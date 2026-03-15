@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Mohor Clothings - Premium handcrafted women's fashion in Bangladesh. Kurtis, Khaadi, Three-piece, and Formal Wear.">
+    <meta name="description" content="Mohor Clothings - Premium handcrafted women's fashion in Bangladesh.">
     <title>Mohor Clothings | Handcrafted Luxury Fashion</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
@@ -22,221 +22,72 @@
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
-        body {
-            font-family: 'Montserrat', sans-serif;
-            background-color: var(--white);
-            color: var(--text-dark);
-            line-height: 1.6;
-            overflow-x: hidden;
-        }
-
+        body { font-family: 'Montserrat', sans-serif; background-color: var(--white); color: var(--text-dark); line-height: 1.6; overflow-x: hidden; }
         h1, h2, h3, .brand-logo { font-family: 'Playfair Display', serif; }
 
         /* --- Navigation --- */
-        nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px 5%;
-            background: var(--white);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .brand-logo {
-            font-size: 28px;
-            font-weight: 700;
-            letter-spacing: 2px;
-            text-decoration: none;
-            color: var(--deep-black);
-            text-transform: uppercase;
-        }
-
-        .nav-links { display: flex; align-items: center; }
+        nav { display: flex; justify-content: space-between; align-items: center; padding: 20px 5%; background: var(--white); position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid var(--border-color); }
+        .brand-logo { font-size: 28px; font-weight: 700; letter-spacing: 2px; text-decoration: none; color: var(--deep-black); text-transform: uppercase; }
         
-        .nav-links a {
-            text-decoration: none;
-            color: var(--text-dark);
-            margin-left: 30px;
-            font-size: 13px;
-            font-weight: 600;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            transition: var(--transition);
-        }
-
+        .nav-right { display: flex; align-items: center; gap: 20px; }
+        .nav-links { display: flex; align-items: center; }
+        .nav-links a { text-decoration: none; color: var(--text-dark); margin-left: 30px; font-size: 13px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; transition: var(--transition); }
         .nav-links a:hover { color: var(--primary-gold); }
 
-        /* 3-Dot Menu Button */
-        .menu-toggle {
-            display: none;
-            font-size: 24px;
-            background: none;
-            border: none;
-            cursor: pointer;
-            color: var(--deep-black);
-        }
+        /* Cart Button in Nav */
+        .cart-toggle-btn { background: none; border: none; font-family: 'Montserrat', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px; text-transform: uppercase; letter-spacing: 1px; }
+        .cart-badge { background: var(--primary-gold); color: var(--white); border-radius: 50%; padding: 2px 8px; font-size: 12px; }
+
+        .menu-toggle { display: none; font-size: 24px; background: none; border: none; cursor: pointer; color: var(--deep-black); }
 
         /* --- Hero Section --- */
-        .hero {
-            height: 70vh;
-            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), 
-                        url('https://images.unsplash.com/photo-1589156191108-c762ff4b96ab?auto=format&fit=crop&w=1920&q=80');
-            background-size: cover;
-            background-position: center;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            color: var(--white);
-            padding: 0 20px;
-        }
-
+        .hero { height: 60vh; background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1589156191108-c762ff4b96ab?auto=format&fit=crop&w=1920&q=80') center/cover; display: flex; align-items: center; justify-content: center; text-align: center; color: var(--white); padding: 0 20px; }
         .hero-content h1 { font-size: clamp(2.5rem, 8vw, 4.5rem); margin-bottom: 20px; font-weight: 400; font-style: italic; }
-        .hero-content p { font-size: 16px; margin-bottom: 30px; letter-spacing: 2px; text-transform: uppercase; }
 
-        /* --- Shop Interface (List, Sort, Filter) --- */
+        /* --- Shop Layout --- */
         .shop-section { padding: 60px 5%; }
-        
-        .shop-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 40px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid var(--border-color);
-            flex-wrap: wrap;
-            gap: 20px;
-        }
-
+        .shop-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; padding-bottom: 20px; border-bottom: 1px solid var(--border-color); flex-wrap: wrap; gap: 20px; }
         .shop-header h2 { font-size: 32px; }
 
-        .shop-controls {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
-        /* Sort Dropdown */
-        .sort-box select {
-            padding: 10px 15px;
-            border: 1px solid var(--border-color);
-            background: var(--white);
-            font-family: 'Montserrat', sans-serif;
-            font-size: 13px;
-            outline: none;
-            cursor: pointer;
-        }
-
-        /* Mobile Filter Toggle */
-        .mobile-filter-btn {
-            display: none;
-            background: var(--deep-black);
-            color: var(--white);
-            border: none;
-            padding: 10px 20px;
-            font-size: 13px;
-            cursor: pointer;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        /* Main Shop Layout */
-        .shop-layout {
-            display: flex;
-            gap: 40px;
-            align-items: flex-start;
-        }
-
-        /* Sidebar Filters */
-        .sidebar {
-            width: 250px;
-            flex-shrink: 0;
-            position: sticky;
-            top: 100px;
-        }
-
-        .filter-group { margin-bottom: 30px; }
-        .filter-group h3 { font-size: 18px; margin-bottom: 15px; font-family: 'Montserrat', sans-serif; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
-        .filter-group ul { list-style: none; }
-        .filter-group li { margin-bottom: 12px; font-size: 14px; color: var(--text-light); display: flex; align-items: center; gap: 10px; cursor: pointer; }
-        .filter-group input[type="checkbox"] { accent-color: var(--primary-gold); width: 16px; height: 16px; cursor: pointer; }
-
-        /* Product Grid */
-        .product-grid {
-            flex: 1;
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 30px;
-        }
-
-        .product-card {
-            background: var(--white);
-            transition: var(--transition);
-        }
-
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; }
+        .product-card { background: var(--white); transition: var(--transition); display: flex; flex-direction: column; }
         .product-card:hover { transform: translateY(-5px); }
-
-        .image-container {
-            height: 380px;
-            overflow: hidden;
-            position: relative;
-            background: var(--soft-gray);
-        }
-
-        .product-image {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.7s ease;
-        }
-
+        .image-container { height: 380px; overflow: hidden; background: var(--soft-gray); }
+        .product-image { width: 100%; height: 100%; object-fit: cover; transition: transform 0.7s ease; }
         .product-card:hover .product-image { transform: scale(1.05); }
+        
+        .product-details { padding: 20px 0; text-align: center; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
+        .product-details h3 { font-size: 15px; font-weight: 600; margin-bottom: 8px; font-family: 'Montserrat', sans-serif; }
+        .product-price { color: var(--primary-gold); font-weight: 600; font-size: 16px; margin-bottom: 15px; }
+        
+        .add-to-cart-btn { background: var(--deep-black); color: var(--white); border: none; padding: 12px; font-family: 'Montserrat', sans-serif; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; transition: var(--transition); width: 100%; }
+        .add-to-cart-btn:hover { background: var(--primary-gold); }
 
-        .product-details { padding: 20px 0; text-align: left; }
-        .product-category { font-size: 11px; color: var(--text-light); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; display: block; }
-        .product-details h3 { font-size: 16px; font-weight: 500; margin-bottom: 8px; font-family: 'Montserrat', sans-serif; }
-        .product-price { color: var(--primary-gold); font-weight: 600; font-size: 15px; }
+        /* --- Cart Sidebar Modal --- */
+        .cart-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; opacity: 0; visibility: hidden; transition: var(--transition); }
+        .cart-overlay.active { opacity: 1; visibility: visible; }
+        
+        .cart-sidebar { position: fixed; top: 0; right: -400px; width: 100%; max-width: 400px; height: 100vh; background: var(--white); z-index: 2001; transition: right 0.4s ease; display: flex; flex-direction: column; box-shadow: -5px 0 15px rgba(0,0,0,0.1); }
+        .cart-sidebar.active { right: 0; }
+        
+        .cart-header { padding: 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+        .cart-header h3 { font-size: 20px; margin: 0; }
+        .close-cart { font-size: 28px; cursor: pointer; line-height: 1; }
+        
+        .cart-items { flex-grow: 1; overflow-y: auto; padding: 20px; }
+        .cart-item { display: flex; justify-content: space-between; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid var(--soft-gray); font-size: 14px; }
+        .remove-item { color: red; cursor: pointer; font-size: 12px; border: none; background: none; margin-top: 5px;}
+        
+        .cart-footer { padding: 20px; border-top: 1px solid var(--border-color); background: var(--soft-gray); }
+        .cart-total { display: flex; justify-content: space-between; font-weight: 600; font-size: 18px; margin-bottom: 20px; }
+        .checkout-btn { background: #25d366; color: var(--white); border: none; padding: 15px; width: 100%; font-family: 'Montserrat', sans-serif; font-size: 14px; font-weight: 600; text-transform: uppercase; cursor: pointer; transition: var(--transition); display: flex; justify-content: center; gap: 10px; }
+        .checkout-btn:hover { background: #128c7e; }
 
-        /* --- Footer & WhatsApp --- */
-        footer { background: var(--deep-black); color: var(--white); padding: 60px 5% 30px; text-align: center; }
-        .footer-logo { font-size: 28px; margin-bottom: 20px; display: block; }
-        .social-links { margin-bottom: 30px; }
-        .social-links a { color: var(--white); margin: 0 15px; text-decoration: none; font-size: 13px; letter-spacing: 1px; transition: var(--transition); }
-        .social-links a:hover { color: var(--primary-gold); }
-        .copyright { font-size: 11px; color: #777; letter-spacing: 1px; text-transform: uppercase; }
+        /* Footer */
+        footer { background: var(--deep-black); color: var(--white); padding: 40px 5% 20px; text-align: center; }
 
-        .whatsapp-float {
-            position: fixed; width: 55px; height: 55px; bottom: 30px; right: 30px;
-            background-color: #25d366; color: var(--white); border-radius: 50px;
-            display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.15); z-index: 1001; transition: var(--transition);
-        }
-        .whatsapp-float:hover { transform: translateY(-3px); background-color: #128c7e; }
-
-        /* --- Responsive Design --- */
         @media (max-width: 900px) {
-            .shop-layout { flex-direction: column; }
-            .sidebar { 
-                width: 100%; 
-                display: none; /* Hidden by default on mobile */
-                background: var(--soft-gray);
-                padding: 20px;
-                position: static;
-            }
-            .sidebar.active { display: block; }
-            .mobile-filter-btn { display: block; }
-            .nav-links { 
-                display: none; 
-                flex-direction: column; 
-                position: absolute; 
-                top: 100%; left: 0; width: 100%; 
-                background: var(--white); 
-                padding: 20px 0; 
-                box-shadow: 0 5px 10px rgba(0,0,0,0.05);
-            }
+            .nav-links { display: none; flex-direction: column; position: absolute; top: 100%; left: 0; width: 100%; background: var(--white); padding: 20px 0; box-shadow: 0 5px 10px rgba(0,0,0,0.05); }
             .nav-links.active { display: flex; }
             .nav-links a { margin: 15px 0; }
             .menu-toggle { display: block; }
@@ -247,10 +98,12 @@
 
     <nav>
         <a href="#" class="brand-logo">Mohor</a>
-        <button class="menu-toggle" id="menuToggle" aria-label="Menu">&#8942;</button>
+        <div class="nav-right">
+            <button class="cart-toggle-btn" id="openCartBtn">Cart <span class="cart-badge" id="cartBadge">0</span></button>
+            <button class="menu-toggle" id="menuToggle">&#8942;</button>
+        </div>
         <div class="nav-links" id="navLinks">
             <a href="#shop">Shop</a>
-            <a href="#about">Craftmanship</a>
             <a href="https://www.facebook.com/mohorclothings" target="_blank">Facebook</a>
             <a href="https://www.instagram.com/mohorclothings" target="_blank">Instagram</a>
         </div>
@@ -258,139 +111,215 @@
 
     <section class="hero">
         <div class="hero-content">
-            <p>Handcrafted in Bangladesh</p>
-            <h1>Artistry Redefined.</h1>
+            <h1>New Arrivals.</h1>
         </div>
     </section>
 
     <section id="shop" class="shop-section">
         <div class="shop-header">
             <h2>Our Collection</h2>
-            <div class="shop-controls">
-                <button class="mobile-filter-btn" id="mobileFilterBtn">Filters & Categories</button>
-                <div class="sort-box">
-                    <select aria-label="Sort products">
-                        <option>Sort by: Newest</option>
-                        <option>Price: Low to High</option>
-                        <option>Price: High to Low</option>
-                        <option>Bestsellers</option>
-                    </select>
-                </div>
-            </div>
         </div>
         
-        <div class="shop-layout">
-            <aside class="sidebar" id="sidebar">
-                <div class="filter-group">
-                    <h3>Categories</h3>
-                    <ul>
-                        <li><input type="checkbox" id="cat1"> <label for="cat1">Kurtis</label></li>
-                        <li><input type="checkbox" id="cat2"> <label for="cat2">Khaadi Series</label></li>
-                        <li><input type="checkbox" id="cat3"> <label for="cat3">Three-Piece Suits</label></li>
-                        <li><input type="checkbox" id="cat4"> <label for="cat4">Formal & Office Wear</label></li>
-                        <li><input type="checkbox" id="cat5"> <label for="cat5">Two-Piece Sets</label></li>
-                    </ul>
+        <div class="product-grid">
+            
+            <div class="product-card">
+                <div class="image-container">
+                    <img src="dress1.png" alt="White Tops" class="product-image">
                 </div>
-                
-                <div class="filter-group">
-                    <h3>Material</h3>
-                    <ul>
-                        <li><input type="checkbox" id="mat1"> <label for="mat1">Pure Cotton</label></li>
-                        <li><input type="checkbox" id="mat2"> <label for="mat2">Silk-Viscose</label></li>
-                        <li><input type="checkbox" id="mat3"> <label for="mat3">Linen</label></li>
-                    </ul>
-                </div>
-
-                <div class="filter-group">
-                    <h3>Price Range</h3>
-                    <ul>
-                        <li><input type="checkbox" id="price1"> <label for="price1">Under ৳2,000</label></li>
-                        <li><input type="checkbox" id="price2"> <label for="price2">৳2,000 - ৳4,000</label></li>
-                        <li><input type="checkbox" id="price3"> <label for="price3">Above ৳4,000</label></li>
-                    </ul>
-                </div>
-            </aside>
-
-            <div class="product-grid">
-                <div class="product-card">
-                    <div class="image-container">
-                        <img src="https://images.unsplash.com/photo-1590736704728-f4730bb30770?auto=format&fit=crop&w=600&q=80" alt="Handcrafted Kurti" class="product-image">
-                    </div>
-                    <div class="product-details">
-                        <span class="product-category">Khaadi Series</span>
-                        <h3>Hand-loomed Mustard Kurti</h3>
-                        <p class="product-price">৳ 2,450</p>
-                    </div>
-                </div>
-
-                <div class="product-card">
-                    <div class="image-container">
-                        <img src="https://images.unsplash.com/photo-1617175548912-f87531644503?auto=format&fit=crop&w=600&q=80" alt="Formal Three Piece" class="product-image">
-                    </div>
-                    <div class="product-details">
-                        <span class="product-category">Office & Viva</span>
-                        <h3>Executive Three-Piece Set</h3>
-                        <p class="product-price">৳ 4,200</p>
-                    </div>
-                </div>
-
-                <div class="product-card">
-                    <div class="image-container">
-                        <img src="https://images.unsplash.com/photo-1609357536066-64670f2096e6?auto=format&fit=crop&w=600&q=80" alt="Two Piece Luxury" class="product-image">
-                    </div>
-                    <div class="product-details">
-                        <span class="product-category">Premium Silk</span>
-                        <h3>Signature Emerald Two-Piece</h3>
-                        <p class="product-price">৳ 3,800</p>
-                    </div>
-                </div>
-
-                <div class="product-card">
-                    <div class="image-container">
-                        <img src="https://images.unsplash.com/photo-1550614000-4b95dd2449bb?auto=format&fit=crop&w=600&q=80" alt="Linen Kurti" class="product-image">
-                    </div>
-                    <div class="product-details">
-                        <span class="product-category">Everyday Wear</span>
-                        <h3>Classic White Linen Kurti</h3>
-                        <p class="product-price">৳ 1,850</p>
-                    </div>
+                <div class="product-details">
+                    <h3>White Tops</h3>
+                    <p class="product-price">৳ 990</p>
+                    <button class="add-to-cart-btn" onclick="addToCart('White Tops', 990)">Add to Cart</button>
                 </div>
             </div>
+
+            <div class="product-card">
+                <div class="image-container">
+                    <img src="dress2.png" alt="Long Tops White Blue Cotton" class="product-image">
+                </div>
+                <div class="product-details">
+                    <h3>Long Tops White Blue Cotton</h3>
+                    <p class="product-price">৳ 1490</p>
+                    <button class="add-to-cart-btn" onclick="addToCart('Long Tops White Blue Cotton', 1490)">Add to Cart</button>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <div class="image-container">
+                    <img src="dress3.png" alt="Couple Dress Combo" class="product-image">
+                </div>
+                <div class="product-details">
+                    <h3>Couple Dress Combo</h3>
+                    <p class="product-price">৳ 3990</p>
+                    <button class="add-to-cart-btn" onclick="addToCart('Couple Dress Combo', 3990)">Add to Cart</button>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <div class="image-container">
+                    <img src="dress4.png" alt="Red embroidery Cotton Three Piece Dress" class="product-image">
+                </div>
+                <div class="product-details">
+                    <h3>Red Embroidery Cotton Three Piece</h3>
+                    <p class="product-price">৳ 1790</p>
+                    <button class="add-to-cart-btn" onclick="addToCart('Red Embroidery Cotton Three Piece', 1790)">Add to Cart</button>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <div class="image-container">
+                    <img src="dress5.png" alt="Red Tops" class="product-image">
+                </div>
+                <div class="product-details">
+                    <h3>Red Tops</h3>
+                    <p class="product-price">৳ 990</p>
+                    <button class="add-to-cart-btn" onclick="addToCart('Red Tops', 990)">Add to Cart</button>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <div class="image-container">
+                    <img src="dress6.png" alt="Three Piece Cotton With Premium Embroidery" class="product-image">
+                </div>
+                <div class="product-details">
+                    <h3>Three Piece Cotton (Premium Embroidery)</h3>
+                    <p class="product-price">৳ 1690</p>
+                    <button class="add-to-cart-btn" onclick="addToCart('Three Piece Cotton (Premium Embroidery)', 1690)">Add to Cart</button>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <div class="image-container">
+                    <img src="dress7.png" alt="Three Piece Embroidered Cotton Print Dress" class="product-image">
+                </div>
+                <div class="product-details">
+                    <h3>Three Piece Embroidered Cotton Print</h3>
+                    <p class="product-price">৳ 1690</p>
+                    <button class="add-to-cart-btn" onclick="addToCart('Three Piece Embroidered Cotton Print', 1690)">Add to Cart</button>
+                </div>
+            </div>
+
         </div>
     </section>
 
-    <footer>
-        <span class="brand-logo footer-logo">Mohor Clothings</span>
-        <div class="social-links">
-            <a href="https://www.facebook.com/mohorclothings" target="_blank">Facebook</a>
-            <a href="https://www.instagram.com/mohorclothings" target="_blank">Instagram</a>
-            <a href="tel:+8801330113027">01330113027</a>
+    <div class="cart-overlay" id="cartOverlay"></div>
+    <div class="cart-sidebar" id="cartSidebar">
+        <div class="cart-header">
+            <h3>Your Cart</h3>
+            <span class="close-cart" id="closeCartBtn">&times;</span>
         </div>
-        <p class="copyright">&copy; 2026 Mohor Clothings Bangladesh. All Rights Reserved.</p>
+        <div class="cart-items" id="cartItemsContainer">
+            <p style="text-align: center; color: #666; margin-top: 20px;">Your cart is empty.</p>
+        </div>
+        <div class="cart-footer">
+            <div class="cart-total">
+                <span>Total:</span>
+                <span>৳<span id="cartTotalValue">0</span></span>
+            </div>
+            <button class="checkout-btn" onclick="checkoutToWhatsApp()">
+                Order via WhatsApp
+            </button>
+        </div>
+    </div>
+
+    <footer>
+        <p style="font-size: 12px; color: #777;">&copy; 2026 Mohor Clothings Bangladesh. All Rights Reserved.</p>
     </footer>
 
-    <a href="https://wa.me/8801330113027" class="whatsapp-float" target="_blank" aria-label="Contact on WhatsApp">
-        <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0.16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.72.94 3.659 1.437 5.634 1.437h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-    </a>
-
     <script>
-        // Toggle Mobile 3-Dot Navigation Menu
+        // --- Mobile Menu Toggle ---
         document.getElementById('menuToggle').addEventListener('click', function() {
             document.getElementById('navLinks').classList.toggle('active');
         });
 
-        // Toggle Mobile Filter Sidebar
-        document.getElementById('mobileFilterBtn').addEventListener('click', function() {
-            const sidebar = document.getElementById('sidebar');
-            sidebar.classList.toggle('active');
-            
-            // Change button text when active
-            if(sidebar.classList.contains('active')) {
-                this.innerHTML = 'Hide Filters';
-            } else {
-                this.innerHTML = 'Filters & Categories';
-            }
+        // --- Cart System Variables ---
+        let cart = [];
+        const cartOverlay = document.getElementById('cartOverlay');
+        const cartSidebar = document.getElementById('cartSidebar');
+        const cartItemsContainer = document.getElementById('cartItemsContainer');
+        const cartTotalValue = document.getElementById('cartTotalValue');
+        const cartBadge = document.getElementById('cartBadge');
+
+        // --- Open/Close Cart ---
+        document.getElementById('openCartBtn').addEventListener('click', () => {
+            cartSidebar.classList.add('active');
+            cartOverlay.classList.add('active');
         });
+
+        document.getElementById('closeCartBtn').addEventListener('click', closeCart);
+        cartOverlay.addEventListener('click', closeCart);
+
+        function closeCart() {
+            cartSidebar.classList.remove('active');
+            cartOverlay.classList.remove('active');
+        }
+
+        // --- Add to Cart Logic ---
+        function addToCart(name, price) {
+            // Add item to array
+            cart.push({ name: name, price: price });
+            updateCartUI();
+            
+            // Give user feedback (open cart automatically)
+            cartSidebar.classList.add('active');
+            cartOverlay.classList.add('active');
+        }
+
+        // --- Remove from Cart Logic ---
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            updateCartUI();
+        }
+
+        // --- Update Cart Interface ---
+        function updateCartUI() {
+            cartItemsContainer.innerHTML = ''; // Clear current list
+            let total = 0;
+
+            if (cart.length === 0) {
+                cartItemsContainer.innerHTML = '<p style="text-align: center; color: #666; margin-top: 20px;">Your cart is empty.</p>';
+            } else {
+                cart.forEach((item, index) => {
+                    total += item.price;
+                    cartItemsContainer.innerHTML += `
+                        <div class="cart-item">
+                            <div>
+                                <strong>${item.name}</strong><br>
+                                <button class="remove-item" onclick="removeFromCart(${index})">Remove</button>
+                            </div>
+                            <div>৳${item.price}</div>
+                        </div>
+                    `;
+                });
+            }
+
+            cartTotalValue.innerText = total;
+            cartBadge.innerText = cart.length;
+        }
+
+        // --- Checkout via WhatsApp Logic ---
+        function checkoutToWhatsApp() {
+            if (cart.length === 0) {
+                alert("Your cart is empty!");
+                return;
+            }
+
+            let message = "Hello Mohor Clothings! I would like to order the following items:%0A%0A";
+            let total = 0;
+
+            cart.forEach((item, index) => {
+                message += `${index + 1}. ${item.name} - ৳${item.price}%0A`;
+                total += item.price;
+            });
+
+            message += `%0A*Total: ৳${total}*`;
+
+            // Replace with your actual WhatsApp Number
+            const phoneNumber = "8801330113027"; 
+            const whatsappUrl = `https://wa.me/${phoneNumber}?text=${message}`;
+            
+            window.open(whatsappUrl, '_blank');
+        }
     </script>
 </body>
 </html>
