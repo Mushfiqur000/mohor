@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Mohor Clothings - Premium handcrafted women's fashion in Bangladesh. Kurtis, Khaadi, Three-piece, and Formal Wear for Office and University.">
+    <title>Mohor Clothings | Handcrafted Luxury Fashion</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-gold: #C9A14A;
+            --deep-black: #0c0c0c;
+            --soft-gray: #f4f4f4;
+            --text-dark: #222;
+            --text-light: #666;
+            --white: #ffffff;
+            --transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--white);
+            color: var(--text-dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3,.brand-logo {
+            font-family: 'Playfair Display', serif;
+        }
+
+        /* Navigation */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 5%;
+            background: var(--white);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid #eee;
+        }
+
+       .brand-logo {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-decoration: none;
+            color: var(--deep-black);
+            text-transform: uppercase;
+        }
+
+       .nav-links a {
+            text-decoration: none;
+            color: var(--text-dark);
+            margin-left: 30px;
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: var(--transition);
+        }
+
+       .nav-links a:hover {
+            color: var(--primary-gold);
+        }
+
+        /* Hero Section */
+       .hero {
+            height: 100vh;
+            background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), 
+                        url('https://images.unsplash.com/photo-1589156191108-c762ff4b96ab?auto=format&fit=crop&w=1920&q=80');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: var(--white);
+            padding: 0 20px;
+        }
+
+       .hero-content h1 {
+            font-size: clamp(2.5rem, 8vw, 5rem);
+            margin-bottom: 20px;
+            font-weight: 400;
+            font-style: italic;
+        }
+
+       .hero-content p {
+            font-size: 18px;
+            margin-bottom: 40px;
+            letter-spacing: 2px;
+            font-weight: 300;
+            text-transform: uppercase;
+        }
+
+       .cta-button {
+            padding: 18px 45px;
+            background: transparent;
+            color: var(--white);
+            border: 1px solid var(--white);
+            text-decoration: none;
+            font-size: 14px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            transition: var(--transition);
+        }
+
+       .cta-button:hover {
+            background: var(--white);
+            color: var(--deep-black);
+        }
+
+        /* Collections Section */
+       .section-padding {
+            padding: 100px 5%;
+        }
+
+       .section-header {
+            text-align: center;
+            margin-bottom: 70px;
+        }
+
+       .section-header h2 {
+            font-size: 36px;
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+        }
+
+       .section-header p {
+            color: var(--text-light);
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+       .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+        }
+
+       .product-card {
+            position: relative;
+            cursor: pointer;
+            overflow: hidden;
+            background: var(--soft-gray);
+        }
+
+       .image-container {
+            height: 450px;
+            overflow: hidden;
+            position: relative;
+        }
+
+       .product-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: var(--transition);
+        }
+
+       .product-card:hover.product-image {
+            transform: scale(1.08);
+            filter: brightness(0.9);
+        }
+
+       .hover-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+       .product-card:hover.hover-overlay {
+            opacity: 1;
+        }
+
+       .view-btn {
+            background: var(--white);
+            color: var(--deep-black);
+            padding: 12px 25px;
+            font-size: 12px;
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+       .product-details {
+            padding: 25px 0;
+            text-align: center;
+        }
+
+       .product-details h3 {
+            font-size: 18px;
+            font-weight: 400;
+            margin-bottom: 8px;
+        }
+
+       .product-details.price {
+            color: var(--primary-gold);
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        /* About Section */
+       .about-section {
+            background-color: var(--soft-gray);
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+       .about-text {
+            flex: 1;
+            min-width: 350px;
+            padding: 80px 10%;
+        }
+
+       .about-image {
+            flex: 1;
+            min-width: 350px;
+            height: 600px;
+            background: url('https://images.unsplash.com/photo-1544441893-675973e31985?auto=format&fit=crop&w=1000&q=80') center/cover;
+        }
+
+        /* WhatsApp Floating Button */
+       .whatsapp-float {
+            position: fixed;
+            width: 60px;
+            height: 60px;
+            bottom: 40px;
+            right: 40px;
+            background-color: #25d366;
+            color: var(--white);
+            border-radius: 50px;
+            text-align: center;
+            font-size: 30px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            z-index: 1001;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+       .whatsapp-float:hover {
+            transform: translateY(-5px) scale(1.1);
+            background-color: #128c7e;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--deep-black);
+            color: var(--white);
+            padding: 80px 5% 40px;
+            text-align: center;
+        }
+
+       .footer-logo {
+            font-size: 32px;
+            margin-bottom: 30px;
+            display: block;
+        }
+
+       .social-links {
+            margin-bottom: 40px;
+        }
+
+       .social-links a {
+            color: var(--white);
+            margin: 0 15px;
+            text-decoration: none;
+            font-size: 14px;
+            letter-spacing: 1px;
+            transition: var(--transition);
+        }
+
+       .social-links a:hover {
+            color: var(--primary-gold);
+        }
+
+       .copyright {
+            font-size: 11px;
+            color: #555;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        @media (max-width: 768px) {
+           .nav-links { display: none; }
+           .hero-content h1 { font-size: 3rem; }
+           .about-text { padding: 40px 5%; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="#" class="brand-logo">Mohor</a>
+        <div class="nav-links">
+            <a href="#collections">Collections</a>
+            <a href="#about">Craftmanship</a>
+            <a href="https://www.facebook.com/share/1Be3jj7iqb/?mibextid=wwXIfr" target="_blank">Facebook</a>
+            <a href="https://www.instagram.com/mohorclothings" target="_blank">Instagram</a>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-content">
+            <p>Handcrafted in Bangladesh</p>
+            <h1>Artistry Redefined.</h1>
+            <a href="#collections" class="cta-button">Explore Collection</a>
+        </div>
+    </section>
+
+    <section id="collections" class="section-padding">
+        <div class="section-header">
+            <p>Our Curated Series</p>
+            <h2>Premium Essentials</h2>
+        </div>
+        
+        <div class="grid">
+            <div class="product-card">
+                <div class="image-container">
+                    <img src="https://images.unsplash.com/photo-1590736704728-f4730bb30770?auto=format&fit=crop&w=600&q=80" alt="Handcrafted Kurti" class="product-image">
+                    <div class="hover-overlay">
+                        <span class="view-btn">View Details</span>
+                    </div>
+                </div>
+                <div class="product-details">
+                    <h3>Hand-loomed Khaadi Kurti</h3>
+                    <p class="price">Luxury Cotton Series</p>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <div class="image-container">
+                    <img src="https://images.unsplash.com/photo-1617175548912-f87531644503?auto=format&fit=crop&w=600&q=80" alt="Formal Three Piece" class="product-image">
+                    <div class="hover-overlay">
+                        <span class="view-btn">View Details</span>
+                    </div>
+                </div>
+                <div class="product-details">
+                    <h3>Formal Three-Piece Set</h3>
+                    <p class="price">Office & Viva Collection</p>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <div class="image-container">
+                    <img src="https://images.unsplash.com/photo-1609357536066-64670f2096e6?auto=format&fit=crop&w=600&q=80" alt="Two Piece Luxury" class="product-image">
+                    <div class="hover-overlay">
+                        <span class="view-btn">View Details</span>
+                    </div>
+                </div>
+                <div class="product-details">
+                    <h3>Signature Two-Piece</h3>
+                    <p class="price">Premium Silk-Viscose</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="about" class="about-section">
+        <div class="about-text">
+            <h2 style="font-size: 32px; margin-bottom: 25px;">The Mohor Promise</h2>
+            <p style="margin-bottom: 20px; color: #555;">In a world of fast fashion, Mohor Clothings stands as a testament to the enduring beauty of handcrafted garments. We specialize in well-designed, premium outfits that empower the modern woman—whether she is presenting at a university viva, leading a meeting in the office, or attending a formal evening event.</p>
+            <p style="color: #555;">Each stitch is a story, and each fabric is chosen for its luxury feel and durability. Our khaadi and handcrafted collections are designed in Bangladesh, for the world.</p>
+        </div>
+        <div class="about-image"></div>
+    </section>
+
+    <footer>
+        <span class="brand-logo footer-logo">Mohor Clothings</span>
+        <div class="social-links">
+            <a href="https://www.facebook.com/share/1Be3jj7iqb/?mibextid=wwXIfr" target="_blank">Facebook</a>
+            <a href="https://www.instagram.com/mohorclothings" target="_blank">Instagram</a>
+            <a href="tel:+8801330113027">01330113027</a>
+        </div>
+        <p class="copyright">&copy; 2025 Mohor Clothings Bangladesh. All Rights Reserved.</p>
+    </footer>
+
+    <a href="https://wa.me/8801330113027?text=Hello%20Mohor%20Clothings!%20I%20am%20interested%20in%20your%20premium%20collection." class="whatsapp-float" target="_blank" aria-label="Contact on WhatsApp">
+        <svg viewBox="0 0 24 24" width="32" height="32" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0.16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.72.94 3.659 1.437 5.634 1.437h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+    </a>
+
+</body>
+</html>
