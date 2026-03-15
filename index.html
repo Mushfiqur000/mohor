@@ -3,27 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Mohor Clothings - Premium handcrafted women's fashion in Bangladesh. Kurtis, Khaadi, Three-piece, and Formal Wear for Office and University.">
+    <meta name="description" content="Mohor Clothings - Premium handcrafted women's fashion in Bangladesh. Kurtis, Khaadi, Three-piece, and Formal Wear.">
     <title>Mohor Clothings | Handcrafted Luxury Fashion</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
     
     <style>
         :root {
             --primary-gold: #C9A14A;
             --deep-black: #0c0c0c;
-            --soft-gray: #f4f4f4;
+            --soft-gray: #f9f9f9;
+            --border-color: #eaeaea;
             --text-dark: #222;
             --text-light: #666;
             --white: #ffffff;
-            --transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition: all 0.3s ease;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Montserrat', sans-serif;
@@ -33,11 +30,9 @@
             overflow-x: hidden;
         }
 
-        h1, h2, h3,.brand-logo {
-            font-family: 'Playfair Display', serif;
-        }
+        h1, h2, h3, .brand-logo { font-family: 'Playfair Display', serif; }
 
-        /* Navigation */
+        /* --- Navigation --- */
         nav {
             display: flex;
             justify-content: space-between;
@@ -47,10 +42,10 @@
             position: sticky;
             top: 0;
             z-index: 1000;
-            border-bottom: 1px solid #eee;
+            border-bottom: 1px solid var(--border-color);
         }
 
-       .brand-logo {
+        .brand-logo {
             font-size: 28px;
             font-weight: 700;
             letter-spacing: 2px;
@@ -59,7 +54,9 @@
             text-transform: uppercase;
         }
 
-       .nav-links a {
+        .nav-links { display: flex; align-items: center; }
+        
+        .nav-links a {
             text-decoration: none;
             color: var(--text-dark);
             margin-left: 30px;
@@ -70,14 +67,22 @@
             transition: var(--transition);
         }
 
-       .nav-links a:hover {
-            color: var(--primary-gold);
+        .nav-links a:hover { color: var(--primary-gold); }
+
+        /* 3-Dot Menu Button */
+        .menu-toggle {
+            display: none;
+            font-size: 24px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--deep-black);
         }
 
-        /* Hero Section */
-       .hero {
-            height: 100vh;
-            background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), 
+        /* --- Hero Section --- */
+        .hero {
+            height: 70vh;
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), 
                         url('https://images.unsplash.com/photo-1589156191108-c762ff4b96ab?auto=format&fit=crop&w=1920&q=80');
             background-size: cover;
             background-position: center;
@@ -89,226 +94,152 @@
             padding: 0 20px;
         }
 
-       .hero-content h1 {
-            font-size: clamp(2.5rem, 8vw, 5rem);
-            margin-bottom: 20px;
-            font-weight: 400;
-            font-style: italic;
-        }
+        .hero-content h1 { font-size: clamp(2.5rem, 8vw, 4.5rem); margin-bottom: 20px; font-weight: 400; font-style: italic; }
+        .hero-content p { font-size: 16px; margin-bottom: 30px; letter-spacing: 2px; text-transform: uppercase; }
 
-       .hero-content p {
-            font-size: 18px;
+        /* --- Shop Interface (List, Sort, Filter) --- */
+        .shop-section { padding: 60px 5%; }
+        
+        .shop-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 40px;
-            letter-spacing: 2px;
-            font-weight: 300;
-            text-transform: uppercase;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+            flex-wrap: wrap;
+            gap: 20px;
         }
 
-       .cta-button {
-            padding: 18px 45px;
-            background: transparent;
-            color: var(--white);
-            border: 1px solid var(--white);
-            text-decoration: none;
-            font-size: 14px;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            transition: var(--transition);
+        .shop-header h2 { font-size: 32px; }
+
+        .shop-controls {
+            display: flex;
+            align-items: center;
+            gap: 20px;
         }
 
-       .cta-button:hover {
+        /* Sort Dropdown */
+        .sort-box select {
+            padding: 10px 15px;
+            border: 1px solid var(--border-color);
             background: var(--white);
-            color: var(--deep-black);
+            font-family: 'Montserrat', sans-serif;
+            font-size: 13px;
+            outline: none;
+            cursor: pointer;
         }
 
-        /* Collections Section */
-       .section-padding {
-            padding: 100px 5%;
-        }
-
-       .section-header {
-            text-align: center;
-            margin-bottom: 70px;
-        }
-
-       .section-header h2 {
-            font-size: 36px;
-            margin-bottom: 15px;
+        /* Mobile Filter Toggle */
+        .mobile-filter-btn {
+            display: none;
+            background: var(--deep-black);
+            color: var(--white);
+            border: none;
+            padding: 10px 20px;
+            font-size: 13px;
+            cursor: pointer;
+            text-transform: uppercase;
             letter-spacing: 1px;
         }
 
-       .section-header p {
-            color: var(--text-light);
-            font-size: 14px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
-       .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        /* Main Shop Layout */
+        .shop-layout {
+            display: flex;
             gap: 40px;
+            align-items: flex-start;
         }
 
-       .product-card {
-            position: relative;
-            cursor: pointer;
+        /* Sidebar Filters */
+        .sidebar {
+            width: 250px;
+            flex-shrink: 0;
+            position: sticky;
+            top: 100px;
+        }
+
+        .filter-group { margin-bottom: 30px; }
+        .filter-group h3 { font-size: 18px; margin-bottom: 15px; font-family: 'Montserrat', sans-serif; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+        .filter-group ul { list-style: none; }
+        .filter-group li { margin-bottom: 12px; font-size: 14px; color: var(--text-light); display: flex; align-items: center; gap: 10px; cursor: pointer; }
+        .filter-group input[type="checkbox"] { accent-color: var(--primary-gold); width: 16px; height: 16px; cursor: pointer; }
+
+        /* Product Grid */
+        .product-grid {
+            flex: 1;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        .product-card {
+            background: var(--white);
+            transition: var(--transition);
+        }
+
+        .product-card:hover { transform: translateY(-5px); }
+
+        .image-container {
+            height: 380px;
             overflow: hidden;
+            position: relative;
             background: var(--soft-gray);
         }
 
-       .image-container {
-            height: 450px;
-            overflow: hidden;
-            position: relative;
-        }
-
-       .product-image {
+        .product-image {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            transition: var(--transition);
+            transition: transform 0.7s ease;
         }
 
-       .product-card:hover.product-image {
-            transform: scale(1.08);
-            filter: brightness(0.9);
-        }
+        .product-card:hover .product-image { transform: scale(1.05); }
 
-       .hover-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            transition: var(--transition);
-        }
+        .product-details { padding: 20px 0; text-align: left; }
+        .product-category { font-size: 11px; color: var(--text-light); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; display: block; }
+        .product-details h3 { font-size: 16px; font-weight: 500; margin-bottom: 8px; font-family: 'Montserrat', sans-serif; }
+        .product-price { color: var(--primary-gold); font-weight: 600; font-size: 15px; }
 
-       .product-card:hover.hover-overlay {
-            opacity: 1;
-        }
+        /* --- Footer & WhatsApp --- */
+        footer { background: var(--deep-black); color: var(--white); padding: 60px 5% 30px; text-align: center; }
+        .footer-logo { font-size: 28px; margin-bottom: 20px; display: block; }
+        .social-links { margin-bottom: 30px; }
+        .social-links a { color: var(--white); margin: 0 15px; text-decoration: none; font-size: 13px; letter-spacing: 1px; transition: var(--transition); }
+        .social-links a:hover { color: var(--primary-gold); }
+        .copyright { font-size: 11px; color: #777; letter-spacing: 1px; text-transform: uppercase; }
 
-       .view-btn {
-            background: var(--white);
-            color: var(--deep-black);
-            padding: 12px 25px;
-            font-size: 12px;
-            text-transform: uppercase;
-            font-weight: 600;
-            letter-spacing: 1px;
+        .whatsapp-float {
+            position: fixed; width: 55px; height: 55px; bottom: 30px; right: 30px;
+            background-color: #25d366; color: var(--white); border-radius: 50px;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15); z-index: 1001; transition: var(--transition);
         }
+        .whatsapp-float:hover { transform: translateY(-3px); background-color: #128c7e; }
 
-       .product-details {
-            padding: 25px 0;
-            text-align: center;
-        }
-
-       .product-details h3 {
-            font-size: 18px;
-            font-weight: 400;
-            margin-bottom: 8px;
-        }
-
-       .product-details.price {
-            color: var(--primary-gold);
-            font-weight: 600;
-            letter-spacing: 1px;
-        }
-
-        /* About Section */
-       .about-section {
-            background-color: var(--soft-gray);
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-        }
-
-       .about-text {
-            flex: 1;
-            min-width: 350px;
-            padding: 80px 10%;
-        }
-
-       .about-image {
-            flex: 1;
-            min-width: 350px;
-            height: 600px;
-            background: url('https://images.unsplash.com/photo-1544441893-675973e31985?auto=format&fit=crop&w=1000&q=80') center/cover;
-        }
-
-        /* WhatsApp Floating Button */
-       .whatsapp-float {
-            position: fixed;
-            width: 60px;
-            height: 60px;
-            bottom: 40px;
-            right: 40px;
-            background-color: #25d366;
-            color: var(--white);
-            border-radius: 50px;
-            text-align: center;
-            font-size: 30px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            z-index: 1001;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-decoration: none;
-            transition: var(--transition);
-        }
-
-       .whatsapp-float:hover {
-            transform: translateY(-5px) scale(1.1);
-            background-color: #128c7e;
-        }
-
-        /* Footer */
-        footer {
-            background: var(--deep-black);
-            color: var(--white);
-            padding: 80px 5% 40px;
-            text-align: center;
-        }
-
-       .footer-logo {
-            font-size: 32px;
-            margin-bottom: 30px;
-            display: block;
-        }
-
-       .social-links {
-            margin-bottom: 40px;
-        }
-
-       .social-links a {
-            color: var(--white);
-            margin: 0 15px;
-            text-decoration: none;
-            font-size: 14px;
-            letter-spacing: 1px;
-            transition: var(--transition);
-        }
-
-       .social-links a:hover {
-            color: var(--primary-gold);
-        }
-
-       .copyright {
-            font-size: 11px;
-            color: #555;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }
-
-        @media (max-width: 768px) {
-           .nav-links { display: none; }
-           .hero-content h1 { font-size: 3rem; }
-           .about-text { padding: 40px 5%; }
+        /* --- Responsive Design --- */
+        @media (max-width: 900px) {
+            .shop-layout { flex-direction: column; }
+            .sidebar { 
+                width: 100%; 
+                display: none; /* Hidden by default on mobile */
+                background: var(--soft-gray);
+                padding: 20px;
+                position: static;
+            }
+            .sidebar.active { display: block; }
+            .mobile-filter-btn { display: block; }
+            .nav-links { 
+                display: none; 
+                flex-direction: column; 
+                position: absolute; 
+                top: 100%; left: 0; width: 100%; 
+                background: var(--white); 
+                padding: 20px 0; 
+                box-shadow: 0 5px 10px rgba(0,0,0,0.05);
+            }
+            .nav-links.active { display: flex; }
+            .nav-links a { margin: 15px 0; }
+            .menu-toggle { display: block; }
         }
     </style>
 </head>
@@ -316,10 +247,11 @@
 
     <nav>
         <a href="#" class="brand-logo">Mohor</a>
-        <div class="nav-links">
-            <a href="#collections">Collections</a>
+        <button class="menu-toggle" id="menuToggle" aria-label="Menu">&#8942;</button>
+        <div class="nav-links" id="navLinks">
+            <a href="#shop">Shop</a>
             <a href="#about">Craftmanship</a>
-            <a href="https://www.facebook.com/share/1Be3jj7iqb/?mibextid=wwXIfr" target="_blank">Facebook</a>
+            <a href="https://www.facebook.com/mohorclothings" target="_blank">Facebook</a>
             <a href="https://www.instagram.com/mohorclothings" target="_blank">Instagram</a>
         </div>
     </nav>
@@ -328,80 +260,137 @@
         <div class="hero-content">
             <p>Handcrafted in Bangladesh</p>
             <h1>Artistry Redefined.</h1>
-            <a href="#collections" class="cta-button">Explore Collection</a>
         </div>
     </section>
 
-    <section id="collections" class="section-padding">
-        <div class="section-header">
-            <p>Our Curated Series</p>
-            <h2>Premium Essentials</h2>
+    <section id="shop" class="shop-section">
+        <div class="shop-header">
+            <h2>Our Collection</h2>
+            <div class="shop-controls">
+                <button class="mobile-filter-btn" id="mobileFilterBtn">Filters & Categories</button>
+                <div class="sort-box">
+                    <select aria-label="Sort products">
+                        <option>Sort by: Newest</option>
+                        <option>Price: Low to High</option>
+                        <option>Price: High to Low</option>
+                        <option>Bestsellers</option>
+                    </select>
+                </div>
+            </div>
         </div>
         
-        <div class="grid">
-            <div class="product-card">
-                <div class="image-container">
-                    <img src="https://images.unsplash.com/photo-1590736704728-f4730bb30770?auto=format&fit=crop&w=600&q=80" alt="Handcrafted Kurti" class="product-image">
-                    <div class="hover-overlay">
-                        <span class="view-btn">View Details</span>
-                    </div>
+        <div class="shop-layout">
+            <aside class="sidebar" id="sidebar">
+                <div class="filter-group">
+                    <h3>Categories</h3>
+                    <ul>
+                        <li><input type="checkbox" id="cat1"> <label for="cat1">Kurtis</label></li>
+                        <li><input type="checkbox" id="cat2"> <label for="cat2">Khaadi Series</label></li>
+                        <li><input type="checkbox" id="cat3"> <label for="cat3">Three-Piece Suits</label></li>
+                        <li><input type="checkbox" id="cat4"> <label for="cat4">Formal & Office Wear</label></li>
+                        <li><input type="checkbox" id="cat5"> <label for="cat5">Two-Piece Sets</label></li>
+                    </ul>
                 </div>
-                <div class="product-details">
-                    <h3>Hand-loomed Khaadi Kurti</h3>
-                    <p class="price">Luxury Cotton Series</p>
+                
+                <div class="filter-group">
+                    <h3>Material</h3>
+                    <ul>
+                        <li><input type="checkbox" id="mat1"> <label for="mat1">Pure Cotton</label></li>
+                        <li><input type="checkbox" id="mat2"> <label for="mat2">Silk-Viscose</label></li>
+                        <li><input type="checkbox" id="mat3"> <label for="mat3">Linen</label></li>
+                    </ul>
                 </div>
-            </div>
 
-            <div class="product-card">
-                <div class="image-container">
-                    <img src="https://images.unsplash.com/photo-1617175548912-f87531644503?auto=format&fit=crop&w=600&q=80" alt="Formal Three Piece" class="product-image">
-                    <div class="hover-overlay">
-                        <span class="view-btn">View Details</span>
-                    </div>
+                <div class="filter-group">
+                    <h3>Price Range</h3>
+                    <ul>
+                        <li><input type="checkbox" id="price1"> <label for="price1">Under ৳2,000</label></li>
+                        <li><input type="checkbox" id="price2"> <label for="price2">৳2,000 - ৳4,000</label></li>
+                        <li><input type="checkbox" id="price3"> <label for="price3">Above ৳4,000</label></li>
+                    </ul>
                 </div>
-                <div class="product-details">
-                    <h3>Formal Three-Piece Set</h3>
-                    <p class="price">Office & Viva Collection</p>
-                </div>
-            </div>
+            </aside>
 
-            <div class="product-card">
-                <div class="image-container">
-                    <img src="https://images.unsplash.com/photo-1609357536066-64670f2096e6?auto=format&fit=crop&w=600&q=80" alt="Two Piece Luxury" class="product-image">
-                    <div class="hover-overlay">
-                        <span class="view-btn">View Details</span>
+            <div class="product-grid">
+                <div class="product-card">
+                    <div class="image-container">
+                        <img src="https://images.unsplash.com/photo-1590736704728-f4730bb30770?auto=format&fit=crop&w=600&q=80" alt="Handcrafted Kurti" class="product-image">
+                    </div>
+                    <div class="product-details">
+                        <span class="product-category">Khaadi Series</span>
+                        <h3>Hand-loomed Mustard Kurti</h3>
+                        <p class="product-price">৳ 2,450</p>
                     </div>
                 </div>
-                <div class="product-details">
-                    <h3>Signature Two-Piece</h3>
-                    <p class="price">Premium Silk-Viscose</p>
+
+                <div class="product-card">
+                    <div class="image-container">
+                        <img src="https://images.unsplash.com/photo-1617175548912-f87531644503?auto=format&fit=crop&w=600&q=80" alt="Formal Three Piece" class="product-image">
+                    </div>
+                    <div class="product-details">
+                        <span class="product-category">Office & Viva</span>
+                        <h3>Executive Three-Piece Set</h3>
+                        <p class="product-price">৳ 4,200</p>
+                    </div>
+                </div>
+
+                <div class="product-card">
+                    <div class="image-container">
+                        <img src="https://images.unsplash.com/photo-1609357536066-64670f2096e6?auto=format&fit=crop&w=600&q=80" alt="Two Piece Luxury" class="product-image">
+                    </div>
+                    <div class="product-details">
+                        <span class="product-category">Premium Silk</span>
+                        <h3>Signature Emerald Two-Piece</h3>
+                        <p class="product-price">৳ 3,800</p>
+                    </div>
+                </div>
+
+                <div class="product-card">
+                    <div class="image-container">
+                        <img src="https://images.unsplash.com/photo-1550614000-4b95dd2449bb?auto=format&fit=crop&w=600&q=80" alt="Linen Kurti" class="product-image">
+                    </div>
+                    <div class="product-details">
+                        <span class="product-category">Everyday Wear</span>
+                        <h3>Classic White Linen Kurti</h3>
+                        <p class="product-price">৳ 1,850</p>
+                    </div>
                 </div>
             </div>
         </div>
-    </section>
-
-    <section id="about" class="about-section">
-        <div class="about-text">
-            <h2 style="font-size: 32px; margin-bottom: 25px;">The Mohor Promise</h2>
-            <p style="margin-bottom: 20px; color: #555;">In a world of fast fashion, Mohor Clothings stands as a testament to the enduring beauty of handcrafted garments. We specialize in well-designed, premium outfits that empower the modern woman—whether she is presenting at a university viva, leading a meeting in the office, or attending a formal evening event.</p>
-            <p style="color: #555;">Each stitch is a story, and each fabric is chosen for its luxury feel and durability. Our khaadi and handcrafted collections are designed in Bangladesh, for the world.</p>
-        </div>
-        <div class="about-image"></div>
     </section>
 
     <footer>
         <span class="brand-logo footer-logo">Mohor Clothings</span>
         <div class="social-links">
-            <a href="https://www.facebook.com/share/1Be3jj7iqb/?mibextid=wwXIfr" target="_blank">Facebook</a>
+            <a href="https://www.facebook.com/mohorclothings" target="_blank">Facebook</a>
             <a href="https://www.instagram.com/mohorclothings" target="_blank">Instagram</a>
             <a href="tel:+8801330113027">01330113027</a>
         </div>
-        <p class="copyright">&copy; 2025 Mohor Clothings Bangladesh. All Rights Reserved.</p>
+        <p class="copyright">&copy; 2026 Mohor Clothings Bangladesh. All Rights Reserved.</p>
     </footer>
 
-    <a href="https://wa.me/8801330113027?text=Hello%20Mohor%20Clothings!%20I%20am%20interested%20in%20your%20premium%20collection." class="whatsapp-float" target="_blank" aria-label="Contact on WhatsApp">
-        <svg viewBox="0 0 24 24" width="32" height="32" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0.16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.72.94 3.659 1.437 5.634 1.437h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+    <a href="https://wa.me/8801330113027" class="whatsapp-float" target="_blank" aria-label="Contact on WhatsApp">
+        <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0.16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.72.94 3.659 1.437 5.634 1.437h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
     </a>
 
+    <script>
+        // Toggle Mobile 3-Dot Navigation Menu
+        document.getElementById('menuToggle').addEventListener('click', function() {
+            document.getElementById('navLinks').classList.toggle('active');
+        });
+
+        // Toggle Mobile Filter Sidebar
+        document.getElementById('mobileFilterBtn').addEventListener('click', function() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('active');
+            
+            // Change button text when active
+            if(sidebar.classList.contains('active')) {
+                this.innerHTML = 'Hide Filters';
+            } else {
+                this.innerHTML = 'Filters & Categories';
+            }
+        });
+    </script>
 </body>
 </html>
