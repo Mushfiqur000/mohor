@@ -34,30 +34,48 @@
         .nav-links a { text-decoration: none; color: var(--text-dark); margin-left: 30px; font-size: 13px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; transition: var(--transition); }
         .nav-links a:hover { color: var(--primary-gold); }
 
-        /* Cart Button in Nav */
         .cart-toggle-btn { background: none; border: none; font-family: 'Montserrat', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px; text-transform: uppercase; letter-spacing: 1px; }
         .cart-badge { background: var(--primary-gold); color: var(--white); border-radius: 50%; padding: 2px 8px; font-size: 12px; }
 
         .menu-toggle { display: none; font-size: 24px; background: none; border: none; cursor: pointer; color: var(--deep-black); }
 
         /* --- Hero Section --- */
-        .hero { height: 60vh; background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1589156191108-c762ff4b96ab?auto=format&fit=crop&w=1920&q=80') center/cover; display: flex; align-items: center; justify-content: center; text-align: center; color: var(--white); padding: 0 20px; }
-        .hero-content h1 { font-size: clamp(2.5rem, 8vw, 4.5rem); margin-bottom: 20px; font-weight: 400; font-style: italic; }
+        .hero { height: 40vh; background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1589156191108-c762ff4b96ab?auto=format&fit=crop&w=1920&q=80') center/cover; display: flex; align-items: center; justify-content: center; text-align: center; color: var(--white); padding: 0 20px; }
+        .hero-content h1 { font-size: clamp(2.5rem, 8vw, 4.5rem); margin-bottom: 10px; font-weight: 400; font-style: italic; }
 
-        /* --- Shop Layout --- */
-        .shop-section { padding: 60px 5%; }
-        .shop-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; padding-bottom: 20px; border-bottom: 1px solid var(--border-color); flex-wrap: wrap; gap: 20px; }
-        .shop-header h2 { font-size: 32px; }
+        /* --- Shop Section & Filters --- */
+        .shop-section { padding: 40px 5%; }
+        
+        .shop-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid var(--border-color); flex-wrap: wrap; gap: 15px; }
+        .shop-header h2 { font-size: 28px; }
 
-        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; }
-        .product-card { background: var(--white); transition: var(--transition); display: flex; flex-direction: column; }
-        .product-card:hover { transform: translateY(-5px); }
-        .image-container { height: 380px; overflow: hidden; background: var(--soft-gray); }
+        .shop-controls { display: flex; align-items: center; gap: 15px; }
+        
+        .sort-box select { padding: 10px 15px; border: 1px solid var(--border-color); background: var(--white); font-family: 'Montserrat', sans-serif; font-size: 13px; outline: none; cursor: pointer; }
+        
+        .mobile-filter-btn { display: none; background: var(--deep-black); color: var(--white); border: none; padding: 10px 20px; font-size: 13px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; }
+
+        .shop-layout { display: flex; gap: 40px; align-items: flex-start; }
+
+        /* Sidebar Filters */
+        .sidebar { width: 250px; flex-shrink: 0; position: sticky; top: 100px; }
+        .filter-group { margin-bottom: 30px; }
+        .filter-group h3 { font-size: 16px; margin-bottom: 15px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; border-bottom: 2px solid var(--soft-gray); padding-bottom: 5px; }
+        .filter-group ul { list-style: none; }
+        .filter-group li { margin-bottom: 12px; font-size: 14px; color: var(--text-light); display: flex; align-items: center; gap: 10px; cursor: pointer; }
+        .filter-group input[type="checkbox"] { accent-color: var(--primary-gold); width: 16px; height: 16px; cursor: pointer; }
+
+        /* Product Grid */
+        .product-grid { flex: 1; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 30px; }
+        .product-card { background: var(--white); transition: var(--transition); display: flex; flex-direction: column; border: 1px solid var(--soft-gray); }
+        .product-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
+        .image-container { height: 350px; overflow: hidden; background: var(--soft-gray); }
         .product-image { width: 100%; height: 100%; object-fit: cover; transition: transform 0.7s ease; }
         .product-card:hover .product-image { transform: scale(1.05); }
         
-        .product-details { padding: 20px 0; text-align: center; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
-        .product-details h3 { font-size: 15px; font-weight: 600; margin-bottom: 8px; font-family: 'Montserrat', sans-serif; }
+        .product-details { padding: 20px 15px; text-align: center; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
+        .product-category-label { font-size: 11px; color: var(--text-light); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
+        .product-details h3 { font-size: 14px; font-weight: 600; margin-bottom: 8px; font-family: 'Montserrat', sans-serif; }
         .product-price { color: var(--primary-gold); font-weight: 600; font-size: 16px; margin-bottom: 15px; }
         
         .add-to-cart-btn { background: var(--deep-black); color: var(--white); border: none; padding: 12px; font-family: 'Montserrat', sans-serif; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; transition: var(--transition); width: 100%; }
@@ -66,27 +84,26 @@
         /* --- Cart Sidebar Modal --- */
         .cart-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; opacity: 0; visibility: hidden; transition: var(--transition); }
         .cart-overlay.active { opacity: 1; visibility: visible; }
-        
         .cart-sidebar { position: fixed; top: 0; right: -400px; width: 100%; max-width: 400px; height: 100vh; background: var(--white); z-index: 2001; transition: right 0.4s ease; display: flex; flex-direction: column; box-shadow: -5px 0 15px rgba(0,0,0,0.1); }
         .cart-sidebar.active { right: 0; }
-        
         .cart-header { padding: 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
-        .cart-header h3 { font-size: 20px; margin: 0; }
         .close-cart { font-size: 28px; cursor: pointer; line-height: 1; }
-        
         .cart-items { flex-grow: 1; overflow-y: auto; padding: 20px; }
         .cart-item { display: flex; justify-content: space-between; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid var(--soft-gray); font-size: 14px; }
         .remove-item { color: red; cursor: pointer; font-size: 12px; border: none; background: none; margin-top: 5px;}
-        
         .cart-footer { padding: 20px; border-top: 1px solid var(--border-color); background: var(--soft-gray); }
         .cart-total { display: flex; justify-content: space-between; font-weight: 600; font-size: 18px; margin-bottom: 20px; }
         .checkout-btn { background: #25d366; color: var(--white); border: none; padding: 15px; width: 100%; font-family: 'Montserrat', sans-serif; font-size: 14px; font-weight: 600; text-transform: uppercase; cursor: pointer; transition: var(--transition); display: flex; justify-content: center; gap: 10px; }
         .checkout-btn:hover { background: #128c7e; }
 
-        /* Footer */
         footer { background: var(--deep-black); color: var(--white); padding: 40px 5% 20px; text-align: center; }
 
+        /* Responsive Design */
         @media (max-width: 900px) {
+            .shop-layout { flex-direction: column; }
+            .sidebar { width: 100%; display: none; background: var(--soft-gray); padding: 20px; position: static; margin-bottom: 20px; }
+            .sidebar.active { display: block; }
+            .mobile-filter-btn { display: block; }
             .nav-links { display: none; flex-direction: column; position: absolute; top: 100%; left: 0; width: 100%; background: var(--white); padding: 20px 0; box-shadow: 0 5px 10px rgba(0,0,0,0.05); }
             .nav-links.active { display: flex; }
             .nav-links a { margin: 15px 0; }
@@ -118,87 +135,126 @@
     <section id="shop" class="shop-section">
         <div class="shop-header">
             <h2>Our Collection</h2>
+            <div class="shop-controls">
+                <button class="mobile-filter-btn" id="mobileFilterBtn">Filters</button>
+                <div class="sort-box">
+                    <select id="sortSelect" aria-label="Sort products">
+                        <option value="default">Sort by: Default</option>
+                        <option value="low-high">Price: Low to High</option>
+                        <option value="high-low">Price: High to Low</option>
+                    </select>
+                </div>
+            </div>
         </div>
         
-        <div class="product-grid">
-            
-            <div class="product-card">
-                <div class="image-container">
-                    <img src="dress1.png" alt="White Tops" class="product-image">
+        <div class="shop-layout">
+            <aside class="sidebar" id="sidebar">
+                <div class="filter-group">
+                    <h3>Categories</h3>
+                    <ul>
+                        <li><input type="checkbox" class="filter-checkbox" value="tops" id="cat-tops"> <label for="cat-tops">Tops</label></li>
+                        <li><input type="checkbox" class="filter-checkbox" value="three-piece" id="cat-threepiece"> <label for="cat-threepiece">Three Piece</label></li>
+                        <li><input type="checkbox" class="filter-checkbox" value="combo" id="cat-combo"> <label for="cat-combo">Couple Combo</label></li>
+                    </ul>
                 </div>
-                <div class="product-details">
-                    <h3>White Tops</h3>
-                    <p class="product-price">৳ 990</p>
-                    <button class="add-to-cart-btn" onclick="addToCart('White Tops', 990)">Add to Cart</button>
-                </div>
-            </div>
 
-            <div class="product-card">
-                <div class="image-container">
-                    <img src="dress2.png" alt="Long Tops White Blue Cotton" class="product-image">
+                <div class="filter-group">
+                    <h3>Price</h3>
+                    <ul>
+                        <li><input type="checkbox" class="filter-checkbox price-filter" value="under-1000" id="price-1"> <label for="price-1">Under ৳1000</label></li>
+                        <li><input type="checkbox" class="filter-checkbox price-filter" value="1000-2000" id="price-2"> <label for="price-2">৳1000 - ৳2000</label></li>
+                        <li><input type="checkbox" class="filter-checkbox price-filter" value="above-2000" id="price-3"> <label for="price-3">Above ৳2000</label></li>
+                    </ul>
                 </div>
-                <div class="product-details">
-                    <h3>Long Tops White Blue Cotton</h3>
-                    <p class="product-price">৳ 1490</p>
-                    <button class="add-to-cart-btn" onclick="addToCart('Long Tops White Blue Cotton', 1490)">Add to Cart</button>
-                </div>
-            </div>
+            </aside>
 
-            <div class="product-card">
-                <div class="image-container">
-                    <img src="dress3.png" alt="Couple Dress Combo" class="product-image">
+            <div class="product-grid" id="productGrid">
+                
+                <div class="product-card" data-category="tops" data-price="990">
+                    <div class="image-container">
+                        <img src="dress1.png" alt="White Tops" class="product-image">
+                    </div>
+                    <div class="product-details">
+                        <span class="product-category-label">Tops</span>
+                        <h3>White Tops</h3>
+                        <p class="product-price">৳ 990</p>
+                        <button class="add-to-cart-btn" onclick="addToCart('White Tops', 990)">Add to Cart</button>
+                    </div>
                 </div>
-                <div class="product-details">
-                    <h3>Couple Dress Combo</h3>
-                    <p class="product-price">৳ 3990</p>
-                    <button class="add-to-cart-btn" onclick="addToCart('Couple Dress Combo', 3990)">Add to Cart</button>
-                </div>
-            </div>
 
-            <div class="product-card">
-                <div class="image-container">
-                    <img src="dress4.png" alt="Red embroidery Cotton Three Piece Dress" class="product-image">
+                <div class="product-card" data-category="tops" data-price="1490">
+                    <div class="image-container">
+                        <img src="dress2.png" alt="Long Tops White Blue Cotton" class="product-image">
+                    </div>
+                    <div class="product-details">
+                        <span class="product-category-label">Tops</span>
+                        <h3>Long Tops White Blue Cotton</h3>
+                        <p class="product-price">৳ 1490</p>
+                        <button class="add-to-cart-btn" onclick="addToCart('Long Tops White Blue Cotton', 1490)">Add to Cart</button>
+                    </div>
                 </div>
-                <div class="product-details">
-                    <h3>Red Embroidery Cotton Three Piece</h3>
-                    <p class="product-price">৳ 1790</p>
-                    <button class="add-to-cart-btn" onclick="addToCart('Red Embroidery Cotton Three Piece', 1790)">Add to Cart</button>
-                </div>
-            </div>
 
-            <div class="product-card">
-                <div class="image-container">
-                    <img src="dress5.png" alt="Red Tops" class="product-image">
+                <div class="product-card" data-category="combo" data-price="3990">
+                    <div class="image-container">
+                        <img src="dress3.png" alt="Couple Dress Combo" class="product-image">
+                    </div>
+                    <div class="product-details">
+                        <span class="product-category-label">Couple Combo</span>
+                        <h3>Couple Dress Combo</h3>
+                        <p class="product-price">৳ 3990</p>
+                        <button class="add-to-cart-btn" onclick="addToCart('Couple Dress Combo', 3990)">Add to Cart</button>
+                    </div>
                 </div>
-                <div class="product-details">
-                    <h3>Red Tops</h3>
-                    <p class="product-price">৳ 990</p>
-                    <button class="add-to-cart-btn" onclick="addToCart('Red Tops', 990)">Add to Cart</button>
-                </div>
-            </div>
 
-            <div class="product-card">
-                <div class="image-container">
-                    <img src="dress6.png" alt="Three Piece Cotton With Premium Embroidery" class="product-image">
+                <div class="product-card" data-category="three-piece" data-price="1790">
+                    <div class="image-container">
+                        <img src="dress4.png" alt="Red embroidery Cotton Three Piece Dress" class="product-image">
+                    </div>
+                    <div class="product-details">
+                        <span class="product-category-label">Three Piece</span>
+                        <h3>Red Embroidery Cotton Three Piece</h3>
+                        <p class="product-price">৳ 1790</p>
+                        <button class="add-to-cart-btn" onclick="addToCart('Red Embroidery Cotton Three Piece', 1790)">Add to Cart</button>
+                    </div>
                 </div>
-                <div class="product-details">
-                    <h3>Three Piece Cotton (Premium Embroidery)</h3>
-                    <p class="product-price">৳ 1690</p>
-                    <button class="add-to-cart-btn" onclick="addToCart('Three Piece Cotton (Premium Embroidery)', 1690)">Add to Cart</button>
-                </div>
-            </div>
 
-            <div class="product-card">
-                <div class="image-container">
-                    <img src="dress7.png" alt="Three Piece Embroidered Cotton Print Dress" class="product-image">
+                <div class="product-card" data-category="tops" data-price="990">
+                    <div class="image-container">
+                        <img src="dress5.png" alt="Red Tops" class="product-image">
+                    </div>
+                    <div class="product-details">
+                        <span class="product-category-label">Tops</span>
+                        <h3>Red Tops</h3>
+                        <p class="product-price">৳ 990</p>
+                        <button class="add-to-cart-btn" onclick="addToCart('Red Tops', 990)">Add to Cart</button>
+                    </div>
                 </div>
-                <div class="product-details">
-                    <h3>Three Piece Embroidered Cotton Print</h3>
-                    <p class="product-price">৳ 1690</p>
-                    <button class="add-to-cart-btn" onclick="addToCart('Three Piece Embroidered Cotton Print', 1690)">Add to Cart</button>
-                </div>
-            </div>
 
+                <div class="product-card" data-category="three-piece" data-price="1690">
+                    <div class="image-container">
+                        <img src="dress6.png" alt="Three Piece Cotton With Premium Embroidery" class="product-image">
+                    </div>
+                    <div class="product-details">
+                        <span class="product-category-label">Three Piece</span>
+                        <h3>Three Piece Cotton (Premium Embroidery)</h3>
+                        <p class="product-price">৳ 1690</p>
+                        <button class="add-to-cart-btn" onclick="addToCart('Three Piece Cotton (Premium Embroidery)', 1690)">Add to Cart</button>
+                    </div>
+                </div>
+
+                <div class="product-card" data-category="three-piece" data-price="1690">
+                    <div class="image-container">
+                        <img src="dress7.png" alt="Three Piece Embroidered Cotton Print Dress" class="product-image">
+                    </div>
+                    <div class="product-details">
+                        <span class="product-category-label">Three Piece</span>
+                        <h3>Three Piece Embroidered Cotton Print</h3>
+                        <p class="product-price">৳ 1690</p>
+                        <button class="add-to-cart-btn" onclick="addToCart('Three Piece Embroidered Cotton Print', 1690)">Add to Cart</button>
+                    </div>
+                </div>
+
+            </div>
         </div>
     </section>
 
@@ -216,9 +272,7 @@
                 <span>Total:</span>
                 <span>৳<span id="cartTotalValue">0</span></span>
             </div>
-            <button class="checkout-btn" onclick="checkoutToWhatsApp()">
-                Order via WhatsApp
-            </button>
+            <button class="checkout-btn" onclick="checkoutToWhatsApp()">Order via WhatsApp</button>
         </div>
     </div>
 
@@ -227,12 +281,70 @@
     </footer>
 
     <script>
-        // --- Mobile Menu Toggle ---
-        document.getElementById('menuToggle').addEventListener('click', function() {
+        // --- Mobile Menus ---
+        document.getElementById('menuToggle').addEventListener('click', () => {
             document.getElementById('navLinks').classList.toggle('active');
         });
 
-        // --- Cart System Variables ---
+        document.getElementById('mobileFilterBtn').addEventListener('click', function() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('active');
+            this.innerHTML = sidebar.classList.contains('active') ? 'Hide Filters' : 'Filters';
+        });
+
+        // --- Filter & Sort Logic ---
+        const productGrid = document.getElementById('productGrid');
+        const products = Array.from(document.querySelectorAll('.product-card'));
+        const checkboxes = document.querySelectorAll('.filter-checkbox');
+        const sortSelect = document.getElementById('sortSelect');
+
+        function updateProducts() {
+            // Get active filters
+            const activeCategories = Array.from(document.querySelectorAll('input[id^="cat-"]:checked')).map(cb => cb.value);
+            const activePrices = Array.from(document.querySelectorAll('.price-filter:checked')).map(cb => cb.value);
+            const sortValue = sortSelect.value;
+
+            // Filter
+            let filteredProducts = products.filter(product => {
+                const category = product.getAttribute('data-category');
+                const price = parseInt(product.getAttribute('data-price'));
+                
+                // Check Category
+                let categoryMatch = activeCategories.length === 0 || activeCategories.includes(category);
+                
+                // Check Price
+                let priceMatch = activePrices.length === 0;
+                if (!priceMatch) {
+                    if (activePrices.includes('under-1000') && price < 1000) priceMatch = true;
+                    if (activePrices.includes('1000-2000') && price >= 1000 && price <= 2000) priceMatch = true;
+                    if (activePrices.includes('above-2000') && price > 2000) priceMatch = true;
+                }
+
+                return categoryMatch && priceMatch;
+            });
+
+            // Sort
+            if (sortValue === 'low-high') {
+                filteredProducts.sort((a, b) => parseInt(a.getAttribute('data-price')) - parseInt(b.getAttribute('data-price')));
+            } else if (sortValue === 'high-low') {
+                filteredProducts.sort((a, b) => parseInt(b.getAttribute('data-price')) - parseInt(a.getAttribute('data-price')));
+            }
+
+            // Update DOM
+            productGrid.innerHTML = '';
+            if (filteredProducts.length === 0) {
+                productGrid.innerHTML = '<p style="grid-column: 1/-1; text-align:center; padding: 40px; color: #666;">No products match your filters.</p>';
+            } else {
+                filteredProducts.forEach(product => productGrid.appendChild(product));
+            }
+        }
+
+        // Attach event listeners
+        checkboxes.forEach(cb => cb.addEventListener('change', updateProducts));
+        sortSelect.addEventListener('change', updateProducts);
+
+
+        // --- Cart System ---
         let cart = [];
         const cartOverlay = document.getElementById('cartOverlay');
         const cartSidebar = document.getElementById('cartSidebar');
@@ -240,42 +352,27 @@
         const cartTotalValue = document.getElementById('cartTotalValue');
         const cartBadge = document.getElementById('cartBadge');
 
-        // --- Open/Close Cart ---
         document.getElementById('openCartBtn').addEventListener('click', () => {
-            cartSidebar.classList.add('active');
-            cartOverlay.classList.add('active');
+            cartSidebar.classList.add('active'); cartOverlay.classList.add('active');
         });
-
+        const closeCart = () => { cartSidebar.classList.remove('active'); cartOverlay.classList.remove('active'); };
         document.getElementById('closeCartBtn').addEventListener('click', closeCart);
         cartOverlay.addEventListener('click', closeCart);
 
-        function closeCart() {
-            cartSidebar.classList.remove('active');
-            cartOverlay.classList.remove('active');
-        }
-
-        // --- Add to Cart Logic ---
         function addToCart(name, price) {
-            // Add item to array
             cart.push({ name: name, price: price });
             updateCartUI();
-            
-            // Give user feedback (open cart automatically)
-            cartSidebar.classList.add('active');
-            cartOverlay.classList.add('active');
+            cartSidebar.classList.add('active'); cartOverlay.classList.add('active');
         }
 
-        // --- Remove from Cart Logic ---
         function removeFromCart(index) {
             cart.splice(index, 1);
             updateCartUI();
         }
 
-        // --- Update Cart Interface ---
         function updateCartUI() {
-            cartItemsContainer.innerHTML = ''; // Clear current list
+            cartItemsContainer.innerHTML = ''; 
             let total = 0;
-
             if (cart.length === 0) {
                 cartItemsContainer.innerHTML = '<p style="text-align: center; color: #666; margin-top: 20px;">Your cart is empty.</p>';
             } else {
@@ -283,42 +380,22 @@
                     total += item.price;
                     cartItemsContainer.innerHTML += `
                         <div class="cart-item">
-                            <div>
-                                <strong>${item.name}</strong><br>
-                                <button class="remove-item" onclick="removeFromCart(${index})">Remove</button>
-                            </div>
+                            <div><strong>${item.name}</strong><br><button class="remove-item" onclick="removeFromCart(${index})">Remove</button></div>
                             <div>৳${item.price}</div>
-                        </div>
-                    `;
+                        </div>`;
                 });
             }
-
             cartTotalValue.innerText = total;
             cartBadge.innerText = cart.length;
         }
 
-        // --- Checkout via WhatsApp Logic ---
         function checkoutToWhatsApp() {
-            if (cart.length === 0) {
-                alert("Your cart is empty!");
-                return;
-            }
-
+            if (cart.length === 0) { alert("Your cart is empty!"); return; }
             let message = "Hello Mohor Clothings! I would like to order the following items:%0A%0A";
             let total = 0;
-
-            cart.forEach((item, index) => {
-                message += `${index + 1}. ${item.name} - ৳${item.price}%0A`;
-                total += item.price;
-            });
-
+            cart.forEach((item, index) => { message += `${index + 1}. ${item.name} - ৳${item.price}%0A`; total += item.price; });
             message += `%0A*Total: ৳${total}*`;
-
-            // Replace with your actual WhatsApp Number
-            const phoneNumber = "8801330113027"; 
-            const whatsappUrl = `https://wa.me/${phoneNumber}?text=${message}`;
-            
-            window.open(whatsappUrl, '_blank');
+            window.open(`https://wa.me/8801330113027?text=${message}`, '_blank');
         }
     </script>
 </body>
