@@ -35,20 +35,27 @@
         .cart-badge { background: var(--primary-gold); color: var(--white); border-radius: 50%; padding: 2px 8px; font-size: 12px; }
         .menu-toggle { display: none; font-size: 24px; background: none; border: none; cursor: pointer; color: var(--deep-black); }
 
-        /* --- Google Translate Custom CSS --- */
-        #google_translate_element select {
-            padding: 5px;
+        /* --- Custom Language Dropdown --- */
+        .custom-lang-box select {
+            padding: 6px 10px;
             font-family: 'Montserrat', sans-serif;
-            font-size: 12px;
+            font-size: 13px;
+            font-weight: 600;
             border: 1px solid var(--border-color);
             border-radius: 4px;
-            outline: none;
+            background-color: var(--white);
+            color: var(--deep-black);
             cursor: pointer;
+            outline: none;
+            transition: var(--transition);
         }
-        /* Hides the annoying Google top bar */
-        .skiptranslate iframe { display: none !important; }
+        .custom-lang-box select:hover {
+            border-color: var(--primary-gold);
+        }
+
+        /* Hides all of Google's annoying popups and top bars */
+        .skiptranslate iframe, .goog-te-banner-frame { display: none !important; }
         body { top: 0px !important; }
-        /* Hides the Google Translate tooltip hover effect */
         .goog-text-highlight { background-color: transparent !important; box-shadow: none !important; }
 
         /* --- Hero Section --- */
@@ -151,14 +158,22 @@
         }
     </style>
 </head>
-<body class="notranslate"> <!-- Ensures body doesn't shift weirdly with Google translate -->
+<body class="notranslate"> 
 
     <nav>
         <a href="#" class="brand-logo">Mohor</a>
         
         <div class="nav-right">
-            <!-- Google Translate Dropdown Container -->
-            <div id="google_translate_element"></div>
+            <!-- Our Custom Dropdown -->
+            <div class="custom-lang-box">
+                <select id="customLangSelect" onchange="switchLanguage(this.value)">
+                    <option value="en">English</option>
+                    <option value="bn">বাংলা</option>
+                </select>
+            </div>
+
+            <!-- Google's hidden widget -->
+            <div id="google_translate_element" style="display:none;"></div>
             
             <button class="cart-toggle-btn" id="openCartBtn">Cart <span class="cart-badge" id="cartBadge">0</span></button>
             <button class="menu-toggle" id="menuToggle">&#8942;</button>
@@ -285,7 +300,7 @@
     <script src="products.js"></script>
     <script src="app.js"></script>
 
-    <!-- Google Translate Script (Only Allows English and Bangla) -->
+    <!-- Google Translate Script -->
     <script type="text/javascript">
         function googleTranslateElementInit() {
             new google.translate.TranslateElement({
@@ -297,5 +312,17 @@
     </script>
     <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
+    <!-- Custom Dropdown Logic -->
+    <script>
+        function switchLanguage(lang) {
+            // Find Google's hidden select box
+            const googleSelect = document.querySelector('.goog-te-combo');
+            
+            if (googleSelect) {
+                googleSelect.value = lang; 
+                googleSelect.dispatchEvent(new Event('change')); // Trigger the change
+            }
+        }
+    </script>
 </body>
 </html>
