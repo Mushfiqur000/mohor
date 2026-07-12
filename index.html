@@ -21,19 +21,16 @@
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
-
         body { font-family: 'Montserrat', sans-serif; background-color: var(--white); color: var(--text-dark); line-height: 1.6; overflow-x: hidden; }
         h1, h2, h3, h4, .brand-logo { font-family: 'Playfair Display', serif; }
 
         /* --- Navigation --- */
         nav { display: flex; justify-content: space-between; align-items: center; padding: 20px 5%; background: var(--white); position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid var(--border-color); }
         .brand-logo { font-size: 28px; font-weight: 700; letter-spacing: 2px; text-decoration: none; color: var(--deep-black); text-transform: uppercase; }
-        
         .nav-right { display: flex; align-items: center; gap: 20px; }
         .nav-links { display: flex; align-items: center; }
         .nav-links a { text-decoration: none; color: var(--text-dark); margin-left: 30px; font-size: 13px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; transition: var(--transition); }
         .nav-links a:hover { color: var(--primary-gold); }
-
         .cart-toggle-btn { background: none; border: none; font-family: 'Montserrat', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px; text-transform: uppercase; letter-spacing: 1px; }
         .cart-badge { background: var(--primary-gold); color: var(--white); border-radius: 50%; padding: 2px 8px; font-size: 12px; }
         .menu-toggle { display: none; font-size: 24px; background: none; border: none; cursor: pointer; color: var(--deep-black); }
@@ -45,7 +42,6 @@
         .shop-section { padding: 40px 5%; }
         .shop-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid var(--border-color); flex-wrap: wrap; gap: 15px; }
         .shop-header h2 { font-size: 28px; }
-
         .shop-controls { display: flex; align-items: center; gap: 15px; }
         .sort-box select { padding: 10px 15px; border: 1px solid var(--border-color); background: var(--white); font-family: 'Montserrat', sans-serif; font-size: 13px; outline: none; cursor: pointer; }
         .mobile-filter-btn { display: none; background: var(--deep-black); color: var(--white); border: none; padding: 10px 20px; font-size: 13px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; }
@@ -66,38 +62,40 @@
         .image-container { height: 350px; overflow: hidden; background: var(--soft-gray); position: relative; }
         .product-image { width: 100%; height: 100%; object-fit: cover; transition: transform 0.7s ease; }
         .product-card:hover .product-image { transform: scale(1.05); }
-        
         .product-details-card { padding: 20px 15px; text-align: center; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
         .product-category-label { font-size: 11px; color: var(--text-light); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; font-family: 'Montserrat', sans-serif; }
         .product-details-card h3 { font-size: 15px; font-weight: 600; margin-bottom: 8px; font-family: 'Montserrat', sans-serif; }
         .product-price { color: var(--primary-gold); font-weight: 600; font-size: 16px; margin-bottom: 15px; }
 
-        /* --- Product Quick View Modal --- */
+        /* --- Product Quick View Modal (Upgraded) --- */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 3000; display: flex; justify-content: center; align-items: center; opacity: 0; visibility: hidden; transition: var(--transition); padding: 20px; }
         .modal-overlay.active { opacity: 1; visibility: visible; }
-        
-        .modal-content { background: var(--white); width: 100%; max-width: 900px; max-height: 90vh; overflow-y: auto; position: relative; display: flex; flex-direction: row; box-shadow: 0 20px 40px rgba(0,0,0,0.2); transform: translateY(20px); transition: transform 0.3s ease; }
+        .modal-content { background: var(--white); width: 100%; max-width: 1000px; max-height: 95vh; overflow-y: auto; position: relative; display: flex; flex-direction: row; box-shadow: 0 20px 40px rgba(0,0,0,0.2); transform: translateY(20px); transition: transform 0.3s ease; }
         .modal-overlay.active .modal-content { transform: translateY(0); }
-        
         .close-modal { position: absolute; top: 15px; right: 20px; font-size: 30px; cursor: pointer; color: var(--text-dark); z-index: 10; line-height: 1; }
         .close-modal:hover { color: var(--primary-gold); }
 
-        .modal-image-sec { flex: 1; background: var(--soft-gray); min-height: 400px; }
-        .modal-image-sec img { width: 100%; height: 100%; object-fit: cover; }
+        /* Multiple Image Gallery CSS */
+        .modal-image-sec { flex: 1; background: var(--soft-gray); padding: 20px; display: flex; flex-direction: column; align-items: center; }
+        .main-image-wrapper { width: 100%; max-height: 500px; display: flex; justify-content: center; overflow: hidden; background: #fff; }
+        .main-image-wrapper img { max-width: 100%; max-height: 100%; object-fit: contain; }
+        .thumbnail-gallery { display: flex; gap: 10px; margin-top: 20px; overflow-x: auto; max-width: 100%; padding-bottom: 10px; }
+        .thumbnail { width: 70px; height: 90px; object-fit: cover; cursor: pointer; border: 2px solid transparent; transition: var(--transition); opacity: 0.7; }
+        .thumbnail:hover { opacity: 1; }
+        .thumbnail.active { border-color: var(--primary-gold); opacity: 1; }
         
         .modal-info-sec { flex: 1; padding: 40px 30px; display: flex; flex-direction: column; }
         .modal-info-sec h2 { font-size: 24px; margin-bottom: 10px; color: var(--deep-black); }
         .modal-info-sec .modal-price { font-size: 22px; color: var(--primary-gold); font-weight: 600; margin-bottom: 25px; }
         
-        /* Size Selector */
-        .size-section { margin-bottom: 25px; }
-        .size-section h4 { font-family: 'Montserrat', sans-serif; font-size: 13px; text-transform: uppercase; margin-bottom: 10px; font-weight: 600; letter-spacing: 1px; }
-        .size-options { display: flex; gap: 10px; flex-wrap: wrap; }
-        .size-btn { border: 1px solid var(--border-color); background: var(--white); padding: 8px 15px; font-family: 'Montserrat', sans-serif; font-size: 13px; cursor: pointer; transition: var(--transition); min-width: 45px; text-align: center; }
-        .size-btn:hover { border-color: var(--primary-gold); }
-        .size-btn.selected { background: var(--deep-black); color: var(--white); border-color: var(--deep-black); }
+        /* Selectors (Size & Color) */
+        .selector-section { margin-bottom: 25px; }
+        .selector-section h4 { font-family: 'Montserrat', sans-serif; font-size: 13px; text-transform: uppercase; margin-bottom: 10px; font-weight: 600; letter-spacing: 1px; }
+        .selector-options { display: flex; gap: 10px; flex-wrap: wrap; }
+        .select-btn { border: 1px solid var(--border-color); background: var(--white); padding: 8px 15px; font-family: 'Montserrat', sans-serif; font-size: 13px; cursor: pointer; transition: var(--transition); min-width: 45px; text-align: center; }
+        .select-btn:hover { border-color: var(--primary-gold); }
+        .select-btn.selected { background: var(--deep-black); color: var(--white); border-color: var(--deep-black); }
 
-        /* Descriptions & Details */
         .desc-section, .details-section { margin-bottom: 25px; }
         .desc-section h4, .details-section h4 { font-family: 'Montserrat', sans-serif; font-size: 13px; text-transform: uppercase; margin-bottom: 8px; font-weight: 600; letter-spacing: 1px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px; }
         .desc-section p { font-size: 14px; color: var(--text-light); line-height: 1.7; }
@@ -122,10 +120,8 @@
         .cart-total { display: flex; justify-content: space-between; font-weight: 600; font-size: 18px; margin-bottom: 20px; font-family: 'Playfair Display', serif; }
         .checkout-btn { background: #25d366; color: var(--white); border: none; padding: 15px; width: 100%; font-family: 'Montserrat', sans-serif; font-size: 14px; font-weight: 600; text-transform: uppercase; cursor: pointer; transition: var(--transition); display: flex; justify-content: center; gap: 10px; }
         .checkout-btn:hover { background: #128c7e; }
-
         footer { background: var(--deep-black); color: var(--white); padding: 40px 5% 20px; text-align: center; }
 
-        /* Responsive Design */
         @media (max-width: 900px) {
             .shop-layout { flex-direction: column; }
             .sidebar { width: 100%; display: none; background: var(--soft-gray); padding: 20px; position: static; margin-bottom: 20px; }
@@ -136,7 +132,6 @@
             .nav-links a { margin: 15px 0; }
             .menu-toggle { display: block; }
             .modal-content { flex-direction: column; }
-            .modal-image-sec { min-height: 300px; }
             .modal-info-sec { padding: 20px; }
         }
     </style>
@@ -156,9 +151,7 @@
         </div>
     </nav>
 
-    <section class="hero">
-        <!-- Banner image contains its own text -->
-    </section>
+    <section class="hero"></section>
 
     <section id="shop" class="shop-section">
         <div class="shop-header">
@@ -210,18 +203,29 @@
             <span class="close-modal" id="closeModalBtn">&times;</span>
             
             <div class="modal-image-sec">
-                <img id="modalImage" src="" alt="Product">
+                <div class="main-image-wrapper">
+                    <img id="modalMainImage" src="" alt="Product Main Image">
+                </div>
+                <!-- Thumbnail Gallery Area -->
+                <div class="thumbnail-gallery" id="modalThumbnails">
+                    <!-- Thumbnails generated here -->
+                </div>
             </div>
             
             <div class="modal-info-sec">
                 <h2 id="modalTitle">Product Title</h2>
                 <div class="modal-price" id="modalPrice">৳0</div>
                 
-                <div class="size-section">
+                <!-- Color Selector -->
+                <div class="selector-section" id="colorSection" style="display:none;">
+                    <h4>Select Color <span id="colorWarning" style="color: red; display: none; text-transform:none; font-size: 11px;">*Please select a color</span></h4>
+                    <div class="selector-options" id="modalColors"></div>
+                </div>
+
+                <!-- Size Selector -->
+                <div class="selector-section">
                     <h4>Select Size <span id="sizeWarning" style="color: red; display: none; text-transform:none; font-size: 11px;">*Please select a size</span></h4>
-                    <div class="size-options" id="modalSizes">
-                        <!-- Size buttons generated here -->
-                    </div>
+                    <div class="selector-options" id="modalSizes"></div>
                 </div>
 
                 <div class="desc-section">
@@ -231,9 +235,7 @@
 
                 <div class="details-section">
                     <h4>Product Details</h4>
-                    <ul id="modalDetails">
-                        <!-- Details generated here -->
-                    </ul>
+                    <ul id="modalDetails"></ul>
                 </div>
 
                 <button class="add-to-cart-btn" id="modalAddToCartBtn">Add to Cart</button>
@@ -264,19 +266,10 @@
         <p style="font-size: 12px; color: #777;">&copy; 2026 Mohor Clothings Bangladesh. All Rights Reserved.</p>
     </footer>
 
-    <script>
-        // ==========================================
-        // 1. YOUR PRODUCT DATABASE
-        // Edit, add, or remove products here!
-        // ==========================================
-        const productsData = [
-            // ALL PRODUCTS HAVE BEEN DELETED.
-            // Add your new products here using the same format as before.
-        ];
+    <!-- THIS LINE LINKS YOUR NEW DATABASE FILE! -->
+    <script src="products.js"></script>
 
-        // ==========================================
-        // 2. RENDERING & FILTERING LOGIC
-        // ==========================================
+    <script>
         const productGrid = document.getElementById('productGrid');
         const checkboxes = document.querySelectorAll('.filter-checkbox');
         const sortSelect = document.getElementById('sortSelect');
@@ -284,7 +277,7 @@
         function renderProducts(productsToRender) {
             productGrid.innerHTML = '';
             
-            if (productsToRender.length === 0) {
+            if (!productsToRender || productsToRender.length === 0) {
                 productGrid.innerHTML = '<p style="grid-column: 1/-1; text-align:center; padding: 40px; color: #666;">No products match your filters.</p>';
                 return;
             }
@@ -292,12 +285,14 @@
             productsToRender.forEach(product => {
                 const card = document.createElement('div');
                 card.className = 'product-card';
-                // Clicking the card opens the Modal
                 card.onclick = () => openProductModal(product);
                 
+                // Uses the FIRST image in the array as the cover
+                const coverImage = product.images && product.images.length > 0 ? product.images[0] : '';
+
                 card.innerHTML = `
                     <div class="image-container">
-                        <img src="${product.image}" alt="${product.title}" class="product-image" onerror="this.src='https://via.placeholder.com/300x400/f9f9f9/666?text=Mohor'">
+                        <img src="${coverImage}" alt="${product.title}" class="product-image" onerror="this.src='https://via.placeholder.com/300x400/f9f9f9/666?text=Mohor'">
                     </div>
                     <div class="product-details-card">
                         <span class="product-category-label">${product.category.replace('-', ' ')}</span>
@@ -310,6 +305,7 @@
         }
 
         function updateProducts() {
+            if (typeof productsData === 'undefined') return; // Failsafe if products.js is empty
             const activeCategories = Array.from(document.querySelectorAll('input[id^="cat-"]:checked')).map(cb => cb.value);
             const activePrices = Array.from(document.querySelectorAll('.price-filter:checked')).map(cb => cb.value);
             const sortValue = sortSelect.value;
@@ -338,29 +334,83 @@
         checkboxes.forEach(cb => cb.addEventListener('change', updateProducts));
         sortSelect.addEventListener('change', updateProducts);
         
-        // Initial load
-        renderProducts(productsData);
+        // Wait a tiny bit to ensure products.js loaded, then render
+        setTimeout(() => renderProducts(typeof productsData !== 'undefined' ? productsData : []), 100);
 
         // ==========================================
-        // 3. PRODUCT MODAL (QUICK VIEW) LOGIC
+        // PRODUCT MODAL (GALLERY, COLORS, SIZES)
         // ==========================================
         const productModal = document.getElementById('productModal');
         const closeModalBtn = document.getElementById('closeModalBtn');
         let currentViewingProduct = null;
         let selectedSize = null;
+        let selectedColor = null;
 
         function openProductModal(product) {
             currentViewingProduct = product;
-            selectedSize = null; // Reset size on new open
+            selectedSize = null;
+            selectedColor = null;
             document.getElementById('sizeWarning').style.display = 'none';
+            document.getElementById('colorWarning').style.display = 'none';
 
-            // Populate Modal Data
-            document.getElementById('modalImage').src = product.image;
+            // Text Info
             document.getElementById('modalTitle').innerText = product.title;
             document.getElementById('modalPrice').innerText = `৳ ${product.price}`;
             document.getElementById('modalDesc').innerText = product.description;
             
-            // Populate Details List
+            // Image Gallery Setup
+            const mainImage = document.getElementById('modalMainImage');
+            const thumbContainer = document.getElementById('modalThumbnails');
+            thumbContainer.innerHTML = '';
+            
+            if (product.images && product.images.length > 0) {
+                mainImage.src = product.images[0]; // Set first as main
+                
+                product.images.forEach((imgSrc, index) => {
+                    const thumb = document.createElement('img');
+                    thumb.src = imgSrc;
+                    thumb.className = 'thumbnail' + (index === 0 ? ' active' : '');
+                    
+                    // Click thumbnail to swap main image
+                    thumb.onclick = () => {
+                        mainImage.src = imgSrc;
+                        document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
+                        thumb.classList.add('active');
+                    };
+                    thumbContainer.appendChild(thumb);
+                });
+            }
+
+            // Colors
+            const colorsContainer = document.getElementById('modalColors');
+            const colorSection = document.getElementById('colorSection');
+            colorsContainer.innerHTML = '';
+            if (product.colors && product.colors.length > 0) {
+                colorSection.style.display = 'block';
+                product.colors.forEach(color => {
+                    const btn = document.createElement('button');
+                    btn.className = 'select-btn color-btn';
+                    btn.innerText = color;
+                    btn.onclick = () => selectOption(btn, color, 'color');
+                    colorsContainer.appendChild(btn);
+                });
+            } else {
+                colorSection.style.display = 'none';
+                selectedColor = "Default"; // Bypass check if no colors exist
+            }
+
+            // Sizes
+            const sizesContainer = document.getElementById('modalSizes');
+            sizesContainer.innerHTML = '';
+            product.sizes.forEach(size => {
+                const btn = document.createElement('button');
+                btn.className = 'select-btn size-btn';
+                btn.innerText = size;
+                btn.onclick = () => selectOption(btn, size, 'size');
+                sizesContainer.appendChild(btn);
+            });
+
+            // Details List
             const detailsList = document.getElementById('modalDetails');
             detailsList.innerHTML = '';
             product.details.forEach(detail => {
@@ -369,47 +419,40 @@
                 detailsList.appendChild(li);
             });
 
-            // Populate Sizes
-            const sizesContainer = document.getElementById('modalSizes');
-            sizesContainer.innerHTML = '';
-            product.sizes.forEach(size => {
-                const btn = document.createElement('button');
-                btn.className = 'size-btn';
-                btn.innerText = size;
-                btn.onclick = () => selectSize(btn, size);
-                sizesContainer.appendChild(btn);
-            });
-
             productModal.classList.add('active');
         }
 
-        function selectSize(clickedBtn, size) {
-            selectedSize = size;
-            document.getElementById('sizeWarning').style.display = 'none';
-            // Remove 'selected' class from all buttons, add to clicked
-            document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('selected'));
+        function selectOption(clickedBtn, value, type) {
+            if (type === 'size') {
+                selectedSize = value;
+                document.getElementById('sizeWarning').style.display = 'none';
+                document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('selected'));
+            } else if (type === 'color') {
+                selectedColor = value;
+                document.getElementById('colorWarning').style.display = 'none';
+                document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('selected'));
+            }
             clickedBtn.classList.add('selected');
         }
 
-        closeModalBtn.addEventListener('click', () => {
-            productModal.classList.remove('active');
-        });
-        productModal.addEventListener('click', (e) => {
-            if (e.target === productModal) productModal.classList.remove('active');
-        });
+        closeModalBtn.addEventListener('click', () => { productModal.classList.remove('active'); });
+        productModal.addEventListener('click', (e) => { if (e.target === productModal) productModal.classList.remove('active'); });
 
         document.getElementById('modalAddToCartBtn').addEventListener('click', () => {
-            if (!selectedSize) {
-                document.getElementById('sizeWarning').style.display = 'inline';
-                return;
-            }
-            // Add to cart with size
-            addToCart(currentViewingProduct.title, currentViewingProduct.price, selectedSize);
+            let valid = true;
+            if (!selectedSize) { document.getElementById('sizeWarning').style.display = 'inline'; valid = false; }
+            if (!selectedColor) { document.getElementById('colorWarning').style.display = 'inline'; valid = false; }
+            if (!valid) return;
+
+            let displayName = currentViewingProduct.title;
+            if(selectedColor !== "Default") displayName += ` (${selectedColor})`;
+
+            addToCart(displayName, currentViewingProduct.price, selectedSize);
             productModal.classList.remove('active');
         });
 
         // ==========================================
-        // 4. CART & WHATSAPP LOGIC
+        // CART & WHATSAPP LOGIC
         // ==========================================
         let cart = [];
         const cartOverlay = document.getElementById('cartOverlay');
@@ -418,25 +461,17 @@
         const cartTotalValue = document.getElementById('cartTotalValue');
         const cartBadge = document.getElementById('cartBadge');
 
-        document.getElementById('openCartBtn').addEventListener('click', () => {
-            cartSidebar.classList.add('active'); cartOverlay.classList.add('active');
-        });
-        
-        const closeCart = () => { 
-            cartSidebar.classList.remove('active'); cartOverlay.classList.remove('active'); 
-        };
-        
+        document.getElementById('openCartBtn').addEventListener('click', () => { cartSidebar.classList.add('active'); cartOverlay.classList.add('active'); });
+        const closeCart = () => { cartSidebar.classList.remove('active'); cartOverlay.classList.remove('active'); };
         document.getElementById('closeCartBtn').addEventListener('click', closeCart);
         cartOverlay.addEventListener('click', closeCart);
 
         function addToCart(name, price, size) {
             cart.push({ name: name, price: price, size: size });
             updateCartUI();
-            cartSidebar.classList.add('active'); 
-            cartOverlay.classList.add('active');
+            cartSidebar.classList.add('active'); cartOverlay.classList.add('active');
         }
 
-        // Make removeFromCart accessible to inline HTML
         window.removeFromCart = function(index) {
             cart.splice(index, 1);
             updateCartUI();
@@ -467,10 +502,7 @@
 
         window.checkoutToWhatsApp = function() {
             if (cart.length === 0) { alert("Your cart is empty!"); return; }
-            
-            // Mohor Clothings WhatsApp Number
             const WHATSAPP_NUMBER = "8801330113027"; 
-            
             let message = "Hello Mohor Clothings! I would like to order the following items:%0A%0A";
             let total = 0;
             cart.forEach((item, index) => { 
@@ -478,17 +510,11 @@
                 total += item.price; 
             });
             message += `%0A*Total: ৳${total}*`;
-            
             window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${message}`, '_blank');
         }
 
-        // ==========================================
-        // 5. MOBILE MENU LOGIC
-        // ==========================================
-        document.getElementById('menuToggle').addEventListener('click', () => {
-            document.getElementById('navLinks').classList.toggle('active');
-        });
-
+        // Mobile Menu
+        document.getElementById('menuToggle').addEventListener('click', () => { document.getElementById('navLinks').classList.toggle('active'); });
         document.getElementById('mobileFilterBtn').addEventListener('click', function() {
             const sidebar = document.getElementById('sidebar');
             sidebar.classList.toggle('active');
