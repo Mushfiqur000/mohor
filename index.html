@@ -158,7 +158,8 @@
         }
     </style>
 </head>
-<body class="notranslate"> 
+<!-- Removed the notranslate class from the body tag below -->
+<body> 
 
     <nav>
         <a href="#" class="brand-logo">Mohor</a>
@@ -320,7 +321,7 @@
             
             if (googleSelect) {
                 googleSelect.value = lang; 
-                googleSelect.dispatchEvent(new Event('change')); // Trigger the change
+                googleSelect.dispatchEvent(new Event('change')); // Trigger the translation
             }
         }
     </script>
