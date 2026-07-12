@@ -9,25 +9,52 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
     
     <style>
-        /* ALL YOUR EXISTING CSS STAYS EXACTLY THE SAME HERE */
-        /* Consider moving this into a 'style.css' file later! */
-        :root { --primary-gold: #C9A14A; --deep-black: #0c0c0c; --soft-gray: #f9f9f9; --border-color: #eaeaea; --text-dark: #222; --text-light: #666; --white: #ffffff; --transition: all 0.3s ease; }
+        :root {
+            --primary-gold: #C9A14A;
+            --deep-black: #0c0c0c;
+            --soft-gray: #f9f9f9;
+            --border-color: #eaeaea;
+            --text-dark: #222;
+            --text-light: #666;
+            --white: #ffffff;
+            --transition: all 0.3s ease;
+        }
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Montserrat', sans-serif; background-color: var(--white); color: var(--text-dark); line-height: 1.6; overflow-x: hidden; }
         h1, h2, h3, h4, .brand-logo { font-family: 'Playfair Display', serif; }
+
+        /* --- Navigation --- */
         nav { display: flex; justify-content: space-between; align-items: center; padding: 20px 5%; background: var(--white); position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid var(--border-color); }
         .brand-logo { font-size: 28px; font-weight: 700; letter-spacing: 2px; text-decoration: none; color: var(--deep-black); text-transform: uppercase; }
-        .nav-right { display: flex; align-items: center; gap: 20px; }
+        .nav-right { display: flex; align-items: center; gap: 15px; }
         .nav-links { display: flex; align-items: center; }
         .nav-links a { text-decoration: none; color: var(--text-dark); margin-left: 30px; font-size: 13px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; transition: var(--transition); }
         .nav-links a:hover { color: var(--primary-gold); }
         .cart-toggle-btn { background: none; border: none; font-family: 'Montserrat', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px; text-transform: uppercase; letter-spacing: 1px; }
         .cart-badge { background: var(--primary-gold); color: var(--white); border-radius: 50%; padding: 2px 8px; font-size: 12px; }
         .menu-toggle { display: none; font-size: 24px; background: none; border: none; cursor: pointer; color: var(--deep-black); }
-        /* Language Button Styling */
-        .lang-toggle-btn { background: var(--primary-gold); color: var(--white); border: none; padding: 5px 10px; border-radius: 4px; font-size: 12px; font-weight: bold; cursor: pointer; font-family: 'Montserrat', sans-serif; transition: var(--transition);}
-        .lang-toggle-btn:hover { background: var(--deep-black); }
+
+        /* --- Google Translate Custom CSS --- */
+        #google_translate_element select {
+            padding: 5px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            outline: none;
+            cursor: pointer;
+        }
+        /* Hides the annoying Google top bar */
+        .skiptranslate iframe { display: none !important; }
+        body { top: 0px !important; }
+        /* Hides the Google Translate tooltip hover effect */
+        .goog-text-highlight { background-color: transparent !important; box-shadow: none !important; }
+
+        /* --- Hero Section --- */
         .hero { height: 45vh; background: url('banner.png') center/cover no-repeat; display: flex; align-items: center; justify-content: center; padding: 0; }
+
+        /* --- Shop Section & Filters --- */
         .shop-section { padding: 40px 5%; }
         .shop-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid var(--border-color); flex-wrap: wrap; gap: 15px; }
         .shop-header h2 { font-size: 28px; }
@@ -35,12 +62,16 @@
         .sort-box select { padding: 10px 15px; border: 1px solid var(--border-color); background: var(--white); font-family: 'Montserrat', sans-serif; font-size: 13px; outline: none; cursor: pointer; }
         .mobile-filter-btn { display: none; background: var(--deep-black); color: var(--white); border: none; padding: 10px 20px; font-size: 13px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; }
         .shop-layout { display: flex; gap: 40px; align-items: flex-start; }
+
+        /* Sidebar Filters */
         .sidebar { width: 250px; flex-shrink: 0; position: sticky; top: 100px; }
         .filter-group { margin-bottom: 30px; }
         .filter-group h3 { font-size: 16px; margin-bottom: 15px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; border-bottom: 2px solid var(--soft-gray); padding-bottom: 5px; font-family: 'Montserrat', sans-serif; }
         .filter-group ul { list-style: none; }
         .filter-group li { margin-bottom: 12px; font-size: 14px; color: var(--text-light); display: flex; align-items: center; gap: 10px; cursor: pointer; }
         .filter-group input[type="checkbox"] { accent-color: var(--primary-gold); width: 16px; height: 16px; cursor: pointer; }
+
+        /* Product Grid */
         .product-grid { flex: 1; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 30px; }
         .product-card { background: var(--white); transition: var(--transition); display: flex; flex-direction: column; border: 1px solid var(--soft-gray); cursor: pointer; }
         .product-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); border-color: var(--primary-gold); }
@@ -51,12 +82,15 @@
         .product-category-label { font-size: 11px; color: var(--text-light); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; font-family: 'Montserrat', sans-serif; }
         .product-details-card h3 { font-size: 15px; font-weight: 600; margin-bottom: 8px; font-family: 'Montserrat', sans-serif; }
         .product-price { color: var(--primary-gold); font-weight: 600; font-size: 16px; margin-bottom: 15px; }
+
+        /* --- Product Quick View Modal --- */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 3000; display: flex; justify-content: center; align-items: center; opacity: 0; visibility: hidden; transition: var(--transition); padding: 20px; }
         .modal-overlay.active { opacity: 1; visibility: visible; }
         .modal-content { background: var(--white); width: 100%; max-width: 1000px; max-height: 95vh; overflow-y: auto; position: relative; display: flex; flex-direction: row; box-shadow: 0 20px 40px rgba(0,0,0,0.2); transform: translateY(20px); transition: transform 0.3s ease; }
         .modal-overlay.active .modal-content { transform: translateY(0); }
         .close-modal { position: absolute; top: 15px; right: 20px; font-size: 30px; cursor: pointer; color: var(--text-dark); z-index: 10; line-height: 1; }
         .close-modal:hover { color: var(--primary-gold); }
+
         .modal-image-sec { flex: 1; background: var(--soft-gray); padding: 20px; display: flex; flex-direction: column; align-items: center; }
         .main-image-wrapper { width: 100%; max-height: 500px; display: flex; justify-content: center; overflow: hidden; background: #fff; }
         .main-image-wrapper img { max-width: 100%; max-height: 100%; object-fit: contain; }
@@ -64,22 +98,28 @@
         .thumbnail { width: 70px; height: 90px; object-fit: cover; cursor: pointer; border: 2px solid transparent; transition: var(--transition); opacity: 0.7; }
         .thumbnail:hover { opacity: 1; }
         .thumbnail.active { border-color: var(--primary-gold); opacity: 1; }
+        
         .modal-info-sec { flex: 1; padding: 40px 30px; display: flex; flex-direction: column; }
         .modal-info-sec h2 { font-size: 24px; margin-bottom: 10px; color: var(--deep-black); }
         .modal-info-sec .modal-price { font-size: 22px; color: var(--primary-gold); font-weight: 600; margin-bottom: 25px; }
+        
         .selector-section { margin-bottom: 25px; }
         .selector-section h4 { font-family: 'Montserrat', sans-serif; font-size: 13px; text-transform: uppercase; margin-bottom: 10px; font-weight: 600; letter-spacing: 1px; }
         .selector-options { display: flex; gap: 10px; flex-wrap: wrap; }
         .select-btn { border: 1px solid var(--border-color); background: var(--white); padding: 8px 15px; font-family: 'Montserrat', sans-serif; font-size: 13px; cursor: pointer; transition: var(--transition); min-width: 45px; text-align: center; }
         .select-btn:hover { border-color: var(--primary-gold); }
         .select-btn.selected { background: var(--deep-black); color: var(--white); border-color: var(--deep-black); }
+
         .desc-section, .details-section { margin-bottom: 25px; }
         .desc-section h4, .details-section h4 { font-family: 'Montserrat', sans-serif; font-size: 13px; text-transform: uppercase; margin-bottom: 8px; font-weight: 600; letter-spacing: 1px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px; }
         .desc-section p { font-size: 14px; color: var(--text-light); line-height: 1.7; }
         .details-section ul { list-style: square inside; color: var(--text-light); font-size: 14px; }
         .details-section li { margin-bottom: 5px; }
+
         .add-to-cart-btn { background: var(--deep-black); color: var(--white); border: none; padding: 15px; font-family: 'Montserrat', sans-serif; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; transition: var(--transition); width: 100%; margin-top: auto; }
         .add-to-cart-btn:hover { background: var(--primary-gold); }
+
+        /* --- Cart Sidebar Modal --- */
         .cart-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; opacity: 0; visibility: hidden; transition: var(--transition); }
         .cart-overlay.active { opacity: 1; visibility: visible; }
         .cart-sidebar { position: fixed; top: 0; right: -400px; width: 100%; max-width: 400px; height: 100vh; background: var(--white); z-index: 2001; transition: right 0.4s ease; display: flex; flex-direction: column; box-shadow: -5px 0 15px rgba(0,0,0,0.1); }
@@ -94,7 +134,9 @@
         .cart-total { display: flex; justify-content: space-between; font-weight: 600; font-size: 18px; margin-bottom: 20px; font-family: 'Playfair Display', serif; }
         .checkout-btn { background: #25d366; color: var(--white); border: none; padding: 15px; width: 100%; font-family: 'Montserrat', sans-serif; font-size: 14px; font-weight: 600; text-transform: uppercase; cursor: pointer; transition: var(--transition); display: flex; justify-content: center; gap: 10px; }
         .checkout-btn:hover { background: #128c7e; }
+        
         footer { background: var(--deep-black); color: var(--white); padding: 40px 5% 20px; text-align: center; }
+
         @media (max-width: 900px) {
             .shop-layout { flex-direction: column; }
             .sidebar { width: 100%; display: none; background: var(--soft-gray); padding: 20px; position: static; margin-bottom: 20px; }
@@ -109,20 +151,23 @@
         }
     </style>
 </head>
-<body>
+<body class="notranslate"> <!-- Ensures body doesn't shift weirdly with Google translate -->
 
     <nav>
-        <a href="#" class="brand-logo" data-i18n="brand">Mohor</a>
+        <a href="#" class="brand-logo">Mohor</a>
+        
         <div class="nav-right">
-            <!-- Language Toggle Button Added Here -->
-            <button class="lang-toggle-btn" id="langToggle">বাংলা</button>
-            <button class="cart-toggle-btn" id="openCartBtn"><span data-i18n="cart">Cart</span> <span class="cart-badge" id="cartBadge">0</span></button>
+            <!-- Google Translate Dropdown Container -->
+            <div id="google_translate_element"></div>
+            
+            <button class="cart-toggle-btn" id="openCartBtn">Cart <span class="cart-badge" id="cartBadge">0</span></button>
             <button class="menu-toggle" id="menuToggle">&#8942;</button>
         </div>
+        
         <div class="nav-links" id="navLinks">
-            <a href="#shop" data-i18n="shop">Shop</a>
-            <a href="https://www.facebook.com/share/1Be3jj7iqb/?mibextid=wwXIfr" target="_blank" data-i18n="facebook">Facebook</a>
-            <a href="https://www.instagram.com/mohorclothings" target="_blank" data-i18n="instagram">Instagram</a>
+            <a href="#shop">Shop</a>
+            <a href="https://www.facebook.com/share/1Be3jj7iqb/?mibextid=wwXIfr" target="_blank">Facebook</a>
+            <a href="https://www.instagram.com/mohorclothings" target="_blank">Instagram</a>
         </div>
     </nav>
 
@@ -130,14 +175,14 @@
 
     <section id="shop" class="shop-section">
         <div class="shop-header">
-            <h2 data-i18n="collection">Our Collection</h2>
+            <h2>Our Collection</h2>
             <div class="shop-controls">
-                <button class="mobile-filter-btn" id="mobileFilterBtn" data-i18n="filters">Filters</button>
+                <button class="mobile-filter-btn" id="mobileFilterBtn">Filters</button>
                 <div class="sort-box">
                     <select id="sortSelect" aria-label="Sort products">
-                        <option value="default" data-i18n="sort_default">Sort by: Default</option>
-                        <option value="low-high" data-i18n="sort_low_high">Price: Low to High</option>
-                        <option value="high-low" data-i18n="sort_high_low">Price: High to Low</option>
+                        <option value="default">Sort by: Default</option>
+                        <option value="low-high">Price: Low to High</option>
+                        <option value="high-low">Price: High to Low</option>
                     </select>
                 </div>
             </div>
@@ -146,7 +191,7 @@
         <div class="shop-layout">
             <aside class="sidebar" id="sidebar">
                 <div class="filter-group">
-                    <h3 data-i18n="cat_title">Categories</h3>
+                    <h3>Categories</h3>
                     <ul>
                         <li><input type="checkbox" class="filter-checkbox" value="kurti" id="cat-kurti"> <label for="cat-kurti">Kurti</label></li>
                         <li><input type="checkbox" class="filter-checkbox" value="three-piece" id="cat-threepiece"> <label for="cat-threepiece">Three Piece</label></li>
@@ -156,7 +201,7 @@
                 </div>
 
                 <div class="filter-group">
-                    <h3 data-i18n="price_title">Price</h3>
+                    <h3>Price</h3>
                     <ul>
                         <li><input type="checkbox" class="filter-checkbox price-filter" value="under-1500" id="price-1"> <label for="price-1">Under ৳1500</label></li>
                         <li><input type="checkbox" class="filter-checkbox price-filter" value="1500-2500" id="price-2"> <label for="price-2">৳1500 - ৳2500</label></li>
@@ -165,8 +210,9 @@
                 </div>
             </aside>
 
+            <!-- Dynamic Product Grid -->
             <div class="product-grid" id="productGrid">
-                <!-- Products will be loaded here via JavaScript -->
+                <!-- Products will be loaded here via app.js -->
             </div>
         </div>
     </section>
@@ -198,16 +244,16 @@
                 </div>
 
                 <div class="desc-section">
-                    <h4 data-i18n="desc">Description</h4>
+                    <h4>Description</h4>
                     <p id="modalDesc">Product description.</p>
                 </div>
 
                 <div class="details-section">
-                    <h4 data-i18n="details">Product Details</h4>
+                    <h4>Product Details</h4>
                     <ul id="modalDetails"></ul>
                 </div>
 
-                <button class="add-to-cart-btn" id="modalAddToCartBtn" data-i18n="add_to_cart">Add to Cart</button>
+                <button class="add-to-cart-btn" id="modalAddToCartBtn">Add to Cart</button>
             </div>
         </div>
     </div>
@@ -216,29 +262,40 @@
     <div class="cart-overlay" id="cartOverlay"></div>
     <div class="cart-sidebar" id="cartSidebar">
         <div class="cart-header">
-            <h3 data-i18n="cart">Your Cart</h3>
+            <h3>Your Cart</h3>
             <span class="close-cart" id="closeCartBtn">&times;</span>
         </div>
         <div class="cart-items" id="cartItemsContainer">
-            <p style="text-align: center; color: #666; margin-top: 20px;" data-i18n="empty_cart">Your cart is empty.</p>
+            <p style="text-align: center; color: #666; margin-top: 20px;">Your cart is empty.</p>
         </div>
         <div class="cart-footer">
             <div class="cart-total">
-                <span data-i18n="total">Total:</span>
+                <span>Total:</span>
                 <span>৳<span id="cartTotalValue">0</span></span>
             </div>
-            <button class="checkout-btn" onclick="checkoutToWhatsApp()" data-i18n="checkout">Order via WhatsApp</button>
+            <button class="checkout-btn" onclick="checkoutToWhatsApp()">Order via WhatsApp</button>
         </div>
     </div>
 
     <footer>
-        <p style="font-size: 12px; color: #777;" data-i18n="footer">&copy; 2026 Mohor Clothings Bangladesh. All Rights Reserved.</p>
+        <p style="font-size: 12px; color: #777;">&copy; 2026 Mohor Clothings Bangladesh. All Rights Reserved.</p>
     </footer>
 
-    <!-- All Script Tags grouped at the bottom to keep the HTML clean -->
+    <!-- Scripts -->
     <script src="products.js"></script>
-    <script src="lang.js"></script>
     <script src="app.js"></script>
+
+    <!-- Google Translate Script (Only Allows English and Bangla) -->
+    <script type="text/javascript">
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({
+                pageLanguage: 'en',
+                includedLanguages: 'en,bn', 
+                layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+            }, 'google_translate_element');
+        }
+    </script>
+    <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
 </body>
 </html>
