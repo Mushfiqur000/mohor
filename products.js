@@ -5,10 +5,10 @@ const productsData = [
         category: "three-piece",
         price: 3200,
         images: [
-            "images/peach-vila-3piece/Add_dupatta_to_dress_2K_202607121726.jpeg",
-            "images/peach-vila-3piece/Add_dupatta_to_dress_202607121742.jpeg",
-            "images/peach-vila-3piece/Add_dupatta_to_dress_202607121811.jpeg",
-            "images/peach-vila-3piece/Edit_image_add_dupatta_202607121815.jpeg"
+            "images/peach-vila-3piece/peach_vila1.jpg",
+            "images/peach-vila-3piece/peach_vila2.jpg",
+            "images/peach-vila-3piece/peach_vila3.jpg",
+            "images/peach-vila-3piece/peach_vila14.jpg"
         ],
         sizes: ["38", "40", "44"],
         colors: ["Peach Pink"],
