@@ -1,32 +1,25 @@
-// ==========================================
-// MOHOR CLOTHINGS - PRODUCT DATABASE
-// ==========================================
-// Instructions: 
-// 1. To add a new product, copy the block from { to }, and paste it below the last one.
-// 2. Make sure each product block is separated by a comma.
-// 3. 'images' is a list. The first image will be the main cover!
-
 const productsData = [
     {
         id: 1,
-        title: "Premium White Kurti",
-        category: "kurti",
-        price: 1490,
-        // List as many images as you want here inside the brackets!
+        title: "Peach Vila 3-Piece",
+        category: "three-piece",
+        price: 3200,
         images: [
-            "kurti-front.jpg", 
-            "kurti-back.jpg", 
-            "kurti-detail.jpg"
+            "images/peach-vila-3piece/Add_dupatta_to_dress_2K_202607121726.jpeg",
+            "images/peach-vila-3piece/Add_dupatta_to_dress_202607121742.jpeg",
+            "images/peach-vila-3piece/Add_dupatta_to_dress_202607121811.jpeg",
+            "images/peach-vila-3piece/Edit_image_add_dupatta_202607121815.jpeg"
         ],
-        sizes: ["S", "M", "L", "XL", "XXL"],
-        colors: ["Pure White", "Off White"],
-        description: "Elegant handcrafted white kurti perfect for university, office, or viva presentations. Designed for all-day comfort with a premium aesthetic.",
+        sizes: ["38", "40", "44"],
+        colors: ["Peach Pink"],
+        description: "A premium embroidered 3-piece ensemble featuring high-quality detailing. Designed with a loose fit to provide ultimate comfort for summer wear.",
         details: [
-            "Material: Premium Cotton",
-            "Fit: Regular Fit",
-            "Care: Hand wash gently",
-            "Handcrafted in Bangladesh"
+            "Shirt Fabric: Premium Soft Cotton (80 GSM)",
+            "Trouser Fabric: Premium Soft Cotton (80 GSM)",
+            "Dupatta: Soft Tissue Chiffon",
+            "Embroidery: High-Quality Embroidery",
+            "Fit: Loose Fit",
+            "Season: Summer Wear"
         ]
     }
-    // Add the next product here...
 ];
