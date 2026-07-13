@@ -142,6 +142,11 @@ function openProductModal(product) {
     selectedColor = null;
     document.getElementById('sizeWarning').style.display = 'none';
     document.getElementById('colorWarning').style.display = 'none';
+    
+    // Clear size guide display when opening a new product
+    if(document.getElementById('sizeGuideDisplay')) {
+        document.getElementById('sizeGuideDisplay').innerHTML = ""; 
+    }
 
     document.getElementById('modalTitle').innerText = getText(product.title);
     document.getElementById('modalPrice').innerText = `৳ ${product.price}`;
@@ -218,6 +223,16 @@ function selectOption(clickedBtn, value, type) {
         selectedSize = value;
         document.getElementById('sizeWarning').style.display = 'none';
         document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('selected'));
+        
+        // --- SHOW DYNAMIC MEASUREMENTS ---
+        const sizeGuideDisplay = document.getElementById('sizeGuideDisplay');
+        if (sizeGuideDisplay) {
+            if (currentViewingProduct.sizeMeasurements && currentViewingProduct.sizeMeasurements[value]) {
+                sizeGuideDisplay.innerHTML = currentViewingProduct.sizeMeasurements[value][currentLang] || currentViewingProduct.sizeMeasurements[value]['en'];
+            } else {
+                sizeGuideDisplay.innerHTML = "";
+            }
+        }
     } else if (type === 'color') {
         selectedColor = value;
         document.getElementById('colorWarning').style.display = 'none';
