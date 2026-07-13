@@ -3,7 +3,7 @@ let currentLang = 'en';
 
 const uiTranslations = {
     en: {
-        navShop: "Shop", navAbout: "About Us", navCart: "Cart", shopTitle: "Our Collection", filterBtn: "Filters",
+        navShop: "Shop", navAbout: "About Us", navPolicy: "Policy", navCart: "Cart", shopTitle: "Our Collection", filterBtn: "Filters",
         sortDefault: "Sort by: Default", sortLowHigh: "Price: Low to High", sortHighLow: "Price: High to Low",
         catTitle: "Categories", catKurti: "Kurti", catThreePiece: "Three Piece", catKhadi: "Khadi", catFormal: "Formal Wear",
         priceTitle: "Price", price1: "Under ৳1500", price2: "৳1500 - ৳2500", price3: "Above ৳2500",
@@ -13,10 +13,11 @@ const uiTranslations = {
         cartTotal: "Total:", orderWhatsapp: "Order via WhatsApp", footerText: "© 2026 Mohor Clothings Bangladesh. All Rights Reserved.",
         selectOptions: "Select Size & Add to Cart",
         aboutTitle: "About Mohor Clothings",
-        aboutText: "Welcome to Mohor Clothings, your premier destination for handcrafted luxury fashion in Bangladesh. From our breathable, premium soft cotton Three-Piece ensembles to our elegantly tailored Kurtis and authentic Khadi wear, every piece is designed with the modern woman in mind. Whether you are stepping into a university classroom, leading a corporate meeting, or celebrating a festive occasion, our collections offer the perfect fit. Proudly serving Sylhet and customers nationwide, we are dedicated to bringing you high-quality embroidery and timeless designs that empower your everyday wardrobe."
+        aboutText: "Welcome to Mohor Clothings, your premier destination for handcrafted luxury fashion in Bangladesh. From our breathable, premium soft cotton Three-Piece ensembles to our elegantly tailored Kurtis and authentic Khadi wear, every piece is designed with the modern woman in mind. Whether you are stepping into a university classroom, leading a corporate meeting, or celebrating a festive occasion, our collections offer the perfect fit. Proudly serving Sylhet and customers nationwide, we are dedicated to bringing you high-quality embroidery and timeless designs that empower your everyday wardrobe.",
+        deliveryAddressLabel: "Delivery Address *", policyAgreeText: "I agree to the", policyLink: "Delivery & Return Policy"
     },
     bn: {
-        navShop: "শপ", navAbout: "আমাদের সম্পর্কে", navCart: "কার্ট", shopTitle: "আমাদের কালেকশন", filterBtn: "ফিল্টার",
+        navShop: "শপ", navAbout: "আমাদের সম্পর্কে", navPolicy: "পলিসি", navCart: "কার্ট", shopTitle: "আমাদের কালেকশন", filterBtn: "ফিল্টার",
         sortDefault: "সর্ট: ডিফল্ট", sortLowHigh: "দাম: কম থেকে বেশি", sortHighLow: "দাম: বেশি থেকে কম",
         catTitle: "ক্যাটাগরি", catKurti: "কুর্তি", catThreePiece: "থ্রি-পিস", catKhadi: "খাদি", catFormal: "ফরমাল ওয়্যার",
         priceTitle: "দাম", price1: "৳১৫০০ এর নিচে", price2: "৳১৫০০ - ৳২৫০০", price3: "৳২৫০০ এর উপরে",
@@ -26,7 +27,8 @@ const uiTranslations = {
         cartTotal: "মোট:", orderWhatsapp: "হোয়াটসঅ্যাপে অর্ডার করুন", footerText: "© ২০২৬ মোহর ক্লথিংস বাংলাদেশ। সর্বস্বত্ব সংরক্ষিত।",
         selectOptions: "সাইজ নির্বাচন করুন",
         aboutTitle: "মোহর ক্লথিংস সম্পর্কে",
-        aboutText: "মোহর ক্লথিংস-এ আপনাকে স্বাগতম, বাংলাদেশে হাতে তৈরি লাক্সারি ফ্যাশনের অন্যতম বিশ্বস্ত নাম। আমাদের আরামদায়ক প্রিমিয়াম সফট কটন থ্রি-পিস থেকে শুরু করে আকর্ষণীয় কুর্তি এবং ঐতিহ্যবাহী খাদি পোশাক—প্রতিটি ডিজাইন তৈরি করা হয়েছে আধুনিক নারীদের কথা মাথায় রেখে। আপনি ইউনিভার্সিটির ক্লাসে যান, কর্পোরেট মিটিং পরিচালনা করুন বা কোনো উৎসব উদযাপন করুন, আমাদের কালেকশনে আপনার জন্য মানানসই পোশাক রয়েছে। সিলেট থেকে শুরু করে সারা দেশের গ্রাহকদের জন্য উচ্চমানের এমব্রয়ডারি এবং মানসম্মত ডিজাইনের পোশাক পৌঁছে দিতে আমরা প্রতিশ্রুতিবদ্ধ।"
+        aboutText: "মোহর ক্লথিংস-এ আপনাকে স্বাগতম, বাংলাদেশে হাতে তৈরি লাক্সারি ফ্যাশনের অন্যতম বিশ্বস্ত নাম। আমাদের আরামদায়ক প্রিমিয়াম সফট কটন থ্রি-পিস থেকে শুরু করে আকর্ষণীয় কুর্তি এবং ঐতিহ্যবাহী খাদি পোশাক—প্রতিটি ডিজাইন তৈরি করা হয়েছে আধুনিক নারীদের কথা মাথায় রেখে। আপনি ইউনিভার্সিটির ক্লাসে যান, কর্পোরেট মিটিং পরিচালনা করুন বা কোনো উৎসব উদযাপন করুন, আমাদের কালেকশনে আপনার জন্য মানানসই পোশাক রয়েছে। সিলেট থেকে শুরু করে সারা দেশের গ্রাহকদের জন্য উচ্চমানের এমব্রয়ডারি এবং মানসম্মত ডিজাইনের পোশাক পৌঁছে দিতে আমরা প্রতিশ্রুতিবদ্ধ।",
+        deliveryAddressLabel: "ডেলিভারি ঠিকানা *", policyAgreeText: "আমি সম্মত হচ্ছি", policyLink: "ডেলিভারি ও রিটার্ন পলিসিতে"
     }
 };
 
@@ -314,16 +316,42 @@ function updateCartUI() {
     cartBadge.innerText = cart.length;
 }
 
+// --- UPDATED CHECKOUT LOGIC WITH ADDRESS AND POLICY CHECK ---
 window.checkoutToWhatsApp = function() {
-    if (cart.length === 0) { alert(uiTranslations[currentLang].cartEmpty); return; }
+    if (cart.length === 0) { 
+        alert(uiTranslations[currentLang].cartEmpty); 
+        return; 
+    }
+    
+    // Safely capture user inputs
+    const addressElement = document.getElementById('deliveryAddress');
+    const policyElement = document.getElementById('policyAgree');
+    
+    const addressInput = addressElement ? addressElement.value.trim() : "";
+    const policyAgree = policyElement ? policyElement.checked : false;
+
+    // Validation checks
+    if (!addressInput) {
+        alert(currentLang === 'en' ? "Please enter your delivery address." : "অনুগ্রহ করে আপনার ডেলিভারি ঠিকানা দিন।");
+        return;
+    }
+    if (!policyAgree) {
+        alert(currentLang === 'en' ? "Please agree to the Delivery & Return Policy." : "অনুগ্রহ করে ডেলিভারি ও রিটার্ন পলিসিতে সম্মত হোন।");
+        return;
+    }
+
     const WHATSAPP_NUMBER = "8801330113027"; 
     let message = "Hello Mohor Clothings! I would like to order the following items:%0A%0A";
     let total = 0;
+    
     cart.forEach((item, index) => { 
         message += `${index + 1}. ${item.name} (Size: ${item.size}) - ৳${item.price}%0A`; 
         total += item.price; 
     });
+    
     message += `%0A*Total: ৳${total}*`;
+    message += `%0A%0A*Delivery Address:*%0A${addressInput}`;
+    
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${message}`, '_blank');
 }
 
