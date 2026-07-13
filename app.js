@@ -10,7 +10,8 @@ const uiTranslations = {
         noProducts: "No products match your filters.", sizeSelect: "Select Size", sizeWarning: "*Please select a size",
         colorSelect: "Select Color", colorWarning: "*Please select a color", descTitle: "Description",
         detailsTitle: "Product Details", addToCart: "Add to Cart", cartTitle: "Your Cart", cartEmpty: "Your cart is empty.",
-        cartTotal: "Total:", orderWhatsapp: "Order via WhatsApp", footerText: "© 2026 Mohor Clothings Bangladesh. All Rights Reserved."
+        cartTotal: "Total:", orderWhatsapp: "Order via WhatsApp", footerText: "© 2026 Mohor Clothings Bangladesh. All Rights Reserved.",
+        selectOptions: "Select Size & Add to Cart"
     },
     bn: {
         navShop: "শপ", navCart: "কার্ট", shopTitle: "আমাদের কালেকশন", filterBtn: "ফিল্টার",
@@ -20,19 +21,27 @@ const uiTranslations = {
         noProducts: "আপনার ফিল্টারের সাথে মিলে এমন কোনো পণ্য নেই।", sizeSelect: "সাইজ নির্বাচন করুন", sizeWarning: "*দয়া করে একটি সাইজ নির্বাচন করুন",
         colorSelect: "রং নির্বাচন করুন", colorWarning: "*দয়া করে একটি রং নির্বাচন করুন", descTitle: "বিবরণ",
         detailsTitle: "পণ্যের বিস্তারিত", addToCart: "কার্টে যোগ করুন", cartTitle: "আপনার কার্ট", cartEmpty: "আপনার কার্ট খালি।",
-        cartTotal: "মোট:", orderWhatsapp: "হোয়াটসঅ্যাপে অর্ডার করুন", footerText: "© ২০২৬ মোহর ক্লথিংস বাংলাদেশ। সর্বস্বত্ব সংরক্ষিত।"
+        cartTotal: "মোট:", orderWhatsapp: "হোয়াটসঅ্যাপে অর্ডার করুন", footerText: "© ২০২৬ মোহর ক্লথিংস বাংলাদেশ। সর্বস্বত্ব সংরক্ষিত।",
+        selectOptions: "সাইজ নির্বাচন করুন"
     }
 };
+
+// CRASH PREVENTER: Safely grabs text even if translation is missing
+function getText(dataField) {
+    if (!dataField) return "";
+    if (typeof dataField === 'string') return dataField; // If you forget to add {en, bn}, it won't crash!
+    return dataField[currentLang] || dataField['en'] || "";
+}
 
 function updateUIText() {
     document.querySelectorAll('[data-i18n]').forEach(el => {
         const key = el.getAttribute('data-i18n');
         if (uiTranslations[currentLang][key]) {
-            el.innerText = uiTranslations[currentLang][key];
+            el.innerHTML = uiTranslations[currentLang][key];
         }
     });
-    updateProducts(); // Re-render grid in new language
-    updateCartUI();   // Re-render cart in new language
+    updateProducts(); 
+    updateCartUI();   
 }
 
 document.getElementById('langToggleBtn').addEventListener('click', () => {
@@ -60,11 +69,10 @@ function renderProducts(productsToRender) {
         card.onclick = () => openProductModal(product);
         
         const coverImage = product.images && product.images.length > 0 ? product.images[0] : '';
-        const displayTitle = product.title[currentLang];
-        
-        // Match English category text for UI label display safely
+        const displayTitle = getText(product.title);
         const displayCategory = product.category.replace('-', ' ');
 
+        // Note: Added the Add to Cart button directly on the card!
         card.innerHTML = `
             <div class="image-container">
                 <img src="${coverImage}" alt="${displayTitle}" class="product-image" onerror="this.src='https://via.placeholder.com/300x400/f9f9f9/666?text=Mohor'">
@@ -73,6 +81,7 @@ function renderProducts(productsToRender) {
                 <span class="product-category-label">${displayCategory}</span>
                 <h3>${displayTitle}</h3>
                 <p class="product-price">৳ ${product.price}</p>
+                <button class="add-to-cart-btn" style="padding: 10px; margin-top: 10px; font-size: 11px; width: 100%; border-radius: 4px;">${uiTranslations[currentLang].selectOptions}</button>
             </div>
         `;
         productGrid.appendChild(card);
@@ -124,9 +133,9 @@ function openProductModal(product) {
     document.getElementById('sizeWarning').style.display = 'none';
     document.getElementById('colorWarning').style.display = 'none';
 
-    document.getElementById('modalTitle').innerText = product.title[currentLang];
+    document.getElementById('modalTitle').innerText = getText(product.title);
     document.getElementById('modalPrice').innerText = `৳ ${product.price}`;
-    document.getElementById('modalDesc').innerText = product.description[currentLang];
+    document.getElementById('modalDesc').innerText = getText(product.description);
     
     const mainImage = document.getElementById('modalMainImage');
     const thumbContainer = document.getElementById('modalThumbnails');
@@ -150,13 +159,19 @@ function openProductModal(product) {
     const colorsContainer = document.getElementById('modalColors');
     const colorSection = document.getElementById('colorSection');
     colorsContainer.innerHTML = '';
-    if (product.colors && product.colors[currentLang].length > 0) {
+    
+    // Check if colors exist safely
+    let colorArray = [];
+    if (product.colors) {
+        colorArray = Array.isArray(product.colors) ? product.colors : (product.colors[currentLang] || product.colors['en'] || []);
+    }
+
+    if (colorArray.length > 0) {
         colorSection.style.display = 'block';
-        product.colors[currentLang].forEach((color, index) => {
+        colorArray.forEach((color) => {
             const btn = document.createElement('button');
             btn.className = 'select-btn color-btn';
             btn.innerText = color;
-            // Map the selection back to English for cart backend if needed, or just keep display language
             btn.onclick = () => selectOption(btn, color, 'color');
             colorsContainer.appendChild(btn);
         });
@@ -167,17 +182,24 @@ function openProductModal(product) {
 
     const sizesContainer = document.getElementById('modalSizes');
     sizesContainer.innerHTML = '';
-    product.sizes.forEach(size => {
-        const btn = document.createElement('button');
-        btn.className = 'select-btn size-btn';
-        btn.innerText = size;
-        btn.onclick = () => selectOption(btn, size, 'size');
-        sizesContainer.appendChild(btn);
-    });
+    if(product.sizes) {
+        product.sizes.forEach(size => {
+            const btn = document.createElement('button');
+            btn.className = 'select-btn size-btn';
+            btn.innerText = size;
+            btn.onclick = () => selectOption(btn, size, 'size');
+            sizesContainer.appendChild(btn);
+        });
+    }
 
     const detailsList = document.getElementById('modalDetails');
     detailsList.innerHTML = '';
-    product.details[currentLang].forEach(detail => {
+    let detailsArray = [];
+    if (product.details) {
+        detailsArray = Array.isArray(product.details) ? product.details : (product.details[currentLang] || product.details['en'] || []);
+    }
+    
+    detailsArray.forEach(detail => {
         const li = document.createElement('li');
         li.innerText = detail;
         detailsList.appendChild(li);
@@ -208,8 +230,8 @@ document.getElementById('modalAddToCartBtn').addEventListener('click', () => {
     if (!selectedColor) { document.getElementById('colorWarning').style.display = 'inline'; valid = false; }
     if (!valid) return;
 
-    // Use english name for backend order consistency
-    let displayName = currentViewingProduct.title.en;
+    // Save the English name to the cart so orders are consistent for you
+    let displayName = typeof currentViewingProduct.title === 'string' ? currentViewingProduct.title : currentViewingProduct.title.en;
     if(selectedColor !== "Default") displayName += ` (${selectedColor})`;
 
     addToCart(displayName, currentViewingProduct.price, selectedSize);
