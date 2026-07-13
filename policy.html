@@ -1,129 +1,285 @@
 <!DOCTYPE html>
+
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <meta name="description" content="Mohor Clothings Delivery and Return Policy.">
+
     <title>Policy | Mohor Clothings</title>
-    <!-- Favicon -->
-    <link rel="icon" type="image/jpeg" href="favicon.jpeg">
-    
+
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+
     
+
+    <!-- Copy your exact CSS from index.html <style> tag and paste it here -->
+
     <style>
-        :root { --primary-gold: #C9A14A; --deep-black: #0c0c0c; --soft-gray: #f9f9f9; --border-color: #eaeaea; --text-dark: #222; --text-light: #666; --white: #ffffff; --transition: all 0.3s ease; }
+
+        /* PASTE YOUR CSS VARIABLES AND STYLES HERE TO KEEP THE LOOK CONSISTENT */
+
+        :root {
+
+            --primary-gold: #C9A14A;
+
+            --deep-black: #0c0c0c;
+
+            --soft-gray: #f9f9f9;
+
+            --border-color: #eaeaea;
+
+            --text-dark: #222;
+
+            --text-light: #666;
+
+            --white: #ffffff;
+
+            --transition: all 0.3s ease;
+
+        }
+
+
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
+
         body { font-family: 'Montserrat', sans-serif; background-color: var(--white); color: var(--text-dark); line-height: 1.6; overflow-x: hidden; }
+
         h1, h2, h3, h4, .brand-logo { font-family: 'Playfair Display', serif; }
-        
+
+
+
         nav { display: flex; justify-content: space-between; align-items: center; padding: 20px 5%; background: var(--white); position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid var(--border-color); }
+
         .brand-logo { font-size: 28px; font-weight: 700; letter-spacing: 2px; text-decoration: none; color: var(--deep-black); text-transform: uppercase; }
+
         .nav-right { display: flex; align-items: center; gap: 20px; }
+
         .nav-links { display: flex; align-items: center; }
+
         .nav-links a { text-decoration: none; color: var(--text-dark); margin-left: 30px; font-size: 13px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; transition: var(--transition); }
+
         .nav-links a:hover { color: var(--primary-gold); }
+
         .cart-toggle-btn { background: none; border: none; font-family: 'Montserrat', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px; text-transform: uppercase; letter-spacing: 1px; }
+
         .cart-badge { background: var(--primary-gold); color: var(--white); border-radius: 50%; padding: 2px 8px; font-size: 12px; }
+
         .menu-toggle { display: none; font-size: 24px; background: none; border: none; cursor: pointer; color: var(--deep-black); }
+
         .lang-btn { background: var(--deep-black); color: var(--white); border: none; padding: 5px 10px; font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 600; cursor: pointer; border-radius: 3px; letter-spacing: 1px;}
+
         .lang-btn:hover { background: var(--primary-gold); }
+
         
+
         .policy-container { max-width: 800px; margin: 50px auto; padding: 0 5%; min-height: 60vh; }
+
         .policy-container h2 { font-size: 28px; margin-bottom: 30px; text-align: center; color: var(--deep-black); }
+
         .policy-container h3 { font-family: 'Montserrat', sans-serif; font-size: 16px; margin-top: 30px; margin-bottom: 10px; color: var(--primary-gold); text-transform: uppercase; letter-spacing: 1px; }
+
         .policy-container p { font-size: 15px; color: var(--text-light); line-height: 1.8; margin-bottom: 15px; }
 
-        /* Cart Sidebar Styles */
+
+
+        /* PASTE CART AND FOOTER CSS HERE FROM INDEX.HTML TO KEEP IT STYLED */
+
         .cart-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; opacity: 0; visibility: hidden; transition: var(--transition); }
+
         .cart-overlay.active { opacity: 1; visibility: visible; }
+
         .cart-sidebar { position: fixed; top: 0; right: -400px; width: 100%; max-width: 400px; height: 100vh; background: var(--white); z-index: 2001; transition: right 0.4s ease; display: flex; flex-direction: column; box-shadow: -5px 0 15px rgba(0,0,0,0.1); }
+
         .cart-sidebar.active { right: 0; }
+
         .cart-header { padding: 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+
         .close-cart { font-size: 28px; cursor: pointer; line-height: 1; font-family: 'Montserrat', sans-serif; }
+
         .cart-items { flex-grow: 1; overflow-y: auto; padding: 20px; }
+
         .cart-item { display: flex; justify-content: space-between; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid var(--soft-gray); font-size: 14px; }
+
         .cart-item-info span { font-size: 12px; color: var(--text-light); display: block; margin-top: 3px; }
+
         .remove-item { color: #d9534f; cursor: pointer; font-size: 12px; border: none; background: none; margin-top: 5px; text-transform: uppercase; font-weight: 600;}
+
         .cart-footer { padding: 20px; border-top: 1px solid var(--border-color); background: var(--soft-gray); }
+
         .cart-total { display: flex; justify-content: space-between; font-weight: 600; font-size: 18px; margin-bottom: 20px; font-family: 'Playfair Display', serif; }
+
         .checkout-btn { background: #25d366; color: var(--white); border: none; padding: 15px; width: 100%; font-family: 'Montserrat', sans-serif; font-size: 14px; font-weight: 600; text-transform: uppercase; cursor: pointer; transition: var(--transition); display: flex; justify-content: center; gap: 10px; }
+
         .checkout-btn:hover { background: #128c7e; }
+
         footer { background: var(--deep-black); color: var(--white); padding: 40px 5% 20px; text-align: center; }
+
     </style>
+
 </head>
+
 <body>
 
+
+
     <nav>
+
         <a href="index.html" class="brand-logo">Mohor</a>
+
         <div class="nav-right">
+
             <button id="langToggleBtn" class="lang-btn">EN / বাং</button>
+
             <button class="cart-toggle-btn" id="openCartBtn"><span data-i18n="navCart">Cart</span> <span class="cart-badge" id="cartBadge">0</span></button>
+
             <button class="menu-toggle" id="menuToggle">&#8942;</button>
+
         </div>
+
         <div class="nav-links" id="navLinks">
+
             <a href="index.html" data-i18n="navShop">Shop</a>
+
             <a href="about.html" data-i18n="navAbout">About Us</a>
+
             <a href="policy.html" data-i18n="navPolicy" style="color: var(--primary-gold);">Policy</a>
+
             <a href="https://www.facebook.com/share/1Be3jj7iqb/?mibextid=wwXIfr" target="_blank">Facebook</a>
+
             <a href="https://www.instagram.com/mohorclothings" target="_blank">Instagram</a>
+
         </div>
+
     </nav>
 
+
+
     <section class="policy-container">
+
         <h2 data-i18n="policyPageTitle">Delivery & Return Policy</h2>
+
         
+
         <h3 data-i18n="policy1Title">1. Delivery Information</h3>
+
         <p data-i18n="policy1Text">We deliver nationwide across Bangladesh. For orders within Sylhet, the standard delivery time is 1-3 business days. For orders outside Sylhet, delivery typically takes 3-5 business days. Delivery charges will be calculated and communicated during the confirmation phase on WhatsApp based on your delivery address.</p>
 
+
+
         <h3 data-i18n="policy2Title">2. Order Confirmation</h3>
+
         <p data-i18n="policy2Text">Once you place an order via WhatsApp, our team will verify product availability and send you a confirmation message along with the final bill (including delivery charges) before processing.</p>
 
+
+
         <h3 data-i18n="policy3Title">3. Return & Exchange Policy</h3>
+
         <p data-i18n="policy3Text">We take pride in the quality of our handcrafted clothing. However, if you receive a defective or incorrect item, please notify us within 24 hours of receiving the delivery. The item must be unused, unwashed, and in its original packaging with tags intact. Please record an unboxing video to claim any damages or defects.</p>
 
+
+
         <h3 data-i18n="policy4Title">4. Color Disclaimer</h3>
+
         <p data-i18n="policy4Text">While we strive to ensure our images accurately represent the product, actual colors may slightly vary due to lighting during photography or your device's display settings. Exchanges will not be accommodated purely for slight color variations.</p>
+
     </section>
 
+
+
     <!-- Cart Sidebar -->
+
     <div class="cart-overlay" id="cartOverlay"></div>
+
     <div class="cart-sidebar" id="cartSidebar">
+
         <div class="cart-header">
+
             <h3 data-i18n="cartTitle">Your Cart</h3>
+
             <span class="close-cart" id="closeCartBtn">&times;</span>
+
         </div>
+
         <div class="cart-items" id="cartItemsContainer">
+
             <p style="text-align: center; color: #666; margin-top: 20px;" data-i18n="cartEmpty">Your cart is empty.</p>
+
         </div>
+
         <div class="cart-footer">
+
             <div class="checkout-form" style="margin-bottom: 15px; text-align: left;">
+
                 <label for="deliveryAddress" style="font-size: 12px; font-weight: 600; display: block; margin-bottom: 5px; color: var(--text-dark);" data-i18n="deliveryAddressLabel">Delivery Address *</label>
+
                 <textarea id="deliveryAddress" rows="2" style="width: 100%; padding: 8px; border: 1px solid var(--border-color); font-family: 'Montserrat', sans-serif; font-size: 12px; outline: none; resize: none; margin-bottom: 8px;" placeholder="House#, Road#, Area, City..."></textarea>
+
                 
+
                 <div style="font-size: 11px; color: var(--text-light); line-height: 1.4; display: flex; align-items: flex-start; gap: 5px;">
+
                     <input type="checkbox" id="policyAgree" style="accent-color: var(--primary-gold); margin-top: 2px;">
+
                     <label for="policyAgree">
+
                         <span data-i18n="policyAgreeText">I agree to the</span> 
+
                         <a href="policy.html" style="color: var(--primary-gold); text-decoration: underline;" data-i18n="policyLink">Delivery & Return Policy</a>.
+
                     </label>
+
                 </div>
+
             </div>
+
+
 
             <div class="cart-total">
+
                 <span data-i18n="cartTotal">Total:</span>
+
                 <span>৳<span id="cartTotalValue">0</span></span>
+
             </div>
+
             <button class="checkout-btn" onclick="checkoutToWhatsApp()">
+
                 <span data-i18n="orderWhatsapp">Order via WhatsApp</span>
+
             </button>
+
         </div>
+
     </div>
 
+
+
     <footer>
+
         <p style="font-size: 12px; color: #777;" data-i18n="footerText">&copy; 2026 Mohor Clothings Bangladesh. All Rights Reserved.</p>
+
     </footer>
 
+
+
+    <!-- Hidden elements to keep app.js happy -->
+
+    <div id="productGrid" style="display:none;"></div>
+
+    <select id="sortSelect" style="display:none;"></select>
+
+
+
     <!-- Logic Files -->
+
+    <script src="products.js"></script>
+
     <script src="app.js"></script>
+
 </body>
+
 </html>
