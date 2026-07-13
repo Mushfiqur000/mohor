@@ -14,7 +14,18 @@ const uiTranslations = {
         selectOptions: "Select Size & Add to Cart",
         aboutTitle: "About Mohor Clothings",
         aboutText: "Welcome to Mohor Clothings, your premier destination for handcrafted luxury fashion in Bangladesh. From our breathable, premium soft cotton Three-Piece ensembles to our elegantly tailored Kurtis and authentic Khadi wear, every piece is designed with the modern woman in mind. Whether you are stepping into a university classroom, leading a corporate meeting, or celebrating a festive occasion, our collections offer the perfect fit. Proudly serving Sylhet and customers nationwide, we are dedicated to bringing you high-quality embroidery and timeless designs that empower your everyday wardrobe.",
-        deliveryAddressLabel: "Delivery Address *", policyAgreeText: "I agree to the", policyLink: "Delivery & Return Policy"
+        deliveryAddressLabel: "Delivery Address *", policyAgreeText: "I agree to the", policyLink: "Delivery & Return Policy",
+        
+        // NEW POLICY PAGE TRANSLATIONS
+        policyPageTitle: "Delivery & Return Policy",
+        policy1Title: "1. Delivery Information",
+        policy1Text: "We deliver nationwide across Bangladesh. For orders within Sylhet, the standard delivery time is 1-3 business days. For orders outside Sylhet, delivery typically takes 3-5 business days. Delivery charges will be calculated and communicated during the confirmation phase on WhatsApp based on your delivery address.",
+        policy2Title: "2. Order Confirmation",
+        policy2Text: "Once you place an order via WhatsApp, our team will verify product availability and send you a confirmation message along with the final bill (including delivery charges) before processing.",
+        policy3Title: "3. Return & Exchange Policy",
+        policy3Text: "We take pride in the quality of our handcrafted clothing. However, if you receive a defective or incorrect item, please notify us within 24 hours of receiving the delivery. The item must be unused, unwashed, and in its original packaging with tags intact. Please record an unboxing video to claim any damages or defects.",
+        policy4Title: "4. Color Disclaimer",
+        policy4Text: "While we strive to ensure our images accurately represent the product, actual colors may slightly vary due to lighting during photography or your device's display settings. Exchanges will not be accommodated purely for slight color variations."
     },
     bn: {
         navShop: "শপ", navAbout: "আমাদের সম্পর্কে", navPolicy: "পলিসি", navCart: "কার্ট", shopTitle: "আমাদের কালেকশন", filterBtn: "ফিল্টার",
@@ -28,10 +39,20 @@ const uiTranslations = {
         selectOptions: "সাইজ নির্বাচন করুন",
         aboutTitle: "মোহর ক্লথিংস সম্পর্কে",
         aboutText: "মোহর ক্লথিংস-এ আপনাকে স্বাগতম, বাংলাদেশে হাতে তৈরি লাক্সারি ফ্যাশনের অন্যতম বিশ্বস্ত নাম। আমাদের আরামদায়ক প্রিমিয়াম সফট কটন থ্রি-পিস থেকে শুরু করে আকর্ষণীয় কুর্তি এবং ঐতিহ্যবাহী খাদি পোশাক—প্রতিটি ডিজাইন তৈরি করা হয়েছে আধুনিক নারীদের কথা মাথায় রেখে। আপনি ইউনিভার্সিটির ক্লাসে যান, কর্পোরেট মিটিং পরিচালনা করুন বা কোনো উৎসব উদযাপন করুন, আমাদের কালেকশনে আপনার জন্য মানানসই পোশাক রয়েছে। সিলেট থেকে শুরু করে সারা দেশের গ্রাহকদের জন্য উচ্চমানের এমব্রয়ডারি এবং মানসম্মত ডিজাইনের পোশাক পৌঁছে দিতে আমরা প্রতিশ্রুতিবদ্ধ।",
-        deliveryAddressLabel: "ডেলিভারি ঠিকানা *", policyAgreeText: "আমি সম্মত হচ্ছি", policyLink: "ডেলিভারি ও রিটার্ন পলিসিতে"
+        deliveryAddressLabel: "ডেলিভারি ঠিকানা *", policyAgreeText: "আমি সম্মত হচ্ছি", policyLink: "ডেলিভারি ও রিটার্ন পলিসিতে",
+        
+        // NEW POLICY PAGE TRANSLATIONS
+        policyPageTitle: "ডেলিভারি ও রিটার্ন পলিসি",
+        policy1Title: "১. ডেলিভারি তথ্য",
+        policy1Text: "আমরা সারা বাংলাদেশে ডেলিভারি দিয়ে থাকি। সিলেটের ভেতরের অর্ডারের জন্য, সাধারণ ডেলিভারি সময় ১-৩ কর্মদিবস। সিলেটের বাইরের অর্ডারের জন্য সাধারণত ৩-৫ কর্মদিবস সময় লাগে। আপনার ডেলিভারি ঠিকানার ওপর ভিত্তি করে ডেলিভারি চার্জ হিসাব করা হবে এবং হোয়াটসঅ্যাপে কনফার্মেশনের সময় জানিয়ে দেওয়া হবে।",
+        policy2Title: "২. অর্ডার কনফার্মেশন",
+        policy2Text: "হোয়াটসঅ্যাপের মাধ্যমে অর্ডার করার পর, আমাদের টিম পণ্যের প্রাপ্যতা যাচাই করবে এবং প্রসেস করার আগে আপনাকে একটি কনফার্মেশন মেসেজ ও চূড়ান্ত বিল (ডেলিভারি চার্জ সহ) পাঠিয়ে দেবে।",
+        policy3Title: "৩. রিটার্ন ও এক্সচেঞ্জ পলিসি",
+        policy3Text: "আমরা আমাদের হাতে তৈরি পোশাকের মানের বিষয়ে গর্ববোধ করি। তবে, যদি আপনি কোনো ত্রুটিপূর্ণ বা ভুল পণ্য পান, অনুগ্রহ করে ডেলিভারি পাওয়ার ২৪ ঘণ্টার মধ্যে আমাদের জানান। পণ্যটি অবশ্যই অব্যবহৃত, ধোয়া হয়নি এমন, এবং অরিজিনাল প্যাকেজিং ও ট্যাগযুক্ত থাকতে হবে। কোনো ক্ষতি বা ত্রুটি দাবি করার জন্য অনুগ্রহ করে একটি আনবক্সিং ভিডিও রেকর্ড করুন।",
+        policy4Title: "৪. রঙের ডিসক্লেইমার",
+        policy4Text: "যদিও আমরা নিশ্চিত করার চেষ্টা করি যে আমাদের ছবিগুলো পণ্যের সঠিক রং উপস্থাপন করে, ফটোগ্রাফির সময় আলোর কারণে বা আপনার ডিভাইসের ডিসপ্লে সেটিংসের কারণে আসল রং সামান্য ভিন্ন হতে পারে। শুধুমাত্র সামান্য রঙের পার্থক্যের কারণে কোনো এক্সচেঞ্জ গ্রহণ করা হবে না।"
     }
 };
-
 function getText(dataField) {
     if (!dataField) return "";
     if (typeof dataField === 'string') return dataField; 
