@@ -3,7 +3,7 @@ let currentLang = 'en';
 
 const uiTranslations = {
     en: {
-        navShop: "Shop", navAbout: "About", navCart: "Cart", shopTitle: "Our Collection", filterBtn: "Filters",
+        navShop: "Shop", navAbout: "About Us", navCart: "Cart", shopTitle: "Our Collection", filterBtn: "Filters",
         sortDefault: "Sort by: Default", sortLowHigh: "Price: Low to High", sortHighLow: "Price: High to Low",
         catTitle: "Categories", catKurti: "Kurti", catThreePiece: "Three Piece", catKhadi: "Khadi", catFormal: "Formal Wear",
         priceTitle: "Price", price1: "Under ৳1500", price2: "৳1500 - ৳2500", price3: "Above ৳2500",
@@ -26,7 +26,7 @@ const uiTranslations = {
         cartTotal: "মোট:", orderWhatsapp: "হোয়াটসঅ্যাপে অর্ডার করুন", footerText: "© ২০২৬ মোহর ক্লথিংস বাংলাদেশ। সর্বস্বত্ব সংরক্ষিত।",
         selectOptions: "সাইজ নির্বাচন করুন",
         aboutTitle: "মোহর ক্লথিংস সম্পর্কে",
-        aboutText: "মোহর ক্লথিংস-এ আপনাকে স্বাগতম, বাংলাদেশে হাতে তৈরি লাক্সারি ফ্যাশনের অন্যতম বিশ্বস্ত নাম। আমাদের আরামদায়ক প্রিমিয়াম সফট কটন থ্রি-পিস থেকে শুরু করে আকর্ষণীয় কুর্তি এবং ঐতিহ্যবাহী খাদি পোশাক—প্রতিটি ডিজাইন তৈরি করা হয়েছে আধুনিক নারীদের কথা মাথায় রেখে। আপনি ইউনিভার্সিটির ক্লাসে যান, কর্পোরেট মিটিং পরিচালনা করুন বা কোনো উৎসব উদযাপন করুন, আমাদের কালেকশনে আপনার জন্য মানানসই পোশাক রয়েছে। সিলেট থেকে শুরু করে সারা দেশের গ্রাহকদের জন্য উচ্চমানের এমব্রয়ডারি এবং মানসম্মত ডিজাইনের পোশাক পৌঁছে দিতে আমরা প্রতিশ্রুতিবদ্ধ।"
+        aboutText: "মোহর ক্লথিংস-এ আপনাকে স্বাগতম, বাংলাদেশে হাতে তৈরি লাক্সারি ফ্যাশনের অন্যতম বিশ্বস্ত নাম। আমাদের আরামদায়ক প্রিমিয়াম সফট কটন থ্রি-পিস থেকে শুরু করে আকর্ষণীয় কুর্তি এবং ঐতিহ্যবাহী খাদি পোশাক—প্রতিটি ডিজাইন তৈরি করা হয়েছে আধুনিক নারীদের কথা মাথায় রেখে। আপনি ইউনিভার্সিটির ক্লাসে যান, কর্পোরেট মিটিং পরিচালনা করুন বা কোনো উৎসব উদযাপন করুন, আমাদের কালেকশনে আপনার জন্য মানানসই পোশাক রয়েছে। সিলেট থেকে শুরু করে সারা দেশের গ্রাহকদের জন্য উচ্চমানের এমব্রয়ডারি এবং মানসম্মত ডিজাইনের পোশাক পৌঁছে দিতে আমরা প্রতিশ্রুতিবদ্ধ।"
     }
 };
 
@@ -43,7 +43,11 @@ function updateUIText() {
             el.innerHTML = uiTranslations[currentLang][key];
         }
     });
-    if (document.getElementById('productGrid')) { updateProducts(); }
+    
+    // Only try to update products if the grid actually exists on the page
+    if (document.getElementById('productGrid')) { 
+        updateProducts(); 
+    }
     updateCartUI();   
 }
 
@@ -53,172 +57,188 @@ document.getElementById('langToggleBtn').addEventListener('click', () => {
 });
 
 
-// --- PRODUCT RENDERING & FILTERING (Only runs on index.html) ---
-const productGrid = document.getElementById('productGrid');
-if (productGrid) {
-    const checkboxes = document.querySelectorAll('.filter-checkbox');
+// --- PRODUCT RENDERING & FILTERING ---
+function renderProducts(productsToRender) {
+    const productGrid = document.getElementById('productGrid');
+    if (!productGrid) return; // Safety check
+    
+    productGrid.innerHTML = '';
+    if (!productsToRender || productsToRender.length === 0) {
+        productGrid.innerHTML = `<p style="grid-column: 1/-1; text-align:center; padding: 40px; color: #666;">${uiTranslations[currentLang].noProducts}</p>`;
+        return;
+    }
+
+    productsToRender.forEach(product => {
+        const card = document.createElement('div');
+        card.className = 'product-card';
+        card.onclick = () => openProductModal(product);
+        
+        const coverImage = product.images && product.images.length > 0 ? product.images[0] : '';
+        const displayTitle = getText(product.title);
+        const displayCategory = product.category.replace('-', ' ');
+
+        card.innerHTML = `
+            <div class="image-container">
+                <img src="${coverImage}" alt="${displayTitle}" class="product-image" onerror="this.src='https://via.placeholder.com/300x400/f9f9f9/666?text=Mohor'">
+            </div>
+            <div class="product-details-card">
+                <span class="product-category-label">${displayCategory}</span>
+                <h3>${displayTitle}</h3>
+                <p class="product-price">৳ ${product.price}</p>
+                <button class="add-to-cart-btn" style="padding: 10px; margin-top: 10px; font-size: 11px; width: 100%; border-radius: 4px;">${uiTranslations[currentLang].selectOptions}</button>
+            </div>
+        `;
+        productGrid.appendChild(card);
+    });
+}
+
+function updateProducts() {
+    if (typeof productsData === 'undefined') return;
     const sortSelect = document.getElementById('sortSelect');
+    if (!sortSelect) return; // Safety check
 
-    function renderProducts(productsToRender) {
-        productGrid.innerHTML = '';
-        if (!productsToRender || productsToRender.length === 0) {
-            productGrid.innerHTML = `<p style="grid-column: 1/-1; text-align:center; padding: 40px; color: #666;">${uiTranslations[currentLang].noProducts}</p>`;
-            return;
+    const activeCategories = Array.from(document.querySelectorAll('input[id^="cat-"]:checked')).map(cb => cb.value);
+    const activePrices = Array.from(document.querySelectorAll('.price-filter:checked')).map(cb => cb.value);
+    const sortValue = sortSelect.value;
+
+    let filtered = productsData.filter(product => {
+        let catMatch = activeCategories.length === 0 || activeCategories.includes(product.category);
+        let priceMatch = activePrices.length === 0;
+        if (!priceMatch) {
+            if (activePrices.includes('under-1500') && product.price < 1500) priceMatch = true;
+            if (activePrices.includes('1500-2500') && product.price >= 1500 && product.price <= 2500) priceMatch = true;
+            if (activePrices.includes('above-2500') && product.price > 2500) priceMatch = true;
         }
+        return catMatch && priceMatch;
+    });
 
-        productsToRender.forEach(product => {
-            const card = document.createElement('div');
-            card.className = 'product-card';
-            card.onclick = () => openProductModal(product);
-            
-            const coverImage = product.images && product.images.length > 0 ? product.images[0] : '';
-            const displayTitle = getText(product.title);
-            const displayCategory = product.category.replace('-', ' ');
+    if (sortValue === 'low-high') { filtered.sort((a, b) => a.price - b.price); } 
+    else if (sortValue === 'high-low') { filtered.sort((a, b) => b.price - a.price); }
 
-            card.innerHTML = `
-                <div class="image-container">
-                    <img src="${coverImage}" alt="${displayTitle}" class="product-image" onerror="this.src='https://via.placeholder.com/300x400/f9f9f9/666?text=Mohor'">
-                </div>
-                <div class="product-details-card">
-                    <span class="product-category-label">${displayCategory}</span>
-                    <h3>${displayTitle}</h3>
-                    <p class="product-price">৳ ${product.price}</p>
-                    <button class="add-to-cart-btn" style="padding: 10px; margin-top: 10px; font-size: 11px; width: 100%; border-radius: 4px;">${uiTranslations[currentLang].selectOptions}</button>
-                </div>
-            `;
-            productGrid.appendChild(card);
-        });
-    }
+    renderProducts(filtered);
+}
 
-    window.updateProducts = function() {
-        if (typeof productsData === 'undefined') return;
-        const activeCategories = Array.from(document.querySelectorAll('input[id^="cat-"]:checked')).map(cb => cb.value);
-        const activePrices = Array.from(document.querySelectorAll('.price-filter:checked')).map(cb => cb.value);
-        const sortValue = sortSelect.value;
+// Attach event listeners only if elements exist
+const checkboxes = document.querySelectorAll('.filter-checkbox');
+checkboxes.forEach(cb => cb.addEventListener('change', updateProducts));
 
-        let filtered = productsData.filter(product => {
-            let catMatch = activeCategories.length === 0 || activeCategories.includes(product.category);
-            let priceMatch = activePrices.length === 0;
-            if (!priceMatch) {
-                if (activePrices.includes('under-1500') && product.price < 1500) priceMatch = true;
-                if (activePrices.includes('1500-2500') && product.price >= 1500 && product.price <= 2500) priceMatch = true;
-                if (activePrices.includes('above-2500') && product.price > 2500) priceMatch = true;
-            }
-            return catMatch && priceMatch;
-        });
-
-        if (sortValue === 'low-high') { filtered.sort((a, b) => a.price - b.price); } 
-        else if (sortValue === 'high-low') { filtered.sort((a, b) => b.price - a.price); }
-
-        renderProducts(filtered);
-    }
-
-    checkboxes.forEach(cb => cb.addEventListener('change', updateProducts));
+const sortSelect = document.getElementById('sortSelect');
+if (sortSelect) {
     sortSelect.addEventListener('change', updateProducts);
 }
 
+
 // --- MODAL LOGIC ---
+let currentViewingProduct = null;
+let selectedSize = null;
+let selectedColor = null;
+
+function openProductModal(product) {
+    const productModal = document.getElementById('productModal');
+    if (!productModal) return;
+
+    currentViewingProduct = product;
+    selectedSize = null;
+    selectedColor = null;
+    document.getElementById('sizeWarning').style.display = 'none';
+    document.getElementById('colorWarning').style.display = 'none';
+
+    document.getElementById('modalTitle').innerText = getText(product.title);
+    document.getElementById('modalPrice').innerText = `৳ ${product.price}`;
+    document.getElementById('modalDesc').innerText = getText(product.description);
+    
+    const mainImage = document.getElementById('modalMainImage');
+    const thumbContainer = document.getElementById('modalThumbnails');
+    thumbContainer.innerHTML = '';
+    
+    if (product.images && product.images.length > 0) {
+        mainImage.src = product.images[0];
+        product.images.forEach((imgSrc, index) => {
+            const thumb = document.createElement('img');
+            thumb.src = imgSrc;
+            thumb.className = 'thumbnail' + (index === 0 ? ' active' : '');
+            thumb.onclick = () => {
+                mainImage.src = imgSrc;
+                document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
+                thumb.classList.add('active');
+            };
+            thumbContainer.appendChild(thumb);
+        });
+    }
+
+    const colorsContainer = document.getElementById('modalColors');
+    const colorSection = document.getElementById('colorSection');
+    colorsContainer.innerHTML = '';
+    
+    let colorArray = [];
+    if (product.colors) { colorArray = Array.isArray(product.colors) ? product.colors : (product.colors[currentLang] || product.colors['en'] || []); }
+
+    if (colorArray.length > 0) {
+        colorSection.style.display = 'block';
+        colorArray.forEach((color) => {
+            const btn = document.createElement('button');
+            btn.className = 'select-btn color-btn';
+            btn.innerText = color;
+            btn.onclick = () => selectOption(btn, color, 'color');
+            colorsContainer.appendChild(btn);
+        });
+    } else {
+        colorSection.style.display = 'none';
+        selectedColor = "Default";
+    }
+
+    const sizesContainer = document.getElementById('modalSizes');
+    sizesContainer.innerHTML = '';
+    if(product.sizes) {
+        product.sizes.forEach(size => {
+            const btn = document.createElement('button');
+            btn.className = 'select-btn size-btn';
+            btn.innerText = size;
+            btn.onclick = () => selectOption(btn, size, 'size');
+            sizesContainer.appendChild(btn);
+        });
+    }
+
+    const detailsList = document.getElementById('modalDetails');
+    detailsList.innerHTML = '';
+    let detailsArray = [];
+    if (product.details) { detailsArray = Array.isArray(product.details) ? product.details : (product.details[currentLang] || product.details['en'] || []); }
+    
+    detailsArray.forEach(detail => {
+        const li = document.createElement('li');
+        li.innerText = detail;
+        detailsList.appendChild(li);
+    });
+
+    productModal.classList.add('active');
+}
+
+function selectOption(clickedBtn, value, type) {
+    if (type === 'size') {
+        selectedSize = value;
+        document.getElementById('sizeWarning').style.display = 'none';
+        document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('selected'));
+    } else if (type === 'color') {
+        selectedColor = value;
+        document.getElementById('colorWarning').style.display = 'none';
+        document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('selected'));
+    }
+    clickedBtn.classList.add('selected');
+}
+
+const closeModalBtn = document.getElementById('closeModalBtn');
+if (closeModalBtn) {
+    closeModalBtn.addEventListener('click', () => { document.getElementById('productModal').classList.remove('active'); });
+}
+
 const productModal = document.getElementById('productModal');
 if (productModal) {
-    const closeModalBtn = document.getElementById('closeModalBtn');
-    let currentViewingProduct = null;
-    let selectedSize = null;
-    let selectedColor = null;
-
-    window.openProductModal = function(product) {
-        currentViewingProduct = product;
-        selectedSize = null;
-        selectedColor = null;
-        document.getElementById('sizeWarning').style.display = 'none';
-        document.getElementById('colorWarning').style.display = 'none';
-
-        document.getElementById('modalTitle').innerText = getText(product.title);
-        document.getElementById('modalPrice').innerText = `৳ ${product.price}`;
-        document.getElementById('modalDesc').innerText = getText(product.description);
-        
-        const mainImage = document.getElementById('modalMainImage');
-        const thumbContainer = document.getElementById('modalThumbnails');
-        thumbContainer.innerHTML = '';
-        
-        if (product.images && product.images.length > 0) {
-            mainImage.src = product.images[0];
-            product.images.forEach((imgSrc, index) => {
-                const thumb = document.createElement('img');
-                thumb.src = imgSrc;
-                thumb.className = 'thumbnail' + (index === 0 ? ' active' : '');
-                thumb.onclick = () => {
-                    mainImage.src = imgSrc;
-                    document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
-                    thumb.classList.add('active');
-                };
-                thumbContainer.appendChild(thumb);
-            });
-        }
-
-        const colorsContainer = document.getElementById('modalColors');
-        const colorSection = document.getElementById('colorSection');
-        colorsContainer.innerHTML = '';
-        
-        let colorArray = [];
-        if (product.colors) { colorArray = Array.isArray(product.colors) ? product.colors : (product.colors[currentLang] || product.colors['en'] || []); }
-
-        if (colorArray.length > 0) {
-            colorSection.style.display = 'block';
-            colorArray.forEach((color) => {
-                const btn = document.createElement('button');
-                btn.className = 'select-btn color-btn';
-                btn.innerText = color;
-                btn.onclick = () => selectOption(btn, color, 'color');
-                colorsContainer.appendChild(btn);
-            });
-        } else {
-            colorSection.style.display = 'none';
-            selectedColor = "Default";
-        }
-
-        const sizesContainer = document.getElementById('modalSizes');
-        sizesContainer.innerHTML = '';
-        if(product.sizes) {
-            product.sizes.forEach(size => {
-                const btn = document.createElement('button');
-                btn.className = 'select-btn size-btn';
-                btn.innerText = size;
-                btn.onclick = () => selectOption(btn, size, 'size');
-                sizesContainer.appendChild(btn);
-            });
-        }
-
-        const detailsList = document.getElementById('modalDetails');
-        detailsList.innerHTML = '';
-        let detailsArray = [];
-        if (product.details) { detailsArray = Array.isArray(product.details) ? product.details : (product.details[currentLang] || product.details['en'] || []); }
-        
-        detailsArray.forEach(detail => {
-            const li = document.createElement('li');
-            li.innerText = detail;
-            detailsList.appendChild(li);
-        });
-
-        productModal.classList.add('active');
-    }
-
-    function selectOption(clickedBtn, value, type) {
-        if (type === 'size') {
-            selectedSize = value;
-            document.getElementById('sizeWarning').style.display = 'none';
-            document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('selected'));
-        } else if (type === 'color') {
-            selectedColor = value;
-            document.getElementById('colorWarning').style.display = 'none';
-            document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('selected'));
-        }
-        clickedBtn.classList.add('selected');
-    }
-
-    closeModalBtn.addEventListener('click', () => { productModal.classList.remove('active'); });
     productModal.addEventListener('click', (e) => { if (e.target === productModal) productModal.classList.remove('active'); });
+}
 
-    document.getElementById('modalAddToCartBtn').addEventListener('click', () => {
+const modalAddToCartBtn = document.getElementById('modalAddToCartBtn');
+if (modalAddToCartBtn) {
+    modalAddToCartBtn.addEventListener('click', () => {
         let valid = true;
         if (!selectedSize) { document.getElementById('sizeWarning').style.display = 'inline'; valid = false; }
         if (!selectedColor) { document.getElementById('colorWarning').style.display = 'inline'; valid = false; }
@@ -228,7 +248,7 @@ if (productModal) {
         if(selectedColor !== "Default") displayName += ` (${selectedColor})`;
 
         addToCart(displayName, currentViewingProduct.price, selectedSize);
-        productModal.classList.remove('active');
+        document.getElementById('productModal').classList.remove('active');
     });
 }
 
