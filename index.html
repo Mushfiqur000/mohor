@@ -34,6 +34,9 @@
         .cart-toggle-btn { background: none; border: none; font-family: 'Montserrat', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px; text-transform: uppercase; letter-spacing: 1px; }
         .cart-badge { background: var(--primary-gold); color: var(--white); border-radius: 50%; padding: 2px 8px; font-size: 12px; }
         .menu-toggle { display: none; font-size: 24px; background: none; border: none; cursor: pointer; color: var(--deep-black); }
+        
+        .lang-btn { background: var(--deep-black); color: var(--white); border: none; padding: 5px 10px; font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 600; cursor: pointer; border-radius: 3px; letter-spacing: 1px;}
+        .lang-btn:hover { background: var(--primary-gold); }
 
         /* --- Hero Section --- */
         .hero { height: 45vh; background: url('banner.png') center/cover no-repeat; display: flex; align-items: center; justify-content: center; padding: 0; }
@@ -67,7 +70,7 @@
         .product-details-card h3 { font-size: 15px; font-weight: 600; margin-bottom: 8px; font-family: 'Montserrat', sans-serif; }
         .product-price { color: var(--primary-gold); font-weight: 600; font-size: 16px; margin-bottom: 15px; }
 
-        /* --- Product Quick View Modal (Upgraded) --- */
+        /* --- Product Quick View Modal --- */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 3000; display: flex; justify-content: center; align-items: center; opacity: 0; visibility: hidden; transition: var(--transition); padding: 20px; }
         .modal-overlay.active { opacity: 1; visibility: visible; }
         .modal-content { background: var(--white); width: 100%; max-width: 1000px; max-height: 95vh; overflow-y: auto; position: relative; display: flex; flex-direction: row; box-shadow: 0 20px 40px rgba(0,0,0,0.2); transform: translateY(20px); transition: transform 0.3s ease; }
@@ -75,7 +78,6 @@
         .close-modal { position: absolute; top: 15px; right: 20px; font-size: 30px; cursor: pointer; color: var(--text-dark); z-index: 10; line-height: 1; }
         .close-modal:hover { color: var(--primary-gold); }
 
-        /* Multiple Image Gallery CSS */
         .modal-image-sec { flex: 1; background: var(--soft-gray); padding: 20px; display: flex; flex-direction: column; align-items: center; }
         .main-image-wrapper { width: 100%; max-height: 500px; display: flex; justify-content: center; overflow: hidden; background: #fff; }
         .main-image-wrapper img { max-width: 100%; max-height: 100%; object-fit: contain; }
@@ -88,7 +90,6 @@
         .modal-info-sec h2 { font-size: 24px; margin-bottom: 10px; color: var(--deep-black); }
         .modal-info-sec .modal-price { font-size: 22px; color: var(--primary-gold); font-weight: 600; margin-bottom: 25px; }
         
-        /* Selectors (Size & Color) */
         .selector-section { margin-bottom: 25px; }
         .selector-section h4 { font-family: 'Montserrat', sans-serif; font-size: 13px; text-transform: uppercase; margin-bottom: 10px; font-weight: 600; letter-spacing: 1px; }
         .selector-options { display: flex; gap: 10px; flex-wrap: wrap; }
@@ -141,11 +142,12 @@
     <nav>
         <a href="#" class="brand-logo">Mohor</a>
         <div class="nav-right">
-            <button class="cart-toggle-btn" id="openCartBtn">Cart <span class="cart-badge" id="cartBadge">0</span></button>
+            <button id="langToggleBtn" class="lang-btn">EN / বাং</button>
+            <button class="cart-toggle-btn" id="openCartBtn"><span data-i18n="navCart">Cart</span> <span class="cart-badge" id="cartBadge">0</span></button>
             <button class="menu-toggle" id="menuToggle">&#8942;</button>
         </div>
         <div class="nav-links" id="navLinks">
-            <a href="#shop">Shop</a>
+            <a href="#shop" data-i18n="navShop">Shop</a>
             <a href="https://www.facebook.com/share/1Be3jj7iqb/?mibextid=wwXIfr" target="_blank">Facebook</a>
             <a href="https://www.instagram.com/mohorclothings" target="_blank">Instagram</a>
         </div>
@@ -155,14 +157,14 @@
 
     <section id="shop" class="shop-section">
         <div class="shop-header">
-            <h2>Our Collection</h2>
+            <h2 data-i18n="shopTitle">Our Collection</h2>
             <div class="shop-controls">
-                <button class="mobile-filter-btn" id="mobileFilterBtn">Filters</button>
+                <button class="mobile-filter-btn" id="mobileFilterBtn" data-i18n="filterBtn">Filters</button>
                 <div class="sort-box">
                     <select id="sortSelect" aria-label="Sort products">
-                        <option value="default">Sort by: Default</option>
-                        <option value="low-high">Price: Low to High</option>
-                        <option value="high-low">Price: High to Low</option>
+                        <option value="default" data-i18n="sortDefault">Sort by: Default</option>
+                        <option value="low-high" data-i18n="sortLowHigh">Price: Low to High</option>
+                        <option value="high-low" data-i18n="sortHighLow">Price: High to Low</option>
                     </select>
                 </div>
             </div>
@@ -171,33 +173,32 @@
         <div class="shop-layout">
             <aside class="sidebar" id="sidebar">
                 <div class="filter-group">
-                    <h3>Categories</h3>
+                    <h3 data-i18n="catTitle">Categories</h3>
                     <ul>
-                        <li><input type="checkbox" class="filter-checkbox" value="kurti" id="cat-kurti"> <label for="cat-kurti">Kurti</label></li>
-                        <li><input type="checkbox" class="filter-checkbox" value="three-piece" id="cat-threepiece"> <label for="cat-threepiece">Three Piece</label></li>
-                        <li><input type="checkbox" class="filter-checkbox" value="khadi" id="cat-khadi"> <label for="cat-khadi">Khadi</label></li>
-                        <li><input type="checkbox" class="filter-checkbox" value="formal" id="cat-formal"> <label for="cat-formal">Formal Wear</label></li>
+                        <li><input type="checkbox" class="filter-checkbox" value="kurti" id="cat-kurti"> <label for="cat-kurti" data-i18n="catKurti">Kurti</label></li>
+                        <li><input type="checkbox" class="filter-checkbox" value="three-piece" id="cat-threepiece"> <label for="cat-threepiece" data-i18n="catThreePiece">Three Piece</label></li>
+                        <li><input type="checkbox" class="filter-checkbox" value="khadi" id="cat-khadi"> <label for="cat-khadi" data-i18n="catKhadi">Khadi</label></li>
+                        <li><input type="checkbox" class="filter-checkbox" value="formal" id="cat-formal"> <label for="cat-formal" data-i18n="catFormal">Formal Wear</label></li>
                     </ul>
                 </div>
 
                 <div class="filter-group">
-                    <h3>Price</h3>
+                    <h3 data-i18n="priceTitle">Price</h3>
                     <ul>
-                        <li><input type="checkbox" class="filter-checkbox price-filter" value="under-1500" id="price-1"> <label for="price-1">Under ৳1500</label></li>
-                        <li><input type="checkbox" class="filter-checkbox price-filter" value="1500-2500" id="price-2"> <label for="price-2">৳1500 - ৳2500</label></li>
-                        <li><input type="checkbox" class="filter-checkbox price-filter" value="above-2500" id="price-3"> <label for="price-3">Above ৳2500</label></li>
+                        <li><input type="checkbox" class="filter-checkbox price-filter" value="under-1500" id="price-1"> <label for="price-1" data-i18n="price1">Under ৳1500</label></li>
+                        <li><input type="checkbox" class="filter-checkbox price-filter" value="1500-2500" id="price-2"> <label for="price-2" data-i18n="price2">৳1500 - ৳2500</label></li>
+                        <li><input type="checkbox" class="filter-checkbox price-filter" value="above-2500" id="price-3"> <label for="price-3" data-i18n="price3">Above ৳2500</label></li>
                     </ul>
                 </div>
             </aside>
 
-            <!-- Dynamic Product Grid -->
             <div class="product-grid" id="productGrid">
-                <!-- Products will be loaded here via JavaScript -->
+                <!-- Products dynamically loaded -->
             </div>
         </div>
     </section>
 
-    <!-- Product Details Modal (Quick View) -->
+    <!-- Product Details Modal -->
     <div class="modal-overlay" id="productModal">
         <div class="modal-content">
             <span class="close-modal" id="closeModalBtn">&times;</span>
@@ -206,39 +207,34 @@
                 <div class="main-image-wrapper">
                     <img id="modalMainImage" src="" alt="Product Main Image">
                 </div>
-                <!-- Thumbnail Gallery Area -->
-                <div class="thumbnail-gallery" id="modalThumbnails">
-                    <!-- Thumbnails generated here -->
-                </div>
+                <div class="thumbnail-gallery" id="modalThumbnails"></div>
             </div>
             
             <div class="modal-info-sec">
                 <h2 id="modalTitle">Product Title</h2>
                 <div class="modal-price" id="modalPrice">৳0</div>
                 
-                <!-- Color Selector -->
                 <div class="selector-section" id="colorSection" style="display:none;">
-                    <h4>Select Color <span id="colorWarning" style="color: red; display: none; text-transform:none; font-size: 11px;">*Please select a color</span></h4>
+                    <h4><span data-i18n="colorSelect">Select Color</span> <span id="colorWarning" style="color: red; display: none; text-transform:none; font-size: 11px;" data-i18n="colorWarning">*Please select a color</span></h4>
                     <div class="selector-options" id="modalColors"></div>
                 </div>
 
-                <!-- Size Selector -->
                 <div class="selector-section">
-                    <h4>Select Size <span id="sizeWarning" style="color: red; display: none; text-transform:none; font-size: 11px;">*Please select a size</span></h4>
+                    <h4><span data-i18n="sizeSelect">Select Size</span> <span id="sizeWarning" style="color: red; display: none; text-transform:none; font-size: 11px;" data-i18n="sizeWarning">*Please select a size</span></h4>
                     <div class="selector-options" id="modalSizes"></div>
                 </div>
 
                 <div class="desc-section">
-                    <h4>Description</h4>
+                    <h4 data-i18n="descTitle">Description</h4>
                     <p id="modalDesc">Product description.</p>
                 </div>
 
                 <div class="details-section">
-                    <h4>Product Details</h4>
+                    <h4 data-i18n="detailsTitle">Product Details</h4>
                     <ul id="modalDetails"></ul>
                 </div>
 
-                <button class="add-to-cart-btn" id="modalAddToCartBtn">Add to Cart</button>
+                <button class="add-to-cart-btn" id="modalAddToCartBtn" data-i18n="addToCart">Add to Cart</button>
             </div>
         </div>
     </div>
@@ -247,279 +243,29 @@
     <div class="cart-overlay" id="cartOverlay"></div>
     <div class="cart-sidebar" id="cartSidebar">
         <div class="cart-header">
-            <h3>Your Cart</h3>
+            <h3 data-i18n="cartTitle">Your Cart</h3>
             <span class="close-cart" id="closeCartBtn">&times;</span>
         </div>
         <div class="cart-items" id="cartItemsContainer">
-            <p style="text-align: center; color: #666; margin-top: 20px;">Your cart is empty.</p>
+            <p style="text-align: center; color: #666; margin-top: 20px;" data-i18n="cartEmpty">Your cart is empty.</p>
         </div>
         <div class="cart-footer">
             <div class="cart-total">
-                <span>Total:</span>
+                <span data-i18n="cartTotal">Total:</span>
                 <span>৳<span id="cartTotalValue">0</span></span>
             </div>
-            <button class="checkout-btn" onclick="checkoutToWhatsApp()">Order via WhatsApp</button>
+            <button class="checkout-btn" onclick="checkoutToWhatsApp()">
+                <span data-i18n="orderWhatsapp">Order via WhatsApp</span>
+            </button>
         </div>
     </div>
 
     <footer>
-        <p style="font-size: 12px; color: #777;">&copy; 2026 Mohor Clothings Bangladesh. All Rights Reserved.</p>
+        <p style="font-size: 12px; color: #777;" data-i18n="footerText">&copy; 2026 Mohor Clothings Bangladesh. All Rights Reserved.</p>
     </footer>
 
-    <!-- THIS LINE LINKS YOUR NEW DATABASE FILE! -->
+    <!-- Database and Logic Files -->
     <script src="products.js"></script>
-
-    <script>
-        const productGrid = document.getElementById('productGrid');
-        const checkboxes = document.querySelectorAll('.filter-checkbox');
-        const sortSelect = document.getElementById('sortSelect');
-
-        function renderProducts(productsToRender) {
-            productGrid.innerHTML = '';
-            
-            if (!productsToRender || productsToRender.length === 0) {
-                productGrid.innerHTML = '<p style="grid-column: 1/-1; text-align:center; padding: 40px; color: #666;">No products match your filters.</p>';
-                return;
-            }
-
-            productsToRender.forEach(product => {
-                const card = document.createElement('div');
-                card.className = 'product-card';
-                card.onclick = () => openProductModal(product);
-                
-                // Uses the FIRST image in the array as the cover
-                const coverImage = product.images && product.images.length > 0 ? product.images[0] : '';
-
-                card.innerHTML = `
-                    <div class="image-container">
-                        <img src="${coverImage}" alt="${product.title}" class="product-image" onerror="this.src='https://via.placeholder.com/300x400/f9f9f9/666?text=Mohor'">
-                    </div>
-                    <div class="product-details-card">
-                        <span class="product-category-label">${product.category.replace('-', ' ')}</span>
-                        <h3>${product.title}</h3>
-                        <p class="product-price">৳ ${product.price}</p>
-                    </div>
-                `;
-                productGrid.appendChild(card);
-            });
-        }
-
-        function updateProducts() {
-            if (typeof productsData === 'undefined') return; // Failsafe if products.js is empty
-            const activeCategories = Array.from(document.querySelectorAll('input[id^="cat-"]:checked')).map(cb => cb.value);
-            const activePrices = Array.from(document.querySelectorAll('.price-filter:checked')).map(cb => cb.value);
-            const sortValue = sortSelect.value;
-
-            let filtered = productsData.filter(product => {
-                let catMatch = activeCategories.length === 0 || activeCategories.includes(product.category);
-                let priceMatch = activePrices.length === 0;
-                
-                if (!priceMatch) {
-                    if (activePrices.includes('under-1500') && product.price < 1500) priceMatch = true;
-                    if (activePrices.includes('1500-2500') && product.price >= 1500 && product.price <= 2500) priceMatch = true;
-                    if (activePrices.includes('above-2500') && product.price > 2500) priceMatch = true;
-                }
-                return catMatch && priceMatch;
-            });
-
-            if (sortValue === 'low-high') {
-                filtered.sort((a, b) => a.price - b.price);
-            } else if (sortValue === 'high-low') {
-                filtered.sort((a, b) => b.price - a.price);
-            }
-
-            renderProducts(filtered);
-        }
-
-        checkboxes.forEach(cb => cb.addEventListener('change', updateProducts));
-        sortSelect.addEventListener('change', updateProducts);
-        
-        // Wait a tiny bit to ensure products.js loaded, then render
-        setTimeout(() => renderProducts(typeof productsData !== 'undefined' ? productsData : []), 100);
-
-        // ==========================================
-        // PRODUCT MODAL (GALLERY, COLORS, SIZES)
-        // ==========================================
-        const productModal = document.getElementById('productModal');
-        const closeModalBtn = document.getElementById('closeModalBtn');
-        let currentViewingProduct = null;
-        let selectedSize = null;
-        let selectedColor = null;
-
-        function openProductModal(product) {
-            currentViewingProduct = product;
-            selectedSize = null;
-            selectedColor = null;
-            document.getElementById('sizeWarning').style.display = 'none';
-            document.getElementById('colorWarning').style.display = 'none';
-
-            // Text Info
-            document.getElementById('modalTitle').innerText = product.title;
-            document.getElementById('modalPrice').innerText = `৳ ${product.price}`;
-            document.getElementById('modalDesc').innerText = product.description;
-            
-            // Image Gallery Setup
-            const mainImage = document.getElementById('modalMainImage');
-            const thumbContainer = document.getElementById('modalThumbnails');
-            thumbContainer.innerHTML = '';
-            
-            if (product.images && product.images.length > 0) {
-                mainImage.src = product.images[0]; // Set first as main
-                
-                product.images.forEach((imgSrc, index) => {
-                    const thumb = document.createElement('img');
-                    thumb.src = imgSrc;
-                    thumb.className = 'thumbnail' + (index === 0 ? ' active' : '');
-                    
-                    // Click thumbnail to swap main image
-                    thumb.onclick = () => {
-                        mainImage.src = imgSrc;
-                        document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
-                        thumb.classList.add('active');
-                    };
-                    thumbContainer.appendChild(thumb);
-                });
-            }
-
-            // Colors
-            const colorsContainer = document.getElementById('modalColors');
-            const colorSection = document.getElementById('colorSection');
-            colorsContainer.innerHTML = '';
-            if (product.colors && product.colors.length > 0) {
-                colorSection.style.display = 'block';
-                product.colors.forEach(color => {
-                    const btn = document.createElement('button');
-                    btn.className = 'select-btn color-btn';
-                    btn.innerText = color;
-                    btn.onclick = () => selectOption(btn, color, 'color');
-                    colorsContainer.appendChild(btn);
-                });
-            } else {
-                colorSection.style.display = 'none';
-                selectedColor = "Default"; // Bypass check if no colors exist
-            }
-
-            // Sizes
-            const sizesContainer = document.getElementById('modalSizes');
-            sizesContainer.innerHTML = '';
-            product.sizes.forEach(size => {
-                const btn = document.createElement('button');
-                btn.className = 'select-btn size-btn';
-                btn.innerText = size;
-                btn.onclick = () => selectOption(btn, size, 'size');
-                sizesContainer.appendChild(btn);
-            });
-
-            // Details List
-            const detailsList = document.getElementById('modalDetails');
-            detailsList.innerHTML = '';
-            product.details.forEach(detail => {
-                const li = document.createElement('li');
-                li.innerText = detail;
-                detailsList.appendChild(li);
-            });
-
-            productModal.classList.add('active');
-        }
-
-        function selectOption(clickedBtn, value, type) {
-            if (type === 'size') {
-                selectedSize = value;
-                document.getElementById('sizeWarning').style.display = 'none';
-                document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('selected'));
-            } else if (type === 'color') {
-                selectedColor = value;
-                document.getElementById('colorWarning').style.display = 'none';
-                document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('selected'));
-            }
-            clickedBtn.classList.add('selected');
-        }
-
-        closeModalBtn.addEventListener('click', () => { productModal.classList.remove('active'); });
-        productModal.addEventListener('click', (e) => { if (e.target === productModal) productModal.classList.remove('active'); });
-
-        document.getElementById('modalAddToCartBtn').addEventListener('click', () => {
-            let valid = true;
-            if (!selectedSize) { document.getElementById('sizeWarning').style.display = 'inline'; valid = false; }
-            if (!selectedColor) { document.getElementById('colorWarning').style.display = 'inline'; valid = false; }
-            if (!valid) return;
-
-            let displayName = currentViewingProduct.title;
-            if(selectedColor !== "Default") displayName += ` (${selectedColor})`;
-
-            addToCart(displayName, currentViewingProduct.price, selectedSize);
-            productModal.classList.remove('active');
-        });
-
-        // ==========================================
-        // CART & WHATSAPP LOGIC
-        // ==========================================
-        let cart = [];
-        const cartOverlay = document.getElementById('cartOverlay');
-        const cartSidebar = document.getElementById('cartSidebar');
-        const cartItemsContainer = document.getElementById('cartItemsContainer');
-        const cartTotalValue = document.getElementById('cartTotalValue');
-        const cartBadge = document.getElementById('cartBadge');
-
-        document.getElementById('openCartBtn').addEventListener('click', () => { cartSidebar.classList.add('active'); cartOverlay.classList.add('active'); });
-        const closeCart = () => { cartSidebar.classList.remove('active'); cartOverlay.classList.remove('active'); };
-        document.getElementById('closeCartBtn').addEventListener('click', closeCart);
-        cartOverlay.addEventListener('click', closeCart);
-
-        function addToCart(name, price, size) {
-            cart.push({ name: name, price: price, size: size });
-            updateCartUI();
-            cartSidebar.classList.add('active'); cartOverlay.classList.add('active');
-        }
-
-        window.removeFromCart = function(index) {
-            cart.splice(index, 1);
-            updateCartUI();
-        }
-
-        function updateCartUI() {
-            cartItemsContainer.innerHTML = ''; 
-            let total = 0;
-            if (cart.length === 0) {
-                cartItemsContainer.innerHTML = '<p style="text-align: center; color: #666; margin-top: 20px;">Your cart is empty.</p>';
-            } else {
-                cart.forEach((item, index) => {
-                    total += item.price;
-                    cartItemsContainer.innerHTML += `
-                        <div class="cart-item">
-                            <div class="cart-item-info">
-                                <strong>${item.name}</strong>
-                                <span>Size: ${item.size}</span>
-                                <button class="remove-item" onclick="removeFromCart(${index})">Remove</button>
-                            </div>
-                            <div style="font-weight:600; color:var(--primary-gold);">৳${item.price}</div>
-                        </div>`;
-                });
-            }
-            cartTotalValue.innerText = total;
-            cartBadge.innerText = cart.length;
-        }
-
-        window.checkoutToWhatsApp = function() {
-            if (cart.length === 0) { alert("Your cart is empty!"); return; }
-            const WHATSAPP_NUMBER = "8801330113027"; 
-            let message = "Hello Mohor Clothings! I would like to order the following items:%0A%0A";
-            let total = 0;
-            cart.forEach((item, index) => { 
-                message += `${index + 1}. ${item.name} (Size: ${item.size}) - ৳${item.price}%0A`; 
-                total += item.price; 
-            });
-            message += `%0A*Total: ৳${total}*`;
-            window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${message}`, '_blank');
-        }
-
-        // Mobile Menu
-        document.getElementById('menuToggle').addEventListener('click', () => { document.getElementById('navLinks').classList.toggle('active'); });
-        document.getElementById('mobileFilterBtn').addEventListener('click', function() {
-            const sidebar = document.getElementById('sidebar');
-            sidebar.classList.toggle('active');
-            this.innerHTML = sidebar.classList.contains('active') ? 'Hide Filters' : 'Filters';
-        });
-    </script>
+    <script src="app.js"></script>
 </body>
 </html>
