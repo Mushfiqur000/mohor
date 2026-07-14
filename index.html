@@ -118,6 +118,11 @@
         .add-to-cart-btn { background: var(--deep-black); color: var(--white); border: none; padding: 15px; font-family: 'Montserrat', sans-serif; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; transition: var(--transition); width: 100%; margin-top: auto; }
         .add-to-cart-btn:hover { background: var(--primary-gold); }
 
+        /* Floating WhatsApp Button */
+        .floating-wa { position: fixed; bottom: 30px; right: 30px; background-color: #25d366; color: white; border-radius: 50%; width: 60px; height: 60px; display: flex; justify-content: center; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.2); z-index: 4000; transition: transform 0.3s ease; text-decoration: none; }
+        .floating-wa:hover { transform: scale(1.1); }
+        .floating-wa svg { fill: white; width: 35px; height: 35px; }
+
         /* --- Cart Sidebar Modal --- */
         .cart-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; opacity: 0; visibility: hidden; transition: var(--transition); }
         .cart-overlay.active { opacity: 1; visibility: visible; }
@@ -130,7 +135,6 @@
         .cart-item-info span { font-size: 12px; color: var(--text-light); display: block; margin-top: 3px; }
         .remove-item { color: #d9534f; cursor: pointer; font-size: 12px; border: none; background: none; margin-top: 5px; text-transform: uppercase; font-weight: 600;}
         .cart-footer { padding: 20px; border-top: 1px solid var(--border-color); background: var(--soft-gray); }
-        .cart-total { display: flex; justify-content: space-between; font-weight: 600; font-size: 18px; margin-bottom: 20px; font-family: 'Playfair Display', serif; }
         .checkout-btn { background: #25d366; color: var(--white); border: none; padding: 15px; width: 100%; font-family: 'Montserrat', sans-serif; font-size: 14px; font-weight: 600; text-transform: uppercase; cursor: pointer; transition: var(--transition); display: flex; justify-content: center; gap: 10px; }
         .checkout-btn:hover { background: #128c7e; }
         footer { background: var(--deep-black); color: var(--white); padding: 40px 5% 20px; text-align: center; }
@@ -254,6 +258,11 @@
         </div>
     </div>
 
+    <!-- Floating WhatsApp Button -->
+    <a href="https://wa.me/8801330113027" class="floating-wa" target="_blank" aria-label="Chat with us on WhatsApp">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157.1zm-157 341.6c-33.2 0-65.7-8.9-94-25.7l-6.7-4-69.8 18.3L72 359.2l-4.4-7c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1 34.8 34.9 56.2 81.2 56.1 130.5 0 101.8-84.9 184.6-186.6 184.6zm101.2-138.2c-5.5-2.8-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.5 2.8-3.7 5.6-14.3 18-17.6 21.8-3.2 3.7-6.5 4.2-12 1.4-32.6-16.3-54-29.1-75.5-66-5.7-9.8 5.7-9.1 16.3-30.3 1.8-3.7 .9-6.9-.5-9.7-1.4-2.8-12.5-30.1-17.1-41.2-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2-3.7 0-9.7 1.4-14.8 6.9-5.1 5.6-19.4 19-19.4 46.3 0 27.3 19.9 53.7 22.6 57.4 2.8 3.7 39.1 59.7 94.8 83.8 35.2 15.2 49 16.5 66.6 13.9 10.7-1.6 32.8-13.4 37.4-26.4 4.6-13 4.6-24.1 3.2-26.4-1.3-2.5-5-3.9-10.5-6.6z"/></svg>
+    </a>
+
     <!-- Cart Sidebar -->
     <div class="cart-overlay" id="cartOverlay"></div>
     <div class="cart-sidebar" id="cartSidebar">
@@ -267,25 +276,51 @@
         
         <!-- DATA-NOSNIPPET ADDED HERE -->
         <div class="cart-footer" data-nosnippet>
+            
             <div class="checkout-form" style="margin-bottom: 15px; text-align: left;">
-                <label for="deliveryAddress" style="font-size: 12px; font-weight: 600; display: block; margin-bottom: 5px; color: var(--text-dark);" data-i18n="deliveryAddressLabel">Delivery Address *</label>
-                <textarea id="deliveryAddress" rows="2" style="width: 100%; padding: 8px; border: 1px solid var(--border-color); font-family: 'Montserrat', sans-serif; font-size: 12px; outline: none; resize: none; margin-bottom: 8px;" placeholder="House#, Road#, Area, City..."></textarea>
+                <input type="text" id="custName" placeholder="Full Name *" style="width: 100%; padding: 8px; margin-bottom: 8px; border: 1px solid var(--border-color); font-family: 'Montserrat', sans-serif; font-size: 12px; outline: none;">
+                <input type="tel" id="custPhone" placeholder="Mobile Number *" style="width: 100%; padding: 8px; margin-bottom: 8px; border: 1px solid var(--border-color); font-family: 'Montserrat', sans-serif; font-size: 12px; outline: none;">
+                <textarea id="deliveryAddress" rows="2" style="width: 100%; padding: 8px; border: 1px solid var(--border-color); font-family: 'Montserrat', sans-serif; font-size: 12px; outline: none; resize: none; margin-bottom: 8px;" placeholder="Complete Delivery Address *"></textarea>
+                
+                <!-- NEW Delivery Dropdown -->
+                <select id="deliveryZone" style="width: 100%; padding: 8px; margin-bottom: 8px; border: 1px solid var(--border-color); font-family: 'Montserrat', sans-serif; font-size: 12px; outline: none; background: white; cursor: pointer;" onchange="updateDeliveryPolicyAndTotal()">
+                    <option value="" disabled selected data-i18n="selectDeliveryZone">Select Delivery Zone *</option>
+                    <option value="80" data-i18n="zoneInside">Inside Sylhet (৳80)</option>
+                    <option value="150" data-i18n="zoneOutside">Outside Sylhet (৳150)</option>
+                </select>
+                
+                <!-- NEW Dynamic Policy Display Box -->
+                <div id="dynamicPolicyDisplay" style="font-size: 11px; color: var(--text-light); margin-bottom: 15px; background: var(--soft-gray); padding: 10px; border-radius: 4px; display: none;">
+                    <!-- Policy text will inject here automatically -->
+                </div>
                 
                 <div style="font-size: 11px; color: var(--text-light); line-height: 1.4; display: flex; align-items: flex-start; gap: 5px;">
-                    <input type="checkbox" id="policyAgree" style="accent-color: var(--primary-gold); margin-top: 2px;">
+                    <input type="checkbox" id="policyAgree" style="accent-color: var(--primary-gold); margin-top: 2px; cursor: pointer;">
                     <label for="policyAgree">
                         <span data-i18n="policyAgreeText">I agree to the</span> 
-                        <a href="policy.html" style="color: var(--primary-gold); text-decoration: underline;" data-i18n="policyLink">Delivery & Return Policy</a>.
+                        <a href="policy.html" style="color: var(--primary-gold); text-decoration: underline;" data-i18n="policyLink">Delivery & Order Confirmation Policy</a>.
                     </label>
                 </div>
             </div>
 
-            <div class="cart-total">
-                <span data-i18n="cartTotal">Total:</span>
-                <span>৳<span id="cartTotalValue">0</span></span>
+            <!-- NEW Cart Summary Area -->
+            <div class="cart-summary" style="margin-bottom: 20px; font-family: 'Montserrat', sans-serif;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 13px; color: var(--text-light);">
+                    <span data-i18n="cartSubtotal">Subtotal:</span>
+                    <span>৳<span id="cartSubtotalValue">0</span></span>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 13px; color: var(--text-light);">
+                    <span data-i18n="cartDelivery">Delivery Charge:</span>
+                    <span>৳<span id="cartDeliveryValue">0</span></span>
+                </div>
+                <div class="cart-total" style="display: flex; justify-content: space-between; font-weight: 600; font-size: 18px; font-family: 'Playfair Display', serif; border-top: 1px solid var(--border-color); padding-top: 12px;">
+                    <span data-i18n="cartTotal">Final Total:</span>
+                    <span>৳<span id="cartTotalValue">0</span></span>
+                </div>
             </div>
-            <button class="checkout-btn" onclick="checkoutToWhatsApp()">
-                <span data-i18n="orderWhatsapp">Order via WhatsApp</span>
+
+            <button class="checkout-btn" onclick="checkoutToWhatsApp()" style="background: var(--deep-black); color: var(--white); border: none; padding: 15px; width: 100%; font-family: 'Montserrat', sans-serif; font-size: 14px; font-weight: 600; text-transform: uppercase; cursor: pointer; transition: var(--transition); display: flex; justify-content: center; gap: 10px;">
+                <span data-i18n="orderWhatsapp">Confirm Order</span>
             </button>
         </div>
     </div>
