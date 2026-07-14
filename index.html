@@ -57,7 +57,7 @@
         .shop-section { padding: 40px 5%; }
         .shop-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid var(--border-color); flex-wrap: wrap; gap: 15px; }
         .shop-header h2 { font-size: 28px; }
-        .shop-controls { display: flex; align-items: center; gap: 15px; }
+        .shop-controls { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
         .sort-box select { padding: 10px 15px; border: 1px solid var(--border-color); background: var(--white); font-family: 'Montserrat', sans-serif; font-size: 13px; outline: none; cursor: pointer; }
         .mobile-filter-btn { display: none; background: var(--deep-black); color: var(--white); border: none; padding: 10px 20px; font-size: 13px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; }
         .shop-layout { display: flex; gap: 40px; align-items: flex-start; }
@@ -150,6 +150,7 @@
             .menu-toggle { display: block; }
             .modal-content { flex-direction: column; }
             .modal-info-sec { padding: 20px; }
+            #searchInput { width: 100%; margin-bottom: 10px; }
         }
     </style>
 </head>
@@ -177,6 +178,10 @@
         <div class="shop-header">
             <h2 data-i18n="shopTitle">Our Collection</h2>
             <div class="shop-controls">
+                
+                <!-- NEW SMART SEARCH BAR -->
+                <input type="text" id="searchInput" placeholder="Search dresses, formal, khadi..." data-i18n-placeholder="searchPlaceholder" style="padding: 10px 15px; border: 1px solid var(--border-color); background: var(--white); font-family: 'Montserrat', sans-serif; font-size: 13px; outline: none; min-width: 250px;">
+                
                 <button class="mobile-filter-btn" id="mobileFilterBtn" data-i18n="filterBtn">Filters</button>
                 <div class="sort-box">
                     <select id="sortSelect" aria-label="Sort products">
