@@ -10,18 +10,20 @@ const uiTranslations = {
         noProducts: "No products match your filters.", sizeSelect: "Select Size", sizeWarning: "*Please select a size",
         colorSelect: "Select Color", colorWarning: "*Please select a color", descTitle: "Description",
         detailsTitle: "Product Details", addToCart: "Add to Cart", cartTitle: "Your Cart", cartEmpty: "Your cart is empty.",
-        cartTotal: "Total:", orderWhatsapp: "Confirm Order", footerText: "© 2026 Mohor Clothings Bangladesh. All Rights Reserved.",
+        cartSubtotal: "Subtotal:", cartDelivery: "Delivery Charge:", cartTotal: "Final Total:",
+        orderWhatsapp: "Confirm Order", footerText: "© 2026 Mohor Clothings Bangladesh. All Rights Reserved.",
         selectOptions: "Select Size & Add to Cart",
         aboutTitle: "About Mohor Clothings",
         aboutText: "Welcome to Mohor Clothings, your premier destination for handcrafted luxury fashion in Bangladesh. From our breathable, premium soft cotton Three-Piece ensembles to our elegantly tailored Kurtis and authentic Khadi wear, every piece is designed with the modern woman in mind. Whether you are stepping into a university classroom, leading a corporate meeting, or celebrating a festive occasion, our collections offer the perfect fit. Proudly serving Sylhet and customers nationwide, we are dedicated to bringing you high-quality embroidery and timeless designs that empower your everyday wardrobe.",
         policyAgreeText: "I agree to the", policyLink: "Delivery & Order Confirmation Policy",
+        selectDeliveryZone: "Select Delivery Zone *", zoneInside: "Inside Sylhet (৳80)", zoneOutside: "Outside Sylhet (৳150)",
         
-        // NEW POLICY PAGE TRANSLATIONS
+        // POLICY TRANSLATIONS (Reused for the cart dropdown)
         policyPageTitle: "Mohor Delivery & Order Confirmation Policy",
         policy1Title: "Inside Sylhet (Delivery Charge: ৳80)",
-        policy1Text: "<ul><li>Estimated delivery time: 1–2 business days.</li><li>Delivery time may vary due to weather, holidays, or courier delays.</li><li>Please ensure your name, phone number, and address are correct before confirming your order.</li><li>Our delivery partner will contact you before delivery if necessary.</li></ul>",
+        policy1Text: "<ul style='margin-left: 15px; margin-top: 5px;'><li>Estimated delivery time: 1–2 business days.</li><li>Delivery time may vary due to weather or courier delays.</li><li>Our delivery partner will contact you before delivery.</li></ul>",
         policy2Title: "Outside Sylhet (Delivery Charge: ৳150)",
-        policy2Text: "<ul><li>Estimated delivery time: 2–5 business days, depending on your location.</li><li>Delivery time may be longer during national holidays or unforeseen circumstances.</li><li>Please provide a complete and accurate delivery address with your contact number.</li><li>Our courier partner may contact you before delivery.</li></ul>",
+        policy2Text: "<ul style='margin-left: 15px; margin-top: 5px;'><li>Estimated delivery time: 2–5 business days.</li><li>Delivery time may be longer during national holidays.</li><li>Our courier partner may contact you before delivery.</li></ul>",
         policy3Title: "Order Confirmation Terms",
         policy3Text: "By clicking “Confirm Order”, you acknowledge and agree that:<ul><li>The delivery information you provided is accurate.</li><li>Delivery charges are added to your order total.</li><li>Mohor reserves the right to contact you for order verification before dispatch.</li><li>Orders cannot be modified after they have been packed or shipped.</li><li>If delivery fails due to an incorrect address or unreachable phone number, additional re-delivery charges may apply.</li></ul><br><p style='text-align:center; font-style:italic;'>Thank you for choosing Mohor. We appreciate your trust and look forward to delivering a beautiful shopping experience.</p>"
     },
@@ -33,20 +35,22 @@ const uiTranslations = {
         noProducts: "আপনার ফিল্টারের সাথে মিলে এমন কোনো পণ্য নেই।", sizeSelect: "সাইজ নির্বাচন করুন", sizeWarning: "*দয়া করে একটি সাইজ নির্বাচন করুন",
         colorSelect: "রং নির্বাচন করুন", colorWarning: "*দয়া করে একটি রং নির্বাচন করুন", descTitle: "বিবরণ",
         detailsTitle: "পণ্যের বিস্তারিত", addToCart: "কার্টে যোগ করুন", cartTitle: "আপনার কার্ট", cartEmpty: "আপনার কার্ট খালি।",
-        cartTotal: "মোট:", orderWhatsapp: "কনফার্ম অর্ডার", footerText: "© ২০২৬ মোহর ক্লথিংস বাংলাদেশ। সর্বস্বত্ব সংরক্ষিত।",
+        cartSubtotal: "সাবটোটাল:", cartDelivery: "ডেলিভারি চার্জ:", cartTotal: "মোট মূল্য:",
+        orderWhatsapp: "কনফার্ম অর্ডার", footerText: "© ২০২৬ মোহর ক্লথিংস বাংলাদেশ। সর্বস্বত্ব সংরক্ষিত।",
         selectOptions: "সাইজ নির্বাচন করুন",
         aboutTitle: "মোহর ক্লথিংস সম্পর্কে",
         aboutText: "মোহর ক্লথিংস-এ আপনাকে স্বাগতম, বাংলাদেশে হাতে তৈরি লাক্সারি ফ্যাশনের অন্যতম বিশ্বস্ত নাম। আমাদের আরামদায়ক প্রিমিয়াম সফট কটন থ্রি-পিস থেকে শুরু করে আকর্ষণীয় কুর্তি এবং ঐতিহ্যবাহী খাদি পোশাক—প্রতিটি ডিজাইন তৈরি করা হয়েছে আধুনিক নারীদের কথা মাথায় রেখে। আপনি ইউনিভার্সিটির ক্লাসে যান, কর্পোরেট মিটিং পরিচালনা করুন বা কোনো উৎসব উদযাপন করুন, আমাদের কালেকশনে আপনার জন্য মানানসই পোশাক রয়েছে। সিলেট থেকে শুরু করে সারা দেশের গ্রাহকদের জন্য উচ্চমানের এমব্রয়ডারি এবং মানসম্মত ডিজাইনের পোশাক পৌঁছে দিতে আমরা প্রতিশ্রুতিবদ্ধ।",
         policyAgreeText: "আমি সম্মত হচ্ছি", policyLink: "ডেলিভারি ও অর্ডার কনফার্মেশন পলিসিতে",
+        selectDeliveryZone: "ডেলিভারি জোন নির্বাচন করুন *", zoneInside: "সিলেটের ভেতরে (৳৮০)", zoneOutside: "সিলেটের বাইরে (৳১৫০)",
         
-        // NEW POLICY PAGE TRANSLATIONS
+        // POLICY TRANSLATIONS (Reused for the cart dropdown)
         policyPageTitle: "মোহর ডেলিভারি ও অর্ডার কনফার্মেশন পলিসি",
         policy1Title: "সিলেটের ভেতরে (ডেলিভারি চার্জ: ৳৮০)",
-        policy1Text: "<ul><li>আনুমানিক ডেলিভারি সময়: ১-২ কর্মদিবস।</li><li>আবহাওয়া, ছুটির দিন বা কুরিয়ার বিলম্বের কারণে ডেলিভারি সময় পরিবর্তিত হতে পারে।</li><li>অর্ডার কনফার্ম করার আগে অনুগ্রহ করে আপনার নাম, ফোন নম্বর এবং ঠিকানা সঠিক কিনা তা নিশ্চিত করুন।</li><li>প্রয়োজন হলে আমাদের ডেলিভারি পার্টনার ডেলিভারির আগে আপনার সাথে যোগাযোগ করবে।</li></ul>",
+        policy1Text: "<ul style='margin-left: 15px; margin-top: 5px;'><li>আনুমানিক ডেলিভারি সময়: ১-২ কর্মদিবস।</li><li>আবহাওয়া বা কুরিয়ার বিলম্বের কারণে সময় পরিবর্তিত হতে পারে।</li><li>ডেলিভারির আগে আমাদের পার্টনার যোগাযোগ করবে।</li></ul>",
         policy2Title: "সিলেটের বাইরে (ডেলিভারি চার্জ: ৳১৫০)",
-        policy2Text: "<ul><li>আপনার অবস্থানের ওপর ভিত্তি করে আনুমানিক ডেলিভারি সময়: ২-৫ কর্মদিবস।</li><li>জাতীয় ছুটির দিন বা অনাকাঙ্ক্ষিত পরিস্থিতিতে ডেলিভারি সময় দীর্ঘ হতে পারে।</li><li>যোগাযোগের নম্বরসহ সম্পূর্ণ এবং নির্ভুল ডেলিভারি ঠিকানা প্রদান করুন।</li><li>ডেলিভারির আগে আমাদের কুরিয়ার পার্টনার আপনার সাথে যোগাযোগ করতে পারে।</li></ul>",
+        policy2Text: "<ul style='margin-left: 15px; margin-top: 5px;'><li>আনুমানিক ডেলিভারি সময়: ২-৫ কর্মদিবস।</li><li>জাতীয় ছুটির দিনে সময় দীর্ঘ হতে পারে।</li><li>আমাদের কুরিয়ার পার্টনার যোগাযোগ করতে পারে।</li></ul>",
         policy3Title: "অর্ডার কনফার্মেশন শর্তাবলী",
-        policy3Text: "“কনফার্ম অর্ডার” এ ক্লিক করার মাধ্যমে আপনি স্বীকার এবং সম্মত হচ্ছেন যে:<ul><li>আপনার দেওয়া ডেলিভারি তথ্য নির্ভুল।</li><li>ডেলিভারি চার্জ আপনার অর্ডারের মোট মূল্যের সাথে যোগ করা হবে।</li><li>পণ্য পাঠানোর আগে অর্ডার ভেরিফিকেশনের জন্য মোহর আপনার সাথে যোগাযোগ করার অধিকার রাখে।</li><li>প্যাক বা শিপ করার পর অর্ডারে কোনো পরিবর্তন করা যাবে না।</li><li>ভুল ঠিকানা বা পৌঁছানো যায় না এমন ফোন নম্বরের কারণে ডেলিভারি ব্যর্থ হলে, পুনরায় ডেলিভারি চার্জ প্রযোজ্য হতে পারে।</li></ul><br><p style='text-align:center; font-style:italic;'>মোহর বেছে নেওয়ার জন্য ধন্যবাদ। আমরা আপনার আস্থার মূল্যায়ন করি এবং একটি চমৎকার শপিং অভিজ্ঞতা প্রদানে মুখিয়ে আছি।</p>"
+        policy3Text: "“কনফার্ম অর্ডার” এ ক্লিক করার মাধ্যমে আপনি স্বীকার এবং সম্মত হচ্ছেন যে:<ul><li>আপনার দেওয়া ডেলিভারি তথ্য নির্ভুল।</li><li>ডেলিভারি চার্জ আপনার অর্ডারের মোট মূল্যের সাথে যোগ করা হবে।</li><li>পণ্য পাঠানোর আগে অর্ডার ভেরিফিকেশনের জন্য মোহর আপনার সাথে যোগাযোগ করার অধিকার রাখে।</li><li>প্যাক বা শিপ করার পর অর্ডারে কোনো পরিবর্তন করা যাবে লালন।</li><li>ভুল ঠিকানা বা পৌঁছানো যায় না এমন ফোন নম্বরের কারণে ডেলিভারি ব্যর্থ হলে, পুনরায় ডেলিভারি চার্জ প্রযোজ্য হতে পারে।</li></ul><br><p style='text-align:center; font-style:italic;'>মোহর বেছে নেওয়ার জন্য ধন্যবাদ। আমরা আপনার আস্থার মূল্যায়ন করি এবং একটি চমৎকার শপিং অভিজ্ঞতা প্রদানে মুখিয়ে আছি।</p>"
     }
 };
 
@@ -60,12 +64,17 @@ function updateUIText() {
     document.querySelectorAll('[data-i18n]').forEach(el => {
         const key = el.getAttribute('data-i18n');
         if (uiTranslations[currentLang][key]) {
-            el.innerHTML = uiTranslations[currentLang][key];
+            if (el.tagName === 'OPTION') {
+                el.innerText = uiTranslations[currentLang][key];
+            } else {
+                el.innerHTML = uiTranslations[currentLang][key];
+            }
         }
     });
     
     if (document.getElementById('productGrid')) { updateProducts(); }
-    updateCartUI();   
+    updateCartUI(); 
+    updateDeliveryPolicyAndTotal();  // Refresh policy text on language change
 }
 
 document.getElementById('langToggleBtn').addEventListener('click', () => {
@@ -137,7 +146,6 @@ function updateProducts() {
 
 const checkboxes = document.querySelectorAll('.filter-checkbox');
 checkboxes.forEach(cb => cb.addEventListener('change', updateProducts));
-
 const sortSelect = document.getElementById('sortSelect');
 if (sortSelect) { sortSelect.addEventListener('change', updateProducts); }
 
@@ -155,7 +163,6 @@ function openProductModal(product) {
     selectedColor = null;
     document.getElementById('sizeWarning').style.display = 'none';
     document.getElementById('colorWarning').style.display = 'none';
-    
     if(document.getElementById('sizeGuideDisplay')) { document.getElementById('sizeGuideDisplay').innerHTML = ""; }
 
     document.getElementById('modalTitle').innerText = getText(product.title);
@@ -252,7 +259,6 @@ function selectOption(clickedBtn, value, type) {
 
 const closeModalBtn = document.getElementById('closeModalBtn');
 if (closeModalBtn) { closeModalBtn.addEventListener('click', () => { document.getElementById('productModal').classList.remove('active'); }); }
-
 const productModal = document.getElementById('productModal');
 if (productModal) { productModal.addEventListener('click', (e) => { if (e.target === productModal) productModal.classList.remove('active'); }); }
 
@@ -272,67 +278,109 @@ if (modalAddToCartBtn) {
     });
 }
 
-// --- CART & WHATSAPP LOGIC ---
+// --- CART, QUANTITY & WHATSAPP LOGIC ---
 let cart = [];
 const cartOverlay = document.getElementById('cartOverlay');
 const cartSidebar = document.getElementById('cartSidebar');
 const cartItemsContainer = document.getElementById('cartItemsContainer');
-const cartTotalValue = document.getElementById('cartTotalValue');
-const cartBadge = document.getElementById('cartBadge');
 
 document.getElementById('openCartBtn').addEventListener('click', () => { cartSidebar.classList.add('active'); cartOverlay.classList.add('active'); });
 const closeCart = () => { cartSidebar.classList.remove('active'); cartOverlay.classList.remove('active'); };
 document.getElementById('closeCartBtn').addEventListener('click', closeCart);
 cartOverlay.addEventListener('click', closeCart);
 
+// NEW: Group items by name and size, add quantity tracking
 function addToCart(name, price, size) {
-    cart.push({ name: name, price: price, size: size });
+    let existingItem = cart.find(item => item.name === name && item.size === size);
+    
+    if (existingItem) {
+        existingItem.qty += 1;
+    } else {
+        cart.push({ name: name, price: price, size: size, qty: 1 });
+    }
+    
     updateCartUI();
     cartSidebar.classList.add('active'); cartOverlay.classList.add('active');
 }
 
-window.removeFromCart = function(index) {
-    cart.splice(index, 1);
+// NEW: Plus / Minus quantity controls
+window.changeQty = function(index, delta) {
+    cart[index].qty += delta;
+    if (cart[index].qty <= 0) {
+        cart.splice(index, 1);
+    }
     updateCartUI();
+}
+
+// NEW: Dynamic Policy Display Logic
+window.updateDeliveryPolicyAndTotal = function() {
+    const zoneSelect = document.getElementById('deliveryZone');
+    const policyDisplay = document.getElementById('dynamicPolicyDisplay');
+    
+    if (zoneSelect && policyDisplay) {
+        if (zoneSelect.value === "80") {
+            policyDisplay.style.display = "block";
+            policyDisplay.innerHTML = uiTranslations[currentLang].policy1Text;
+        } else if (zoneSelect.value === "150") {
+            policyDisplay.style.display = "block";
+            policyDisplay.innerHTML = uiTranslations[currentLang].policy2Text;
+        } else {
+            policyDisplay.style.display = "none";
+        }
+    }
+    updateCartUI(); 
 }
 
 window.updateCartUI = function() {
     cartItemsContainer.innerHTML = ''; 
     let subtotal = 0;
+    let totalItems = 0;
+    
     if (cart.length === 0) {
         cartItemsContainer.innerHTML = `<p style="text-align: center; color: #666; margin-top: 20px;">${uiTranslations[currentLang].cartEmpty}</p>`;
     } else {
         cart.forEach((item, index) => {
-            subtotal += item.price;
+            let itemTotal = item.price * item.qty;
+            subtotal += itemTotal;
+            totalItems += item.qty;
+            
+            // UPDATED UI: Includes + and - buttons
             cartItemsContainer.innerHTML += `
-                <div class="cart-item">
-                    <div class="cart-item-info">
-                        <strong>${item.name}</strong>
-                        <span>Size: ${item.size}</span>
-                        <button class="remove-item" onclick="removeFromCart(${index})">Remove</button>
+                <div class="cart-item" style="align-items: center;">
+                    <div class="cart-item-info" style="flex: 1;">
+                        <strong style="display: block; margin-bottom: 3px;">${item.name}</strong>
+                        <span style="font-size: 11px; color: var(--text-light); text-transform: uppercase;">Size: ${item.size}</span>
+                        
+                        <div style="display: flex; align-items: center; gap: 10px; margin-top: 8px;">
+                            <button onclick="changeQty(${index}, -1)" style="border: 1px solid var(--border-color); background: var(--soft-gray); width: 22px; height: 22px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: bold; border-radius: 2px;">-</button>
+                            <span style="font-size: 13px; font-weight: 600;">${item.qty}</span>
+                            <button onclick="changeQty(${index}, 1)" style="border: 1px solid var(--border-color); background: var(--soft-gray); width: 22px; height: 22px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: bold; border-radius: 2px;">+</button>
+                        </div>
                     </div>
-                    <div style="font-weight:600; color:var(--primary-gold);">৳${item.price}</div>
+                    
+                    <div style="text-align: right;">
+                        <div style="font-weight:600; color:var(--primary-gold); margin-bottom: 5px;">৳${itemTotal}</div>
+                        <button class="remove-item" onclick="changeQty(${index}, -${item.qty})" style="font-size: 10px;">Remove</button>
+                    </div>
                 </div>`;
         });
     }
     
-    // Dynamic Delivery Fee Calculation
+    // Summary Calculations
     const zoneSelect = document.getElementById('deliveryZone');
-    const deliveryFee = zoneSelect && cart.length > 0 ? parseInt(zoneSelect.value) : 0;
+    let deliveryFee = 0;
+    if (zoneSelect && zoneSelect.value && cart.length > 0) {
+        deliveryFee = parseInt(zoneSelect.value);
+    }
+    
     const finalTotal = subtotal + deliveryFee;
     
-    if(cartTotalValue) {
-        cartTotalValue.innerText = finalTotal;
-    }
-    if(cartBadge) {
-        cartBadge.innerText = cart.length;
-    }
-}
-
-// Ensure total updates when delivery zone changes
-const zoneSelectElement = document.getElementById('deliveryZone');
-if(zoneSelectElement) {
-    zoneSelectElement.addEventListener('change', updateCartUI);
+    if(document.getElementById('cartSubtotalValue')) document.getElementById('cartSubtotalValue').innerText = subtotal;
+    if(document.getElementById('cartDeliveryValue')) document.getElementById('cartDeliveryValue').innerText = deliveryFee;
+    if(document.getElementById('cartTotalValue')) document.getElementById('cartTotalValue').innerText = finalTotal;
+    
+    const cartBadge = document.getElementById('cartBadge');
+    if(cartBadge) cartBadge.innerText = totalItems;
 }
 
 window.checkoutToWhatsApp = function() {
@@ -350,6 +398,7 @@ window.checkoutToWhatsApp = function() {
     if (!nameInput) { alert(currentLang === 'en' ? "Please enter your Full Name." : "অনুগ্রহ করে আপনার পুরো নাম দিন।"); return; }
     if (!phoneInput) { alert(currentLang === 'en' ? "Please enter your Mobile Number." : "অনুগ্রহ করে আপনার মোবাইল নম্বর দিন।"); return; }
     if (!addressInput) { alert(currentLang === 'en' ? "Please enter your delivery address." : "অনুগ্রহ করে আপনার ডেলিভারি ঠিকানা দিন।"); return; }
+    if (!zoneSelect || !zoneSelect.value) { alert(currentLang === 'en' ? "Please select a Delivery Zone." : "অনুগ্রহ করে ডেলিভারি জোন নির্বাচন করুন।"); return; }
     if (!policyAgree) { alert(currentLang === 'en' ? "Please agree to the Delivery Policy." : "অনুগ্রহ করে ডেলিভারি পলিসিতে সম্মত হোন।"); return; }
 
     const zoneText = zoneSelect.options[zoneSelect.selectedIndex].text;
@@ -360,8 +409,9 @@ window.checkoutToWhatsApp = function() {
     let subtotal = 0;
     
     cart.forEach((item, index) => { 
-        message += `${index + 1}. ${item.name} (Size: ${item.size}) - ৳${item.price}%0A`; 
-        subtotal += item.price; 
+        let itemTotal = item.price * item.qty;
+        message += `${index + 1}. ${item.name} (Size: ${item.size}) | Qty: ${item.qty} - ৳${itemTotal}%0A`; 
+        subtotal += itemTotal; 
     });
     
     message += `%0A*Subtotal: ৳${subtotal}*`;
