@@ -10,22 +10,20 @@ const uiTranslations = {
         noProducts: "No products match your filters.", sizeSelect: "Select Size", sizeWarning: "*Please select a size",
         colorSelect: "Select Color", colorWarning: "*Please select a color", descTitle: "Description",
         detailsTitle: "Product Details", addToCart: "Add to Cart", cartTitle: "Your Cart", cartEmpty: "Your cart is empty.",
-        cartTotal: "Total:", orderWhatsapp: "Order via WhatsApp", footerText: "© 2026 Mohor Clothings Bangladesh. All Rights Reserved.",
+        cartTotal: "Total:", orderWhatsapp: "Confirm Order", footerText: "© 2026 Mohor Clothings Bangladesh. All Rights Reserved.",
         selectOptions: "Select Size & Add to Cart",
         aboutTitle: "About Mohor Clothings",
         aboutText: "Welcome to Mohor Clothings, your premier destination for handcrafted luxury fashion in Bangladesh. From our breathable, premium soft cotton Three-Piece ensembles to our elegantly tailored Kurtis and authentic Khadi wear, every piece is designed with the modern woman in mind. Whether you are stepping into a university classroom, leading a corporate meeting, or celebrating a festive occasion, our collections offer the perfect fit. Proudly serving Sylhet and customers nationwide, we are dedicated to bringing you high-quality embroidery and timeless designs that empower your everyday wardrobe.",
-        deliveryAddressLabel: "Delivery Address *", policyAgreeText: "I agree to the", policyLink: "Delivery & Return Policy",
+        policyAgreeText: "I agree to the", policyLink: "Delivery & Order Confirmation Policy",
         
         // NEW POLICY PAGE TRANSLATIONS
-        policyPageTitle: "Delivery & Return Policy",
-        policy1Title: "1. Delivery Information",
-        policy1Text: "We deliver nationwide across Bangladesh. For orders within Sylhet, the standard delivery time is 1-3 business days. For orders outside Sylhet, delivery typically takes 3-5 business days. Delivery charges will be calculated and communicated during the confirmation phase on WhatsApp based on your delivery address.",
-        policy2Title: "2. Order Confirmation",
-        policy2Text: "Once you place an order via WhatsApp, our team will verify product availability and send you a confirmation message along with the final bill (including delivery charges) before processing.",
-        policy3Title: "3. Return & Exchange Policy",
-        policy3Text: "We take pride in the quality of our handcrafted clothing. However, if you receive a defective or incorrect item, please notify us within 24 hours of receiving the delivery. The item must be unused, unwashed, and in its original packaging with tags intact. Please record an unboxing video to claim any damages or defects.",
-        policy4Title: "4. Color Disclaimer",
-        policy4Text: "While we strive to ensure our images accurately represent the product, actual colors may slightly vary due to lighting during photography or your device's display settings. Exchanges will not be accommodated purely for slight color variations."
+        policyPageTitle: "Mohor Delivery & Order Confirmation Policy",
+        policy1Title: "Inside Sylhet (Delivery Charge: ৳80)",
+        policy1Text: "<ul><li>Estimated delivery time: 1–2 business days.</li><li>Delivery time may vary due to weather, holidays, or courier delays.</li><li>Please ensure your name, phone number, and address are correct before confirming your order.</li><li>Our delivery partner will contact you before delivery if necessary.</li></ul>",
+        policy2Title: "Outside Sylhet (Delivery Charge: ৳150)",
+        policy2Text: "<ul><li>Estimated delivery time: 2–5 business days, depending on your location.</li><li>Delivery time may be longer during national holidays or unforeseen circumstances.</li><li>Please provide a complete and accurate delivery address with your contact number.</li><li>Our courier partner may contact you before delivery.</li></ul>",
+        policy3Title: "Order Confirmation Terms",
+        policy3Text: "By clicking “Confirm Order”, you acknowledge and agree that:<ul><li>The delivery information you provided is accurate.</li><li>Delivery charges are added to your order total.</li><li>Mohor reserves the right to contact you for order verification before dispatch.</li><li>Orders cannot be modified after they have been packed or shipped.</li><li>If delivery fails due to an incorrect address or unreachable phone number, additional re-delivery charges may apply.</li></ul><br><p style='text-align:center; font-style:italic;'>Thank you for choosing Mohor. We appreciate your trust and look forward to delivering a beautiful shopping experience.</p>"
     },
     bn: {
         navShop: "শপ", navAbout: "আমাদের সম্পর্কে", navPolicy: "পলিসি", navCart: "কার্ট", shopTitle: "আমাদের কালেকশন", filterBtn: "ফিল্টার",
@@ -35,24 +33,23 @@ const uiTranslations = {
         noProducts: "আপনার ফিল্টারের সাথে মিলে এমন কোনো পণ্য নেই।", sizeSelect: "সাইজ নির্বাচন করুন", sizeWarning: "*দয়া করে একটি সাইজ নির্বাচন করুন",
         colorSelect: "রং নির্বাচন করুন", colorWarning: "*দয়া করে একটি রং নির্বাচন করুন", descTitle: "বিবরণ",
         detailsTitle: "পণ্যের বিস্তারিত", addToCart: "কার্টে যোগ করুন", cartTitle: "আপনার কার্ট", cartEmpty: "আপনার কার্ট খালি।",
-        cartTotal: "মোট:", orderWhatsapp: "হোয়াটসঅ্যাপে অর্ডার করুন", footerText: "© ২০২৬ মোহর ক্লথিংস বাংলাদেশ। সর্বস্বত্ব সংরক্ষিত।",
+        cartTotal: "মোট:", orderWhatsapp: "কনফার্ম অর্ডার", footerText: "© ২০২৬ মোহর ক্লথিংস বাংলাদেশ। সর্বস্বত্ব সংরক্ষিত।",
         selectOptions: "সাইজ নির্বাচন করুন",
         aboutTitle: "মোহর ক্লথিংস সম্পর্কে",
         aboutText: "মোহর ক্লথিংস-এ আপনাকে স্বাগতম, বাংলাদেশে হাতে তৈরি লাক্সারি ফ্যাশনের অন্যতম বিশ্বস্ত নাম। আমাদের আরামদায়ক প্রিমিয়াম সফট কটন থ্রি-পিস থেকে শুরু করে আকর্ষণীয় কুর্তি এবং ঐতিহ্যবাহী খাদি পোশাক—প্রতিটি ডিজাইন তৈরি করা হয়েছে আধুনিক নারীদের কথা মাথায় রেখে। আপনি ইউনিভার্সিটির ক্লাসে যান, কর্পোরেট মিটিং পরিচালনা করুন বা কোনো উৎসব উদযাপন করুন, আমাদের কালেকশনে আপনার জন্য মানানসই পোশাক রয়েছে। সিলেট থেকে শুরু করে সারা দেশের গ্রাহকদের জন্য উচ্চমানের এমব্রয়ডারি এবং মানসম্মত ডিজাইনের পোশাক পৌঁছে দিতে আমরা প্রতিশ্রুতিবদ্ধ।",
-        deliveryAddressLabel: "ডেলিভারি ঠিকানা *", policyAgreeText: "আমি সম্মত হচ্ছি", policyLink: "ডেলিভারি ও রিটার্ন পলিসিতে",
+        policyAgreeText: "আমি সম্মত হচ্ছি", policyLink: "ডেলিভারি ও অর্ডার কনফার্মেশন পলিসিতে",
         
         // NEW POLICY PAGE TRANSLATIONS
-        policyPageTitle: "ডেলিভারি ও রিটার্ন পলিসি",
-        policy1Title: "১. ডেলিভারি তথ্য",
-        policy1Text: "আমরা সারা বাংলাদেশে ডেলিভারি দিয়ে থাকি। সিলেটের ভেতরের অর্ডারের জন্য, সাধারণ ডেলিভারি সময় ১-৩ কর্মদিবস। সিলেটের বাইরের অর্ডারের জন্য সাধারণত ৩-৫ কর্মদিবস সময় লাগে। আপনার ডেলিভারি ঠিকানার ওপর ভিত্তি করে ডেলিভারি চার্জ হিসাব করা হবে এবং হোয়াটসঅ্যাপে কনফার্মেশনের সময় জানিয়ে দেওয়া হবে।",
-        policy2Title: "২. অর্ডার কনফার্মেশন",
-        policy2Text: "হোয়াটসঅ্যাপের মাধ্যমে অর্ডার করার পর, আমাদের টিম পণ্যের প্রাপ্যতা যাচাই করবে এবং প্রসেস করার আগে আপনাকে একটি কনফার্মেশন মেসেজ ও চূড়ান্ত বিল (ডেলিভারি চার্জ সহ) পাঠিয়ে দেবে।",
-        policy3Title: "৩. রিটার্ন ও এক্সচেঞ্জ পলিসি",
-        policy3Text: "আমরা আমাদের হাতে তৈরি পোশাকের মানের বিষয়ে গর্ববোধ করি। তবে, যদি আপনি কোনো ত্রুটিপূর্ণ বা ভুল পণ্য পান, অনুগ্রহ করে ডেলিভারি পাওয়ার ২৪ ঘণ্টার মধ্যে আমাদের জানান। পণ্যটি অবশ্যই অব্যবহৃত, ধোয়া হয়নি এমন, এবং অরিজিনাল প্যাকেজিং ও ট্যাগযুক্ত থাকতে হবে। কোনো ক্ষতি বা ত্রুটি দাবি করার জন্য অনুগ্রহ করে একটি আনবক্সিং ভিডিও রেকর্ড করুন।",
-        policy4Title: "৪. রঙের ডিসক্লেইমার",
-        policy4Text: "যদিও আমরা নিশ্চিত করার চেষ্টা করি যে আমাদের ছবিগুলো পণ্যের সঠিক রং উপস্থাপন করে, ফটোগ্রাফির সময় আলোর কারণে বা আপনার ডিভাইসের ডিসপ্লে সেটিংসের কারণে আসল রং সামান্য ভিন্ন হতে পারে। শুধুমাত্র সামান্য রঙের পার্থক্যের কারণে কোনো এক্সচেঞ্জ গ্রহণ করা হবে না।"
+        policyPageTitle: "মোহর ডেলিভারি ও অর্ডার কনফার্মেশন পলিসি",
+        policy1Title: "সিলেটের ভেতরে (ডেলিভারি চার্জ: ৳৮০)",
+        policy1Text: "<ul><li>আনুমানিক ডেলিভারি সময়: ১-২ কর্মদিবস।</li><li>আবহাওয়া, ছুটির দিন বা কুরিয়ার বিলম্বের কারণে ডেলিভারি সময় পরিবর্তিত হতে পারে।</li><li>অর্ডার কনফার্ম করার আগে অনুগ্রহ করে আপনার নাম, ফোন নম্বর এবং ঠিকানা সঠিক কিনা তা নিশ্চিত করুন।</li><li>প্রয়োজন হলে আমাদের ডেলিভারি পার্টনার ডেলিভারির আগে আপনার সাথে যোগাযোগ করবে।</li></ul>",
+        policy2Title: "সিলেটের বাইরে (ডেলিভারি চার্জ: ৳১৫০)",
+        policy2Text: "<ul><li>আপনার অবস্থানের ওপর ভিত্তি করে আনুমানিক ডেলিভারি সময়: ২-৫ কর্মদিবস।</li><li>জাতীয় ছুটির দিন বা অনাকাঙ্ক্ষিত পরিস্থিতিতে ডেলিভারি সময় দীর্ঘ হতে পারে।</li><li>যোগাযোগের নম্বরসহ সম্পূর্ণ এবং নির্ভুল ডেলিভারি ঠিকানা প্রদান করুন।</li><li>ডেলিভারির আগে আমাদের কুরিয়ার পার্টনার আপনার সাথে যোগাযোগ করতে পারে।</li></ul>",
+        policy3Title: "অর্ডার কনফার্মেশন শর্তাবলী",
+        policy3Text: "“কনফার্ম অর্ডার” এ ক্লিক করার মাধ্যমে আপনি স্বীকার এবং সম্মত হচ্ছেন যে:<ul><li>আপনার দেওয়া ডেলিভারি তথ্য নির্ভুল।</li><li>ডেলিভারি চার্জ আপনার অর্ডারের মোট মূল্যের সাথে যোগ করা হবে।</li><li>পণ্য পাঠানোর আগে অর্ডার ভেরিফিকেশনের জন্য মোহর আপনার সাথে যোগাযোগ করার অধিকার রাখে।</li><li>প্যাক বা শিপ করার পর অর্ডারে কোনো পরিবর্তন করা যাবে না।</li><li>ভুল ঠিকানা বা পৌঁছানো যায় না এমন ফোন নম্বরের কারণে ডেলিভারি ব্যর্থ হলে, পুনরায় ডেলিভারি চার্জ প্রযোজ্য হতে পারে।</li></ul><br><p style='text-align:center; font-style:italic;'>মোহর বেছে নেওয়ার জন্য ধন্যবাদ। আমরা আপনার আস্থার মূল্যায়ন করি এবং একটি চমৎকার শপিং অভিজ্ঞতা প্রদানে মুখিয়ে আছি।</p>"
     }
 };
+
 function getText(dataField) {
     if (!dataField) return "";
     if (typeof dataField === 'string') return dataField; 
@@ -67,10 +64,7 @@ function updateUIText() {
         }
     });
     
-    // Only try to update products if the grid actually exists on the page
-    if (document.getElementById('productGrid')) { 
-        updateProducts(); 
-    }
+    if (document.getElementById('productGrid')) { updateProducts(); }
     updateCartUI();   
 }
 
@@ -83,7 +77,7 @@ document.getElementById('langToggleBtn').addEventListener('click', () => {
 // --- PRODUCT RENDERING & FILTERING ---
 function renderProducts(productsToRender) {
     const productGrid = document.getElementById('productGrid');
-    if (!productGrid) return; // Safety check
+    if (!productGrid) return; 
     
     productGrid.innerHTML = '';
     if (!productsToRender || productsToRender.length === 0) {
@@ -118,7 +112,7 @@ function renderProducts(productsToRender) {
 function updateProducts() {
     if (typeof productsData === 'undefined') return;
     const sortSelect = document.getElementById('sortSelect');
-    if (!sortSelect) return; // Safety check
+    if (!sortSelect) return; 
 
     const activeCategories = Array.from(document.querySelectorAll('input[id^="cat-"]:checked')).map(cb => cb.value);
     const activePrices = Array.from(document.querySelectorAll('.price-filter:checked')).map(cb => cb.value);
@@ -141,15 +135,11 @@ function updateProducts() {
     renderProducts(filtered);
 }
 
-// Attach event listeners only if elements exist
 const checkboxes = document.querySelectorAll('.filter-checkbox');
 checkboxes.forEach(cb => cb.addEventListener('change', updateProducts));
 
 const sortSelect = document.getElementById('sortSelect');
-if (sortSelect) {
-    sortSelect.addEventListener('change', updateProducts);
-}
-
+if (sortSelect) { sortSelect.addEventListener('change', updateProducts); }
 
 // --- MODAL LOGIC ---
 let currentViewingProduct = null;
@@ -166,10 +156,7 @@ function openProductModal(product) {
     document.getElementById('sizeWarning').style.display = 'none';
     document.getElementById('colorWarning').style.display = 'none';
     
-    // Clear size guide display when opening a new product
-    if(document.getElementById('sizeGuideDisplay')) {
-        document.getElementById('sizeGuideDisplay').innerHTML = ""; 
-    }
+    if(document.getElementById('sizeGuideDisplay')) { document.getElementById('sizeGuideDisplay').innerHTML = ""; }
 
     document.getElementById('modalTitle').innerText = getText(product.title);
     document.getElementById('modalPrice').innerText = `৳ ${product.price}`;
@@ -247,7 +234,6 @@ function selectOption(clickedBtn, value, type) {
         document.getElementById('sizeWarning').style.display = 'none';
         document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('selected'));
         
-        // --- SHOW DYNAMIC MEASUREMENTS ---
         const sizeGuideDisplay = document.getElementById('sizeGuideDisplay');
         if (sizeGuideDisplay) {
             if (currentViewingProduct.sizeMeasurements && currentViewingProduct.sizeMeasurements[value]) {
@@ -265,14 +251,10 @@ function selectOption(clickedBtn, value, type) {
 }
 
 const closeModalBtn = document.getElementById('closeModalBtn');
-if (closeModalBtn) {
-    closeModalBtn.addEventListener('click', () => { document.getElementById('productModal').classList.remove('active'); });
-}
+if (closeModalBtn) { closeModalBtn.addEventListener('click', () => { document.getElementById('productModal').classList.remove('active'); }); }
 
 const productModal = document.getElementById('productModal');
-if (productModal) {
-    productModal.addEventListener('click', (e) => { if (e.target === productModal) productModal.classList.remove('active'); });
-}
+if (productModal) { productModal.addEventListener('click', (e) => { if (e.target === productModal) productModal.classList.remove('active'); }); }
 
 const modalAddToCartBtn = document.getElementById('modalAddToCartBtn');
 if (modalAddToCartBtn) {
@@ -290,7 +272,7 @@ if (modalAddToCartBtn) {
     });
 }
 
-// --- CART & WHATSAPP LOGIC (Runs on all pages) ---
+// --- CART & WHATSAPP LOGIC ---
 let cart = [];
 const cartOverlay = document.getElementById('cartOverlay');
 const cartSidebar = document.getElementById('cartSidebar');
@@ -314,14 +296,14 @@ window.removeFromCart = function(index) {
     updateCartUI();
 }
 
-function updateCartUI() {
+window.updateCartUI = function() {
     cartItemsContainer.innerHTML = ''; 
-    let total = 0;
+    let subtotal = 0;
     if (cart.length === 0) {
         cartItemsContainer.innerHTML = `<p style="text-align: center; color: #666; margin-top: 20px;">${uiTranslations[currentLang].cartEmpty}</p>`;
     } else {
         cart.forEach((item, index) => {
-            total += item.price;
+            subtotal += item.price;
             cartItemsContainer.innerHTML += `
                 <div class="cart-item">
                     <div class="cart-item-info">
@@ -333,45 +315,60 @@ function updateCartUI() {
                 </div>`;
         });
     }
-    cartTotalValue.innerText = total;
-    cartBadge.innerText = cart.length;
+    
+    // Dynamic Delivery Fee Calculation
+    const zoneSelect = document.getElementById('deliveryZone');
+    const deliveryFee = zoneSelect && cart.length > 0 ? parseInt(zoneSelect.value) : 0;
+    const finalTotal = subtotal + deliveryFee;
+    
+    if(cartTotalValue) {
+        cartTotalValue.innerText = finalTotal;
+    }
+    if(cartBadge) {
+        cartBadge.innerText = cart.length;
+    }
 }
 
-// --- UPDATED CHECKOUT LOGIC WITH ADDRESS AND POLICY CHECK ---
+// Ensure total updates when delivery zone changes
+const zoneSelectElement = document.getElementById('deliveryZone');
+if(zoneSelectElement) {
+    zoneSelectElement.addEventListener('change', updateCartUI);
+}
+
 window.checkoutToWhatsApp = function() {
     if (cart.length === 0) { 
-        alert(uiTranslations[currentLang].cartEmpty); 
+        alert(currentLang === 'en' ? "Your cart is empty." : "আপনার কার্ট খালি।"); 
         return; 
     }
     
-    // Safely capture user inputs
-    const addressElement = document.getElementById('deliveryAddress');
-    const policyElement = document.getElementById('policyAgree');
+    const nameInput = document.getElementById('custName') ? document.getElementById('custName').value.trim() : "";
+    const phoneInput = document.getElementById('custPhone') ? document.getElementById('custPhone').value.trim() : "";
+    const addressInput = document.getElementById('deliveryAddress') ? document.getElementById('deliveryAddress').value.trim() : "";
+    const zoneSelect = document.getElementById('deliveryZone');
+    const policyAgree = document.getElementById('policyAgree') ? document.getElementById('policyAgree').checked : false;
+
+    if (!nameInput) { alert(currentLang === 'en' ? "Please enter your Full Name." : "অনুগ্রহ করে আপনার পুরো নাম দিন।"); return; }
+    if (!phoneInput) { alert(currentLang === 'en' ? "Please enter your Mobile Number." : "অনুগ্রহ করে আপনার মোবাইল নম্বর দিন।"); return; }
+    if (!addressInput) { alert(currentLang === 'en' ? "Please enter your delivery address." : "অনুগ্রহ করে আপনার ডেলিভারি ঠিকানা দিন।"); return; }
+    if (!policyAgree) { alert(currentLang === 'en' ? "Please agree to the Delivery Policy." : "অনুগ্রহ করে ডেলিভারি পলিসিতে সম্মত হোন।"); return; }
+
+    const zoneText = zoneSelect.options[zoneSelect.selectedIndex].text;
+    const deliveryFee = parseInt(zoneSelect.value);
     
-    const addressInput = addressElement ? addressElement.value.trim() : "";
-    const policyAgree = policyElement ? policyElement.checked : false;
-
-    // Validation checks
-    if (!addressInput) {
-        alert(currentLang === 'en' ? "Please enter your delivery address." : "অনুগ্রহ করে আপনার ডেলিভারি ঠিকানা দিন।");
-        return;
-    }
-    if (!policyAgree) {
-        alert(currentLang === 'en' ? "Please agree to the Delivery & Return Policy." : "অনুগ্রহ করে ডেলিভারি ও রিটার্ন পলিসিতে সম্মত হোন।");
-        return;
-    }
-
     const WHATSAPP_NUMBER = "8801330113027"; 
-    let message = "Hello Mohor Clothings! I would like to order the following items:%0A%0A";
-    let total = 0;
+    let message = "Hello Mohor Clothings! I would like to confirm my order:%0A%0A";
+    let subtotal = 0;
     
     cart.forEach((item, index) => { 
         message += `${index + 1}. ${item.name} (Size: ${item.size}) - ৳${item.price}%0A`; 
-        total += item.price; 
+        subtotal += item.price; 
     });
     
-    message += `%0A*Total: ৳${total}*`;
-    message += `%0A%0A*Delivery Address:*%0A${addressInput}`;
+    message += `%0A*Subtotal: ৳${subtotal}*`;
+    message += `%0A*Delivery (${zoneText}): ৳${deliveryFee}*`;
+    message += `%0A*FINAL TOTAL: ৳${subtotal + deliveryFee}*%0A`;
+    
+    message += `%0A*CUSTOMER DETAILS:*%0AName: ${nameInput}%0APhone: ${phoneInput}%0AAddress: ${addressInput}`;
     
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${message}`, '_blank');
 }
@@ -387,5 +384,4 @@ if(mobileFilterBtn) {
     });
 }
 
-// Initialize on Load
-setTimeout(() => { updateUIText(); }, 100);
+setTimeout(() => { updateUIText(); updateCartUI(); }, 100);
