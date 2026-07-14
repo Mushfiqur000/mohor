@@ -18,7 +18,7 @@ const uiTranslations = {
         deliveryAddressLabel: "Delivery Address *", policyAgreeText: "I agree to the", policyLink: "Delivery & Return Policy",
         selectDeliveryZone: "Select Delivery Zone *", zoneInside: "Inside Sylhet (৳80)", zoneOutside: "Outside Sylhet (৳150)",
         
-        // POLICY PAGE TRANSLATIONS
+        // NEW POLICY PAGE TRANSLATIONS
         policyPageTitle: "Delivery & Return Policy",
         policy1Title: "1. Delivery Information",
         policy1Text: "<ul style='margin-left: 15px; margin-top: 5px;'><li>Estimated delivery time: 1–2 business days.</li><li>Delivery time may vary due to weather or courier delays.</li><li>Our delivery partner will contact you before delivery.</li></ul>",
@@ -45,7 +45,7 @@ const uiTranslations = {
         deliveryAddressLabel: "ডেলিভারি ঠিকানা *", policyAgreeText: "আমি সম্মত হচ্ছি", policyLink: "ডেলিভারি ও রিটার্ন পলিসিতে",
         selectDeliveryZone: "ডেলিভারি জোন নির্বাচন করুন *", zoneInside: "সিলেটের ভেতরে (৳৮০)", zoneOutside: "সিলেটের বাইরে (৳১৫০)",
         
-        // POLICY PAGE TRANSLATIONS
+        // NEW POLICY PAGE TRANSLATIONS
         policyPageTitle: "ডেলিভারি ও রিটার্ন পলিসি",
         policy1Title: "১. ডেলিভারি তথ্য",
         policy1Text: "<ul style='margin-left: 15px; margin-top: 5px;'><li>আনুমানিক ডেলিভারি সময়: ১-২ কর্মদিবস।</li><li>আবহাওয়া বা কুরিয়ার বিলম্বের কারণে সময় পরিবর্তিত হতে পারে।</li><li>ডেলিভারির আগে আমাদের পার্টনার যোগাযোগ করবে।</li></ul>",
@@ -76,6 +76,7 @@ function updateUIText() {
         }
     });
 
+    // NEW: Update search bar placeholder language
     document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
         const key = el.getAttribute('data-i18n-placeholder');
         if (uiTranslations[currentLang][key]) {
@@ -83,9 +84,16 @@ function updateUIText() {
         }
     });
     
-    if (document.getElementById('productGrid')) { updateProducts(); }
+    // Only try to update products if the grid actually exists on the page
+    if (document.getElementById('productGrid')) { 
+        updateProducts(); 
+    }
     updateCartUI();
-    if (typeof updateDeliveryPolicyAndTotal === "function") { updateDeliveryPolicyAndTotal(); }
+    
+    // Refresh policy text instantly if language is switched
+    if (typeof updateDeliveryPolicyAndTotal === "function") {
+        updateDeliveryPolicyAndTotal();
+    }
 }
 
 document.getElementById('langToggleBtn').addEventListener('click', () => {
@@ -94,10 +102,10 @@ document.getElementById('langToggleBtn').addEventListener('click', () => {
 });
 
 
-// --- PRODUCT RENDERING & SMART SEARCH ---
+// --- PRODUCT RENDERING & FILTERING ---
 function renderProducts(productsToRender) {
     const productGrid = document.getElementById('productGrid');
-    if (!productGrid) return; 
+    if (!productGrid) return; // Safety check
     
     productGrid.innerHTML = '';
     if (!productsToRender || productsToRender.length === 0) {
@@ -132,13 +140,13 @@ function renderProducts(productsToRender) {
 function updateProducts() {
     if (typeof productsData === 'undefined') return;
     const sortSelect = document.getElementById('sortSelect');
-    const searchInput = document.getElementById('searchInput');
-    if (!sortSelect) return; 
+    const searchInput = document.getElementById('searchInput'); // NEW
+    if (!sortSelect) return; // Safety check
 
     const activeCategories = Array.from(document.querySelectorAll('input[id^="cat-"]:checked')).map(cb => cb.value);
     const activePrices = Array.from(document.querySelectorAll('.price-filter:checked')).map(cb => cb.value);
     const sortValue = sortSelect.value;
-    const searchTerm = searchInput ? searchInput.value.toLowerCase().trim() : '';
+    const searchTerm = searchInput ? searchInput.value.toLowerCase().trim() : ''; // NEW
 
     let filtered = productsData.filter(product => {
         let catMatch = activeCategories.length === 0 || activeCategories.includes(product.category);
@@ -176,15 +184,20 @@ function updateProducts() {
     renderProducts(filtered);
 }
 
-// Attach event listeners
+// Attach event listeners only if elements exist
 const checkboxes = document.querySelectorAll('.filter-checkbox');
 checkboxes.forEach(cb => cb.addEventListener('change', updateProducts));
 
 const sortSelect = document.getElementById('sortSelect');
-if (sortSelect) { sortSelect.addEventListener('change', updateProducts); }
+if (sortSelect) {
+    sortSelect.addEventListener('change', updateProducts);
+}
 
+// NEW: Search Input Event Listener
 const searchInput = document.getElementById('searchInput');
-if (searchInput) { searchInput.addEventListener('input', updateProducts); }
+if (searchInput) { 
+    searchInput.addEventListener('input', updateProducts); 
+}
 
 
 // --- MODAL LOGIC ---
@@ -201,7 +214,11 @@ function openProductModal(product) {
     selectedColor = null;
     document.getElementById('sizeWarning').style.display = 'none';
     document.getElementById('colorWarning').style.display = 'none';
-    if(document.getElementById('sizeGuideDisplay')) { document.getElementById('sizeGuideDisplay').innerHTML = ""; }
+    
+    // Clear size guide display when opening a new product
+    if(document.getElementById('sizeGuideDisplay')) {
+        document.getElementById('sizeGuideDisplay').innerHTML = ""; 
+    }
 
     document.getElementById('modalTitle').innerText = getText(product.title);
     document.getElementById('modalPrice').innerText = `৳ ${product.price}`;
@@ -279,6 +296,7 @@ function selectOption(clickedBtn, value, type) {
         document.getElementById('sizeWarning').style.display = 'none';
         document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('selected'));
         
+        // --- SHOW DYNAMIC MEASUREMENTS ---
         const sizeGuideDisplay = document.getElementById('sizeGuideDisplay');
         if (sizeGuideDisplay) {
             if (currentViewingProduct.sizeMeasurements && currentViewingProduct.sizeMeasurements[value]) {
@@ -296,9 +314,14 @@ function selectOption(clickedBtn, value, type) {
 }
 
 const closeModalBtn = document.getElementById('closeModalBtn');
-if (closeModalBtn) { closeModalBtn.addEventListener('click', () => { document.getElementById('productModal').classList.remove('active'); }); }
+if (closeModalBtn) {
+    closeModalBtn.addEventListener('click', () => { document.getElementById('productModal').classList.remove('active'); });
+}
+
 const productModal = document.getElementById('productModal');
-if (productModal) { productModal.addEventListener('click', (e) => { if (e.target === productModal) productModal.classList.remove('active'); }); }
+if (productModal) {
+    productModal.addEventListener('click', (e) => { if (e.target === productModal) productModal.classList.remove('active'); });
+}
 
 const modalAddToCartBtn = document.getElementById('modalAddToCartBtn');
 if (modalAddToCartBtn) {
@@ -328,17 +351,21 @@ const closeCart = () => { cartSidebar.classList.remove('active'); cartOverlay.cl
 document.getElementById('closeCartBtn').addEventListener('click', closeCart);
 cartOverlay.addEventListener('click', closeCart);
 
+// NEW: Group items by name and size, add quantity tracking
 function addToCart(name, price, size) {
     let existingItem = cart.find(item => item.name === name && item.size === size);
+    
     if (existingItem) {
         existingItem.qty += 1;
     } else {
         cart.push({ name: name, price: price, size: size, qty: 1 });
     }
+    
     updateCartUI();
     cartSidebar.classList.add('active'); cartOverlay.classList.add('active');
 }
 
+// NEW: Plus / Minus quantity controls
 window.changeQty = function(index, delta) {
     cart[index].qty += delta;
     if (cart[index].qty <= 0) {
@@ -347,11 +374,13 @@ window.changeQty = function(index, delta) {
     updateCartUI();
 }
 
+// KEEP FOR BACKWARD COMPATIBILITY
 window.removeFromCart = function(index) {
     cart.splice(index, 1);
     updateCartUI();
 }
 
+// NEW: Dynamic Policy Display Logic
 window.updateDeliveryPolicyAndTotal = function() {
     const zoneSelect = document.getElementById('deliveryZone');
     const policyDisplay = document.getElementById('dynamicPolicyDisplay');
@@ -370,6 +399,7 @@ window.updateDeliveryPolicyAndTotal = function() {
     updateCartUI(); 
 }
 
+// NEW: Overhauled Cart UI to show +, -, Subtotal, and Delivery
 window.updateCartUI = function() {
     cartItemsContainer.innerHTML = ''; 
     let subtotal = 0;
@@ -404,6 +434,7 @@ window.updateCartUI = function() {
         });
     }
     
+    // Calculate Delivery and Final Total
     const zoneSelect = document.getElementById('deliveryZone');
     let deliveryFee = 0;
     if (zoneSelect && zoneSelect.value && cart.length > 0) {
@@ -412,18 +443,23 @@ window.updateCartUI = function() {
     
     const finalTotal = subtotal + deliveryFee;
     
+    // Safely update all HTML elements if they exist
     if(document.getElementById('cartSubtotalValue')) document.getElementById('cartSubtotalValue').innerText = subtotal;
     if(document.getElementById('cartDeliveryValue')) document.getElementById('cartDeliveryValue').innerText = deliveryFee;
     if(document.getElementById('cartTotalValue')) document.getElementById('cartTotalValue').innerText = finalTotal;
+    
+    // Update total items badge
     if(cartBadge) cartBadge.innerText = totalItems;
 }
 
+// --- UPDATED CHECKOUT LOGIC WITH ADDRESS AND POLICY CHECK ---
 window.checkoutToWhatsApp = function() {
     if (cart.length === 0) { 
         alert(currentLang === 'en' ? "Your cart is empty." : "আপনার কার্ট খালি।"); 
         return; 
     }
     
+    // Safely capture user inputs
     const nameInput = document.getElementById('custName') ? document.getElementById('custName').value.trim() : "";
     const phoneInput = document.getElementById('custPhone') ? document.getElementById('custPhone').value.trim() : "";
     const addressElement = document.getElementById('deliveryAddress');
@@ -433,6 +469,7 @@ window.checkoutToWhatsApp = function() {
     const addressInput = addressElement ? addressElement.value.trim() : "";
     const policyAgree = policyElement ? policyElement.checked : false;
 
+    // Validation checks
     if (!nameInput) { alert(currentLang === 'en' ? "Please enter your Full Name." : "অনুগ্রহ করে আপনার পুরো নাম দিন।"); return; }
     if (!phoneInput) { alert(currentLang === 'en' ? "Please enter your Mobile Number." : "অনুগ্রহ করে আপনার মোবাইল নম্বর দিন।"); return; }
     if (!addressInput) { alert(currentLang === 'en' ? "Please enter your delivery address." : "অনুগ্রহ করে আপনার ডেলিভারি ঠিকানা দিন।"); return; }
@@ -441,7 +478,7 @@ window.checkoutToWhatsApp = function() {
 
     const zoneText = zoneSelect.options[zoneSelect.selectedIndex].text;
     const deliveryFee = parseInt(zoneSelect.value);
-    
+
     const WHATSAPP_NUMBER = "8801330113027"; 
     let message = "Hello Mohor Clothings! I would like to order the following items:%0A%0A";
     let subtotal = 0;
@@ -472,4 +509,5 @@ if(mobileFilterBtn) {
     });
 }
 
+// Initialize on Load
 setTimeout(() => { updateUIText(); }, 100);
