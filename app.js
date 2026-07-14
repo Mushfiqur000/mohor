@@ -12,13 +12,13 @@ const uiTranslations = {
         detailsTitle: "Product Details", addToCart: "Add to Cart", cartTitle: "Your Cart", cartEmpty: "Your cart is empty.",
         cartSubtotal: "Subtotal:", cartDelivery: "Delivery Charge:", cartTotal: "Final Total:",
         orderWhatsapp: "Confirm Order", footerText: "© 2026 Mohor Clothings Bangladesh. All Rights Reserved.",
-        selectOptions: "Select Size & Add to Cart",
+        selectOptions: "Select Size & Add to Cart", searchPlaceholder: "Search dresses, formal, khadi...",
         aboutTitle: "About Mohor Clothings",
         aboutText: "Welcome to Mohor Clothings, your premier destination for handcrafted luxury fashion in Bangladesh. From our breathable, premium soft cotton Three-Piece ensembles to our elegantly tailored Kurtis and authentic Khadi wear, every piece is designed with the modern woman in mind. Whether you are stepping into a university classroom, leading a corporate meeting, or celebrating a festive occasion, our collections offer the perfect fit. Proudly serving Sylhet and customers nationwide, we are dedicated to bringing you high-quality embroidery and timeless designs that empower your everyday wardrobe.",
         deliveryAddressLabel: "Delivery Address *", policyAgreeText: "I agree to the", policyLink: "Delivery & Return Policy",
         selectDeliveryZone: "Select Delivery Zone *", zoneInside: "Inside Sylhet (৳80)", zoneOutside: "Outside Sylhet (৳150)",
         
-        // NEW POLICY PAGE TRANSLATIONS
+        // POLICY PAGE TRANSLATIONS
         policyPageTitle: "Delivery & Return Policy",
         policy1Title: "1. Delivery Information",
         policy1Text: "<ul style='margin-left: 15px; margin-top: 5px;'><li>Estimated delivery time: 1–2 business days.</li><li>Delivery time may vary due to weather or courier delays.</li><li>Our delivery partner will contact you before delivery.</li></ul>",
@@ -39,13 +39,13 @@ const uiTranslations = {
         detailsTitle: "পণ্যের বিস্তারিত", addToCart: "কার্টে যোগ করুন", cartTitle: "আপনার কার্ট", cartEmpty: "আপনার কার্ট খালি।",
         cartSubtotal: "সাবটোটাল:", cartDelivery: "ডেলিভারি চার্জ:", cartTotal: "মোট মূল্য:",
         orderWhatsapp: "কনফার্ম অর্ডার", footerText: "© ২০২৬ মোহর ক্লথিংস বাংলাদেশ। সর্বস্বত্ব সংরক্ষিত।",
-        selectOptions: "সাইজ নির্বাচন করুন",
+        selectOptions: "সাইজ নির্বাচন করুন", searchPlaceholder: "ড্রেস, ফরমাল, খাদি খুঁজুন...",
         aboutTitle: "মোহর ক্লথিংস সম্পর্কে",
         aboutText: "মোহর ক্লথিংস-এ আপনাকে স্বাগতম, বাংলাদেশে হাতে তৈরি লাক্সারি ফ্যাশনের অন্যতম বিশ্বস্ত নাম। আমাদের আরামদায়ক প্রিমিয়াম সফট কটন থ্রি-পিস থেকে শুরু করে আকর্ষণীয় কুর্তি এবং ঐতিহ্যবাহী খাদি পোশাক—প্রতিটি ডিজাইন তৈরি করা হয়েছে আধুনিক নারীদের কথা মাথায় রেখে। আপনি ইউনিভার্সিটির ক্লাসে যান, কর্পোরেট মিটিং পরিচালনা করুন বা কোনো উৎসব উদযাপন করুন, আমাদের কালেকশনে আপনার জন্য মানানসই পোশাক রয়েছে। সিলেট থেকে শুরু করে সারা দেশের গ্রাহকদের জন্য উচ্চমানের এমব্রয়ডারি এবং মানসম্মত ডিজাইনের পোশাক পৌঁছে দিতে আমরা প্রতিশ্রুতিবদ্ধ।",
         deliveryAddressLabel: "ডেলিভারি ঠিকানা *", policyAgreeText: "আমি সম্মত হচ্ছি", policyLink: "ডেলিভারি ও রিটার্ন পলিসিতে",
         selectDeliveryZone: "ডেলিভারি জোন নির্বাচন করুন *", zoneInside: "সিলেটের ভেতরে (৳৮০)", zoneOutside: "সিলেটের বাইরে (৳১৫০)",
         
-        // NEW POLICY PAGE TRANSLATIONS
+        // POLICY PAGE TRANSLATIONS
         policyPageTitle: "ডেলিভারি ও রিটার্ন পলিসি",
         policy1Title: "১. ডেলিভারি তথ্য",
         policy1Text: "<ul style='margin-left: 15px; margin-top: 5px;'><li>আনুমানিক ডেলিভারি সময়: ১-২ কর্মদিবস।</li><li>আবহাওয়া বা কুরিয়ার বিলম্বের কারণে সময় পরিবর্তিত হতে পারে।</li><li>ডেলিভারির আগে আমাদের পার্টনার যোগাযোগ করবে।</li></ul>",
@@ -75,17 +75,17 @@ function updateUIText() {
             }
         }
     });
+
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+        const key = el.getAttribute('data-i18n-placeholder');
+        if (uiTranslations[currentLang][key]) {
+            el.placeholder = uiTranslations[currentLang][key];
+        }
+    });
     
-    // Only try to update products if the grid actually exists on the page
-    if (document.getElementById('productGrid')) { 
-        updateProducts(); 
-    }
+    if (document.getElementById('productGrid')) { updateProducts(); }
     updateCartUI();
-    
-    // Refresh policy text instantly if language is switched
-    if (typeof updateDeliveryPolicyAndTotal === "function") {
-        updateDeliveryPolicyAndTotal();
-    }
+    if (typeof updateDeliveryPolicyAndTotal === "function") { updateDeliveryPolicyAndTotal(); }
 }
 
 document.getElementById('langToggleBtn').addEventListener('click', () => {
@@ -94,10 +94,10 @@ document.getElementById('langToggleBtn').addEventListener('click', () => {
 });
 
 
-// --- PRODUCT RENDERING & FILTERING ---
+// --- PRODUCT RENDERING & SMART SEARCH ---
 function renderProducts(productsToRender) {
     const productGrid = document.getElementById('productGrid');
-    if (!productGrid) return; // Safety check
+    if (!productGrid) return; 
     
     productGrid.innerHTML = '';
     if (!productsToRender || productsToRender.length === 0) {
@@ -132,21 +132,42 @@ function renderProducts(productsToRender) {
 function updateProducts() {
     if (typeof productsData === 'undefined') return;
     const sortSelect = document.getElementById('sortSelect');
-    if (!sortSelect) return; // Safety check
+    const searchInput = document.getElementById('searchInput');
+    if (!sortSelect) return; 
 
     const activeCategories = Array.from(document.querySelectorAll('input[id^="cat-"]:checked')).map(cb => cb.value);
     const activePrices = Array.from(document.querySelectorAll('.price-filter:checked')).map(cb => cb.value);
     const sortValue = sortSelect.value;
+    const searchTerm = searchInput ? searchInput.value.toLowerCase().trim() : '';
 
     let filtered = productsData.filter(product => {
         let catMatch = activeCategories.length === 0 || activeCategories.includes(product.category);
         let priceMatch = activePrices.length === 0;
+        
         if (!priceMatch) {
             if (activePrices.includes('under-1500') && product.price < 1500) priceMatch = true;
             if (activePrices.includes('1500-2500') && product.price >= 1500 && product.price <= 2500) priceMatch = true;
             if (activePrices.includes('above-2500') && product.price > 2500) priceMatch = true;
         }
-        return catMatch && priceMatch;
+
+        // --- NEW: SMART BROAD SEARCH LOGIC ---
+        let searchMatch = true;
+        if (searchTerm !== '') {
+            // Combine all product data into one string
+            let productText = `${getText(product.title)} ${product.category} ${getText(product.description) || ''}`.toLowerCase();
+            
+            // Inject hidden synonyms so broad terms find the right categories
+            if (productText.includes('formal')) productText += ' dress outfit wear office professional corporate';
+            if (productText.includes('kurti')) productText += ' dress outfit single shirt top casual';
+            if (productText.includes('three-piece') || productText.includes('three piece')) productText += ' dress outfit suit salwar kameez set';
+            if (productText.includes('khadi')) productText += ' dress outfit traditional cotton ethnic authentic';
+
+            // Check if ALL words typed by the user appear SOMEWHERE in our expanded string
+            let searchKeywords = searchTerm.split(/\s+/);
+            searchMatch = searchKeywords.every(word => productText.includes(word));
+        }
+
+        return catMatch && priceMatch && searchMatch;
     });
 
     if (sortValue === 'low-high') { filtered.sort((a, b) => a.price - b.price); } 
@@ -155,14 +176,15 @@ function updateProducts() {
     renderProducts(filtered);
 }
 
-// Attach event listeners only if elements exist
+// Attach event listeners
 const checkboxes = document.querySelectorAll('.filter-checkbox');
 checkboxes.forEach(cb => cb.addEventListener('change', updateProducts));
 
 const sortSelect = document.getElementById('sortSelect');
-if (sortSelect) {
-    sortSelect.addEventListener('change', updateProducts);
-}
+if (sortSelect) { sortSelect.addEventListener('change', updateProducts); }
+
+const searchInput = document.getElementById('searchInput');
+if (searchInput) { searchInput.addEventListener('input', updateProducts); }
 
 
 // --- MODAL LOGIC ---
@@ -179,11 +201,7 @@ function openProductModal(product) {
     selectedColor = null;
     document.getElementById('sizeWarning').style.display = 'none';
     document.getElementById('colorWarning').style.display = 'none';
-    
-    // Clear size guide display when opening a new product
-    if(document.getElementById('sizeGuideDisplay')) {
-        document.getElementById('sizeGuideDisplay').innerHTML = ""; 
-    }
+    if(document.getElementById('sizeGuideDisplay')) { document.getElementById('sizeGuideDisplay').innerHTML = ""; }
 
     document.getElementById('modalTitle').innerText = getText(product.title);
     document.getElementById('modalPrice').innerText = `৳ ${product.price}`;
@@ -261,7 +279,6 @@ function selectOption(clickedBtn, value, type) {
         document.getElementById('sizeWarning').style.display = 'none';
         document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('selected'));
         
-        // --- SHOW DYNAMIC MEASUREMENTS ---
         const sizeGuideDisplay = document.getElementById('sizeGuideDisplay');
         if (sizeGuideDisplay) {
             if (currentViewingProduct.sizeMeasurements && currentViewingProduct.sizeMeasurements[value]) {
@@ -279,14 +296,9 @@ function selectOption(clickedBtn, value, type) {
 }
 
 const closeModalBtn = document.getElementById('closeModalBtn');
-if (closeModalBtn) {
-    closeModalBtn.addEventListener('click', () => { document.getElementById('productModal').classList.remove('active'); });
-}
-
+if (closeModalBtn) { closeModalBtn.addEventListener('click', () => { document.getElementById('productModal').classList.remove('active'); }); }
 const productModal = document.getElementById('productModal');
-if (productModal) {
-    productModal.addEventListener('click', (e) => { if (e.target === productModal) productModal.classList.remove('active'); });
-}
+if (productModal) { productModal.addEventListener('click', (e) => { if (e.target === productModal) productModal.classList.remove('active'); }); }
 
 const modalAddToCartBtn = document.getElementById('modalAddToCartBtn');
 if (modalAddToCartBtn) {
@@ -316,21 +328,17 @@ const closeCart = () => { cartSidebar.classList.remove('active'); cartOverlay.cl
 document.getElementById('closeCartBtn').addEventListener('click', closeCart);
 cartOverlay.addEventListener('click', closeCart);
 
-// NEW: Group items by name and size, add quantity tracking
 function addToCart(name, price, size) {
     let existingItem = cart.find(item => item.name === name && item.size === size);
-    
     if (existingItem) {
         existingItem.qty += 1;
     } else {
         cart.push({ name: name, price: price, size: size, qty: 1 });
     }
-    
     updateCartUI();
     cartSidebar.classList.add('active'); cartOverlay.classList.add('active');
 }
 
-// NEW: Plus / Minus quantity controls
 window.changeQty = function(index, delta) {
     cart[index].qty += delta;
     if (cart[index].qty <= 0) {
@@ -339,13 +347,11 @@ window.changeQty = function(index, delta) {
     updateCartUI();
 }
 
-// KEEP FOR BACKWARD COMPATIBILITY
 window.removeFromCart = function(index) {
     cart.splice(index, 1);
     updateCartUI();
 }
 
-// NEW: Dynamic Policy Display Logic
 window.updateDeliveryPolicyAndTotal = function() {
     const zoneSelect = document.getElementById('deliveryZone');
     const policyDisplay = document.getElementById('dynamicPolicyDisplay');
@@ -364,7 +370,6 @@ window.updateDeliveryPolicyAndTotal = function() {
     updateCartUI(); 
 }
 
-// NEW: Overhauled Cart UI to show +, -, Subtotal, and Delivery
 window.updateCartUI = function() {
     cartItemsContainer.innerHTML = ''; 
     let subtotal = 0;
@@ -399,7 +404,6 @@ window.updateCartUI = function() {
         });
     }
     
-    // Calculate Delivery and Final Total
     const zoneSelect = document.getElementById('deliveryZone');
     let deliveryFee = 0;
     if (zoneSelect && zoneSelect.value && cart.length > 0) {
@@ -408,23 +412,18 @@ window.updateCartUI = function() {
     
     const finalTotal = subtotal + deliveryFee;
     
-    // Safely update all HTML elements if they exist
     if(document.getElementById('cartSubtotalValue')) document.getElementById('cartSubtotalValue').innerText = subtotal;
     if(document.getElementById('cartDeliveryValue')) document.getElementById('cartDeliveryValue').innerText = deliveryFee;
     if(document.getElementById('cartTotalValue')) document.getElementById('cartTotalValue').innerText = finalTotal;
-    
-    // Update total items badge
     if(cartBadge) cartBadge.innerText = totalItems;
 }
 
-// --- UPDATED CHECKOUT LOGIC ---
 window.checkoutToWhatsApp = function() {
     if (cart.length === 0) { 
         alert(currentLang === 'en' ? "Your cart is empty." : "আপনার কার্ট খালি।"); 
         return; 
     }
     
-    // Safely capture user inputs
     const nameInput = document.getElementById('custName') ? document.getElementById('custName').value.trim() : "";
     const phoneInput = document.getElementById('custPhone') ? document.getElementById('custPhone').value.trim() : "";
     const addressElement = document.getElementById('deliveryAddress');
@@ -434,7 +433,6 @@ window.checkoutToWhatsApp = function() {
     const addressInput = addressElement ? addressElement.value.trim() : "";
     const policyAgree = policyElement ? policyElement.checked : false;
 
-    // Validation checks
     if (!nameInput) { alert(currentLang === 'en' ? "Please enter your Full Name." : "অনুগ্রহ করে আপনার পুরো নাম দিন।"); return; }
     if (!phoneInput) { alert(currentLang === 'en' ? "Please enter your Mobile Number." : "অনুগ্রহ করে আপনার মোবাইল নম্বর দিন।"); return; }
     if (!addressInput) { alert(currentLang === 'en' ? "Please enter your delivery address." : "অনুগ্রহ করে আপনার ডেলিভারি ঠিকানা দিন।"); return; }
@@ -474,5 +472,4 @@ if(mobileFilterBtn) {
     });
 }
 
-// Initialize on Load
 setTimeout(() => { updateUIText(); }, 100);
