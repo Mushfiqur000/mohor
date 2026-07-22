@@ -3,42 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Portal - Mohor</title>
-    <link rel="stylesheet" href="style.css">
+    <title>MOHOR Admin Dashboard</title>
+    <style>
+        body { font-family: sans-serif; padding: 40px; text-align: center; }
+        .dashboard-container { max-width: 600px; margin: 0 auto; }
+        button { padding: 10px 20px; background-color: #8b0000; color: white; border: none; cursor: pointer; margin-top: 20px;}
+        button:hover { background-color: #600000; }
+    </style>
 </head>
 <body>
-
-    <!-- 1. The Admin Login Screen -->
-    <div id="admin-login-section" style="text-align: center; margin-top: 50px;">
-        <h2>Mohor Admin Access</h2>
-        <form id="admin-login-form" style="max-width: 300px; margin: 0 auto;">
-            <input type="email" id="admin-email" placeholder="Admin Email" required style="display: block; width: 100%; margin-bottom: 10px; padding: 8px;">
-            <input type="password" id="admin-password" placeholder="Master Password" required style="display: block; width: 100%; margin-bottom: 10px; padding: 8px;">
-            <button type="submit" style="width: 100%; padding: 10px; background-color: darkred; color: white;">Access Dashboard</button>
-        </form>
-    </div>
-
-    <!-- 2. The Hidden Dashboard (Appears after login) -->
-    <div id="admin-dashboard-section" style="display: none; padding: 20px;">
-        <h2>Order Management Dashboard</h2>
-        <button id="logout-btn">Log Out</button>
+    <div class="dashboard-container">
+        <h1>MOHOR Admin Dashboard</h1>
+        <p>Welcome back! You are securely logged in as: <strong id="user-email">Loading...</strong></p>
         
-        <table border="1" style="width: 100%; margin-top: 20px; text-align: left;">
-            <thead>
-                <tr>
-                    <th>Order ID</th>
-                    <th>Customer Name</th>
-                    <th>Items</th>
-                    <th>Total</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody id="order-table-body">
-                <!-- Orders will be injected here by JavaScript -->
-            </tbody>
-        </table>
+        <!-- We will put your product upload forms and data tables here later -->
+
+        <button id="logout-btn">Log Out</button>
     </div>
 
-    <script src="auth.js"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+        // ⚠️ REPLACE THIS WITH YOUR ACTUAL FIREBASE CONFIG ⚠️
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        // Security Check: If not logged in, redirect to login.html
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // User is verified, display their email
+                document.getElementById('user-email').innerText = user.email;
+            } else {
+                // Not logged in, kick them out!
+                window.location.href = "login.html";
+            }
+        });
+
+        // Log Out Button Logic
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            signOut(auth).then(() => {
+                window.location.href = "login.html";
+            }).catch((error) => {
+                console.error("Error signing out: ", error);
+            });
+        });
+    </script>
 </body>
 </html>
