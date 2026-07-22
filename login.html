@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Mohor</title>
+    <!-- Link your existing CSS file here -->
+    <link rel="stylesheet" href="style.css"> 
+</head>
+<body>
+
+    <div class="login-container" style="text-align: center; margin-top: 50px;">
+        <h2>Welcome to Mohor</h2>
+        <p>Log in to save your details for faster checkout.</p>
+        
+        <form id="customer-login-form" style="max-width: 300px; margin: 0 auto;">
+            <input type="email" id="customer-email" placeholder="Email Address" required style="display: block; width: 100%; margin-bottom: 10px; padding: 8px;">
+            <input type="password" id="customer-password" placeholder="Password" required style="display: block; width: 100%; margin-bottom: 10px; padding: 8px;">
+            
+            <button type="submit" style="width: 100%; padding: 10px; background-color: #333; color: white;">Log In</button>
+        </form>
+
+        <p style="margin-top: 20px;">
+            Don't have an account? <a href="#">Sign up</a><br><br>
+            <a href="index.html">← Continue as Guest</a>
+        </form>
+    </div>
+
+    <!-- We will connect the database script here later -->
+    <script src="auth.js"></script> 
+</body>
+</html>
