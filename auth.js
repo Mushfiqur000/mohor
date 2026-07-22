@@ -1,41 +1,61 @@
-// Import the functions you need directly from Google's browser servers
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MOHOR Admin Dashboard</title>
+    <style>
+        body { font-family: sans-serif; padding: 40px; text-align: center; }
+        .dashboard-container { max-width: 600px; margin: 0 auto; }
+        button { padding: 10px 20px; background-color: #8b0000; color: white; border: none; cursor: pointer; margin-top: 20px;}
+        button:hover { background-color: #600000; }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <h1>MOHOR Admin Dashboard</h1>
+        <p>Welcome back! You are securely logged in as: <strong id="user-email">Loading...</strong></p>
+        
+        <!-- We will put your product upload forms and data tables here later -->
 
-// Your web app's Firebase configuration keys
-const firebaseConfig = {
-  apiKey: "AIzaSyALxypXDkF9QexbD_wE7-ADALIdj5vd-rY",
-  authDomain: "mohor-app.firebaseapp.com",
-  projectId: "mohor-app",
-  storageBucket: "mohor-app.firebasestorage.app",
-  messagingSenderId: "989000457004",
-  appId: "1:989000457004:web:5679b256e20d94e27daa89"
-};
+        <button id="logout-btn">Log Out</button>
+    </div>
 
-// Initialize Firebase and Authentication
-const app = initializeApp(firebaseConfig);
-export const auth = getAuth(app);
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-// LOGIN FUNCTIONALITY
-const loginForm = document.getElementById('customer-login-form');
+        const firebaseConfig = {
+            apiKey: "AIzaSyALxypXDkF9QexbD_wE7-ADALIdj5vd-rY",
+            authDomain: "mohor-app.firebaseapp.com",
+            projectId: "mohor-app",
+            storageBucket: "mohor-app.firebasestorage.app",
+            messagingSenderId: "989000457004",
+            appId: "1:989000457004:web:5679b256e20d94e27daa89"
+        };
 
-if (loginForm) {
-    loginForm.addEventListener('submit', (e) => {
-        e.preventDefault(); // Prevents the page from refreshing immediately
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
 
-        // Get the email and password the user typed in
-        const email = document.getElementById('customer-email').value;
-        const password = document.getElementById('customer-password').value;
+        // Security Check: If not logged in, redirect to login.html
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // User is verified, display their email
+                document.getElementById('user-email').innerText = user.email;
+            } else {
+                // Not logged in, kick them out!
+                window.location.href = "login.html";
+            }
+        });
 
-        // Ask Firebase to verify the credentials
-        signInWithEmailAndPassword(auth, email, password)
-            .then((userCredential) => {
-                // Success! Redirect to the admin page
-                window.location.href = "admin.html";
-            })
-            .catch((error) => {
-                // Failure! Show an error message
-                alert("Login failed: " + error.message);
+        // Log Out Button Logic
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            signOut(auth).then(() => {
+                window.location.href = "login.html";
+            }).catch((error) => {
+                console.error("Error signing out: ", error);
             });
-    });
-}
+        });
+    </script>
+</body>
+</html>
