@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Portal - Mohor</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- 1. The Admin Login Screen -->
+    <div id="admin-login-section" style="text-align: center; margin-top: 50px;">
+        <h2>Mohor Admin Access</h2>
+        <form id="admin-login-form" style="max-width: 300px; margin: 0 auto;">
+            <input type="email" id="admin-email" placeholder="Admin Email" required style="display: block; width: 100%; margin-bottom: 10px; padding: 8px;">
+            <input type="password" id="admin-password" placeholder="Master Password" required style="display: block; width: 100%; margin-bottom: 10px; padding: 8px;">
+            <button type="submit" style="width: 100%; padding: 10px; background-color: darkred; color: white;">Access Dashboard</button>
+        </form>
+    </div>
+
+    <!-- 2. The Hidden Dashboard (Appears after login) -->
+    <div id="admin-dashboard-section" style="display: none; padding: 20px;">
+        <h2>Order Management Dashboard</h2>
+        <button id="logout-btn">Log Out</button>
+        
+        <table border="1" style="width: 100%; margin-top: 20px; text-align: left;">
+            <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Customer Name</th>
+                    <th>Items</th>
+                    <th>Total</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody id="order-table-body">
+                <!-- Orders will be injected here by JavaScript -->
+            </tbody>
+        </table>
+    </div>
+
+    <script src="auth.js"></script>
+</body>
+</html>
