@@ -1,7 +1,7 @@
 // --- LANGUAGE DICTIONARY ---
-let currentLang = 'en';
+window.currentLang = 'en';
 
-const uiTranslations = {
+window.uiTranslations = {
     en: {
         navShop: "Shop", navAbout: "About Us", navPolicy: "Policy", navCart: "Cart", shopTitle: "Our Collection", filterBtn: "Filters",
         sortDefault: "Sort by: Default", sortLowHigh: "Price: Low to High", sortHighLow: "Price: High to Low",
@@ -54,33 +54,33 @@ const uiTranslations = {
         policy3Title: "৩. রিটার্ন ও এক্সচেঞ্জ পলিসি",
         policy3Text: "আমরা আমাদের হাতে তৈরি পোশাকের মানের বিষয়ে গর্ববোধ করি। তবে, যদি আপনি কোনো ত্রুটিপূর্ণ বা ভুল পণ্য পান, অনুগ্রহ করে ডেলিভারি পাওয়ার ২৪ ঘণ্টার মধ্যে আমাদের জানান। পণ্যটি অবশ্যই অব্যবহৃত, ধোয়া হয়নি এমন, এবং অরিজিনাল প্যাকেজিং ও ট্যাগযুক্ত থাকতে হবে। কোনো ক্ষতি বা ত্রুটি দাবি করার জন্য অনুগ্রহ করে একটি আনবক্সিং ভিডিও রেকর্ড করুন।",
         policy4Title: "৪. রঙের ডিসক্লেইমার",
-        policy4Text: "যদিও আমরা নিশ্চিত করার চেষ্টা করি যে আমাদের ছবিগুলো পণ্যের সঠিক রং উপস্থাপন করে, ফটোগ্রাফির সময় আলোর কারণে বা আপনার ডিভাইসের ডিসপ্লে সেটিংসের কারণে আসল রং সামান্য ভিন্ন হতে পারে। শুধুমাত্র সামান্য রঙের পার্থক্যের কারণে কোনো এক্সচেঞ্জ গ্রহণ করা হবে না।"
+        policy4Text: "যদিও আমরা নিশ্চিত করার চেষ্টা করি যে আমাদের ছবিগুলো পণ্যের সঠিক রং উপস্থাপন করে, ফটোগ্রাফির সময় আলোর কারণে বা আপনার ডিভাইসের ডিসপ্লে সেটিংসের কারণে আসল রং সামান্য ভিন্ন হতে পারে। শুধুমাত্র সামান্য রঙের পার্থক্যের কারণে কোনো এক্সচেঞ্জ গ্রহণ করা হবেচ্ছ না।"
     }
 };
 
 function getText(dataField) {
     if (!dataField) return "";
     if (typeof dataField === 'string') return dataField; 
-    return dataField[currentLang] || dataField['en'] || "";
+    return dataField[window.currentLang] || dataField['en'] || "";
 }
 
 function updateUIText() {
     document.querySelectorAll('[data-i18n]').forEach(el => {
         const key = el.getAttribute('data-i18n');
-        if (uiTranslations[currentLang][key]) {
+        if (window.uiTranslations[window.currentLang][key]) {
             if (el.tagName === 'OPTION') {
-                el.innerText = uiTranslations[currentLang][key];
+                el.innerText = window.uiTranslations[window.currentLang][key];
             } else {
-                el.innerHTML = uiTranslations[currentLang][key];
+                el.innerHTML = window.uiTranslations[window.currentLang][key];
             }
         }
     });
 
-    // NEW: Update search bar placeholder language
+    // Update search bar placeholder language
     document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
         const key = el.getAttribute('data-i18n-placeholder');
-        if (uiTranslations[currentLang][key]) {
-            el.placeholder = uiTranslations[currentLang][key];
+        if (window.uiTranslations[window.currentLang][key]) {
+            el.placeholder = window.uiTranslations[window.currentLang][key];
         }
     });
     
@@ -88,16 +88,14 @@ function updateUIText() {
     if (document.getElementById('productGrid')) { 
         updateProducts(); 
     }
-    updateCartUI();
     
-    // Refresh policy text instantly if language is switched
-    if (typeof updateDeliveryPolicyAndTotal === "function") {
-        updateDeliveryPolicyAndTotal();
-    }
+    // Call UI updates from cart.js safely
+    if (typeof window.updateCartUI === "function") window.updateCartUI();
+    if (typeof window.updateDeliveryPolicyAndTotal === "function") window.updateDeliveryPolicyAndTotal();
 }
 
 document.getElementById('langToggleBtn').addEventListener('click', () => {
-    currentLang = (currentLang === 'en') ? 'bn' : 'en';
+    window.currentLang = (window.currentLang === 'en') ? 'bn' : 'en';
     updateUIText();
 });
 
@@ -105,11 +103,11 @@ document.getElementById('langToggleBtn').addEventListener('click', () => {
 // --- PRODUCT RENDERING & FILTERING ---
 function renderProducts(productsToRender) {
     const productGrid = document.getElementById('productGrid');
-    if (!productGrid) return; // Safety check
+    if (!productGrid) return; 
     
     productGrid.innerHTML = '';
     if (!productsToRender || productsToRender.length === 0) {
-        productGrid.innerHTML = `<p style="grid-column: 1/-1; text-align:center; padding: 40px; color: #666;">${uiTranslations[currentLang].noProducts}</p>`;
+        productGrid.innerHTML = `<p style="grid-column: 1/-1; text-align:center; padding: 40px; color: #666;">${window.uiTranslations[window.currentLang].noProducts}</p>`;
         return;
     }
 
@@ -130,7 +128,7 @@ function renderProducts(productsToRender) {
                 <span class="product-category-label">${displayCategory}</span>
                 <h3>${displayTitle}</h3>
                 <p class="product-price">৳ ${product.price}</p>
-                <button class="add-to-cart-btn" style="padding: 10px; margin-top: 10px; font-size: 11px; width: 100%; border-radius: 4px;">${uiTranslations[currentLang].selectOptions}</button>
+                <button class="add-to-cart-btn" style="padding: 10px; margin-top: 10px; font-size: 11px; width: 100%; border-radius: 4px;">${window.uiTranslations[window.currentLang].selectOptions}</button>
             </div>
         `;
         productGrid.appendChild(card);
@@ -140,13 +138,13 @@ function renderProducts(productsToRender) {
 function updateProducts() {
     if (typeof productsData === 'undefined') return;
     const sortSelect = document.getElementById('sortSelect');
-    const searchInput = document.getElementById('searchInput'); // NEW
-    if (!sortSelect) return; // Safety check
+    const searchInput = document.getElementById('searchInput'); 
+    if (!sortSelect) return; 
 
     const activeCategories = Array.from(document.querySelectorAll('input[id^="cat-"]:checked')).map(cb => cb.value);
     const activePrices = Array.from(document.querySelectorAll('.price-filter:checked')).map(cb => cb.value);
     const sortValue = sortSelect.value;
-    const searchTerm = searchInput ? searchInput.value.toLowerCase().trim() : ''; // NEW
+    const searchTerm = searchInput ? searchInput.value.toLowerCase().trim() : ''; 
 
     let filtered = productsData.filter(product => {
         let catMatch = activeCategories.length === 0 || activeCategories.includes(product.category);
@@ -158,19 +156,16 @@ function updateProducts() {
             if (activePrices.includes('above-2500') && product.price > 2500) priceMatch = true;
         }
 
-        // --- NEW: SMART BROAD SEARCH LOGIC ---
+        // --- SMART BROAD SEARCH LOGIC ---
         let searchMatch = true;
         if (searchTerm !== '') {
-            // Combine all product data into one string
             let productText = `${getText(product.title)} ${product.category} ${getText(product.description) || ''}`.toLowerCase();
             
-            // Inject hidden synonyms so broad terms find the right categories
             if (productText.includes('formal')) productText += ' dress outfit wear office professional corporate';
             if (productText.includes('kurti')) productText += ' dress outfit single shirt top casual';
             if (productText.includes('three-piece') || productText.includes('three piece')) productText += ' dress outfit suit salwar kameez set';
             if (productText.includes('khadi')) productText += ' dress outfit traditional cotton ethnic authentic';
 
-            // Check if ALL words typed by the user appear SOMEWHERE in our expanded string
             let searchKeywords = searchTerm.split(/\s+/);
             searchMatch = searchKeywords.every(word => productText.includes(word));
         }
@@ -193,7 +188,6 @@ if (sortSelect) {
     sortSelect.addEventListener('change', updateProducts);
 }
 
-// NEW: Search Input Event Listener
 const searchInput = document.getElementById('searchInput');
 if (searchInput) { 
     searchInput.addEventListener('input', updateProducts); 
@@ -215,7 +209,6 @@ function openProductModal(product) {
     document.getElementById('sizeWarning').style.display = 'none';
     document.getElementById('colorWarning').style.display = 'none';
     
-    // Clear size guide display when opening a new product
     if(document.getElementById('sizeGuideDisplay')) {
         document.getElementById('sizeGuideDisplay').innerHTML = ""; 
     }
@@ -248,7 +241,7 @@ function openProductModal(product) {
     colorsContainer.innerHTML = '';
     
     let colorArray = [];
-    if (product.colors) { colorArray = Array.isArray(product.colors) ? product.colors : (product.colors[currentLang] || product.colors['en'] || []); }
+    if (product.colors) { colorArray = Array.isArray(product.colors) ? product.colors : (product.colors[window.currentLang] || product.colors['en'] || []); }
 
     if (colorArray.length > 0) {
         colorSection.style.display = 'block';
@@ -279,7 +272,7 @@ function openProductModal(product) {
     const detailsList = document.getElementById('modalDetails');
     detailsList.innerHTML = '';
     let detailsArray = [];
-    if (product.details) { detailsArray = Array.isArray(product.details) ? product.details : (product.details[currentLang] || product.details['en'] || []); }
+    if (product.details) { detailsArray = Array.isArray(product.details) ? product.details : (product.details[window.currentLang] || product.details['en'] || []); }
     
     detailsArray.forEach(detail => {
         const li = document.createElement('li');
@@ -296,11 +289,10 @@ function selectOption(clickedBtn, value, type) {
         document.getElementById('sizeWarning').style.display = 'none';
         document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('selected'));
         
-        // --- SHOW DYNAMIC MEASUREMENTS ---
         const sizeGuideDisplay = document.getElementById('sizeGuideDisplay');
         if (sizeGuideDisplay) {
             if (currentViewingProduct.sizeMeasurements && currentViewingProduct.sizeMeasurements[value]) {
-                sizeGuideDisplay.innerHTML = currentViewingProduct.sizeMeasurements[value][currentLang] || currentViewingProduct.sizeMeasurements[value]['en'];
+                sizeGuideDisplay.innerHTML = currentViewingProduct.sizeMeasurements[value][window.currentLang] || currentViewingProduct.sizeMeasurements[value]['en'];
             } else {
                 sizeGuideDisplay.innerHTML = "";
             }
@@ -334,168 +326,12 @@ if (modalAddToCartBtn) {
         let displayName = typeof currentViewingProduct.title === 'string' ? currentViewingProduct.title : currentViewingProduct.title.en;
         if(selectedColor !== "Default") displayName += ` (${selectedColor})`;
 
-        addToCart(displayName, currentViewingProduct.price, selectedSize);
+        // Calls the cart.js function
+        if(typeof window.addToCart === "function") {
+            window.addToCart(displayName, currentViewingProduct.price, selectedSize);
+        }
         document.getElementById('productModal').classList.remove('active');
     });
-}
-
-// --- CART, QUANTITY & WHATSAPP LOGIC ---
-let cart = [];
-const cartOverlay = document.getElementById('cartOverlay');
-const cartSidebar = document.getElementById('cartSidebar');
-const cartItemsContainer = document.getElementById('cartItemsContainer');
-const cartBadge = document.getElementById('cartBadge');
-
-document.getElementById('openCartBtn').addEventListener('click', () => { cartSidebar.classList.add('active'); cartOverlay.classList.add('active'); });
-const closeCart = () => { cartSidebar.classList.remove('active'); cartOverlay.classList.remove('active'); };
-document.getElementById('closeCartBtn').addEventListener('click', closeCart);
-cartOverlay.addEventListener('click', closeCart);
-
-// NEW: Group items by name and size, add quantity tracking
-function addToCart(name, price, size) {
-    let existingItem = cart.find(item => item.name === name && item.size === size);
-    
-    if (existingItem) {
-        existingItem.qty += 1;
-    } else {
-        cart.push({ name: name, price: price, size: size, qty: 1 });
-    }
-    
-    updateCartUI();
-    cartSidebar.classList.add('active'); cartOverlay.classList.add('active');
-}
-
-// NEW: Plus / Minus quantity controls
-window.changeQty = function(index, delta) {
-    cart[index].qty += delta;
-    if (cart[index].qty <= 0) {
-        cart.splice(index, 1);
-    }
-    updateCartUI();
-}
-
-// KEEP FOR BACKWARD COMPATIBILITY
-window.removeFromCart = function(index) {
-    cart.splice(index, 1);
-    updateCartUI();
-}
-
-// NEW: Dynamic Policy Display Logic
-window.updateDeliveryPolicyAndTotal = function() {
-    const zoneSelect = document.getElementById('deliveryZone');
-    const policyDisplay = document.getElementById('dynamicPolicyDisplay');
-    
-    if (zoneSelect && policyDisplay) {
-        if (zoneSelect.value === "80") {
-            policyDisplay.style.display = "block";
-            policyDisplay.innerHTML = uiTranslations[currentLang].policy1Text;
-        } else if (zoneSelect.value === "150") {
-            policyDisplay.style.display = "block";
-            policyDisplay.innerHTML = uiTranslations[currentLang].policy2Text;
-        } else {
-            policyDisplay.style.display = "none";
-        }
-    }
-    updateCartUI(); 
-}
-
-// NEW: Overhauled Cart UI to show +, -, Subtotal, and Delivery
-window.updateCartUI = function() {
-    cartItemsContainer.innerHTML = ''; 
-    let subtotal = 0;
-    let totalItems = 0;
-    
-    if (cart.length === 0) {
-        cartItemsContainer.innerHTML = `<p style="text-align: center; color: #666; margin-top: 20px;">${uiTranslations[currentLang].cartEmpty}</p>`;
-    } else {
-        cart.forEach((item, index) => {
-            let itemTotal = item.price * item.qty;
-            subtotal += itemTotal;
-            totalItems += item.qty;
-            
-            cartItemsContainer.innerHTML += `
-                <div class="cart-item" style="align-items: center;">
-                    <div class="cart-item-info" style="flex: 1;">
-                        <strong style="display: block; margin-bottom: 3px;">${item.name}</strong>
-                        <span style="font-size: 11px; color: var(--text-light); text-transform: uppercase;">Size: ${item.size}</span>
-                        
-                        <div style="display: flex; align-items: center; gap: 10px; margin-top: 8px;">
-                            <button onclick="changeQty(${index}, -1)" style="border: 1px solid var(--border-color); background: var(--soft-gray); width: 22px; height: 22px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: bold; border-radius: 2px;">-</button>
-                            <span style="font-size: 13px; font-weight: 600;">${item.qty}</span>
-                            <button onclick="changeQty(${index}, 1)" style="border: 1px solid var(--border-color); background: var(--soft-gray); width: 22px; height: 22px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: bold; border-radius: 2px;">+</button>
-                        </div>
-                    </div>
-                    
-                    <div style="text-align: right;">
-                        <div style="font-weight:600; color:var(--primary-gold); margin-bottom: 5px;">৳${itemTotal}</div>
-                        <button class="remove-item" onclick="removeFromCart(${index})" style="font-size: 10px;">Remove</button>
-                    </div>
-                </div>`;
-        });
-    }
-    
-    // Calculate Delivery and Final Total
-    const zoneSelect = document.getElementById('deliveryZone');
-    let deliveryFee = 0;
-    if (zoneSelect && zoneSelect.value && cart.length > 0) {
-        deliveryFee = parseInt(zoneSelect.value);
-    }
-    
-    const finalTotal = subtotal + deliveryFee;
-    
-    // Safely update all HTML elements if they exist
-    if(document.getElementById('cartSubtotalValue')) document.getElementById('cartSubtotalValue').innerText = subtotal;
-    if(document.getElementById('cartDeliveryValue')) document.getElementById('cartDeliveryValue').innerText = deliveryFee;
-    if(document.getElementById('cartTotalValue')) document.getElementById('cartTotalValue').innerText = finalTotal;
-    
-    // Update total items badge
-    if(cartBadge) cartBadge.innerText = totalItems;
-}
-
-// --- UPDATED CHECKOUT LOGIC WITH ADDRESS AND POLICY CHECK ---
-window.checkoutToWhatsApp = function() {
-    if (cart.length === 0) { 
-        alert(currentLang === 'en' ? "Your cart is empty." : "আপনার কার্ট খালি।"); 
-        return; 
-    }
-    
-    // Safely capture user inputs
-    const nameInput = document.getElementById('custName') ? document.getElementById('custName').value.trim() : "";
-    const phoneInput = document.getElementById('custPhone') ? document.getElementById('custPhone').value.trim() : "";
-    const addressElement = document.getElementById('deliveryAddress');
-    const zoneSelect = document.getElementById('deliveryZone');
-    const policyElement = document.getElementById('policyAgree');
-    
-    const addressInput = addressElement ? addressElement.value.trim() : "";
-    const policyAgree = policyElement ? policyElement.checked : false;
-
-    // Validation checks
-    if (!nameInput) { alert(currentLang === 'en' ? "Please enter your Full Name." : "অনুগ্রহ করে আপনার পুরো নাম দিন।"); return; }
-    if (!phoneInput) { alert(currentLang === 'en' ? "Please enter your Mobile Number." : "অনুগ্রহ করে আপনার মোবাইল নম্বর দিন।"); return; }
-    if (!addressInput) { alert(currentLang === 'en' ? "Please enter your delivery address." : "অনুগ্রহ করে আপনার ডেলিভারি ঠিকানা দিন।"); return; }
-    if (!zoneSelect || !zoneSelect.value) { alert(currentLang === 'en' ? "Please select a Delivery Zone." : "অনুগ্রহ করে ডেলিভারি জোন নির্বাচন করুন।"); return; }
-    if (!policyAgree) { alert(currentLang === 'en' ? "Please agree to the Delivery & Return Policy." : "অনুগ্রহ করে ডেলিভারি ও রিটার্ন পলিসিতে সম্মত হোন।"); return; }
-
-    const zoneText = zoneSelect.options[zoneSelect.selectedIndex].text;
-    const deliveryFee = parseInt(zoneSelect.value);
-
-    const WHATSAPP_NUMBER = "8801330113027"; 
-    let message = "Hello Mohor Clothings! I would like to order the following items:%0A%0A";
-    let subtotal = 0;
-    
-    cart.forEach((item, index) => { 
-        let itemTotal = item.price * item.qty;
-        message += `${index + 1}. ${item.name} (Size: ${item.size}) | Qty: ${item.qty} - ৳${itemTotal}%0A`; 
-        subtotal += itemTotal; 
-    });
-    
-    message += `%0A*Subtotal: ৳${subtotal}*`;
-    message += `%0A*Delivery (${zoneText}): ৳${deliveryFee}*`;
-    message += `%0A*FINAL TOTAL: ৳${subtotal + deliveryFee}*%0A`;
-    
-    message += `%0A*CUSTOMER DETAILS:*%0AName: ${nameInput}%0APhone: ${phoneInput}%0AAddress: ${addressInput}`;
-    
-    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${message}`, '_blank');
 }
 
 // Mobile Menu
@@ -505,7 +341,7 @@ if(mobileFilterBtn) {
     mobileFilterBtn.addEventListener('click', function() {
         const sidebar = document.getElementById('sidebar');
         sidebar.classList.toggle('active');
-        this.innerText = uiTranslations[currentLang].filterBtn;
+        this.innerText = window.uiTranslations[window.currentLang].filterBtn;
     });
 }
 
