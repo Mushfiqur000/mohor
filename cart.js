@@ -173,16 +173,15 @@ window.checkoutToAdmin = async function() {
     if (!orderData) return; 
     
     // 1. Temporarily disable the button so the user doesn't double-click
-    const confirmBtn = document.querySelector('button[onclick="window.checkoutToAdmin()"]');
-    let originalText = "Confirm Order";
+    const confirmBtn = document.getElementById('adminOrderBtn');
+    let originalText = confirmBtn ? confirmBtn.innerHTML : "Confirm Order";
     if (confirmBtn) {
-        originalText = confirmBtn.innerHTML;
         confirmBtn.innerHTML = window.currentLang === 'en' ? "Processing..." : "প্রসেস হচ্ছে...";
         confirmBtn.disabled = true;
     }
 
     try {
-        // 2. Package the order data perfectly for your Admin Dashboard
+        // 2. Package the order data
         const newOrder = {
             customerName: orderData.name,
             customerPhone: orderData.phone,
@@ -193,7 +192,7 @@ window.checkoutToAdmin = async function() {
             totalAmount: orderData.finalTotal,
             items: window.cart,
             orderDate: new Date().toISOString(),
-            status: "New" // Sets it as a New order for your admin panel
+            status: "New" 
         };
 
         // 3. Send the data to your Firebase 'orders' collection
