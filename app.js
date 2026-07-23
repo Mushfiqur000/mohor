@@ -317,7 +317,10 @@ if (productModal) {
 
 const modalAddToCartBtn = document.getElementById('modalAddToCartBtn');
 if (modalAddToCartBtn) {
-    modalAddToCartBtn.addEventListener('click', () => {
+    // FIX: ADDED 'e' AND 'e.preventDefault()' HERE
+    modalAddToCartBtn.addEventListener('click', (e) => {
+        e.preventDefault(); 
+        
         let valid = true;
         if (!selectedSize) { document.getElementById('sizeWarning').style.display = 'inline'; valid = false; }
         if (!selectedColor) { document.getElementById('colorWarning').style.display = 'inline'; valid = false; }
