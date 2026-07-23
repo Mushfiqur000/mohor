@@ -5,31 +5,94 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MOHOR Admin Dashboard</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f4f9; margin: 0; padding: 0; }
-        .header { background-color: #8b0000; color: white; padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background-color: #f4f4f9; 
+            margin: 0; 
+            padding: 0; 
+        }
+        .header {
+            background-color: #8b0000;
+            color: white;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
         .header h1 { margin: 0; font-size: 24px; }
-        .logout-btn { padding: 8px 16px; background-color: white; color: #8b0000; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .logout-btn { 
+            padding: 8px 16px; background-color: white; color: #8b0000; 
+            border: none; border-radius: 4px; cursor: pointer; font-weight: bold;
+        }
         .logout-btn:hover { background-color: #f0f0f0; }
         
-        .dashboard-container { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
+        .dashboard-container { 
+            max-width: 1200px; 
+            margin: 30px auto; 
+            padding: 0 20px;
+        }
 
-        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 30px; }
-        .stat-card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-align: center; border-top: 4px solid #8b0000; }
-        .stat-card h3 { margin: 0 0 10px 0; color: #666; font-size: 14px; }
-        .stat-card .number { font-size: 24px; font-weight: bold; color: #333; }
+        /* Stat Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            text-align: center;
+            border-top: 4px solid #8b0000;
+        }
+        .stat-card h3 { margin: 0 0 10px 0; color: #666; font-size: 15px; }
+        .stat-card .number { font-size: 26px; font-weight: bold; color: #333; }
         
-        .admin-card { background: white; padding: 25px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 30px;}
-        .admin-card-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #8b0000; padding-bottom: 10px; margin-bottom: 15px; }
+        .admin-card {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        .admin-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #8b0000;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
         .admin-card-header h2 { margin: 0; color: #333; }
         
-        .action-btn { padding: 6px 12px; background-color: #2e8b57; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; margin-right: 5px;}
-        .action-btn:hover { background-color: #236b43; }
-        .cancel-btn { background-color: #8b0000; }
+        .export-btn {
+            padding: 8px 16px; background-color: #333; color: white;
+            border: none; border-radius: 4px; cursor: pointer; font-size: 14px;
+        }
+        .export-btn:hover { background-color: #000; }
+
+        /* Action Buttons for Orders */
+        .confirm-btn {
+            padding: 6px 12px; background-color: #2e8b57; color: white;
+            border: none; border-radius: 4px; cursor: pointer; font-size: 12px;
+            margin-right: 5px;
+        }
+        .confirm-btn:hover { background-color: #236b43; }
+        
+        .cancel-btn {
+            padding: 6px 12px; background-color: #8b0000; color: white;
+            border: none; border-radius: 4px; cursor: pointer; font-size: 12px;
+        }
         .cancel-btn:hover { background-color: #600000; }
 
+        /* Table Styles */
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; font-size: 14px;}
         th { background-color: #f8f8f8; color: #333; }
+        .status-pending { color: orange; font-weight: bold; }
+        .status-confirmed { color: green; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -44,30 +107,31 @@
 
     <div class="dashboard-container">
         
-        <!-- Insights / Stats Row (Waiting for real Firebase data) -->
+        <!-- Top Stats Row (Empty/Waiting for Database) -->
         <div class="stats-grid">
             <div class="stat-card">
                 <h3>Total Sales (Insights)</h3>
-                <div class="number" id="total-sales">৳0</div>
+                <div class="number">৳0</div>
             </div>
             <div class="stat-card">
                 <h3>Total Orders</h3>
-                <div class="number" id="total-orders">0</div>
+                <div class="number">0</div>
             </div>
             <div class="stat-card">
                 <h3>Pending Actions</h3>
-                <div class="number" id="pending-orders">0</div>
+                <div class="number">0</div>
             </div>
             <div class="stat-card">
-                <h3>Low Stock Items</h3>
-                <div class="number" id="low-stock" style="color: #8b0000;">0</div>
+                <h3>Low Stock Alerts</h3>
+                <div class="number" style="color: #8b0000;">0 Items</div>
             </div>
         </div>
 
-        <!-- Orders Management -->
+        <!-- Orders Table (Full Width) -->
         <div class="admin-card">
             <div class="admin-card-header">
-                <h2>Manage Orders</h2>
+                <h2>Manage Customer Orders</h2>
+                <button class="export-btn" id="export-csv-btn">Export Data (CSV)</button>
             </div>
             <table>
                 <thead>
@@ -77,35 +141,44 @@
                         <th>Item</th>
                         <th>Total</th>
                         <th>Status</th>
-                        <th>Actions</th> <!-- NEW: Action column for confirming orders -->
+                        <th>Actions</th>
                     </tr>
                 </thead>
-                <tbody id="real-orders-table-body">
-                    <!-- Real orders from Firebase will be injected here via Javascript -->
+                <tbody id="orders-table-body">
+                    <!-- Example row to show the Confirm/Cancel buttons -->
                     <tr>
-                        <td colspan="6" style="text-align: center; color: #888;">Loading real orders from database...</td>
+                        <td>#EXAMPLE</td>
+                        <td>Waiting for Database...</td>
+                        <td>---</td>
+                        <td>৳0</td>
+                        <td class="status-pending">Pending</td>
+                        <td>
+                            <button class="confirm-btn">Confirm Order</button>
+                            <button class="cancel-btn">Cancel</button>
+                        </td>
                     </tr>
                 </tbody>
             </table>
         </div>
 
-        <!-- Inventory Alerts -->
+        <!-- Inventory Tracker (Full Width) -->
         <div class="admin-card">
             <div class="admin-card-header">
-                <h2>Inventory Insights</h2>
+                <h2>Inventory Alerts (Synced with product.js)</h2>
             </div>
             <table>
                 <thead>
                     <tr>
-                        <th>Garment (From product.js)</th>
+                        <th>Garment</th>
                         <th>Size</th>
                         <th>Stock Left</th>
                     </tr>
                 </thead>
-                <tbody id="real-inventory-table-body">
-                    <!-- Real inventory from Firebase will be injected here via Javascript -->
+                <tbody id="inventory-table-body">
                     <tr>
-                        <td colspan="3" style="text-align: center; color: #888;">Loading inventory data...</td>
+                        <td colspan="3" style="text-align: center; color: #888; padding: 20px;">
+                            Waiting for connection to your database...
+                        </td>
                     </tr>
                 </tbody>
             </table>
@@ -116,7 +189,6 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-        // You will also import Firestore here later to fetch the real data
 
         const firebaseConfig = {
             apiKey: "AIzaSyALxypXDkF9QexbD_wE7-ADALIdj5vd-rY",
@@ -136,10 +208,6 @@
         onAuthStateChanged(auth, (user) => {
             if (user && user.email === adminEmail) {
                 document.getElementById('user-email').innerText = user.email;
-                
-                // FUTURE STEP: We will call a function here like fetchRealOrders() 
-                // to pull data from your database and populate the tables.
-
             } else if (user) {
                 window.location.href = "index.html"; 
             } else {
@@ -154,6 +222,11 @@
             }).catch((error) => {
                 console.error("Error signing out: ", error);
             });
+        });
+
+        // --- EXPORT BUTTON PLACEHOLDER ---
+        document.getElementById('export-csv-btn').addEventListener('click', () => {
+            alert("This will generate a spreadsheet of your orders once connected to the database.");
         });
     </script>
 </body>
