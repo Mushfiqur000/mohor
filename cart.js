@@ -167,10 +167,64 @@ window.checkoutToWhatsApp = function() {
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${message}`, '_blank');
 }
 
-// Option 2: Direct Admin Order
+// Option 2: Direct Admin Order (Firebase Integration)
 window.checkoutToAdmin = async function() {
     const orderData = validateCheckoutInputs();
     if (!orderData) return; 
     
-    alert(window.currentLang === 'en' ? "Connecting to Database... Your order will be sent to the Admin Panel soon!" : "ডাটাবেসের সাথে সংযুক্ত হচ্ছে... আপনার অর্ডারটি শীঘ্রই অ্যাডমিন প্যানেলে পাঠানো হবে!");
+    // 1. Temporarily disable the button so the user doesn't double-click
+    const confirmBtn = document.querySelector('button[onclick="window.checkoutToAdmin()"]');
+    let originalText = "Confirm Order";
+    if (confirmBtn) {
+        originalText = confirmBtn.innerHTML;
+        confirmBtn.innerHTML = window.currentLang === 'en' ? "Processing..." : "প্রসেস হচ্ছে...";
+        confirmBtn.disabled = true;
+    }
+
+    try {
+        // 2. Package the order data perfectly for your Admin Dashboard
+        const newOrder = {
+            customerName: orderData.name,
+            customerPhone: orderData.phone,
+            deliveryAddress: orderData.address,
+            deliveryZone: orderData.zoneText,
+            deliveryFee: orderData.deliveryFee,
+            subtotal: orderData.subtotal,
+            totalAmount: orderData.finalTotal,
+            items: window.cart,
+            orderDate: new Date().toISOString(),
+            status: "New" // Sets it as a New order for your admin panel
+        };
+
+        // 3. Send the data to your Firebase 'orders' collection
+        await window.db.collection("orders").add(newOrder);
+
+        // 4. Show success message
+        alert(window.currentLang === 'en' ? "Order placed successfully! We will contact you soon." : "আপনার অর্ডারটি সফলভাবে সম্পন্ন হয়েছে! আমরা শীঘ্রই যোগাযোগ করব।");
+        
+        // 5. Empty the cart and update the UI
+        window.cart = [];
+        window.updateCartUI();
+        
+        // 6. Close the cart sidebar automatically
+        document.getElementById('cartSidebar').classList.remove('active');
+        document.getElementById('cartOverlay').classList.remove('active');
+
+        // 7. Clear the input fields for the next customer
+        if(document.getElementById('custName')) document.getElementById('custName').value = '';
+        if(document.getElementById('custPhone')) document.getElementById('custPhone').value = '';
+        if(document.getElementById('deliveryAddress')) document.getElementById('deliveryAddress').value = '';
+        if(document.getElementById('deliveryZone')) document.getElementById('deliveryZone').value = '';
+        if(document.getElementById('policyAgree')) document.getElementById('policyAgree').checked = false;
+
+    } catch (error) {
+        console.error("Error saving order: ", error);
+        alert(window.currentLang === 'en' ? "There was an error placing your order. Please try WhatsApp instead." : "অর্ডার প্লেস করতে সমস্যা হয়েছে। অনুগ্রহ করে হোয়াটসঅ্যাপে চেষ্টা করুন।");
+    } finally {
+        // 8. Turn the button back on
+        if (confirmBtn) {
+            confirmBtn.innerHTML = originalText;
+            confirmBtn.disabled = false;
+        }
+    }
 }
