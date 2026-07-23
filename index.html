@@ -333,14 +333,16 @@
                     Order by WhatsApp
                 </button>
             </div>
+        </div>
+    </div>
 
     <footer data-nosnippet>
         <p style="font-size: 12px; color: #777;" data-i18n="footerText">&copy; 2026 Mohor Clothings Bangladesh. All Rights Reserved.</p>
     </footer>
 
-    <!-- Firebase CDN SDKs (Compat version for Vanilla JS) -->
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+    <!-- Firebase CDN SDKs with DEFER to fix site loading speed -->
+    <script defer src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
     <script>
         const firebaseConfig = {
@@ -351,16 +353,13 @@
             messagingSenderId: "989000457004",
             appId: "1:989000457004:web:5679b256e20d94e27daa89"
         };
-        // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
-        // Initialize Firestore
         window.db = firebase.firestore();
     </script>
 
     <!-- Database and Logic Files -->
     <script src="products.js"></script>
     <script src="app.js"></script>
-    <!-- FIX 3: ADDED CART.JS CONNECTION HERE -->
     <script src="cart.js"></script> 
 </body>
 </html>
