@@ -157,6 +157,7 @@
         <a href="index.html" class="brand-logo">Mohor</a>
         <div class="nav-right">
             <button type="button" id="langToggleBtn" class="lang-btn">EN / বাং</button>
+            <button type="button" class="cart-toggle-btn" id="openAccountBtn" style="background:none; border:none; cursor:pointer; font-weight:600; font-size:13px; text-transform: uppercase;">Account</button>
             <button type="button" class="cart-toggle-btn" id="openCartBtn"><span data-i18n="navCart">Cart</span> <span class="cart-badge" id="cartBadge">0</span></button>
             <button type="button" class="menu-toggle" id="menuToggle">&#8942;</button>
         </div>
@@ -333,14 +334,67 @@
                     Order by WhatsApp
                 </button>
             </div>
+        </div>
+    </div>
+
+    <!-- Account / Profile Modal -->
+    <div class="cart-overlay" id="accountOverlay"></div>
+    <div class="cart-sidebar" id="accountSidebar" style="padding: 20px; overflow-y: auto;">
+        <div class="cart-header" style="padding: 0 0 20px 0;">
+            <h3 id="accountModalTitle">Customer Account</h3>
+            <button type="button" class="close-cart" id="closeAccountBtn" style="border: none; background: none; font-size: 28px; cursor: pointer;">&times;</button>
+        </div>
+
+        <!-- VIEW 1: NOT LOGGED IN (Login / Signup Form) -->
+        <div id="authView" style="margin-top: 20px;">
+            <div id="loginFormContainer">
+                <h4 style="margin-bottom: 15px; font-size: 16px;">Login to Your Account</h4>
+                <input type="email" id="loginEmail" placeholder="Email Address" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid var(--border-color);">
+                <input type="password" id="loginPassword" placeholder="Password" style="width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid var(--border-color);">
+                <button type="button" onclick="window.handleLogin()" style="width: 100%; background: var(--deep-black); color: white; padding: 12px; border: none; font-weight: 600; cursor: pointer; margin-bottom: 10px;">LOG IN</button>
+                <p style="text-align: center; font-size: 12px; color: var(--text-light); cursor: pointer;" onclick="window.toggleAuthMode()">Don't have an account? <span style="color: var(--primary-gold); text-decoration: underline;">Sign up</span></p>
+            </div>
+
+            <div id="signupFormContainer" style="display: none;">
+                <h4 style="margin-bottom: 15px; font-size: 16px;">Create an Account</h4>
+                <input type="text" id="signupName" placeholder="Full Name" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid var(--border-color);">
+                <input type="email" id="signupEmail" placeholder="Email Address" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid var(--border-color);">
+                <input type="password" id="signupPassword" placeholder="Password (min 6 chars)" style="width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid var(--border-color);">
+                <button type="button" onclick="window.handleSignup()" style="width: 100%; background: var(--deep-black); color: white; padding: 12px; border: none; font-weight: 600; cursor: pointer; margin-bottom: 10px;">SIGN UP</button>
+                <p style="text-align: center; font-size: 12px; color: var(--text-light); cursor: pointer;" onclick="window.toggleAuthMode()">Already have an account? <span style="color: var(--primary-gold); text-decoration: underline;">Log in</span></p>
+            </div>
+        </div>
+
+        <!-- VIEW 2: LOGGED IN (Profile, Address Book & Order History) -->
+        <div id="profileView" style="display: none; margin-top: 10px;">
+            <div style="background: var(--soft-gray); padding: 15px; border-radius: 4px; margin-bottom: 20px;">
+                <p style="font-size: 13px; color: var(--text-light);">Logged in as:</p>
+                <strong id="userProfileEmail" style="font-size: 14px; display: block; margin-bottom: 10px;"></strong>
+                <button type="button" onclick="window.handleLogout()" style="background: #d9534f; color: white; border: none; padding: 6px 12px; font-size: 11px; font-weight: 600; cursor: pointer;">LOG OUT</button>
+            </div>
+
+            <h4 style="font-size: 14px; text-transform: uppercase; margin-bottom: 10px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px;">Saved Address Book</h4>
+            <div style="margin-bottom: 20px;">
+                <input type="text" id="profilePhone" placeholder="Default Phone" style="width: 100%; padding: 8px; margin-bottom: 8px; border: 1px solid var(--border-color); font-size: 12px;">
+                <textarea id="profileAddress" placeholder="Default Delivery Address" rows="2" style="width: 100%; padding: 8px; margin-bottom: 8px; border: 1px solid var(--border-color); font-size: 12px; resize: none;"></textarea>
+                <button type="button" onclick="window.saveUserProfile()" style="background: var(--primary-gold); color: white; border: none; padding: 8px 15px; font-size: 12px; font-weight: 600; cursor: pointer;">Save Address</button>
+            </div>
+
+            <h4 style="font-size: 14px; text-transform: uppercase; margin-bottom: 10px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px;">My Order History</h4>
+            <div id="userOrderHistoryContainer" style="max-height: 250px; overflow-y: auto; font-size: 12px;">
+                <p style="color: var(--text-light);">Loading orders...</p>
+            </div>
+        </div>
+    </div>
 
     <footer data-nosnippet>
         <p style="font-size: 12px; color: #777;" data-i18n="footerText">&copy; 2026 Mohor Clothings Bangladesh. All Rights Reserved.</p>
     </footer>
 
-    <!-- Firebase CDN SDKs (Compat version for Vanilla JS) -->
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+    <!-- Firebase CDN SDKs with DEFER -->
+    <script defer src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
     <script>
         const firebaseConfig = {
@@ -360,7 +414,7 @@
     <!-- Database and Logic Files -->
     <script src="products.js"></script>
     <script src="app.js"></script>
-    <!-- FIX 3: ADDED CART.JS CONNECTION HERE -->
     <script src="cart.js"></script> 
+    <script src="auth.js"></script>
 </body>
 </html>
