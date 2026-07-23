@@ -135,9 +135,6 @@
         .cart-item-info span { font-size: 12px; color: var(--text-light); display: block; margin-top: 3px; }
         .remove-item { color: #d9534f; cursor: pointer; font-size: 12px; border: none; background: none; margin-top: 5px; text-transform: uppercase; font-weight: 600;}
         .cart-footer { padding: 20px; border-top: 1px solid var(--border-color); background: var(--soft-gray); }
-        .checkout-btn { background: #25d366; color: var(--white); border: none; padding: 15px; width: 100%; font-family: 'Montserrat', sans-serif; font-size: 14px; font-weight: 600; text-transform: uppercase; cursor: pointer; transition: var(--transition); display: flex; justify-content: center; gap: 10px; }
-        .checkout-btn:hover { background: #128c7e; }
-        footer { background: var(--deep-black); color: var(--white); padding: 40px 5% 20px; text-align: center; }
 
         @media (max-width: 900px) {
             .shop-layout { flex-direction: column; }
@@ -159,9 +156,9 @@
     <nav>
         <a href="index.html" class="brand-logo">Mohor</a>
         <div class="nav-right">
-            <button id="langToggleBtn" class="lang-btn">EN / বাং</button>
-            <button class="cart-toggle-btn" id="openCartBtn"><span data-i18n="navCart">Cart</span> <span class="cart-badge" id="cartBadge">0</span></button>
-            <button class="menu-toggle" id="menuToggle">&#8942;</button>
+            <button type="button" id="langToggleBtn" class="lang-btn">EN / বাং</button>
+            <button type="button" class="cart-toggle-btn" id="openCartBtn"><span data-i18n="navCart">Cart</span> <span class="cart-badge" id="cartBadge">0</span></button>
+            <button type="button" class="menu-toggle" id="menuToggle">&#8942;</button>
         </div>
         <div class="nav-links" id="navLinks">
             <a href="index.html" data-i18n="navShop">Shop</a>
@@ -182,7 +179,7 @@
                 <!-- NEW SMART SEARCH BAR -->
                 <input type="text" id="searchInput" placeholder="Search dresses, formal, khadi..." data-i18n-placeholder="searchPlaceholder" style="padding: 10px 15px; border: 1px solid var(--border-color); background: var(--white); font-family: 'Montserrat', sans-serif; font-size: 13px; outline: none; min-width: 250px;">
                 
-                <button class="mobile-filter-btn" id="mobileFilterBtn" data-i18n="filterBtn">Filters</button>
+                <button type="button" class="mobile-filter-btn" id="mobileFilterBtn" data-i18n="filterBtn">Filters</button>
                 <div class="sort-box">
                     <select id="sortSelect" aria-label="Sort products">
                         <option value="default" data-i18n="sortDefault">Sort by: Default</option>
@@ -258,7 +255,8 @@
                     <ul id="modalDetails"></ul>
                 </div>
 
-                <button class="add-to-cart-btn" id="modalAddToCartBtn" data-i18n="addToCart">Add to Cart</button>
+                <!-- FIX 1: TYPE="BUTTON" ADDED HERE TO PREVENT PAGE RELOAD -->
+                <button type="button" class="add-to-cart-btn" id="modalAddToCartBtn" data-i18n="addToCart">Add to Cart</button>
             </div>
         </div>
     </div>
@@ -273,13 +271,12 @@
     <div class="cart-sidebar" id="cartSidebar">
         <div class="cart-header">
             <h3 data-i18n="cartTitle">Your Cart</h3>
-            <span class="close-cart" id="closeCartBtn">&times;</span>
+            <button type="button" class="close-cart" id="closeCartBtn" style="border: none; background: none;">&times;</button>
         </div>
         <div class="cart-items" id="cartItemsContainer">
             <p style="text-align: center; color: #666; margin-top: 20px;" data-i18n="cartEmpty">Your cart is empty.</p>
         </div>
         
-        <!-- DATA-NOSNIPPET ADDED HERE -->
         <div class="cart-footer" data-nosnippet>
             
             <div class="checkout-form" style="margin-bottom: 15px; text-align: left;">
@@ -287,14 +284,12 @@
                 <input type="tel" id="custPhone" placeholder="Mobile Number *" style="width: 100%; padding: 8px; margin-bottom: 8px; border: 1px solid var(--border-color); font-family: 'Montserrat', sans-serif; font-size: 12px; outline: none;">
                 <textarea id="deliveryAddress" rows="2" style="width: 100%; padding: 8px; border: 1px solid var(--border-color); font-family: 'Montserrat', sans-serif; font-size: 12px; outline: none; resize: none; margin-bottom: 8px;" placeholder="Complete Delivery Address *"></textarea>
                 
-                <!-- NEW Delivery Dropdown -->
-                <select id="deliveryZone" style="width: 100%; padding: 8px; margin-bottom: 8px; border: 1px solid var(--border-color); font-family: 'Montserrat', sans-serif; font-size: 12px; outline: none; background: white; cursor: pointer;" onchange="updateDeliveryPolicyAndTotal()">
+                <select id="deliveryZone" style="width: 100%; padding: 8px; margin-bottom: 8px; border: 1px solid var(--border-color); font-family: 'Montserrat', sans-serif; font-size: 12px; outline: none; background: white; cursor: pointer;" onchange="window.updateDeliveryPolicyAndTotal()">
                     <option value="" disabled selected data-i18n="selectDeliveryZone">Select Delivery Zone *</option>
                     <option value="80" data-i18n="zoneInside">Inside Sylhet (৳80)</option>
                     <option value="150" data-i18n="zoneOutside">Outside Sylhet (৳150)</option>
                 </select>
                 
-                <!-- NEW Dynamic Policy Display Box -->
                 <div id="dynamicPolicyDisplay" style="font-size: 11px; color: var(--text-light); margin-bottom: 15px; background: var(--soft-gray); padding: 10px; border-radius: 4px; display: none;">
                     <!-- Policy text will inject here automatically -->
                 </div>
@@ -308,7 +303,6 @@
                 </div>
             </div>
 
-            <!-- NEW Cart Summary Area -->
             <div class="cart-summary" style="margin-bottom: 20px; font-family: 'Montserrat', sans-serif;">
                 <div style="display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 13px; color: var(--text-light);">
                     <span data-i18n="cartSubtotal">Subtotal:</span>
@@ -324,13 +318,23 @@
                 </div>
             </div>
 
-            <button class="checkout-btn" onclick="checkoutToWhatsApp()" style="background: var(--deep-black); color: var(--white); border: none; padding: 15px; width: 100%; font-family: 'Montserrat', sans-serif; font-size: 14px; font-weight: 600; text-transform: uppercase; cursor: pointer; transition: var(--transition); display: flex; justify-content: center; gap: 10px;">
-                <span data-i18n="orderWhatsapp">Confirm Order</span>
-            </button>
+            <!-- FIX 2: DUAL CHECKOUT BUTTONS RESTORED -->
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <!-- ADMIN CHECKOUT (Black Button) -->
+                <button type="button" onclick="window.checkoutToAdmin()" style="flex: 1; background: var(--deep-black); color: var(--white); padding: 15px; border: none; font-family: 'Montserrat', sans-serif; font-size: 13px; font-weight: 600; text-transform: uppercase; cursor: pointer; transition: var(--transition);">
+                    <span data-i18n="orderWhatsapp">Confirm Order</span>
+                </button>
+                
+                <!-- WHATSAPP CHECKOUT (Green Button) -->
+                <button type="button" onclick="window.checkoutToWhatsApp()" style="background-color: #25D366; color: white; border: none; border-radius: 50%; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1); flex-shrink: 0; transition: var(--transition);">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                    </svg>
+                </button>
+            </div>
         </div>
     </div>
 
-    <!-- DATA-NOSNIPPET ADDED HERE -->
     <footer data-nosnippet>
         <p style="font-size: 12px; color: #777;" data-i18n="footerText">&copy; 2026 Mohor Clothings Bangladesh. All Rights Reserved.</p>
     </footer>
@@ -338,5 +342,7 @@
     <!-- Database and Logic Files -->
     <script src="products.js"></script>
     <script src="app.js"></script>
+    <!-- FIX 3: ADDED CART.JS CONNECTION HERE -->
+    <script src="cart.js"></script> 
 </body>
 </html>
