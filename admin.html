@@ -5,27 +5,227 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MOHOR Admin Dashboard</title>
     <style>
-        body { font-family: sans-serif; padding: 40px; text-align: center; }
-        .dashboard-container { max-width: 600px; margin: 0 auto; }
-        button { padding: 10px 20px; background-color: #8b0000; color: white; border: none; cursor: pointer; margin-top: 20px;}
-        button:hover { background-color: #600000; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background-color: #f4f4f9; 
+            margin: 0; 
+            padding: 0; 
+        }
+        .header {
+            background-color: #8b0000;
+            color: white;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header h1 { margin: 0; font-size: 24px; }
+        .logout-btn { 
+            padding: 8px 16px; background-color: white; color: #8b0000; 
+            border: none; border-radius: 4px; cursor: pointer; font-weight: bold;
+        }
+        .logout-btn:hover { background-color: #f0f0f0; }
+        
+        .dashboard-container { 
+            max-width: 1100px; 
+            margin: 30px auto; 
+            padding: 0 20px;
+        }
+
+        /* Stat Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            text-align: center;
+            border-top: 4px solid #8b0000;
+        }
+        .stat-card h3 { margin: 0 0 10px 0; color: #666; font-size: 16px; }
+        .stat-card .number { font-size: 28px; font-weight: bold; color: #333; }
+        
+        /* Main Grid */
+        .main-grid {
+            display: grid; 
+            grid-template-columns: 1fr 2fr; 
+            gap: 30px; 
+        }
+        
+        .admin-card {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .admin-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #8b0000;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+        .admin-card-header h2 { margin: 0; color: #333; }
+        
+        /* Form Styles */
+        input, select {
+            width: 100%; padding: 10px; margin: 10px 0;
+            border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;
+        }
+        .action-btn {
+            width: 100%; padding: 12px; background-color: #8b0000; color: white;
+            border: none; border-radius: 4px; cursor: pointer; font-size: 16px; font-weight: bold;
+        }
+        .action-btn:hover { background-color: #600000; }
+        
+        .export-btn {
+            padding: 6px 12px; background-color: #2e8b57; color: white;
+            border: none; border-radius: 4px; cursor: pointer; font-size: 14px;
+        }
+        .export-btn:hover { background-color: #236b43; }
+
+        /* Table Styles */
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; font-size: 14px;}
+        th { background-color: #f8f8f8; color: #333; }
+        .status-pending { color: orange; font-weight: bold; }
+        .status-shipped { color: green; font-weight: bold; }
+        .low-stock { color: red; font-weight: bold; }
     </style>
 </head>
 <body>
-    <div class="dashboard-container">
-        <h1>MOHOR Admin Dashboard</h1>
-        <p>Welcome back! You are securely logged in as: <strong id="user-email">Loading...</strong></p>
-        
-        <!-- We will put your product upload forms and data tables here later -->
+    
+    <div class="header">
+        <h1>MOHOR Admin</h1>
+        <div>
+            <span style="margin-right: 15px; font-size: 14px;">Logged in: <strong id="user-email">Loading...</strong></span>
+            <button id="logout-btn" class="logout-btn">Log Out</button>
+        </div>
+    </div>
 
-        <button id="logout-btn">Log Out</button>
+    <div class="dashboard-container">
+        
+        <!-- Top Stats Row -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Total Sales (This Month)</h3>
+                <div class="number">৳42,500</div>
+            </div>
+            <div class="stat-card">
+                <h3>Pending Orders</h3>
+                <div class="number">12</div>
+            </div>
+            <div class="stat-card">
+                <h3>Low Stock Alerts</h3>
+                <div class="number" style="color: #8b0000;">3 Items</div>
+            </div>
+        </div>
+
+        <div class="main-grid">
+            <!-- Left Column: Product Upload Form -->
+            <div class="admin-card">
+                <div class="admin-card-header">
+                    <h2>Add New Garment</h2>
+                </div>
+                <form id="add-product-form">
+                    <input type="text" id="prod-name" placeholder="Product Name (e.g., Silk Kurti)" required>
+                    <input type="number" id="prod-price" placeholder="Price (BDT)" required>
+                    <input type="number" id="prod-stock" placeholder="Initial Stock Quantity" required>
+                    
+                    <select id="prod-size">
+                        <option value="" disabled selected>Select Available Size</option>
+                        <option value="S">Small (S)</option>
+                        <option value="M">Medium (M)</option>
+                        <option value="L">Large (L)</option>
+                        <option value="XL">Extra Large (XL)</option>
+                        <option value="Free">Free Size</option>
+                    </select>
+
+                    <label for="prod-image" style="font-size: 14px; color: #666; display: block; margin-top: 10px;">Product Image:</label>
+                    <input type="file" id="prod-image" accept="image/*" required>
+                    
+                    <button type="submit" class="action-btn" style="margin-top: 15px;">Upload to Store</button>
+                </form>
+            </div>
+
+            <!-- Right Column: Orders & Inventory -->
+            <div>
+                <!-- Orders Table -->
+                <div class="admin-card" style="margin-bottom: 30px;">
+                    <div class="admin-card-header">
+                        <h2>Recent Orders</h2>
+                        <button class="export-btn" id="export-csv-btn">Export Data (CSV)</button>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Customer</th>
+                                <th>Item</th>
+                                <th>Total</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="orders-table-body">
+                            <tr>
+                                <td>#1001</td>
+                                <td>Ayesha S.</td>
+                                <td>Maroon Maxi Dress (M)</td>
+                                <td>৳2,500</td>
+                                <td class="status-pending">Pending</td>
+                            </tr>
+                            <tr>
+                                <td>#1002</td>
+                                <td>Farhan A.</td>
+                                <td>Cotton Panjabi (L)</td>
+                                <td>৳1,800</td>
+                                <td class="status-shipped">Shipped</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Inventory Tracker -->
+                <div class="admin-card">
+                    <div class="admin-card-header">
+                        <h2>Inventory Alerts</h2>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Garment</th>
+                                <th>Size</th>
+                                <th>Stock Left</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Embroidered Saree</td>
+                                <td>Free</td>
+                                <td class="low-stock">2 remaining</td>
+                            </tr>
+                            <tr>
+                                <td>Blue Denim Jacket</td>
+                                <td>M</td>
+                                <td class="low-stock">0 (Out of Stock)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-        // Replaced with your actual Firebase project configuration
         const firebaseConfig = {
             apiKey: "AIzaSyALxypXDkF9QexbD_wE7-ADALIdj5vd-rY",
             authDomain: "mohor-app.firebaseapp.com",
@@ -38,24 +238,36 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
-        // Security Check: If not logged in, redirect to login.html
+        // --- ADMIN SECURITY LOCK ---
+        const adminEmail = "mushfiqurrahman2222@gmail.com"; 
+
         onAuthStateChanged(auth, (user) => {
-            if (user) {
-                // User is verified, display their email
+            if (user && user.email === adminEmail) {
                 document.getElementById('user-email').innerText = user.email;
+            } else if (user) {
+                window.location.href = "index.html"; 
             } else {
-                // Not logged in, kick them out!
                 window.location.href = "login.html";
             }
         });
 
-        // Log Out Button Logic
+        // --- LOGOUT LOGIC ---
         document.getElementById('logout-btn').addEventListener('click', () => {
             signOut(auth).then(() => {
                 window.location.href = "login.html";
             }).catch((error) => {
                 console.error("Error signing out: ", error);
             });
+        });
+
+        // --- PLACEHOLDER BUTTON LOGIC ---
+        document.getElementById('add-product-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            alert("Database connection needed to save this product!");
+        });
+
+        document.getElementById('export-csv-btn').addEventListener('click', () => {
+            alert("This will soon generate a downloadable spreadsheet of your orders.");
         });
     </script>
 </body>
