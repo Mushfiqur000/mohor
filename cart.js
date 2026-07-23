@@ -68,6 +68,7 @@ window.updateCartUI = function() {
             subtotal += itemTotal;
             totalItems += item.qty;
             
+            // FIX: Added type="button" to the -, +, and Remove buttons to prevent page reloads
             cartItemsContainer.innerHTML += `
                 <div class="cart-item" style="align-items: center;">
                     <div class="cart-item-info" style="flex: 1;">
@@ -75,15 +76,15 @@ window.updateCartUI = function() {
                         <span style="font-size: 11px; color: var(--text-light); text-transform: uppercase;">Size: ${item.size}</span>
                         
                         <div style="display: flex; align-items: center; gap: 10px; margin-top: 8px;">
-                            <button onclick="changeQty(${index}, -1)" style="border: 1px solid var(--border-color); background: var(--soft-gray); width: 22px; height: 22px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: bold; border-radius: 2px;">-</button>
+                            <button type="button" onclick="changeQty(${index}, -1)" style="border: 1px solid var(--border-color); background: var(--soft-gray); width: 22px; height: 22px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: bold; border-radius: 2px;">-</button>
                             <span style="font-size: 13px; font-weight: 600;">${item.qty}</span>
-                            <button onclick="changeQty(${index}, 1)" style="border: 1px solid var(--border-color); background: var(--soft-gray); width: 22px; height: 22px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: bold; border-radius: 2px;">+</button>
+                            <button type="button" onclick="changeQty(${index}, 1)" style="border: 1px solid var(--border-color); background: var(--soft-gray); width: 22px; height: 22px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: bold; border-radius: 2px;">+</button>
                         </div>
                     </div>
                     
                     <div style="text-align: right;">
                         <div style="font-weight:600; color:var(--primary-gold); margin-bottom: 5px;">৳${itemTotal}</div>
-                        <button class="remove-item" onclick="removeFromCart(${index})" style="font-size: 10px;">Remove</button>
+                        <button type="button" class="remove-item" onclick="removeFromCart(${index})" style="font-size: 10px;">Remove</button>
                     </div>
                 </div>`;
         });
