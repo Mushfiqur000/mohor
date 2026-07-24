@@ -415,36 +415,40 @@
             if (user) {
                 // Fetch user data from Firestore
                 window.db.collection("users").doc(user.uid).get().then((doc) => {
+                    let userData = {};
                     if (doc.exists) {
-                        const userData = doc.data();
-                        
-                        // 1. Auto-fill Cart Checkout Form
-                        const custName = document.getElementById("custName");
-                        const custPhone = document.getElementById("custPhone");
-                        const deliveryAddress = document.getElementById("deliveryAddress");
-                        
-                        // Supports both "customerName" and "name" keys depending on how it was saved
-                        if (custName && (userData.customerName || userData.name)) {
-                            custName.value = userData.customerName || userData.name;
-                        }
-                        if (custPhone && (userData.customerPhone || userData.phone)) {
-                            custPhone.value = userData.customerPhone || userData.phone;
-                        }
-                        if (deliveryAddress && (userData.deliveryAddress || userData.address)) {
-                            deliveryAddress.value = userData.deliveryAddress || userData.address;
-                        }
-
-                        // 2. Auto-fill Profile Address Book (in Account Modal)
-                        const profilePhone = document.getElementById("profilePhone");
-                        const profileAddress = document.getElementById("profileAddress");
-                        
-                        if (profilePhone && (userData.customerPhone || userData.phone)) {
-                            profilePhone.value = userData.customerPhone || userData.phone;
-                        }
-                        if (profileAddress && (userData.deliveryAddress || userData.address)) {
-                            profileAddress.value = userData.deliveryAddress || userData.address;
-                        }
+                        userData = doc.data();
                     }
+                        
+                    // 1. Auto-fill Cart Checkout Form
+                    const custName = document.getElementById("custName");
+                    const custPhone = document.getElementById("custPhone");
+                    const deliveryAddress = document.getElementById("deliveryAddress");
+                    
+                    // FIX: Check multiple possible database keys AND the Firebase Auth profile name
+                    let savedName = userData.customerName || userData.name || userData.fullName || user.displayName || "";
+                    
+                    if (custName && savedName) {
+                        custName.value = savedName;
+                    }
+                    if (custPhone && (userData.customerPhone || userData.phone)) {
+                        custPhone.value = userData.customerPhone || userData.phone;
+                    }
+                    if (deliveryAddress && (userData.deliveryAddress || userData.address)) {
+                        deliveryAddress.value = userData.deliveryAddress || userData.address;
+                    }
+
+                    // 2. Auto-fill Profile Address Book (in Account Modal)
+                    const profilePhone = document.getElementById("profilePhone");
+                    const profileAddress = document.getElementById("profileAddress");
+                    
+                    if (profilePhone && (userData.customerPhone || userData.phone)) {
+                        profilePhone.value = userData.customerPhone || userData.phone;
+                    }
+                    if (profileAddress && (userData.deliveryAddress || userData.address)) {
+                        profileAddress.value = userData.deliveryAddress || userData.address;
+                    }
+                    
                 }).catch((error) => {
                     console.error("Error fetching user data:", error);
                 });
