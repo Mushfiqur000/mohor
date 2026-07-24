@@ -81,9 +81,6 @@
         .product-category-label { font-size: 11px; color: var(--text-light); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; font-family: 'Montserrat', sans-serif; }
         .product-details-card h3 { font-size: 15px; font-weight: 600; margin-bottom: 8px; font-family: 'Montserrat', sans-serif; }
         .product-price { color: var(--primary-gold); font-weight: 600; font-size: 16px; margin-bottom: 15px; }
-        
-        .quick-view-btn { background: var(--deep-black); color: var(--white); border: none; padding: 10px; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; width: 100%; transition: var(--transition); margin-top: 15px; font-weight: 600;}
-        .quick-view-btn:hover { background: var(--primary-gold); }
 
         /* --- Product Quick View Modal --- */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 3000; display: flex; justify-content: center; align-items: center; opacity: 0; visibility: hidden; transition: var(--transition); padding: 20px; }
@@ -217,7 +214,7 @@
             </aside>
 
             <div class="product-grid" id="productGrid">
-                <!-- Products dynamically loaded from database will appear here -->
+                <!-- Products dynamically loaded -->
             </div>
         </div>
     </section>
@@ -259,6 +256,7 @@
                     <ul id="modalDetails"></ul>
                 </div>
 
+                <!-- FIX 1: TYPE="BUTTON" ADDED HERE TO PREVENT PAGE RELOAD -->
                 <button type="button" class="add-to-cart-btn" id="modalAddToCartBtn" data-i18n="addToCart">Add to Cart</button>
             </div>
         </div>
@@ -377,6 +375,7 @@
 
             <h4 style="font-size: 14px; text-transform: uppercase; margin-bottom: 10px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px;">Saved Profile</h4>
             <div style="margin-bottom: 20px;">
+                <!-- NEW: Profile Name Field -->
                 <input type="text" id="profileName" placeholder="Full Name" style="width: 100%; padding: 8px; margin-bottom: 8px; border: 1px solid var(--border-color); font-size: 12px;">
                 <input type="text" id="profilePhone" placeholder="Default Phone" style="width: 100%; padding: 8px; margin-bottom: 8px; border: 1px solid var(--border-color); font-size: 12px;">
                 <textarea id="profileAddress" placeholder="Default Delivery Address" rows="2" style="width: 100%; padding: 8px; margin-bottom: 8px; border: 1px solid var(--border-color); font-size: 12px; resize: none;"></textarea>
@@ -394,7 +393,7 @@
         <p style="font-size: 12px; color: #777;" data-i18n="footerText">&copy; 2026 Mohor Clothings Bangladesh. All Rights Reserved.</p>
     </footer>
 
-    <!-- Firebase CDN SDKs -->
+    <!-- Firebase CDN SDKs (DEFER REMOVED) -->
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
@@ -413,233 +412,54 @@
         // Initialize Firestore
         window.db = firebase.firestore();
 
-        // --- FETCH PRODUCTS FROM FIRESTORE DATABASE DYNAMICALLY ---
-        async function loadStoreProductsFromDatabase() {
-            const productGrid = document.getElementById('productGrid');
-            if (!productGrid) return;
-
-            try {
-                const querySnapshot = await window.db.collection("products").get();
-                let dynamicProducts = [];
-
-                querySnapshot.forEach((doc) => {
-                    const data = doc.data();
-                    dynamicProducts.push({
-                        id: doc.id,
-                        title: data.title || "Dress",
-                        category: data.category || "three-piece",
-                        price: Number(data.price || 0),
-                        images: data.images || [],
-                        colors: data.colors || [],
-                        sizes: data.sizes || [],
-                        sizeMeasurements: data.sizeMeasurements || {}, 
-                        measurementsGuide: data.measurementsGuide || "", 
-                        description: data.description || "",
-                        details: data.details || []
-                    });
-                });
-
-                if (dynamicProducts.length > 0) {
-                    window.firestoreProducts = dynamicProducts;
-                    renderStorefrontGrid(window.firestoreProducts);
-                } else {
-                    productGrid.innerHTML = "<p style='text-align:center; color:#888; grid-column: 1/-1;'>No products available right now.</p>";
-                }
-            } catch (error) {
-                console.error("Error loading products from database:", error);
-            }
-        }
-
-        // --- RENDER GRID WITH PROPER IMAGE HANDLING ---
-        function renderStorefrontGrid(products) {
-            const grid = document.getElementById('productGrid');
-            grid.innerHTML = products.map(p => {
-                const mainImage = p.images && p.images.length > 0 ? p.images[0] : '';
-                return `
-                <div class="product-card" onclick="window.openQuickView('${p.id}')">
-                    <div class="image-container">
-                        <img src="${mainImage}" alt="${p.title}" class="product-image">
-                    </div>
-                    <div class="product-details-card">
-                        <div>
-                            <span class="product-category-label">Three Piece</span>
-                            <h3>${p.title}</h3>
-                            <div class="product-price">৳${p.price}</div>
-                        </div>
-                        <button class="quick-view-btn">Select Size & Add to Cart</button>
-                    </div>
-                </div>
-                `;
-            }).join('');
-        }
-
-        // --- DYNAMIC QUICK VIEW MODAL & SIZE POPUP LOGIC ---
-        window.openQuickView = function(productId) {
-            const product = window.firestoreProducts.find(p => p.id === productId);
-            if (!product) return;
-
-            // Fill text fields
-            document.getElementById('modalTitle').innerText = product.title;
-            document.getElementById('modalPrice').innerText = '৳' + product.price;
-            document.getElementById('modalDesc').innerText = product.description;
-            document.getElementById('modalDetails').innerHTML = product.details.map(d => `<li>${d}</li>`).join('');
-
-            // Fill images and thumbnails directly from the ImgBB Links array
-            const mainImg = document.getElementById('modalMainImage');
-            const thumbContainer = document.getElementById('modalThumbnails');
-            if (product.images && product.images.length > 0) {
-                mainImg.src = product.images[0];
-                thumbContainer.innerHTML = product.images.map((imgUrl, idx) => `
-                    <img src="${imgUrl}" class="thumbnail ${idx === 0 ? 'active' : ''}" onclick="window.changeModalImage('${imgUrl}', this)">
-                `).join('');
-            } else {
-                mainImg.src = '';
-                thumbContainer.innerHTML = '';
-            }
-
-            // Fill colors dynamically
-            const colorSec = document.getElementById('colorSection');
-            const colorContainer = document.getElementById('modalColors');
-            if (product.colors && product.colors.length > 0 && product.colors[0] !== "") {
-                colorSec.style.display = 'block';
-                colorContainer.innerHTML = product.colors.map((c, i) => `
-                    <button type="button" class="select-btn ${i === 0 ? 'selected' : ''}" onclick="window.selectColor(this)">${c}</button>
-                `).join('');
-            } else {
-                colorSec.style.display = 'none';
-            }
-
-            // Fill sizes & handle DYNAMIC SIZE GUIDE TEXT changes on click
-            const sizeContainer = document.getElementById('modalSizes');
-            const sizeGuideDisplay = document.getElementById('sizeGuideDisplay');
-            
-            if (product.sizes && product.sizes.length > 0 && product.sizes[0] !== "") {
-                sizeContainer.innerHTML = product.sizes.map((s, i) => {
-                    // Extract specific details for this size
-                    let specificDetails = "";
-                    if (product.sizeMeasurements && product.sizeMeasurements[s] && product.sizeMeasurements[s].length > 0) {
-                         specificDetails = product.sizeMeasurements[s].join('<br>');
-                    } else if (product.measurementsGuide) {
-                         specificDetails = product.measurementsGuide.replace(/\n/g, '<br>');
-                    }
-
-                    // Format string so it doesn't break HTML attributes (convert quotes)
-                    const safeDetails = specificDetails.replace(/'/g, "&apos;").replace(/"/g, "&quot;");
-                    
-                    return `<button type="button" class="select-btn ${i === 0 ? 'selected' : ''}" onclick="window.selectSize('${s}', '${safeDetails}', this)">${s}</button>`;
-                }).join('');
-                
-                // Set the default displayed size guide for whichever size is selected first
-                const firstSize = product.sizes[0];
-                if (product.sizeMeasurements && product.sizeMeasurements[firstSize] && product.sizeMeasurements[firstSize].length > 0) {
-                    sizeGuideDisplay.innerHTML = product.sizeMeasurements[firstSize].join('<br>');
-                } else {
-                    sizeGuideDisplay.innerHTML = product.measurementsGuide ? product.measurementsGuide.replace(/\n/g, '<br>') : '';
-                }
-            } else {
-                sizeContainer.innerHTML = '<span>Free Size</span>';
-                sizeGuideDisplay.innerHTML = '';
-            }
-
-            // Setup 'Add to Cart' click event
-            const addBtn = document.getElementById('modalAddToCartBtn');
-            addBtn.onclick = function() {
-                const selectedSizeEl = document.querySelector('#modalSizes .select-btn.selected');
-                const selectedColorEl = document.querySelector('#modalColors .select-btn.selected');
-                
-                const chosenSize = selectedSizeEl ? selectedSizeEl.innerText : 'Free Size';
-                const chosenColor = selectedColorEl ? selectedColorEl.innerText : 'Default Color';
-
-                if (typeof window.addToCart === 'function') {
-                    window.addToCart({
-                        id: product.id,
-                        title: product.title,
-                        price: product.price,
-                        image: product.images[0] || '',
-                        size: chosenSize,
-                        color: chosenColor,
-                        qty: 1
-                    });
-                    document.getElementById('productModal').classList.remove('active');
-                } else {
-                    alert("Cart functionality is loading. Make sure cart.js is connected.");
-                }
-            };
-
-            // Display the modal instantly
-            document.getElementById('productModal').classList.add('active');
-        };
-
-        // UI Modal Helpers
-        window.changeModalImage = function(url, el) {
-            document.getElementById('modalMainImage').src = url;
-            document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
-            el.classList.add('active');
-        };
-
-        window.selectColor = function(btn) {
-            document.querySelectorAll('#modalColors .select-btn').forEach(b => b.classList.remove('selected'));
-            btn.classList.add('selected');
-        };
-
-        window.selectSize = function(sizeName, detailsText, btn) {
-            document.querySelectorAll('#modalSizes .select-btn').forEach(b => b.classList.remove('selected'));
-            btn.classList.add('selected');
-
-            const guideDisplay = document.getElementById('sizeGuideDisplay');
-            if (detailsText) {
-                guideDisplay.innerHTML = detailsText;
-            } else {
-                guideDisplay.innerHTML = '';
-            }
-        };
-
-        // Modal Close Button Listeners
-        document.getElementById('closeModalBtn').addEventListener('click', () => {
-            document.getElementById('productModal').classList.remove('active');
-        });
-        document.getElementById('productModal').addEventListener('click', (e) => {
-            if (e.target === document.getElementById('productModal')) {
-                document.getElementById('productModal').classList.remove('active');
-            }
-        });
-
-        // Start initialization immediately
-        document.addEventListener("DOMContentLoaded", () => {
-            loadStoreProductsFromDatabase();
-        });
-
-        // --- AUTO-FILL CART & PROFILE WITH USER DATA ---
+        // --- NEW: AUTO-FILL CART & PROFILE WITH USER DATA ---
         firebase.auth().onAuthStateChanged((user) => {
             if (user) {
+                // Fetch user data from Firestore
                 window.db.collection("users").doc(user.uid).get().then((doc) => {
                     let userData = {};
                     if (doc.exists) {
                         userData = doc.data();
                     }
                         
+                    // 1. Auto-fill Cart Checkout Form
                     const custName = document.getElementById("custName");
                     const custPhone = document.getElementById("custPhone");
                     const deliveryAddress = document.getElementById("deliveryAddress");
                     
+                    // FIX: Check multiple possible database keys AND the Firebase Auth profile name
                     let savedName = userData.customerName || userData.name || userData.fullName || user.displayName || "";
                     
-                    if (custName && savedName) { custName.value = savedName; }
-                    if (custPhone && (userData.customerPhone || userData.phone)) { custPhone.value = userData.customerPhone || userData.phone; }
-                    if (deliveryAddress && (userData.deliveryAddress || userData.address)) { deliveryAddress.value = userData.deliveryAddress || userData.address; }
+                    if (custName && savedName) {
+                        custName.value = savedName;
+                    }
+                    if (custPhone && (userData.customerPhone || userData.phone)) {
+                        custPhone.value = userData.customerPhone || userData.phone;
+                    }
+                    if (deliveryAddress && (userData.deliveryAddress || userData.address)) {
+                        deliveryAddress.value = userData.deliveryAddress || userData.address;
+                    }
 
+                    // 2. Auto-fill Profile Address Book (in Account Modal)
                     const profileName = document.getElementById("profileName");
                     const profilePhone = document.getElementById("profilePhone");
                     const profileAddress = document.getElementById("profileAddress");
                     
-                    if (profileName && savedName) { profileName.value = savedName; }
-                    if (profilePhone && (userData.customerPhone || userData.phone)) { profilePhone.value = userData.customerPhone || userData.phone; }
-                    if (profileAddress && (userData.deliveryAddress || userData.address)) { profileAddress.value = userData.deliveryAddress || userData.address; }
+                    if (profileName && savedName) {
+                        profileName.value = savedName;
+                    }
+                    if (profilePhone && (userData.customerPhone || userData.phone)) {
+                        profilePhone.value = userData.customerPhone || userData.phone;
+                    }
+                    if (profileAddress && (userData.deliveryAddress || userData.address)) {
+                        profileAddress.value = userData.deliveryAddress || userData.address;
+                    }
                     
                 }).catch((error) => {
                     console.error("Error fetching user data:", error);
                 });
             } else {
+                // Clear fields if logged out so next guest starts fresh
                 if(document.getElementById("custName")) document.getElementById("custName").value = "";
                 if(document.getElementById("custPhone")) document.getElementById("custPhone").value = "";
                 if(document.getElementById("deliveryAddress")) document.getElementById("deliveryAddress").value = "";
