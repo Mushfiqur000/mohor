@@ -214,7 +214,7 @@
             </aside>
 
             <div class="product-grid" id="productGrid">
-                <!-- Products dynamically loaded -->
+                <!-- Products dynamically loaded from database -->
             </div>
         </div>
     </section>
@@ -256,7 +256,6 @@
                     <ul id="modalDetails"></ul>
                 </div>
 
-                <!-- FIX 1: TYPE="BUTTON" ADDED HERE TO PREVENT PAGE RELOAD -->
                 <button type="button" class="add-to-cart-btn" id="modalAddToCartBtn" data-i18n="addToCart">Add to Cart</button>
             </div>
         </div>
@@ -375,7 +374,6 @@
 
             <h4 style="font-size: 14px; text-transform: uppercase; margin-bottom: 10px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px;">Saved Profile</h4>
             <div style="margin-bottom: 20px;">
-                <!-- NEW: Profile Name Field -->
                 <input type="text" id="profileName" placeholder="Full Name" style="width: 100%; padding: 8px; margin-bottom: 8px; border: 1px solid var(--border-color); font-size: 12px;">
                 <input type="text" id="profilePhone" placeholder="Default Phone" style="width: 100%; padding: 8px; margin-bottom: 8px; border: 1px solid var(--border-color); font-size: 12px;">
                 <textarea id="profileAddress" placeholder="Default Delivery Address" rows="2" style="width: 100%; padding: 8px; margin-bottom: 8px; border: 1px solid var(--border-color); font-size: 12px; resize: none;"></textarea>
@@ -393,7 +391,7 @@
         <p style="font-size: 12px; color: #777;" data-i18n="footerText">&copy; 2026 Mohor Clothings Bangladesh. All Rights Reserved.</p>
     </footer>
 
-    <!-- Firebase CDN SDKs (DEFER REMOVED) -->
+    <!-- Firebase CDN SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
@@ -412,54 +410,80 @@
         // Initialize Firestore
         window.db = firebase.firestore();
 
-        // --- NEW: AUTO-FILL CART & PROFILE WITH USER DATA ---
+        // --- FETCH PRODUCTS FROM FIRESTORE DATABASE DYNAMICALLY ---
+        async function loadStoreProductsFromDatabase() {
+            const productGrid = document.getElementById('productGrid');
+            if (!productGrid) return;
+
+            try {
+                const querySnapshot = await window.db.collection("products").get();
+                let dynamicProducts = [];
+
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    dynamicProducts.push({
+                        id: doc.id,
+                        title: data.title || "Dress",
+                        category: data.category || "three-piece", // fallback
+                        price: Number(data.price || 0),
+                        images: data.images || [],
+                        colors: data.colors || [],
+                        sizes: data.sizes || [],
+                        sizeMeasurements: data.sizeMeasurements || {},
+                        description: data.description || "",
+                        details: data.details || []
+                    });
+                });
+
+                // If products exist in Firestore, make them available globally or inject them into your render function
+                if (dynamicProducts.length > 0) {
+                    window.firestoreProducts = dynamicProducts;
+                    // Trigger your storefront render function if defined in app.js
+                    if (typeof window.renderProducts === 'function') {
+                        window.renderProducts(window.firestoreProducts);
+                    }
+                }
+            } catch (error) {
+                console.error("Error loading products from database:", error);
+            }
+        }
+
+        // Run product loader on page load
+        document.addEventListener("DOMContentLoaded", () => {
+            loadStoreProductsFromDatabase();
+        });
+
+        // --- AUTO-FILL CART & PROFILE WITH USER DATA ---
         firebase.auth().onAuthStateChanged((user) => {
             if (user) {
-                // Fetch user data from Firestore
                 window.db.collection("users").doc(user.uid).get().then((doc) => {
                     let userData = {};
                     if (doc.exists) {
                         userData = doc.data();
                     }
                         
-                    // 1. Auto-fill Cart Checkout Form
                     const custName = document.getElementById("custName");
                     const custPhone = document.getElementById("custPhone");
                     const deliveryAddress = document.getElementById("deliveryAddress");
                     
-                    // FIX: Check multiple possible database keys AND the Firebase Auth profile name
                     let savedName = userData.customerName || userData.name || userData.fullName || user.displayName || "";
                     
-                    if (custName && savedName) {
-                        custName.value = savedName;
-                    }
-                    if (custPhone && (userData.customerPhone || userData.phone)) {
-                        custPhone.value = userData.customerPhone || userData.phone;
-                    }
-                    if (deliveryAddress && (userData.deliveryAddress || userData.address)) {
-                        deliveryAddress.value = userData.deliveryAddress || userData.address;
-                    }
+                    if (custName && savedName) { custName.value = savedName; }
+                    if (custPhone && (userData.customerPhone || userData.phone)) { custPhone.value = userData.customerPhone || userData.phone; }
+                    if (deliveryAddress && (userData.deliveryAddress || userData.address)) { deliveryAddress.value = userData.deliveryAddress || userData.address; }
 
-                    // 2. Auto-fill Profile Address Book (in Account Modal)
                     const profileName = document.getElementById("profileName");
                     const profilePhone = document.getElementById("profilePhone");
                     const profileAddress = document.getElementById("profileAddress");
                     
-                    if (profileName && savedName) {
-                        profileName.value = savedName;
-                    }
-                    if (profilePhone && (userData.customerPhone || userData.phone)) {
-                        profilePhone.value = userData.customerPhone || userData.phone;
-                    }
-                    if (profileAddress && (userData.deliveryAddress || userData.address)) {
-                        profileAddress.value = userData.deliveryAddress || userData.address;
-                    }
+                    if (profileName && savedName) { profileName.value = savedName; }
+                    if (profilePhone && (userData.customerPhone || userData.phone)) { profilePhone.value = userData.customerPhone || userData.phone; }
+                    if (profileAddress && (userData.deliveryAddress || userData.address)) { profileAddress.value = userData.deliveryAddress || userData.address; }
                     
                 }).catch((error) => {
                     console.error("Error fetching user data:", error);
                 });
             } else {
-                // Clear fields if logged out so next guest starts fresh
                 if(document.getElementById("custName")) document.getElementById("custName").value = "";
                 if(document.getElementById("custPhone")) document.getElementById("custPhone").value = "";
                 if(document.getElementById("deliveryAddress")) document.getElementById("deliveryAddress").value = "";
