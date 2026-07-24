@@ -81,9 +81,17 @@ window.handleSignup = async function() {
     try {
         const userCredential = await auth.createUserWithEmailAndPassword(email, password);
         
+        // NEW: Save name to Firebase Auth Profile explicitly
+        if (name) {
+            await userCredential.user.updateProfile({
+                displayName: name
+            });
+        }
+
         // Save user info to Firestore database
         await db.collection("users").doc(userCredential.user.uid).set({ 
             name: name, 
+            customerName: name, // Save under both keys just to be safe
             email: email, 
             createdAt: new Date().toISOString() 
         });
@@ -130,15 +138,27 @@ window.saveUserProfile = async function() {
     }
     const phoneInput = document.getElementById('profilePhone');
     const addressInput = document.getElementById('profileAddress');
+    
+    // NEW: Grab the name from the cart checkout box in case they want to save/update it
+    const cartNameInput = document.getElementById('custName');
 
     const phone = phoneInput ? phoneInput.value.trim() : "";
     const address = addressInput ? addressInput.value.trim() : "";
+    const nameToSave = cartNameInput ? cartNameInput.value.trim() : "";
 
     try {
-        await db.collection("users").doc(window.currentUser.uid).set({
+        let updatePayload = {
             phone: phone, 
             address: address
-        }, { merge: true }); // Merge ensures we don't delete their name/email
+        };
+        
+        // If they typed a name in the cart, save it to their profile!
+        if (nameToSave) {
+            updatePayload.name = nameToSave;
+            updatePayload.customerName = nameToSave;
+        }
+
+        await db.collection("users").doc(window.currentUser.uid).set(updatePayload, { merge: true }); 
         
         alert("Address saved successfully!");
     } catch (error) {
@@ -157,15 +177,19 @@ async function loadUserData(uid) {
             if (data.phone && document.getElementById('profilePhone')) document.getElementById('profilePhone').value = data.phone;
             if (data.address && document.getElementById('profileAddress')) document.getElementById('profileAddress').value = data.address;
             
-            // 2. Auto-fill Cart Checkout inputs so the user doesn't have to type them again
-            if (data.phone && document.getElementById('custPhone') && !document.getElementById('custPhone').value) {
-                document.getElementById('custPhone').value = data.phone;
+            // 2. Auto-fill Cart Checkout inputs
+            // FIX: Check every possible name variation
+            let savedName = data.customerName || data.name || data.fullName || (window.currentUser ? window.currentUser.displayName : "") || "";
+            
+            if (savedName && document.getElementById('custName')) {
+                document.getElementById('custName').value = savedName;
             }
-            if (data.address && document.getElementById('deliveryAddress') && !document.getElementById('deliveryAddress').value) {
-                document.getElementById('deliveryAddress').value = data.address;
+            
+            if (data.phone && document.getElementById('custPhone')) {
+                document.getElementById('custPhone').value = data.phone || data.customerPhone || "";
             }
-            if (data.name && document.getElementById('custName') && !document.getElementById('custName').value) {
-                document.getElementById('custName').value = data.name;
+            if (data.address && document.getElementById('deliveryAddress')) {
+                document.getElementById('deliveryAddress').value = data.address || data.deliveryAddress || "";
             }
         }
     } catch (e) { console.error("Error loading user profile data:", e); }
