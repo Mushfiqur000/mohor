@@ -11,6 +11,50 @@
             margin: 0; 
             padding: 0; 
         }
+        
+        /* --- LOGIN SCREEN STYLES --- */
+        #login-section {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f9;
+        }
+        .login-box {
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            text-align: center;
+            width: 300px;
+            border-top: 4px solid #8b0000;
+        }
+        .login-box h2 { margin-top: 0; color: #8b0000; }
+        .login-box input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .login-box button {
+            width: 100%;
+            padding: 10px;
+            background-color: #8b0000;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .login-box button:hover { background-color: #600000; }
+        .error-msg { color: red; font-size: 12px; margin-top: 10px; display: none; }
+
+        /* --- DASHBOARD STYLES --- */
+        #main-dashboard { display: none; } /* Hidden until logged in */
+        
         .header {
             background-color: #8b0000;
             color: white;
@@ -56,6 +100,7 @@
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             margin-bottom: 30px;
+            overflow-x: auto;
         }
         .admin-card-header {
             display: flex;
@@ -73,122 +118,126 @@
         }
         .export-btn:hover { background-color: #000; }
 
-        /* Action Buttons for Orders */
+        /* Action Buttons & Select */
+        .status-select {
+            padding: 5px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            font-family: inherit;
+        }
         .confirm-btn {
             padding: 6px 12px; background-color: #2e8b57; color: white;
             border: none; border-radius: 4px; cursor: pointer; font-size: 12px;
-            margin-right: 5px;
         }
         .confirm-btn:hover { background-color: #236b43; }
-        
-        .cancel-btn {
-            padding: 6px 12px; background-color: #8b0000; color: white;
-            border: none; border-radius: 4px; cursor: pointer; font-size: 12px;
-        }
-        .cancel-btn:hover { background-color: #600000; }
 
         /* Table Styles */
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; font-size: 14px;}
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; min-width: 800px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; font-size: 14px; vertical-align: top;}
         th { background-color: #f8f8f8; color: #333; }
-        .status-pending { color: orange; font-weight: bold; }
-        .status-confirmed { color: green; font-weight: bold; }
     </style>
 </head>
 <body>
     
-    <div class="header">
-        <h1>MOHOR Admin</h1>
-        <div>
-            <span style="margin-right: 15px; font-size: 14px;">Logged in: <strong id="user-email">Loading...</strong></span>
-            <button id="logout-btn" class="logout-btn">Log Out</button>
+    <!-- LOGIN SECTION -->
+    <div id="login-section">
+        <div class="login-box">
+            <h2>MOHOR Admin</h2>
+            <p style="font-size: 12px; color: #666;">Sign in to access dashboard</p>
+            <input type="email" id="login-email" placeholder="Admin Email" />
+            <input type="password" id="login-password" placeholder="Password" />
+            <button id="login-btn">Log In</button>
+            <div id="login-error" class="error-msg">Incorrect credentials or access denied.</div>
         </div>
     </div>
 
-    <div class="dashboard-container">
-        
-        <!-- Top Stats Row (Empty/Waiting for Database) -->
-        <div class="stats-grid">
-            <div class="stat-card">
-                <h3>Total Sales (Insights)</h3>
-                <div class="number">৳0</div>
-            </div>
-            <div class="stat-card">
-                <h3>Total Orders</h3>
-                <div class="number">0</div>
-            </div>
-            <div class="stat-card">
-                <h3>Pending Actions</h3>
-                <div class="number">0</div>
-            </div>
-            <div class="stat-card">
-                <h3>Low Stock Alerts</h3>
-                <div class="number" style="color: #8b0000;">0 Items</div>
+    <!-- DASHBOARD SECTION -->
+    <div id="main-dashboard">
+        <div class="header">
+            <h1>MOHOR Admin</h1>
+            <div>
+                <span style="margin-right: 15px; font-size: 14px;">Logged in: <strong id="user-email">Loading...</strong></span>
+                <button id="logout-btn" class="logout-btn">Log Out</button>
             </div>
         </div>
 
-        <!-- Orders Table (Full Width) -->
-        <div class="admin-card">
-            <div class="admin-card-header">
-                <h2>Manage Customer Orders</h2>
-                <button class="export-btn" id="export-csv-btn">Export Data (CSV)</button>
+        <div class="dashboard-container">
+            
+            <!-- Top Stats Row -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>Total Sales</h3>
+                    <div class="number" id="stat-sales">৳0</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Total Orders</h3>
+                    <div class="number" id="stat-orders">0</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Pending Actions</h3>
+                    <div class="number" id="stat-pending" style="color: #8b0000;">0</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Low Stock Alerts</h3>
+                    <div class="number">--</div>
+                </div>
             </div>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Order ID</th>
-                        <th>Customer</th>
-                        <th>Item</th>
-                        <th>Total</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="orders-table-body">
-                    <!-- Example row to show the Confirm/Cancel buttons -->
-                    <tr>
-                        <td>#EXAMPLE</td>
-                        <td>Waiting for Database...</td>
-                        <td>---</td>
-                        <td>৳0</td>
-                        <td class="status-pending">Pending</td>
-                        <td>
-                            <button class="confirm-btn">Confirm Order</button>
-                            <button class="cancel-btn">Cancel</button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
 
-        <!-- Inventory Tracker (Full Width) -->
-        <div class="admin-card">
-            <div class="admin-card-header">
-                <h2>Inventory Alerts (Synced with product.js)</h2>
+            <!-- Orders Table -->
+            <div class="admin-card">
+                <div class="admin-card-header">
+                    <h2>Manage Customer Orders</h2>
+                    <button class="export-btn" id="export-csv-btn">Export Data (CSV)</button>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Customer Info</th>
+                            <th>Items</th>
+                            <th>Total & Date</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="orders-table-body">
+                        <tr>
+                            <td colspan="6" style="text-align: center; color: #888;">Loading orders from database...</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Garment</th>
-                        <th>Size</th>
-                        <th>Stock Left</th>
-                    </tr>
-                </thead>
-                <tbody id="inventory-table-body">
-                    <tr>
-                        <td colspan="3" style="text-align: center; color: #888; padding: 20px;">
-                            Waiting for connection to your database...
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
 
+            <!-- Inventory Tracker -->
+            <div class="admin-card">
+                <div class="admin-card-header">
+                    <h2>Inventory Alerts</h2>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Garment</th>
+                            <th>Size</th>
+                            <th>Stock Left</th>
+                        </tr>
+                    </thead>
+                    <tbody id="inventory-table-body">
+                        <tr>
+                            <td colspan="3" style="text-align: center; color: #888; padding: 20px;">
+                                (Inventory system pending setup in database)
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 
+    <!-- FIREBASE MODULAR SCRIPTS -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        import { getFirestore, collection, onSnapshot, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyALxypXDkF9QexbD_wE7-ADALIdj5vd-rY",
@@ -201,32 +250,168 @@
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
+        const db = getFirestore(app);
 
-        // --- ADMIN SECURITY LOCK ---
         const adminEmail = "mushfiqurrahman2222@gmail.com"; 
 
+        // DOM Elements
+        const loginSection = document.getElementById('login-section');
+        const mainDashboard = document.getElementById('main-dashboard');
+        const loginBtn = document.getElementById('login-btn');
+        const logoutBtn = document.getElementById('logout-btn');
+        const errorMsg = document.getElementById('login-error');
+
+        // --- AUTHENTICATION LOGIC ---
         onAuthStateChanged(auth, (user) => {
             if (user && user.email === adminEmail) {
+                // Admin is logged in -> Show Dashboard
+                loginSection.style.display = 'none';
+                mainDashboard.style.display = 'block';
                 document.getElementById('user-email').innerText = user.email;
+                fetchOrders(); // Load the database data
             } else if (user) {
-                window.location.href = "index.html"; 
+                // A normal customer tried to access admin page -> Log them out
+                signOut(auth).then(() => {
+                    loginSection.style.display = 'flex';
+                    mainDashboard.style.display = 'none';
+                    errorMsg.innerText = "Unauthorized. Please log in with admin email.";
+                    errorMsg.style.display = 'block';
+                });
             } else {
-                window.location.href = "login.html";
+                // Nobody logged in -> Show Login Screen
+                loginSection.style.display = 'flex';
+                mainDashboard.style.display = 'none';
             }
         });
 
-        // --- LOGOUT LOGIC ---
-        document.getElementById('logout-btn').addEventListener('click', () => {
-            signOut(auth).then(() => {
-                window.location.href = "login.html";
-            }).catch((error) => {
-                console.error("Error signing out: ", error);
-            });
+        // Login Button Click
+        loginBtn.addEventListener('click', () => {
+            const email = document.getElementById('login-email').value.trim();
+            const pass = document.getElementById('login-password').value.trim();
+            errorMsg.style.display = 'none';
+
+            if(email !== adminEmail) {
+                errorMsg.innerText = "Access denied. Admin email required.";
+                errorMsg.style.display = 'block';
+                return;
+            }
+
+            signInWithEmailAndPassword(auth, email, pass)
+                .catch((error) => {
+                    errorMsg.innerText = "Login failed: " + error.message;
+                    errorMsg.style.display = 'block';
+                });
         });
 
-        // --- EXPORT BUTTON PLACEHOLDER ---
+        // Logout Button Click
+        logoutBtn.addEventListener('click', () => {
+            signOut(auth);
+        });
+
+        // --- FIRESTORE DATABASE LOGIC ---
+        function fetchOrders() {
+            // Listen to "orders" collection in real-time
+            onSnapshot(collection(db, "orders"), (snapshot) => {
+                let totalSales = 0;
+                let totalOrders = 0;
+                let pendingActions = 0;
+                let tableRows = '';
+
+                // Convert snapshot to array so we can sort it newest first
+                let ordersArray = [];
+                snapshot.forEach(doc => {
+                    ordersArray.push({ id: doc.id, ...doc.data() });
+                });
+                ordersArray.sort((a, b) => new Date(b.orderDate || 0) - new Date(a.orderDate || 0));
+
+                ordersArray.forEach(order => {
+                    totalOrders++;
+                    
+                    // Calculate stats
+                    if (order.status !== 'Cancelled') {
+                        totalSales += Number(order.totalAmount || 0);
+                    }
+                    if (!order.status || order.status === 'Pending') {
+                        pendingActions++;
+                    }
+
+                    // Format Items
+                    let itemsHtml = '<span style="color:#888;">No items detailed</span>';
+                    if (order.items && Array.isArray(order.items)) {
+                        itemsHtml = order.items.map(item => 
+                            `<strong>${item.name || 'Dress'}</strong> (${item.size || 'Free Size'}) x${item.qty || 1}`
+                        ).join('<br>');
+                    }
+
+                    const currentStatus = order.status || 'Pending';
+                    const orderDate = order.orderDate ? new Date(order.orderDate).toLocaleDateString() : 'N/A';
+
+                    // Build Row HTML
+                    tableRows += `
+                        <tr>
+                            <td style="font-size: 11px; color: #666;">${order.id}</td>
+                            <td>
+                                <strong>${order.customerName || 'N/A'}</strong><br>
+                                <span style="font-size: 12px; color: #555;">📞 ${order.customerPhone || 'N/A'}</span><br>
+                                <span style="font-size: 11px; color: #888;">${order.deliveryAddress || ''}</span>
+                            </td>
+                            <td style="font-size: 12px;">${itemsHtml}</td>
+                            <td>
+                                <strong>৳${order.totalAmount || 0}</strong><br>
+                                <span style="font-size: 11px; color: #888;">${orderDate}</span>
+                            </td>
+                            <td>
+                                <select class="status-select" data-id="${order.id}">
+                                    <option value="Pending" ${currentStatus==='Pending'?'selected':''}>Pending</option>
+                                    <option value="Confirmed" ${currentStatus==='Confirmed'?'selected':''}>Confirmed</option>
+                                    <option value="Shipped" ${currentStatus==='Shipped'?'selected':''}>Shipped</option>
+                                    <option value="Completed" ${currentStatus==='Completed'?'selected':''}>Completed</option>
+                                    <option value="Cancelled" ${currentStatus==='Cancelled'?'selected':''}>Cancelled</option>
+                                </select>
+                            </td>
+                            <td>
+                                <button class="confirm-btn update-btn" data-id="${order.id}">Update</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+
+                if(ordersArray.length === 0) {
+                    tableRows = `<tr><td colspan="6" style="text-align:center;">No orders found yet.</td></tr>`;
+                }
+
+                // Update DOM
+                document.getElementById('orders-table-body').innerHTML = tableRows;
+                document.getElementById('stat-sales').innerText = '৳' + totalSales.toLocaleString();
+                document.getElementById('stat-orders').innerText = totalOrders;
+                document.getElementById('stat-pending').innerText = pendingActions;
+
+                // Attach Event Listeners to the new Update buttons
+                document.querySelectorAll('.update-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const orderId = e.target.getAttribute('data-id');
+                        const selectEl = document.querySelector(`.status-select[data-id="${orderId}"]`);
+                        updateOrderStatus(orderId, selectEl.value);
+                    });
+                });
+            });
+        }
+
+        // Update Order in Database
+        async function updateOrderStatus(orderId, newStatus) {
+            try {
+                const orderRef = doc(db, "orders", orderId);
+                await updateDoc(orderRef, { status: newStatus });
+                // Optional: You could trigger a small popup here saying "Updated!"
+            } catch (error) {
+                console.error("Error updating status:", error);
+                alert("Failed to update status.");
+            }
+        }
+
+        // CSV Export Placeholder
         document.getElementById('export-csv-btn').addEventListener('click', () => {
-            alert("This will generate a spreadsheet of your orders once connected to the database.");
+            alert("This will generate a spreadsheet of your orders.");
         });
     </script>
 </body>
