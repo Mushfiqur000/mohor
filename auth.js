@@ -133,11 +133,11 @@ window.handleLogout = async function() {
 // Save Address Book to Firestore
 window.saveUserProfile = async function() {
     if (!window.currentUser) {
-        alert("You must be logged in to save a profile.");
+        alert("You must be logged in to save an address.");
         return;
     }
     
-    // NEW: Grab the name directly from the new profile input box in index.html
+    // Grab the name directly from the new profile input box in the sidebar
     const nameInput = document.getElementById('profileName');
     const phoneInput = document.getElementById('profilePhone');
     const addressInput = document.getElementById('profileAddress');
@@ -152,6 +152,7 @@ window.saveUserProfile = async function() {
             address: address
         };
         
+        // Save the profile name to both database keys to prevent future bugs
         if (nameToSave) {
             updatePayload.name = nameToSave;
             updatePayload.customerName = nameToSave;
@@ -171,9 +172,11 @@ async function loadUserData(uid) {
         const userDoc = await db.collection("users").doc(uid).get();
         if (userDoc.exists) {
             const data = userDoc.data();
+            
+            // Check every possible name variation
             let savedName = data.customerName || data.name || data.fullName || (window.currentUser ? window.currentUser.displayName : "") || "";
             
-            // 1. Fill Profile Tab Displays (Now includes Name!)
+            // 1. Fill Profile Tab Displays (Now includes the new profileName field)
             if (savedName && document.getElementById('profileName')) document.getElementById('profileName').value = savedName;
             if (data.phone && document.getElementById('profilePhone')) document.getElementById('profilePhone').value = data.phone;
             if (data.address && document.getElementById('profileAddress')) document.getElementById('profileAddress').value = data.address;
@@ -182,6 +185,7 @@ async function loadUserData(uid) {
             if (savedName && document.getElementById('custName')) {
                 document.getElementById('custName').value = savedName;
             }
+            
             if (data.phone && document.getElementById('custPhone')) {
                 document.getElementById('custPhone').value = data.phone || data.customerPhone || "";
             }
