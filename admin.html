@@ -254,12 +254,18 @@
                             <input type="text" id="prod-colors" placeholder="e.g. Peach Pink, Navy Blue" required>
                         </div>
                         
-                        <div class="form-group full-width">
-                            <label>Sizes & Size-Specific Measurements (Format: Size: Details)</label>
-                            <textarea id="prod-sizes" rows="4" placeholder="38 (M): Body/Chest: 38&#10;Waist: 34-36&#10;42 (L): Body/Chest: 42&#10;Waist: 38-40" required></textarea>
-                            <small style="color: #666; margin-top: 5px;">Enter each size and its specific measurements so it updates dynamically when clicked on the website.</small>
+                        <div class="form-group">
+                            <label>Sizes (Comma Separated)</label>
+                            <input type="text" id="prod-sizes" placeholder="38 (M), 40 (L), 42 (XL)" required>
+                            <small style="color: #666; margin-top: 5px;">List available sizes separated by commas.</small>
                         </div>
 
+                        <div class="form-group full-width">
+                            <label>Size Guide Details (Pop-up measurements per size selection)</label>
+                            <textarea id="prod-measurements" rows="4" placeholder="38 (M): Body/Chest: 38, Waist: 34-36, Hip: 40-42&#10;40 (L): Body/Chest: 40, Waist: 36-38, Hip: 42-44"></textarea>
+                            <small style="color: #666; margin-top: 5px;">Write measurements corresponding to each size so they appear dynamically when a customer clicks a size button on your live storefront.</small>
+                        </div>
+                        
                         <div class="form-group full-width">
                             <label>Main Description</label>
                             <textarea id="prod-desc" rows="3" placeholder="A premium embroidered 3-piece ensemble..."></textarea>
@@ -514,30 +520,8 @@
                 const quantity = Number(document.getElementById('prod-qty').value);
                 const colors = document.getElementById('prod-colors').value.split(',').map(c => c.trim());
                 
-                // Parse sizes and specific measurements map structured input
-                const rawSizesInput = document.getElementById('prod-sizes').value.trim();
-                let sizesArray = [];
-                let sizeMeasurementsMap = {};
-
-                let lines = rawSizesInput.split('\n');
-                let currentSize = '';
-                
-                lines.forEach(line => {
-                    let trimmed = line.trim();
-                    if (!trimmed) return;
-                    if (trimmed.includes('M') || trimmed.includes('L') || trimmed.includes('XL') || trimmed.includes('(') || !trimmed.includes(':')) {
-                        currentSize = trimmed.split(':')[0].trim();
-                        sizesArray.push(currentSize);
-                        sizeMeasurementsMap[currentSize] = [];
-                    } else if (currentSize) {
-                        sizeMeasurementsMap[currentSize].push(trimmed);
-                    }
-                });
-
-                if (sizesArray.length === 0) {
-                    sizesArray = rawSizesInput.split(',').map(s => s.trim());
-                }
-
+                const sizes = document.getElementById('prod-sizes').value.split(',').map(s => s.trim());
+                const measurements = document.getElementById('prod-measurements').value.trim();
                 const desc = document.getElementById('prod-desc').value.trim();
                 const details = document.getElementById('prod-details').value.split('\n').filter(d => d.trim() !== '');
                 const seoKeywords = document.getElementById('prod-seo').value.split(',').map(k => k.trim()).filter(k => k !== '');
@@ -550,8 +534,8 @@
                     price: price,
                     quantity: quantity,
                     colors: colors,
-                    sizes: sizesArray,
-                    sizeMeasurements: sizeMeasurementsMap,
+                    sizes: sizes,
+                    measurements: measurements,
                     description: desc,
                     details: details,
                     seoKeywords: seoKeywords,
