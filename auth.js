@@ -133,18 +133,18 @@ window.handleLogout = async function() {
 // Save Address Book to Firestore
 window.saveUserProfile = async function() {
     if (!window.currentUser) {
-        alert("You must be logged in to save an address.");
+        alert("You must be logged in to save a profile.");
         return;
     }
+    
+    // NEW: Grab the name directly from the new profile input box in index.html
+    const nameInput = document.getElementById('profileName');
     const phoneInput = document.getElementById('profilePhone');
     const addressInput = document.getElementById('profileAddress');
-    
-    // NEW: Grab the name from the cart checkout box in case they want to save/update it
-    const cartNameInput = document.getElementById('custName');
 
+    const nameToSave = nameInput ? nameInput.value.trim() : "";
     const phone = phoneInput ? phoneInput.value.trim() : "";
     const address = addressInput ? addressInput.value.trim() : "";
-    const nameToSave = cartNameInput ? cartNameInput.value.trim() : "";
 
     try {
         let updatePayload = {
@@ -152,7 +152,6 @@ window.saveUserProfile = async function() {
             address: address
         };
         
-        // If they typed a name in the cart, save it to their profile!
         if (nameToSave) {
             updatePayload.name = nameToSave;
             updatePayload.customerName = nameToSave;
@@ -160,9 +159,9 @@ window.saveUserProfile = async function() {
 
         await db.collection("users").doc(window.currentUser.uid).set(updatePayload, { merge: true }); 
         
-        alert("Address saved successfully!");
+        alert("Profile saved successfully!");
     } catch (error) {
-        alert("Error saving address: " + error.message);
+        alert("Error saving profile: " + error.message);
     }
 }
 
@@ -172,19 +171,17 @@ async function loadUserData(uid) {
         const userDoc = await db.collection("users").doc(uid).get();
         if (userDoc.exists) {
             const data = userDoc.data();
+            let savedName = data.customerName || data.name || data.fullName || (window.currentUser ? window.currentUser.displayName : "") || "";
             
-            // 1. Fill Profile Tab Displays
+            // 1. Fill Profile Tab Displays (Now includes Name!)
+            if (savedName && document.getElementById('profileName')) document.getElementById('profileName').value = savedName;
             if (data.phone && document.getElementById('profilePhone')) document.getElementById('profilePhone').value = data.phone;
             if (data.address && document.getElementById('profileAddress')) document.getElementById('profileAddress').value = data.address;
             
             // 2. Auto-fill Cart Checkout inputs
-            // FIX: Check every possible name variation
-            let savedName = data.customerName || data.name || data.fullName || (window.currentUser ? window.currentUser.displayName : "") || "";
-            
             if (savedName && document.getElementById('custName')) {
                 document.getElementById('custName').value = savedName;
             }
-            
             if (data.phone && document.getElementById('custPhone')) {
                 document.getElementById('custPhone').value = data.phone || data.customerPhone || "";
             }
