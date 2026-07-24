@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
     <!-- SEO Meta Tags (Highly Optimized for Fashion, Cloth, Dress) -->
     <meta name="description" content="Shop Mohor Clothings for premium women's fashion in Bangladesh. Discover beautifully handcrafted dresses, stylish Kurtis, elegant Three-Piece suits, and traditional Khadi clothes.">
@@ -98,7 +98,7 @@
             overflow: hidden; 
             box-shadow: 0 4px 15px rgba(0,0,0,0.03); 
             cursor: pointer; 
-            -webkit-tap-highlight-color: transparent; /* Mobile tap fix */
+            -webkit-tap-highlight-color: transparent; 
         }
         
         .product-card:hover { 
@@ -184,9 +184,10 @@
             position: fixed; 
             top: 0; 
             left: 0; 
+            bottom: 0; 
             width: 100%; 
             height: 100%; 
-            background: rgba(0,0,0,0.75); /* Removed backdrop filter */
+            background: rgba(0,0,0,0.75); 
             z-index: 3000; 
             display: flex; 
             justify-content: center; 
@@ -203,9 +204,10 @@
             background: var(--white); 
             width: 100%; 
             max-width: 1000px; 
-            max-height: 90vh; 
-            overflow-y: auto !important; /* Mobile scroll fix */
+            max-height: 90%; 
+            overflow-y: auto !important; 
             -webkit-overflow-scrolling: touch; 
+            overscroll-behavior: contain; /* Prevents background body scrolling */
             position: relative; 
             display: flex; 
             flex-direction: row; 
@@ -251,19 +253,19 @@
         .floating-wa:hover { transform: scale(1.1); }
         .floating-wa svg { fill: white; width: 35px; height: 35px; }
 
-        /* --- Cart Sidebar Modal --- */
-        .cart-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; opacity: 0; visibility: hidden; transition: var(--transition); }
+        /* --- Cart Sidebar Modal & Account Modal (MOBILE FIXED) --- */
+        .cart-overlay { position: fixed; top: 0; left: 0; bottom: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; opacity: 0; visibility: hidden; transition: var(--transition); }
         .cart-overlay.active { opacity: 1; visibility: visible; }
-        .cart-sidebar { position: fixed; top: 0; right: -400px; width: 100%; max-width: 400px; height: 100vh; background: var(--white); z-index: 2001; transition: right 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); display: flex; flex-direction: column; box-shadow: -10px 0 30px rgba(0,0,0,0.1); }
+        .cart-sidebar { position: fixed; top: 0; bottom: 0; right: -400px; width: 100%; max-width: 400px; height: 100%; background: var(--white); z-index: 2001; transition: right 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); display: flex; flex-direction: column; box-shadow: -10px 0 30px rgba(0,0,0,0.1); overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
         .cart-sidebar.active { right: 0; }
-        .cart-header { padding: 25px 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: #fafafa; }
+        .cart-header { padding: 25px 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: #fafafa; flex-shrink: 0; }
         .close-cart { font-size: 28px; cursor: pointer; line-height: 1; font-family: 'Montserrat', sans-serif; transition: var(--transition); }
         .close-cart:hover { color: #d9534f; }
-        .cart-items { flex-grow: 1; overflow-y: auto; padding: 20px; }
+        .cart-items { flex-grow: 1; overflow-y: auto; padding: 20px; -webkit-overflow-scrolling: touch; }
         .cart-item { display: flex; justify-content: space-between; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid var(--soft-gray); font-size: 14px; }
         .cart-item-info span { font-size: 12px; color: var(--text-light); display: block; margin-top: 3px; }
         .remove-item { color: #d9534f; cursor: pointer; font-size: 12px; border: none; background: none; margin-top: 5px; text-transform: uppercase; font-weight: 600;}
-        .cart-footer { padding: 20px; border-top: 1px solid var(--border-color); background: var(--soft-gray); }
+        .cart-footer { padding: 20px; border-top: 1px solid var(--border-color); background: var(--soft-gray); flex-shrink: 0; }
 
         /* SPECIFIC MOBILE RESPONSIVE FIXES */
         @media (max-width: 900px) {
@@ -279,13 +281,24 @@
             .modal-overlay { padding: 10px; }
             .modal-content { 
                 flex-direction: column; 
-                max-height: 92vh; 
+                max-height: 95%; /* Better fit than vh */
                 overflow-y: auto !important; 
                 border-radius: var(--radius); 
             }
             .modal-image-sec { padding: 15px; }
             .main-image-wrapper { max-height: 320px; }
             .modal-info-sec { padding: 30px 20px; }
+            
+            /* iPhone Safari Auto-Zoom Fix */
+            input[type="text"], 
+            input[type="email"], 
+            input[type="password"], 
+            input[type="tel"], 
+            textarea, 
+            select {
+                font-size: 16px !important; /* Must be 16px to stop iPhone zooming */
+            }
+            
             #searchInput { width: 100%; margin-bottom: 10px; }
         }
     </style>
