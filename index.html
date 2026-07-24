@@ -4,12 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <!-- SEO Meta Tags (Highly Optimized for Fashion, Cloth, Dress) -->
+    <!-- SEO Meta Tags -->
     <meta name="description" content="Shop Mohor Clothings for premium women's fashion in Bangladesh. Discover beautifully handcrafted dresses, stylish Kurtis, elegant Three-Piece suits, and traditional Khadi clothes.">
     <meta name="keywords" content="Mohor Clothings, women's fashion Bangladesh, premium kurti, three-piece dress, handcrafted clothing, Sylhet boutique, formal wear women, khadi dress, stylish clothes, women's apparel, best dress shop, fashion brand">
     <title>Mohor Clothings | Premium Women's Dresses, Fashion & Clothing</title>
     
-    <!-- Open Graph Tags (Makes links look beautiful on Facebook/WhatsApp) -->
+    <!-- Open Graph Tags -->
     <meta property="og:title" content="Mohor Clothings | Premium Women's Fashion">
     <meta property="og:description" content="Discover beautifully handcrafted dresses, stylish Kurtis, and elegant Three-Piece suits in Bangladesh.">
     <meta property="og:image" content="favicon.jpeg">
@@ -181,8 +181,6 @@
         <div class="shop-header">
             <h2 data-i18n="shopTitle">Our Collection</h2>
             <div class="shop-controls">
-                
-                <!-- NEW SMART SEARCH BAR -->
                 <input type="text" id="searchInput" placeholder="Search dresses, formal, khadi..." data-i18n-placeholder="searchPlaceholder" style="padding: 10px 15px; border: 1px solid var(--border-color); background: var(--white); font-family: 'Montserrat', sans-serif; font-size: 13px; outline: none; min-width: 250px;">
                 
                 <button type="button" class="mobile-filter-btn" id="mobileFilterBtn" data-i18n="filterBtn">Filters</button>
@@ -219,7 +217,7 @@
             </aside>
 
             <div class="product-grid" id="productGrid">
-                <!-- Products dynamically loaded from database -->
+                <!-- Products loaded dynamically -->
             </div>
         </div>
     </section>
@@ -283,7 +281,6 @@
         </div>
         
         <div class="cart-footer" data-nosnippet>
-            
             <div class="checkout-form" style="margin-bottom: 15px; text-align: left;">
                 <input type="text" id="custName" placeholder="Full Name *" data-i18n-placeholder="checkoutName" style="width: 100%; padding: 8px; margin-bottom: 8px; border: 1px solid var(--border-color); font-family: 'Montserrat', sans-serif; font-size: 12px; outline: none;">
                 <input type="tel" id="custPhone" placeholder="Mobile Number *" data-i18n-placeholder="checkoutPhone" style="width: 100%; padding: 8px; margin-bottom: 8px; border: 1px solid var(--border-color); font-family: 'Montserrat', sans-serif; font-size: 12px; outline: none;">
@@ -295,9 +292,7 @@
                     <option value="150" data-i18n="zoneOutside">Outside Sylhet (৳150)</option>
                 </select>
                 
-                <div id="dynamicPolicyDisplay" style="font-size: 11px; color: var(--text-light); margin-bottom: 15px; background: var(--soft-gray); padding: 10px; border-radius: 4px; display: none;">
-                    <!-- Policy text will inject here automatically -->
-                </div>
+                <div id="dynamicPolicyDisplay" style="font-size: 11px; color: var(--text-light); margin-bottom: 15px; background: var(--soft-gray); padding: 10px; border-radius: 4px; display: none;"></div>
                 
                 <div style="font-size: 11px; color: var(--text-light); line-height: 1.4; display: flex; align-items: flex-start; gap: 5px;">
                     <input type="checkbox" id="policyAgree" style="accent-color: var(--primary-gold); margin-top: 2px; cursor: pointer;">
@@ -323,14 +318,11 @@
                 </div>
             </div>
 
-            <!-- DUAL CHECKOUT BUTTONS (Stacked & Clear) -->
             <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px;">
-                <!-- ADMIN CHECKOUT (Black Button) -->
                 <button type="button" id="adminOrderBtn" onclick="window.checkoutToAdmin()" style="width: 100%; background: var(--deep-black); color: var(--white); padding: 15px; border: none; font-family: 'Montserrat', sans-serif; font-size: 13px; font-weight: 600; text-transform: uppercase; cursor: pointer; transition: var(--transition);" data-i18n="btnConfirmOrder">
                     Confirm Order (Website)
                 </button>
                 
-                <!-- WHATSAPP CHECKOUT (Green Button) -->
                 <button type="button" onclick="window.checkoutToWhatsApp()" style="width: 100%; background-color: #25D366; color: white; padding: 15px; border: none; font-family: 'Montserrat', sans-serif; font-size: 13px; font-weight: 600; text-transform: uppercase; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: var(--transition);">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
                         <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
@@ -349,7 +341,6 @@
             <button type="button" class="close-cart" id="closeAccountBtn" style="border: none; background: none; font-size: 28px; cursor: pointer;">&times;</button>
         </div>
 
-        <!-- VIEW 1: NOT LOGGED IN (Login / Signup Form) -->
         <div id="authView" style="margin-top: 20px;">
             <div id="loginFormContainer">
                 <h4 style="margin-bottom: 15px; font-size: 16px;" data-i18n="accLoginTitle">Login to Your Account</h4>
@@ -375,7 +366,6 @@
             </div>
         </div>
 
-        <!-- VIEW 2: LOGGED IN (Profile, Address Book & Order History) -->
         <div id="profileView" style="display: none; margin-top: 10px;">
             <div style="background: var(--soft-gray); padding: 15px; border-radius: 4px; margin-bottom: 20px;">
                 <p style="font-size: 13px; color: var(--text-light);" data-i18n="accLoggedInAs">Logged in as:</p>
@@ -416,16 +406,19 @@
             messagingSenderId: "989000457004",
             appId: "1:989000457004:web:5679b256e20d94e27daa89"
         };
-        // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
-        // Initialize Firestore
         window.db = firebase.firestore();
 
-        // --- FETCH PRODUCTS FROM FIRESTORE DATABASE DYNAMICALLY ---
-        async function loadStoreProductsFromDatabase() {
-            const productGrid = document.getElementById('productGrid');
-            if (!productGrid) return;
+        // Safe helper for localized or string fields
+        function getFieldText(field) {
+            if (!field) return "";
+            if (typeof field === 'string') return field;
+            const lang = window.currentLang || 'en';
+            return field[lang] || field['en'] || "";
+        }
 
+        // --- FETCH PRODUCTS FROM FIRESTORE DATABASE SAFE & FALLBACK ---
+        async function loadStoreProductsFromDatabase() {
             try {
                 const querySnapshot = await window.db.collection("products").get();
                 let dynamicProducts = [];
@@ -449,50 +442,32 @@
 
                 if (dynamicProducts.length > 0) {
                     window.firestoreProducts = dynamicProducts;
-                    renderStorefrontGrid(window.firestoreProducts);
-                } else {
-                    productGrid.innerHTML = "<p style='text-align:center; color:#888; grid-column: 1/-1;'>No products available right now.</p>";
                 }
             } catch (error) {
                 console.error("Error loading products from database:", error);
+            } finally {
+                if (typeof window.updateProducts === "function") {
+                    window.updateProducts();
+                }
             }
         }
 
-        // --- RENDER GRID WITH PROPER IMAGE HANDLING ---
-        function renderStorefrontGrid(products) {
-            const grid = document.getElementById('productGrid');
-            grid.innerHTML = products.map(p => {
-                const mainImage = p.images && p.images.length > 0 ? p.images[0] : '';
-                return `
-                <div class="product-card" onclick="window.openQuickView('${p.id}')">
-                    <div class="image-container">
-                        <img src="${mainImage}" alt="${p.title}" class="product-image">
-                    </div>
-                    <div class="product-details-card">
-                        <div>
-                            <span class="product-category-label">Three Piece</span>
-                            <h3>${p.title}</h3>
-                            <div class="product-price">৳${p.price}</div>
-                        </div>
-                        <button class="quick-view-btn">Select Size & Add to Cart</button>
-                    </div>
-                </div>
-                `;
-            }).join('');
-        }
-
-        // --- DYNAMIC QUICK VIEW MODAL & SIZE POPUP LOGIC ---
+        // --- DYNAMIC QUICK VIEW MODAL LOGIC ---
         window.openQuickView = function(productId) {
-            const product = window.firestoreProducts.find(p => p.id === productId);
+            let sourceData = (window.firestoreProducts && window.firestoreProducts.length > 0) 
+                ? window.firestoreProducts 
+                : (typeof productsData !== 'undefined' ? productsData : []);
+
+            const product = sourceData.find(p => p.id === productId || String(p.id) === String(productId));
             if (!product) return;
 
-            // Fill text fields
-            document.getElementById('modalTitle').innerText = product.title;
+            document.getElementById('modalTitle').innerText = getFieldText(product.title);
             document.getElementById('modalPrice').innerText = '৳' + product.price;
-            document.getElementById('modalDesc').innerText = product.description;
-            document.getElementById('modalDetails').innerHTML = product.details.map(d => `<li>${d}</li>`).join('');
+            document.getElementById('modalDesc').innerText = getFieldText(product.description);
+            
+            const detailsArr = Array.isArray(product.details) ? product.details : (product.details ? [product.details] : []);
+            document.getElementById('modalDetails').innerHTML = detailsArr.map(d => `<li>${getFieldText(d)}</li>`).join('');
 
-            // Fill images and thumbnails directly from the ImgBB Links array
             const mainImg = document.getElementById('modalMainImage');
             const thumbContainer = document.getElementById('modalThumbnails');
             if (product.images && product.images.length > 0) {
@@ -505,51 +480,52 @@
                 thumbContainer.innerHTML = '';
             }
 
-            // Fill colors dynamically
             const colorSec = document.getElementById('colorSection');
             const colorContainer = document.getElementById('modalColors');
-            if (product.colors && product.colors.length > 0 && product.colors[0] !== "") {
+            const colorList = Array.isArray(product.colors) ? product.colors : [];
+            if (colorList.length > 0 && colorList[0] !== "") {
                 colorSec.style.display = 'block';
-                colorContainer.innerHTML = product.colors.map((c, i) => `
-                    <button type="button" class="select-btn ${i === 0 ? 'selected' : ''}" onclick="window.selectColor(this)">${c}</button>
+                colorContainer.innerHTML = colorList.map((c, i) => `
+                    <button type="button" class="select-btn ${i === 0 ? 'selected' : ''}" onclick="window.selectColor(this)">${getFieldText(c)}</button>
                 `).join('');
             } else {
                 colorSec.style.display = 'none';
             }
 
-            // Fill sizes & handle DYNAMIC SIZE GUIDE TEXT changes on click
             const sizeContainer = document.getElementById('modalSizes');
             const sizeGuideDisplay = document.getElementById('sizeGuideDisplay');
-            
-            if (product.sizes && product.sizes.length > 0 && product.sizes[0] !== "") {
-                sizeContainer.innerHTML = product.sizes.map((s, i) => {
-                    // Extract specific details for this size
+            const sizeList = Array.isArray(product.sizes) ? product.sizes : [];
+
+            if (sizeList.length > 0 && sizeList[0] !== "") {
+                sizeContainer.innerHTML = sizeList.map((s, i) => {
                     let specificDetails = "";
-                    if (product.sizeMeasurements && product.sizeMeasurements[s] && product.sizeMeasurements[s].length > 0) {
-                         specificDetails = product.sizeMeasurements[s].join('<br>');
+                    if (product.sizeMeasurements && product.sizeMeasurements[s]) {
+                        let measurementData = product.sizeMeasurements[s];
+                        if (Array.isArray(measurementData)) {
+                            specificDetails = measurementData.join('<br>');
+                        } else {
+                            specificDetails = getFieldText(measurementData);
+                        }
                     } else if (product.measurementsGuide) {
-                         specificDetails = product.measurementsGuide.replace(/\n/g, '<br>');
+                        specificDetails = getFieldText(product.measurementsGuide).replace(/\n/g, '<br>');
                     }
 
-                    // Format string so it doesn't break HTML attributes (convert quotes)
                     const safeDetails = specificDetails.replace(/'/g, "&apos;").replace(/"/g, "&quot;");
-                    
                     return `<button type="button" class="select-btn ${i === 0 ? 'selected' : ''}" onclick="window.selectSize('${s}', '${safeDetails}', this)">${s}</button>`;
                 }).join('');
                 
-                // Set the default displayed size guide for whichever size is selected first
-                const firstSize = product.sizes[0];
-                if (product.sizeMeasurements && product.sizeMeasurements[firstSize] && product.sizeMeasurements[firstSize].length > 0) {
-                    sizeGuideDisplay.innerHTML = product.sizeMeasurements[firstSize].join('<br>');
+                const firstSize = sizeList[0];
+                if (product.sizeMeasurements && product.sizeMeasurements[firstSize]) {
+                    let firstData = product.sizeMeasurements[firstSize];
+                    sizeGuideDisplay.innerHTML = Array.isArray(firstData) ? firstData.join('<br>') : getFieldText(firstData);
                 } else {
-                    sizeGuideDisplay.innerHTML = product.measurementsGuide ? product.measurementsGuide.replace(/\n/g, '<br>') : '';
+                    sizeGuideDisplay.innerHTML = product.measurementsGuide ? getFieldText(product.measurementsGuide).replace(/\n/g, '<br>') : '';
                 }
             } else {
                 sizeContainer.innerHTML = '<span>Free Size</span>';
                 sizeGuideDisplay.innerHTML = '';
             }
 
-            // Setup 'Add to Cart' click event
             const addBtn = document.getElementById('modalAddToCartBtn');
             addBtn.onclick = function() {
                 const selectedSizeEl = document.querySelector('#modalSizes .select-btn.selected');
@@ -561,24 +537,22 @@
                 if (typeof window.addToCart === 'function') {
                     window.addToCart({
                         id: product.id,
-                        title: product.title,
+                        title: getFieldText(product.title),
                         price: product.price,
-                        image: product.images[0] || '',
+                        image: product.images ? product.images[0] : '',
                         size: chosenSize,
                         color: chosenColor,
                         qty: 1
                     });
                     document.getElementById('productModal').classList.remove('active');
                 } else {
-                    alert("Cart functionality is loading. Make sure cart.js is connected.");
+                    alert("Cart functionality is loading. Please wait.");
                 }
             };
 
-            // Display the modal instantly
             document.getElementById('productModal').classList.add('active');
         };
 
-        // UI Modal Helpers
         window.changeModalImage = function(url, el) {
             document.getElementById('modalMainImage').src = url;
             document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
@@ -602,7 +576,6 @@
             }
         };
 
-        // Modal Close Button Listeners
         document.getElementById('closeModalBtn').addEventListener('click', () => {
             document.getElementById('productModal').classList.remove('active');
         });
@@ -612,19 +585,15 @@
             }
         });
 
-        // Start initialization immediately
         document.addEventListener("DOMContentLoaded", () => {
             loadStoreProductsFromDatabase();
         });
 
-        // --- AUTO-FILL CART & PROFILE WITH USER DATA ---
+        // --- AUTO-FILL USER DATA ---
         firebase.auth().onAuthStateChanged((user) => {
             if (user) {
                 window.db.collection("users").doc(user.uid).get().then((doc) => {
-                    let userData = {};
-                    if (doc.exists) {
-                        userData = doc.data();
-                    }
+                    let userData = doc.exists ? doc.data() : {};
                         
                     const custName = document.getElementById("custName");
                     const custPhone = document.getElementById("custPhone");
@@ -632,21 +601,18 @@
                     
                     let savedName = userData.customerName || userData.name || userData.fullName || user.displayName || "";
                     
-                    if (custName && savedName) { custName.value = savedName; }
-                    if (custPhone && (userData.customerPhone || userData.phone)) { custPhone.value = userData.customerPhone || userData.phone; }
-                    if (deliveryAddress && (userData.deliveryAddress || userData.address)) { deliveryAddress.value = userData.deliveryAddress || userData.address; }
+                    if (custName && savedName) custName.value = savedName;
+                    if (custPhone && (userData.customerPhone || userData.phone)) custPhone.value = userData.customerPhone || userData.phone;
+                    if (deliveryAddress && (userData.deliveryAddress || userData.address)) deliveryAddress.value = userData.deliveryAddress || userData.address;
 
                     const profileName = document.getElementById("profileName");
                     const profilePhone = document.getElementById("profilePhone");
                     const profileAddress = document.getElementById("profileAddress");
                     
-                    if (profileName && savedName) { profileName.value = savedName; }
-                    if (profilePhone && (userData.customerPhone || userData.phone)) { profilePhone.value = userData.customerPhone || userData.phone; }
-                    if (profileAddress && (userData.deliveryAddress || userData.address)) { profileAddress.value = userData.deliveryAddress || userData.address; }
-                    
-                }).catch((error) => {
-                    console.error("Error fetching user data:", error);
-                });
+                    if (profileName && savedName) profileName.value = savedName;
+                    if (profilePhone && (userData.customerPhone || userData.phone)) profilePhone.value = userData.customerPhone || userData.phone;
+                    if (profileAddress && (userData.deliveryAddress || userData.address)) profileAddress.value = userData.deliveryAddress || userData.address;
+                }).catch(err => console.error(err));
             } else {
                 if(document.getElementById("custName")) document.getElementById("custName").value = "";
                 if(document.getElementById("custPhone")) document.getElementById("custPhone").value = "";
