@@ -409,6 +409,54 @@
         firebase.initializeApp(firebaseConfig);
         // Initialize Firestore
         window.db = firebase.firestore();
+
+        // --- NEW: AUTO-FILL CART & PROFILE WITH USER DATA ---
+        firebase.auth().onAuthStateChanged((user) => {
+            if (user) {
+                // Fetch user data from Firestore
+                window.db.collection("users").doc(user.uid).get().then((doc) => {
+                    if (doc.exists) {
+                        const userData = doc.data();
+                        
+                        // 1. Auto-fill Cart Checkout Form
+                        const custName = document.getElementById("custName");
+                        const custPhone = document.getElementById("custPhone");
+                        const deliveryAddress = document.getElementById("deliveryAddress");
+                        
+                        // Supports both "customerName" and "name" keys depending on how it was saved
+                        if (custName && (userData.customerName || userData.name)) {
+                            custName.value = userData.customerName || userData.name;
+                        }
+                        if (custPhone && (userData.customerPhone || userData.phone)) {
+                            custPhone.value = userData.customerPhone || userData.phone;
+                        }
+                        if (deliveryAddress && (userData.deliveryAddress || userData.address)) {
+                            deliveryAddress.value = userData.deliveryAddress || userData.address;
+                        }
+
+                        // 2. Auto-fill Profile Address Book (in Account Modal)
+                        const profilePhone = document.getElementById("profilePhone");
+                        const profileAddress = document.getElementById("profileAddress");
+                        
+                        if (profilePhone && (userData.customerPhone || userData.phone)) {
+                            profilePhone.value = userData.customerPhone || userData.phone;
+                        }
+                        if (profileAddress && (userData.deliveryAddress || userData.address)) {
+                            profileAddress.value = userData.deliveryAddress || userData.address;
+                        }
+                    }
+                }).catch((error) => {
+                    console.error("Error fetching user data:", error);
+                });
+            } else {
+                // Clear fields if logged out so next guest starts fresh
+                if(document.getElementById("custName")) document.getElementById("custName").value = "";
+                if(document.getElementById("custPhone")) document.getElementById("custPhone").value = "";
+                if(document.getElementById("deliveryAddress")) document.getElementById("deliveryAddress").value = "";
+                if(document.getElementById("profilePhone")) document.getElementById("profilePhone").value = "";
+                if(document.getElementById("profileAddress")) document.getElementById("profileAddress").value = "";
+            }
+        });
     </script>
 
     <!-- Database and Logic Files -->
