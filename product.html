@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Product Details | Mohor Clothings</title>
+
+    <link rel="icon" type="image/jpeg" href="favicon.jpeg">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-gold: #C9A14A;
+            --deep-black: #0c0c0c;
+            --soft-gray: #f9f9f9;
+            --border-color: #eaeaea;
+            --text-dark: #222;
+            --text-light: #666;
+            --white: #ffffff;
+            --radius: 8px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Montserrat', sans-serif; background-color: var(--white); color: var(--text-dark); line-height: 1.6; padding-bottom: 90px; }
+        h1, h2, h3, h4, .brand-logo { font-family: 'Playfair Display', serif; }
+
+        /* Top Navigation Header */
+        nav { display: flex; justify-content: space-between; align-items: center; padding: 15px 5%; background: var(--white); position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid var(--border-color); }
+        .back-btn { text-decoration: none; color: var(--deep-black); font-size: 20px; font-weight: 600; display: flex; align-items: center; gap: 5px; }
+        .brand-logo { font-size: 22px; font-weight: 700; letter-spacing: 2px; text-decoration: none; color: var(--deep-black); text-transform: uppercase; }
+        .nav-right { display: flex; align-items: center; gap: 15px; }
+        .cart-toggle-btn { background: none; border: none; font-family: 'Montserrat', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px; text-transform: uppercase; }
+        .cart-badge { background: var(--primary-gold); color: var(--white); border-radius: 50%; padding: 2px 8px; font-size: 11px; }
+        .lang-btn { background: var(--deep-black); color: var(--white); border: none; padding: 5px 10px; font-size: 11px; font-weight: 600; cursor: pointer; border-radius: 4px; }
+
+        /* Product Content Container */
+        .product-container { max-width: 600px; margin: 0 auto; padding: 20px 5%; }
+        
+        .main-image-wrapper { width: 100%; height: 380px; background: var(--soft-gray); border-radius: var(--radius); overflow: hidden; display: flex; justify-content: center; align-items: center; border: 1px solid var(--border-color); }
+        .main-image-wrapper img { width: 100%; height: 100%; object-fit: contain; }
+
+        .thumbnail-gallery { display: flex; gap: 10px; margin-top: 12px; overflow-x: auto; padding-bottom: 5px; }
+        .thumbnail { width: 65px; height: 80px; object-fit: cover; border-radius: 4px; border: 2px solid transparent; opacity: 0.6; cursor: pointer; flex-shrink: 0; }
+        .thumbnail.active { border-color: var(--primary-gold); opacity: 1; }
+
+        .info-section { margin-top: 25px; }
+        .info-section h1 { font-size: 24px; color: var(--deep-black); margin-bottom: 8px; }
+        .price-tag { font-size: 20px; color: var(--primary-gold); font-weight: 600; margin-bottom: 20px; }
+
+        .selector-section { margin-bottom: 20px; }
+        .selector-section h4 { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; font-weight: 600; }
+        .selector-options { display: flex; gap: 10px; flex-wrap: wrap; }
+        .select-btn { border: 1px solid var(--border-color); background: var(--white); padding: 10px 16px; font-size: 13px; font-family: 'Montserrat', sans-serif; border-radius: 4px; cursor: pointer; min-width: 45px; text-align: center; }
+        .select-btn.selected { background: var(--deep-black); color: var(--white); border-color: var(--deep-black); }
+
+        .warning-msg { color: #d9534f; font-size: 11px; display: none; margin-left: 8px; }
+        #sizeGuideDisplay { font-size: 12px; color: var(--text-light); margin-top: 10px; line-height: 1.6; background: var(--soft-gray); padding: 10px; border-radius: 4px; display: none; }
+
+        .desc-box { margin-bottom: 20px; }
+        .desc-box h4 { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; font-weight: 600; border-bottom: 1px solid var(--border-color); padding-bottom: 5px; }
+        .desc-box p, .desc-box ul { font-size: 13px; color: var(--text-light); line-height: 1.7; }
+        .desc-box ul { list-style: square inside; }
+
+        /* Sticky Bottom Action Bar for Mobile */
+        .sticky-bottom-bar { position: fixed; bottom: 0; left: 0; right: 0; background: var(--white); padding: 12px 5%; border-top: 1px solid var(--border-color); display: flex; gap: 10px; z-index: 2000; box-shadow: 0 -5px 15px rgba(0,0,0,0.05); }
+        .add-cart-btn { flex: 1; background: var(--primary-gold); color: var(--white); border: none; padding: 14px; font-family: 'Montserrat', sans-serif; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; border-radius: 4px; cursor: pointer; }
+        .buy-now-btn { flex: 1; background: var(--deep-black); color: var(--white); border: none; padding: 14px; font-family: 'Montserrat', sans-serif; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; border-radius: 4px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="index.html" class="back-btn">&#8592;</a>
+        <a href="index.html" class="brand-logo">Mohor</a>
+        <div class="nav-right">
+            <button type="button" id="langToggleBtn" class="lang-btn">EN / বাং</button>
+            <a href="cart.html" class="cart-toggle-btn" style="text-decoration:none; color:inherit;">
+                <span data-i18n="navCart">Cart</span> <span class="cart-badge" id="cartBadge">0</span>
+            </a>
+        </div>
+    </nav>
+
+    <div class="product-container">
+        <div class="main-image-wrapper">
+            <img id="productMainImage" src="" alt="Product Image">
+        </div>
+        <div class="thumbnail-gallery" id="productThumbnails"></div>
+
+        <div class="info-section">
+            <h1 id="productTitle">Loading product...</h1>
+            <div class="price-tag" id="productPrice">৳0</div>
+
+            <div class="selector-section" id="colorSection" style="display:none;">
+                <h4><span data-i18n="colorSelect">Select Color</span><span id="colorWarning" class="warning-msg" data-i18n="colorWarning">*Required</span></h4>
+                <div class="selector-options" id="productColors"></div>
+            </div>
+
+            <div class="selector-section">
+                <h4><span data-i18n="sizeSelect">Select Size</span><span id="sizeWarning" class="warning-msg" data-i18n="sizeWarning">*Required</span></h4>
+                <div class="selector-options" id="productSizes"></div>
+                <div id="sizeGuideDisplay"></div>
+            </div>
+
+            <div class="desc-box">
+                <h4 data-i18n="descTitle">Description</h4>
+                <p id="productDesc"></p>
+            </div>
+
+            <div class="desc-box">
+                <h4 data-i18n="detailsTitle">Product Details</h4>
+                <ul id="productDetails"></ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Fixed Action Bar -->
+    <div class="sticky-bottom-bar">
+        <button type="button" class="add-cart-btn" id="addToCartBtn" data-i18n="addToCart">Add to Cart</button>
+        <button type="button" class="buy-now-btn" id="buyNowBtn">Buy Now</button>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+    <script src="products.js"></script>
+    <script src="cart.js"></script>
+    <script src="app.js"></script>
+
+    <script>
+        let currentProduct = null;
+        let selectedSize = null;
+        let selectedColor = null;
+
+        // Parse ID parameter from URL: product.html?id=XYZ
+        function getProductIdFromUrl() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('id');
+        }
+
+        async function loadProductDetails() {
+            const targetId = getProductIdFromUrl();
+            if (!targetId) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            // Look up product in Firebase or fallback to local products.js
+            let sourceList = (typeof window.firestoreProducts !== 'undefined' && window.firestoreProducts.length > 0)
+                ? window.firestoreProducts
+                : (typeof productsData !== 'undefined' ? productsData : []);
+
+            currentProduct = sourceList.find(p => String(p.id) === String(targetId));
+
+            // If not found in memory yet, query Firestore directly
+            if (!currentProduct && window.db) {
+                try {
+                    const doc = await window.db.collection("products").doc(targetId).get();
+                    if (doc.exists) {
+                        const data = doc.data();
+                        currentProduct = {
+                            id: doc.id,
+                            title: data.title || "Dress",
+                            price: Number(data.price || 0),
+                            images: data.images || [],
+                            colors: data.colors || [],
+                            sizes: data.sizes || [],
+                            sizeMeasurements: data.sizeMeasurements || {},
+                            description: data.description || "",
+                            details: data.details || []
+                        };
+                    }
+                } catch (e) {
+                    console.error("Error retrieving product:", e);
+                }
+            }
+
+            if (!currentProduct) {
+                document.getElementById('productTitle').innerText = "Product Not Found";
+                return;
+            }
+
+            // Populate Page Elements
+            document.getElementById('productTitle').innerText = getText(currentProduct.title);
+            document.getElementById('productPrice').innerText = `৳ ${currentProduct.price}`;
+            document.getElementById('productDesc').innerText = getText(currentProduct.description);
+
+            // Images
+            const mainImg = document.getElementById('productMainImage');
+            const thumbGallery = document.getElementById('productThumbnails');
+            thumbGallery.innerHTML = '';
+
+            if (currentProduct.images && currentProduct.images.length > 0) {
+                mainImg.src = currentProduct.images[0];
+                currentProduct.images.forEach((imgSrc, idx) => {
+                    const thumb = document.createElement('img');
+                    thumb.src = imgSrc;
+                    thumb.className = 'thumbnail' + (idx === 0 ? ' active' : '');
+                    thumb.onclick = () => {
+                        mainImg.src = imgSrc;
+                        document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
+                        thumb.classList.add('active');
+                    };
+                    thumbGallery.appendChild(thumb);
+                });
+            }
+
+            // Colors
+            const colorsContainer = document.getElementById('productColors');
+            const colorSection = document.getElementById('colorSection');
+            colorsContainer.innerHTML = '';
+            let colorArray = Array.isArray(currentProduct.colors) ? currentProduct.colors : (currentProduct.colors ? (currentProduct.colors[window.currentLang] || currentProduct.colors['en']) : []);
+
+            if (colorArray && colorArray.length > 0) {
+                colorSection.style.display = 'block';
+                colorArray.forEach(color => {
+                    const btn = document.createElement('button');
+                    btn.className = 'select-btn color-btn';
+                    btn.innerText = color;
+                    btn.onclick = () => {
+                        selectedColor = color;
+                        document.getElementById('colorWarning').style.display = 'none';
+                        document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('selected'));
+                        btn.classList.add('selected');
+                    };
+                    colorsContainer.appendChild(btn);
+                });
+            } else {
+                selectedColor = "Default";
+            }
+
+            // Sizes
+            const sizesContainer = document.getElementById('productSizes');
+            sizesContainer.innerHTML = '';
+            if (currentProduct.sizes) {
+                currentProduct.sizes.forEach(size => {
+                    const btn = document.createElement('button');
+                    btn.className = 'select-btn size-btn';
+                    btn.innerText = size;
+                    btn.onclick = () => {
+                        selectedSize = size;
+                        document.getElementById('sizeWarning').style.display = 'none';
+                        document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('selected'));
+                        btn.classList.add('selected');
+
+                        const guide = document.getElementById('sizeGuideDisplay');
+                        if (currentProduct.sizeMeasurements && currentProduct.sizeMeasurements[size]) {
+                            guide.style.display = 'block';
+                            guide.innerHTML = currentProduct.sizeMeasurements[size][window.currentLang] || currentProduct.sizeMeasurements[size]['en'];
+                        } else {
+                            guide.style.display = 'none';
+                        }
+                    };
+                    sizesContainer.appendChild(btn);
+                });
+            }
+
+            // Details
+            const detailsList = document.getElementById('productDetails');
+            detailsList.innerHTML = '';
+            let detailsArray = Array.isArray(currentProduct.details) ? currentProduct.details : (currentProduct.details ? (currentProduct.details[window.currentLang] || currentProduct.details['en']) : []);
+            if (detailsArray) {
+                detailsArray.forEach(d => {
+                    const li = document.createElement('li');
+                    li.innerText = d;
+                    detailsList.appendChild(li);
+                });
+            }
+        }
+
+        // Add to Cart handler
+        function handleAddToCart() {
+            let valid = true;
+            if (!selectedSize) { document.getElementById('sizeWarning').style.display = 'inline'; valid = false; }
+            if (!selectedColor) { document.getElementById('colorWarning').style.display = 'inline'; valid = false; }
+            if (!valid) return false;
+
+            let name = typeof currentProduct.title === 'string' ? currentProduct.title : currentProduct.title.en;
+            if (selectedColor !== "Default") name += ` (${selectedColor})`;
+
+            if (typeof window.addToCart === "function") {
+                window.addToCart(name, currentProduct.price, selectedSize);
+            }
+            return true;
+        }
+
+        document.getElementById('addToCartBtn').addEventListener('click', () => {
+            if (handleAddToCart()) {
+                alert("Item added to cart!");
+            }
+        });
+
+        document.getElementById('buyNowBtn').addEventListener('click', () => {
+            if (handleAddToCart()) {
+                window.location.href = 'cart.html';
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(loadProductDetails, 150);
+        });
+    </script>
+</body>
+</html>
