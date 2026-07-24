@@ -217,7 +217,7 @@
             </aside>
 
             <div class="product-grid" id="productGrid">
-                <!-- Products dynamically loaded from database -->
+                <!-- Products dynamically loaded from database will appear here -->
             </div>
         </div>
     </section>
@@ -427,7 +427,7 @@
                     dynamicProducts.push({
                         id: doc.id,
                         title: data.title || "Dress",
-                        category: data.category || "three-piece", // fallback
+                        category: data.category || "three-piece",
                         price: Number(data.price || 0),
                         images: data.images || [],
                         colors: data.colors || [],
@@ -484,7 +484,7 @@
             document.getElementById('modalDesc').innerText = product.description;
             document.getElementById('modalDetails').innerHTML = product.details.map(d => `<li>${d}</li>`).join('');
 
-            // Fill images
+            // Fill images and thumbnails directly from the ImgBB Links array
             const mainImg = document.getElementById('modalMainImage');
             const thumbContainer = document.getElementById('modalThumbnails');
             if (product.images && product.images.length > 0) {
@@ -497,10 +497,10 @@
                 thumbContainer.innerHTML = '';
             }
 
-            // Fill colors
+            // Fill colors dynamically
             const colorSec = document.getElementById('colorSection');
             const colorContainer = document.getElementById('modalColors');
-            if (product.colors && product.colors.length > 0) {
+            if (product.colors && product.colors.length > 0 && product.colors[0] !== "") {
                 colorSec.style.display = 'block';
                 colorContainer.innerHTML = product.colors.map((c, i) => `
                     <button type="button" class="select-btn ${i === 0 ? 'selected' : ''}" onclick="window.selectColor(this)">${c}</button>
@@ -509,27 +509,27 @@
                 colorSec.style.display = 'none';
             }
 
-            // Fill sizes & handle DYNAMIC SIZE GUIDE TEXT
+            // Fill sizes & handle DYNAMIC SIZE GUIDE TEXT changes on click
             const sizeContainer = document.getElementById('modalSizes');
             const sizeGuideDisplay = document.getElementById('sizeGuideDisplay');
             
-            if (product.sizes && product.sizes.length > 0) {
+            if (product.sizes && product.sizes.length > 0 && product.sizes[0] !== "") {
                 sizeContainer.innerHTML = product.sizes.map((s, i) => {
                     // Extract specific details for this size
                     let specificDetails = "";
-                    if (product.sizeMeasurements && product.sizeMeasurements[s]) {
+                    if (product.sizeMeasurements && product.sizeMeasurements[s] && product.sizeMeasurements[s].length > 0) {
                          specificDetails = product.sizeMeasurements[s].join('<br>');
                     } else if (product.measurementsGuide) {
-                         specificDetails = product.measurementsGuide;
+                         specificDetails = product.measurementsGuide.replace(/\n/g, '<br>');
                     }
 
-                    // Format string so it doesn't break HTML attributes
-                    const safeDetails = specificDetails.replace(/'/g, "&apos;").replace(/"/g, "&quot;").replace(/\n/g, "<br>");
+                    // Format string so it doesn't break HTML attributes (convert quotes)
+                    const safeDetails = specificDetails.replace(/'/g, "&apos;").replace(/"/g, "&quot;");
                     
                     return `<button type="button" class="select-btn ${i === 0 ? 'selected' : ''}" onclick="window.selectSize('${s}', '${safeDetails}', this)">${s}</button>`;
                 }).join('');
                 
-                // Setup the display for whichever size is selected first by default
+                // Set the default displayed size guide for whichever size is selected first
                 const firstSize = product.sizes[0];
                 if (product.sizeMeasurements && product.sizeMeasurements[firstSize] && product.sizeMeasurements[firstSize].length > 0) {
                     sizeGuideDisplay.innerHTML = product.sizeMeasurements[firstSize].join('<br>');
@@ -548,7 +548,7 @@
                 const selectedColorEl = document.querySelector('#modalColors .select-btn.selected');
                 
                 const chosenSize = selectedSizeEl ? selectedSizeEl.innerText : 'Free Size';
-                const chosenColor = selectedColorEl ? selectedColorEl.innerText : '';
+                const chosenColor = selectedColorEl ? selectedColorEl.innerText : 'Default Color';
 
                 if (typeof window.addToCart === 'function') {
                     window.addToCart({
@@ -560,17 +560,17 @@
                         color: chosenColor,
                         qty: 1
                     });
+                    document.getElementById('productModal').classList.remove('active');
                 } else {
-                    alert("Cart system is currently initializing. Please try again.");
+                    alert("Cart functionality is loading. Make sure cart.js is connected.");
                 }
-                document.getElementById('productModal').classList.remove('active');
             };
 
-            // Show the modal
+            // Display the modal instantly
             document.getElementById('productModal').classList.add('active');
         };
 
-        // Modal Action Helpers
+        // UI Modal Helpers
         window.changeModalImage = function(url, el) {
             document.getElementById('modalMainImage').src = url;
             document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
@@ -594,7 +594,7 @@
             }
         };
 
-        // Close Modal Setup
+        // Modal Close Button Listeners
         document.getElementById('closeModalBtn').addEventListener('click', () => {
             document.getElementById('productModal').classList.remove('active');
         });
@@ -604,7 +604,7 @@
             }
         });
 
-        // Run product loader on page load
+        // Start initialization immediately
         document.addEventListener("DOMContentLoaded", () => {
             loadStoreProductsFromDatabase();
         });
