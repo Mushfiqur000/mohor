@@ -88,7 +88,7 @@
 
         <div class="info-section">
             <h1 id="productTitle">Loading product...</h1>
-            <div class="price-tag" id="productPrice">৳0</div>
+            <div class="price-tag" id="productPrice"></div>
 
             <div class="selector-section" id="colorSection" style="display:none;">
                 <h4><span data-i18n="colorSelect">Select Color</span><span id="colorWarning" class="warning-msg" data-i18n="colorWarning">*Required</span></h4>
@@ -133,7 +133,6 @@
         let selectedSize = null;
         let selectedColor = null;
 
-        // Fallback for translating text in case app.js is slightly delayed on mobile
         function getSafeText(dataField) {
             if (typeof window.getText === 'function') return window.getText(dataField);
             if (!dataField) return "";
@@ -141,70 +140,39 @@
             return dataField[window.currentLang || 'en'] || dataField['en'] || "";
         }
 
-        // Parse ID parameter from URL safely
-        function getProductIdFromUrl() {
-            try {
-                const params = new URLSearchParams(window.location.search);
-                return params.get('id');
-            } catch (e) {
-                return null;
-            }
-        }
-
         async function loadProductDetails() {
             try {
-                const targetId = getProductIdFromUrl();
+                // 1. Get ID from URL
+                const params = new URLSearchParams(window.location.search);
+                const targetId = params.get('id');
+                
                 if (!targetId) {
-                    window.location.href = 'index.html';
+                    document.getElementById('productTitle').innerText = "No Product ID provided in URL.";
                     return;
                 }
 
-                // Safely look up product in memory
+                // 2. Force iPhone to search all possible data sources
                 let sourceList = [];
-                if (typeof window.firestoreProducts !== 'undefined' && window.firestoreProducts.length > 0) {
-                    sourceList = window.firestoreProducts;
-                } else if (typeof window.productsData !== 'undefined') {
+                if (typeof window.productsData !== 'undefined' && Array.isArray(window.productsData)) {
                     sourceList = window.productsData;
-                } else if (typeof productsData !== 'undefined') {
+                } else if (typeof productsData !== 'undefined' && Array.isArray(productsData)) {
                     sourceList = productsData;
                 }
 
-                if (sourceList && sourceList.length > 0) {
+                // 3. Find the specific product
+                if (sourceList.length > 0) {
                     currentProduct = sourceList.find(p => String(p.id) === String(targetId));
                 }
 
-                // If not found in memory yet, query Firestore directly safely
-                if (!currentProduct && typeof window.db !== 'undefined' && window.db) {
-                    try {
-                        const doc = await window.db.collection("products").doc(targetId).get();
-                        if (doc.exists) {
-                            const data = doc.data();
-                            currentProduct = {
-                                id: doc.id,
-                                title: data.title || "Dress",
-                                price: Number(data.price || 0),
-                                images: data.images || [],
-                                colors: data.colors || [],
-                                sizes: data.sizes || [],
-                                sizeMeasurements: data.sizeMeasurements || {},
-                                description: data.description || "",
-                                details: data.details || []
-                            };
-                        }
-                    } catch (e) {
-                        console.error("Firebase fetch error:", e);
-                    }
-                }
-
+                // 4. Validate Product Exists
                 if (!currentProduct) {
-                    document.getElementById('productTitle').innerText = "Product Not Found";
+                    document.getElementById('productTitle').innerText = "Product Not Found in products.js";
                     document.getElementById('productTitle').style.color = "#d9534f";
-                    document.getElementById('productPrice').innerText = "";
-                    document.getElementById('productDesc').innerText = "We could not locate this item. Please go back to the shop.";
+                    document.getElementById('productDesc').innerText = "Check if ID '" + targetId + "' exists in your products.js file.";
                     return;
                 }
 
-                // Populate Page Elements Safely
+                // 5. Inject the UI Data Safely
                 document.getElementById('productTitle').innerText = getSafeText(currentProduct.title);
                 document.getElementById('productPrice').innerText = `৳ ${currentProduct.price}`;
                 document.getElementById('productDesc').innerText = getSafeText(currentProduct.description);
@@ -212,8 +180,7 @@
                 // Images
                 const mainImg = document.getElementById('productMainImage');
                 const thumbGallery = document.getElementById('productThumbnails');
-                thumbGallery.innerHTML = '';
-
+                
                 if (currentProduct.images && currentProduct.images.length > 0) {
                     mainImg.src = currentProduct.images[0];
                     currentProduct.images.forEach((imgSrc, idx) => {
@@ -232,14 +199,13 @@
                 // Colors
                 const colorsContainer = document.getElementById('productColors');
                 const colorSection = document.getElementById('colorSection');
-                colorsContainer.innerHTML = '';
                 
                 let colorArray = [];
                 if (currentProduct.colors) {
-                    colorArray = Array.isArray(currentProduct.colors) ? currentProduct.colors : (currentProduct.colors[window.currentLang || 'en'] || currentProduct.colors['en'] || []);
+                    colorArray = Array.isArray(currentProduct.colors) ? currentProduct.colors : (currentProduct.colors['en'] || []);
                 }
 
-                if (colorArray && colorArray.length > 0) {
+                if (colorArray.length > 0) {
                     colorSection.style.display = 'block';
                     colorArray.forEach(color => {
                         const btn = document.createElement('button');
@@ -259,7 +225,6 @@
 
                 // Sizes
                 const sizesContainer = document.getElementById('productSizes');
-                sizesContainer.innerHTML = '';
                 if (currentProduct.sizes && Array.isArray(currentProduct.sizes)) {
                     currentProduct.sizes.forEach(size => {
                         const btn = document.createElement('button');
@@ -270,14 +235,6 @@
                             document.getElementById('sizeWarning').style.display = 'none';
                             document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('selected'));
                             btn.classList.add('selected');
-
-                            const guide = document.getElementById('sizeGuideDisplay');
-                            if (currentProduct.sizeMeasurements && currentProduct.sizeMeasurements[size]) {
-                                guide.style.display = 'block';
-                                guide.innerHTML = currentProduct.sizeMeasurements[size][window.currentLang || 'en'] || currentProduct.sizeMeasurements[size]['en'] || "";
-                            } else {
-                                guide.style.display = 'none';
-                            }
                         };
                         sizesContainer.appendChild(btn);
                     });
@@ -285,13 +242,12 @@
 
                 // Details
                 const detailsList = document.getElementById('productDetails');
-                detailsList.innerHTML = '';
                 let detailsArray = [];
                 if (currentProduct.details) {
-                    detailsArray = Array.isArray(currentProduct.details) ? currentProduct.details : (currentProduct.details[window.currentLang || 'en'] || currentProduct.details['en'] || []);
+                    detailsArray = Array.isArray(currentProduct.details) ? currentProduct.details : (currentProduct.details['en'] || []);
                 }
                 
-                if (detailsArray && Array.isArray(detailsArray)) {
+                if (detailsArray.length > 0) {
                     detailsArray.forEach(d => {
                         const li = document.createElement('li');
                         li.innerText = d;
@@ -300,9 +256,12 @@
                 }
 
             } catch (error) {
-                console.error("Fatal Error Loading Product:", error);
-                document.getElementById('productTitle').innerText = "System Error";
-                document.getElementById('productDesc').innerText = "A script error occurred while loading this product. Please try refreshing the page.";
+                // ERROR LOGGER: This prints the exact reason why it failed to your screen
+                console.error(error);
+                document.getElementById('productTitle').innerText = "Script Crash!";
+                document.getElementById('productTitle').style.color = "red";
+                document.getElementById('productPrice').innerText = "";
+                document.getElementById('productDesc').innerText = "Error: " + error.message;
             }
         }
 
@@ -313,33 +272,26 @@
             if (!selectedColor) { document.getElementById('colorWarning').style.display = 'inline'; valid = false; }
             if (!valid) return false;
 
-            let name = typeof currentProduct.title === 'string' ? currentProduct.title : (currentProduct.title[window.currentLang || 'en'] || currentProduct.title.en);
+            let name = typeof currentProduct.title === 'string' ? currentProduct.title : currentProduct.title.en;
             if (selectedColor !== "Default") name += ` (${selectedColor})`;
 
             if (typeof window.addToCart === "function") {
                 window.addToCart(name, currentProduct.price, selectedSize);
-            } else {
-                console.warn("Cart function not loaded yet.");
             }
             return true;
         }
 
         document.getElementById('addToCartBtn').addEventListener('click', () => {
-            if (handleAddToCart()) {
-                alert("Item added to cart!");
-            }
+            if (handleAddToCart()) alert("Item added to cart!");
         });
 
         document.getElementById('buyNowBtn').addEventListener('click', () => {
-            if (handleAddToCart()) {
-                window.location.href = 'cart.html';
-            }
+            if (handleAddToCart()) window.location.href = 'cart.html';
         });
 
-        // FIX: Replaced 'DOMContentLoaded' with 'window.addEventListener("load")'
-        // This forces iPhone Safari to wait until app.js and products.js are fully processed before running this script
+        // Ensure everything is fully downloaded before running
         window.addEventListener('load', () => {
-            setTimeout(loadProductDetails, 100);
+            setTimeout(loadProductDetails, 200);
         });
     </script>
 </body>
