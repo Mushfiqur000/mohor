@@ -1,3 +1,9 @@
+// --- GLOBAL FIX: Normalize Product IDs ---
+// This ensures product.html doesn't freeze when comparing URL string IDs ("1") to database number IDs (1)
+if (typeof window.productsData !== 'undefined') {
+    window.productsData.forEach(p => p.id = String(p.id));
+}
+
 // --- LANGUAGE DICTIONARY ---
 window.currentLang = 'en';
 
@@ -166,9 +172,9 @@ window.uiTranslations = {
         policy2Title: "২. অর্ডার কনফার্মেশন",
         policy2Text: "<ul style='margin-left: 15px; margin-top: 5px;'><li>আনুমানিক ডেলিভারি সময়: ২-৫ কর্মদিবস।</li><li>জাতীয় ছুটির দিনে সময় দীর্ঘ হতে পারে।</li><li>আমাদের কুরিয়ার পার্টনার যোগাযোগ করতে পারে।</li></ul>",
         policy3Title: "৩. রিটার্ন ও এক্সচেঞ্জ পলিসি",
-        policy3Text: "আমরা আমাদের হাতে তৈরি পোশাকের মানের বিষয়ে গর্ববোধ করি। তবে, যদি আপনি কোনো ত্রুটিপূর্ণ বা ভুল পণ্য পান, অনুগ্রহ করে ডেলিভারি পাওয়ার ২৪ ঘণ্টার মধ্যে আমাদের জানান। পণ্যটি অবশ্যই অব্যবহৃত, ধোয়া হয়নি এমন, এবং অরিজিনাল প্যাকেজিং ও ট্যাগযুক্ত থাকতে হবে। কোনো ক্ষতি বা ত্রুটি দাবি করার জন্য অনুগ্রহ করে একটি আনবক্সিং ভিডিও রেকর্ড করুন।",
+        policy3Text: "আমরা আমাদের হাতে তৈরি পোশাকের মানের বিষয়ে গর্ববোধ করি। তবে, যদি আপনি কোনো ত্রুটিপূর্ণ বা ভুল পণ্য পান, অনুগ্রহ করে ডেলিভারি পাওয়ার ২৪ ঘণ্টার মধ্যে আমাদের জানান। পণ্যটি অবশ্যই অব্যবহৃত, ধোয়া হয়নি এমন, এবং অরিজিনাল প্যাকেজিং ও ট্যাগযুক্ত থাকতেരുവ। কোনো ক্ষতি বা ত্রুটি দাবি করার জন্য অনুগ্রহ করে একটি আনবক্সিং ভিডিও রেকর্ড করুন।",
         policy4Title: "৪. রঙের ডিসক্লেইমার",
-        policy4Text: "যদিও আমরা নিশ্চিত করার চেষ্টা করি যে আমাদের ছবিগুলো পণ্যের সঠিক রং উপস্থাপন করে, ফটোগ্রাফির সময় আলোর কারণে বা আপনার ডিভাইসের ডিসপ্লে সেটিংসের কারণে আসল রং সামান্য ভিন্ন হতে পারে। শুধুমাত্র সামান্য রঙের পার্থক্যের কারণে কোনো এক্সচেঞ্জ গ্রহণ করা হবে ঘন হবে না।"
+        policy4Text: "যদিও আমরা নিশ্চিত করার চেষ্টা করি যে আমাদের ছবিগুলো পণ্যের সঠিক রং উপস্থাপন করে, ফটোগ্রাফির সময় আলোর কারণে বা আপনার ডিভাইসের ডিসপ্লে সেটিংসের কারণে আসল রং সামান্য ভিন্ন হতে পারে। শুধুমাত্র সামান্য রঙের পার্থক্যের কারণে কোনো এক্সচেঞ্জ গ্রহণ করা হবে না।"
     }
 };
 
@@ -233,15 +239,15 @@ function renderProducts(productsToRender) {
         const card = document.createElement('div');
         card.className = 'product-card';
         
-        // --- HYBRID RESPONSIVE VIEW LOGIC ADDED HERE ---
+        // --- HYBRID RESPONSIVE VIEW LOGIC ---
         card.onclick = () => {
             if (window.innerWidth <= 900) {
-                // Mobile: Navigate to dedicated product page
-                window.location.href = `product.html?id=${product.id}`;
+                // Mobile: Navigate to dedicated product page (Ensuring ID is a string)
+                window.location.href = `product.html?id=${String(product.id)}`;
             } else {
                 // Desktop: Open Modal
                 if (typeof window.openQuickView === "function") {
-                    window.openQuickView(product.id);
+                    window.openQuickView(String(product.id));
                 } else {
                     openProductModal(product);
                 }
@@ -270,10 +276,10 @@ function renderProducts(productsToRender) {
 }
 
 function updateProducts() {
-    // Prefer Firestore database products if loaded, fallback to static products.js
+    // FIX: Safely pull from window.productsData to prevent cross-file referencing errors on other pages
     let sourceData = (typeof window.firestoreProducts !== 'undefined' && window.firestoreProducts.length > 0) 
         ? window.firestoreProducts 
-        : (typeof productsData !== 'undefined' ? productsData : []);
+        : (window.productsData || []);
 
     if (sourceData.length === 0) return;
 
