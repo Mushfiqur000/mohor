@@ -148,7 +148,6 @@
         .form-group input, .form-group textarea {
             padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-family: inherit;
         }
-        .form-group input[type="file"] { border: none; padding: 0; }
         .full-width { grid-column: span 2; }
         
         .upload-submit-btn {
@@ -247,10 +246,14 @@
                             <input type="number" id="prod-price" placeholder="e.g. 3200" required>
                         </div>
                         <div class="form-group">
+                            <label>Quantity / Stock</label>
+                            <input type="number" id="prod-qty" placeholder="e.g. 15" required>
+                        </div>
+                        <div class="form-group">
                             <label>Colors (Comma Separated)</label>
                             <input type="text" id="prod-colors" placeholder="e.g. Peach Pink, Navy Blue" required>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group full-width">
                             <label>Sizes & Specific Measurements (Format: Size: Details)</label>
                             <textarea id="prod-sizes" rows="4" placeholder="38 (M): Body/Chest: 38&#10;Waist: 34-36&#10;42 (L): Body/Chest: 42&#10;Waist: 38-40" required></textarea>
                             <small style="color: #666; margin-top: 5px;">Enter each size and its specific measurements so it updates dynamically when clicked on the website.</small>
@@ -267,9 +270,15 @@
                         </div>
 
                         <div class="form-group full-width">
-                            <label>Product Images (Select multiple files)</label>
-                            <input type="file" id="prod-images" accept="image/*" multiple required>
-                            <small style="color: #666; margin-top: 5px;">Highlight and select multiple image files at once (main picture + thumbnails).</small>
+                            <label>SEO Keywords (Comma Separated)</label>
+                            <input type="text" id="prod-seo" placeholder="e.g. Pakistani 3-piece, Eid dress, embroidered cotton suit, MOHOR">
+                            <small style="color: #666; margin-top: 5px;">Add search keywords to help your product rank better on search engines.</small>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label>ImgBB Image Links (Put each direct link on a new line)</label>
+                            <textarea id="prod-images" rows="3" placeholder="https://i.ibb.co/.../image1.jpg&#10;https://i.ibb.co/.../image2.jpg" required></textarea>
+                            <small style="color: #666; margin-top: 5px;">Upload images to ImgBB for free, copy direct image links, and paste them here (one per line).</small>
                         </div>
                     </div>
                     <button type="submit" class="upload-submit-btn" id="upload-btn">Upload Product to Live Website</button>
@@ -307,7 +316,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
         import { getFirestore, collection, onSnapshot, doc, updateDoc, addDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-        import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyALxypXDkF9QexbD_wE7-ADALIdj5vd-rY",
@@ -321,7 +329,6 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
-        const storage = getStorage(app);
 
         const adminEmail = "mushfiqurrahman2222@gmail.com"; 
 
@@ -497,11 +504,13 @@
         addProductForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             uploadBtn.disabled = true;
+            uploadBtn.innerText = "Saving Product to Database...";
             uploadStatus.innerText = "";
 
             try {
                 const title = document.getElementById('prod-title').value.trim();
                 const price = Number(document.getElementById('prod-price').value);
+                const quantity = Number(document.getElementById('prod-qty').value);
                 const colors = document.getElementById('prod-colors').value.split(',').map(c => c.trim());
                 
                 // Parse sizes and specific measurements map structured input
@@ -509,14 +518,12 @@
                 let sizesArray = [];
                 let sizeMeasurementsMap = {};
 
-                // Simple parser to map sizes to their individual measurement lines
                 let lines = rawSizesInput.split('\n');
                 let currentSize = '';
                 
                 lines.forEach(line => {
                     let trimmed = line.trim();
                     if (!trimmed) return;
-                    // If line looks like a size definition (contains brackets or doesn't have colons at start)
                     if (trimmed.includes('M') || trimmed.includes('L') || trimmed.includes('XL') || trimmed.includes('(') || !trimmed.includes(':')) {
                         currentSize = trimmed.split(':')[0].trim();
                         sizesArray.push(currentSize);
@@ -526,35 +533,27 @@
                     }
                 });
 
-                // Fallback if structured format wasn't explicitly multi-line grouped
                 if (sizesArray.length === 0) {
                     sizesArray = rawSizesInput.split(',').map(s => s.trim());
                 }
 
                 const desc = document.getElementById('prod-desc').value.trim();
                 const details = document.getElementById('prod-details').value.split('\n').filter(d => d.trim() !== '');
+                const seoKeywords = document.getElementById('prod-seo').value.split(',').map(k => k.trim()).filter(k => k !== '');
 
-                const files = document.getElementById('prod-images').files;
-                let imageUrls = [];
-                
-                for (let i = 0; i < files.length; i++) {
-                    const file = files[i];
-                    uploadBtn.innerText = `Uploading Image ${i + 1} of ${files.length}...`;
-                    const storageRef = ref(storage, `products/${Date.now()}_${file.name}`);
-                    const uploadTask = await uploadBytesResumable(storageRef, file);
-                    const downloadURL = await getDownloadURL(uploadTask.ref);
-                    imageUrls.push(downloadURL);
-                }
+                // Read ImgBB image URLs from textarea (one link per line)
+                const imageUrls = document.getElementById('prod-images').value.split('\n').map(url => url.trim()).filter(url => url !== '');
 
-                uploadBtn.innerText = "Saving Product to Database...";
                 await addDoc(collection(db, "products"), {
                     title: title,
                     price: price,
+                    quantity: quantity,
                     colors: colors,
                     sizes: sizesArray,
                     sizeMeasurements: sizeMeasurementsMap,
                     description: desc,
                     details: details,
+                    seoKeywords: seoKeywords,
                     images: imageUrls,
                     createdAt: new Date().toISOString()
                 });
