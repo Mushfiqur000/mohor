@@ -68,7 +68,7 @@ window.updateCartUI = function() {
             subtotal += itemTotal;
             totalItems += item.qty;
             
-            // FIX: Added type="button" to the -, +, and Remove buttons to prevent page reloads
+            // Added type="button" to the -, +, and Remove buttons to prevent page reloads
             cartItemsContainer.innerHTML += `
                 <div class="cart-item" style="align-items: center;">
                     <div class="cart-item-info" style="flex: 1;">
@@ -210,12 +210,18 @@ window.checkoutToAdmin = async function() {
         document.getElementById('cartSidebar').classList.remove('active');
         document.getElementById('cartOverlay').classList.remove('active');
 
-        // 7. Clear the input fields for the next customer
-        if(document.getElementById('custName')) document.getElementById('custName').value = '';
-        if(document.getElementById('custPhone')) document.getElementById('custPhone').value = '';
-        if(document.getElementById('deliveryAddress')) document.getElementById('deliveryAddress').value = '';
+        // 7. Clear the input fields (Keep name/address if user is logged in, clear if guest)
+        if (typeof window.currentUser === 'undefined' || !window.currentUser) {
+            if(document.getElementById('custName')) document.getElementById('custName').value = '';
+            if(document.getElementById('custPhone')) document.getElementById('custPhone').value = '';
+            if(document.getElementById('deliveryAddress')) document.getElementById('deliveryAddress').value = '';
+        }
+        
         if(document.getElementById('deliveryZone')) document.getElementById('deliveryZone').value = '';
         if(document.getElementById('policyAgree')) document.getElementById('policyAgree').checked = false;
+        
+        const policyDisplay = document.getElementById('dynamicPolicyDisplay');
+        if(policyDisplay) policyDisplay.style.display = 'none';
 
         // 8. Refresh order history if user is logged in
         if (typeof window.currentUser !== 'undefined' && window.currentUser && typeof loadUserOrders === 'function') {
