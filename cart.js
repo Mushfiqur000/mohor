@@ -181,8 +181,9 @@ window.checkoutToAdmin = async function() {
     }
 
     try {
-        // 2. Package the order data
+        // 2. Package the order data including user tracking
         const newOrder = {
+            userId: (typeof window.currentUser !== 'undefined' && window.currentUser) ? window.currentUser.uid : "guest",
             customerName: orderData.name,
             customerPhone: orderData.phone,
             deliveryAddress: orderData.address,
@@ -216,11 +217,16 @@ window.checkoutToAdmin = async function() {
         if(document.getElementById('deliveryZone')) document.getElementById('deliveryZone').value = '';
         if(document.getElementById('policyAgree')) document.getElementById('policyAgree').checked = false;
 
+        // 8. Refresh order history if user is logged in
+        if (typeof window.currentUser !== 'undefined' && window.currentUser && typeof loadUserOrders === 'function') {
+            loadUserOrders(window.currentUser.uid);
+        }
+
     } catch (error) {
         console.error("Error saving order: ", error);
         alert(window.currentLang === 'en' ? "There was an error placing your order. Please try WhatsApp instead." : "অর্ডার প্লেস করতে সমস্যা হয়েছে। অনুগ্রহ করে হোয়াটসঅ্যাপে চেষ্টা করুন।");
     } finally {
-        // 8. Turn the button back on
+        // 9. Turn the button back on
         if (confirmBtn) {
             confirmBtn.innerHTML = originalText;
             confirmBtn.disabled = false;
