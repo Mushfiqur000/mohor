@@ -133,139 +133,176 @@
         let selectedSize = null;
         let selectedColor = null;
 
-        // Parse ID parameter from URL: product.html?id=XYZ
+        // Fallback for translating text in case app.js is slightly delayed on mobile
+        function getSafeText(dataField) {
+            if (typeof window.getText === 'function') return window.getText(dataField);
+            if (!dataField) return "";
+            if (typeof dataField === 'string') return dataField; 
+            return dataField[window.currentLang || 'en'] || dataField['en'] || "";
+        }
+
+        // Parse ID parameter from URL safely
         function getProductIdFromUrl() {
-            const params = new URLSearchParams(window.location.search);
-            return params.get('id');
+            try {
+                const params = new URLSearchParams(window.location.search);
+                return params.get('id');
+            } catch (e) {
+                return null;
+            }
         }
 
         async function loadProductDetails() {
-            const targetId = getProductIdFromUrl();
-            if (!targetId) {
-                window.location.href = 'index.html';
-                return;
-            }
-
-            // Look up product in Firebase or fallback to local products.js
-            let sourceList = (typeof window.firestoreProducts !== 'undefined' && window.firestoreProducts.length > 0)
-                ? window.firestoreProducts
-                : (typeof productsData !== 'undefined' ? productsData : []);
-
-            currentProduct = sourceList.find(p => String(p.id) === String(targetId));
-
-            // If not found in memory yet, query Firestore directly
-            if (!currentProduct && window.db) {
-                try {
-                    const doc = await window.db.collection("products").doc(targetId).get();
-                    if (doc.exists) {
-                        const data = doc.data();
-                        currentProduct = {
-                            id: doc.id,
-                            title: data.title || "Dress",
-                            price: Number(data.price || 0),
-                            images: data.images || [],
-                            colors: data.colors || [],
-                            sizes: data.sizes || [],
-                            sizeMeasurements: data.sizeMeasurements || {},
-                            description: data.description || "",
-                            details: data.details || []
-                        };
-                    }
-                } catch (e) {
-                    console.error("Error retrieving product:", e);
+            try {
+                const targetId = getProductIdFromUrl();
+                if (!targetId) {
+                    window.location.href = 'index.html';
+                    return;
                 }
-            }
 
-            if (!currentProduct) {
-                document.getElementById('productTitle').innerText = "Product Not Found";
-                return;
-            }
+                // Safely look up product in memory
+                let sourceList = [];
+                if (typeof window.firestoreProducts !== 'undefined' && window.firestoreProducts.length > 0) {
+                    sourceList = window.firestoreProducts;
+                } else if (typeof window.productsData !== 'undefined') {
+                    sourceList = window.productsData;
+                } else if (typeof productsData !== 'undefined') {
+                    sourceList = productsData;
+                }
 
-            // Populate Page Elements
-            document.getElementById('productTitle').innerText = getText(currentProduct.title);
-            document.getElementById('productPrice').innerText = `৳ ${currentProduct.price}`;
-            document.getElementById('productDesc').innerText = getText(currentProduct.description);
+                if (sourceList && sourceList.length > 0) {
+                    currentProduct = sourceList.find(p => String(p.id) === String(targetId));
+                }
 
-            // Images
-            const mainImg = document.getElementById('productMainImage');
-            const thumbGallery = document.getElementById('productThumbnails');
-            thumbGallery.innerHTML = '';
-
-            if (currentProduct.images && currentProduct.images.length > 0) {
-                mainImg.src = currentProduct.images[0];
-                currentProduct.images.forEach((imgSrc, idx) => {
-                    const thumb = document.createElement('img');
-                    thumb.src = imgSrc;
-                    thumb.className = 'thumbnail' + (idx === 0 ? ' active' : '');
-                    thumb.onclick = () => {
-                        mainImg.src = imgSrc;
-                        document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
-                        thumb.classList.add('active');
-                    };
-                    thumbGallery.appendChild(thumb);
-                });
-            }
-
-            // Colors
-            const colorsContainer = document.getElementById('productColors');
-            const colorSection = document.getElementById('colorSection');
-            colorsContainer.innerHTML = '';
-            let colorArray = Array.isArray(currentProduct.colors) ? currentProduct.colors : (currentProduct.colors ? (currentProduct.colors[window.currentLang] || currentProduct.colors['en']) : []);
-
-            if (colorArray && colorArray.length > 0) {
-                colorSection.style.display = 'block';
-                colorArray.forEach(color => {
-                    const btn = document.createElement('button');
-                    btn.className = 'select-btn color-btn';
-                    btn.innerText = color;
-                    btn.onclick = () => {
-                        selectedColor = color;
-                        document.getElementById('colorWarning').style.display = 'none';
-                        document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('selected'));
-                        btn.classList.add('selected');
-                    };
-                    colorsContainer.appendChild(btn);
-                });
-            } else {
-                selectedColor = "Default";
-            }
-
-            // Sizes
-            const sizesContainer = document.getElementById('productSizes');
-            sizesContainer.innerHTML = '';
-            if (currentProduct.sizes) {
-                currentProduct.sizes.forEach(size => {
-                    const btn = document.createElement('button');
-                    btn.className = 'select-btn size-btn';
-                    btn.innerText = size;
-                    btn.onclick = () => {
-                        selectedSize = size;
-                        document.getElementById('sizeWarning').style.display = 'none';
-                        document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('selected'));
-                        btn.classList.add('selected');
-
-                        const guide = document.getElementById('sizeGuideDisplay');
-                        if (currentProduct.sizeMeasurements && currentProduct.sizeMeasurements[size]) {
-                            guide.style.display = 'block';
-                            guide.innerHTML = currentProduct.sizeMeasurements[size][window.currentLang] || currentProduct.sizeMeasurements[size]['en'];
-                        } else {
-                            guide.style.display = 'none';
+                // If not found in memory yet, query Firestore directly safely
+                if (!currentProduct && typeof window.db !== 'undefined' && window.db) {
+                    try {
+                        const doc = await window.db.collection("products").doc(targetId).get();
+                        if (doc.exists) {
+                            const data = doc.data();
+                            currentProduct = {
+                                id: doc.id,
+                                title: data.title || "Dress",
+                                price: Number(data.price || 0),
+                                images: data.images || [],
+                                colors: data.colors || [],
+                                sizes: data.sizes || [],
+                                sizeMeasurements: data.sizeMeasurements || {},
+                                description: data.description || "",
+                                details: data.details || []
+                            };
                         }
-                    };
-                    sizesContainer.appendChild(btn);
-                });
-            }
+                    } catch (e) {
+                        console.error("Firebase fetch error:", e);
+                    }
+                }
 
-            // Details
-            const detailsList = document.getElementById('productDetails');
-            detailsList.innerHTML = '';
-            let detailsArray = Array.isArray(currentProduct.details) ? currentProduct.details : (currentProduct.details ? (currentProduct.details[window.currentLang] || currentProduct.details['en']) : []);
-            if (detailsArray) {
-                detailsArray.forEach(d => {
-                    const li = document.createElement('li');
-                    li.innerText = d;
-                    detailsList.appendChild(li);
-                });
+                if (!currentProduct) {
+                    document.getElementById('productTitle').innerText = "Product Not Found";
+                    document.getElementById('productTitle').style.color = "#d9534f";
+                    document.getElementById('productPrice').innerText = "";
+                    document.getElementById('productDesc').innerText = "We could not locate this item. Please go back to the shop.";
+                    return;
+                }
+
+                // Populate Page Elements Safely
+                document.getElementById('productTitle').innerText = getSafeText(currentProduct.title);
+                document.getElementById('productPrice').innerText = `৳ ${currentProduct.price}`;
+                document.getElementById('productDesc').innerText = getSafeText(currentProduct.description);
+
+                // Images
+                const mainImg = document.getElementById('productMainImage');
+                const thumbGallery = document.getElementById('productThumbnails');
+                thumbGallery.innerHTML = '';
+
+                if (currentProduct.images && currentProduct.images.length > 0) {
+                    mainImg.src = currentProduct.images[0];
+                    currentProduct.images.forEach((imgSrc, idx) => {
+                        const thumb = document.createElement('img');
+                        thumb.src = imgSrc;
+                        thumb.className = 'thumbnail' + (idx === 0 ? ' active' : '');
+                        thumb.onclick = () => {
+                            mainImg.src = imgSrc;
+                            document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
+                            thumb.classList.add('active');
+                        };
+                        thumbGallery.appendChild(thumb);
+                    });
+                }
+
+                // Colors
+                const colorsContainer = document.getElementById('productColors');
+                const colorSection = document.getElementById('colorSection');
+                colorsContainer.innerHTML = '';
+                
+                let colorArray = [];
+                if (currentProduct.colors) {
+                    colorArray = Array.isArray(currentProduct.colors) ? currentProduct.colors : (currentProduct.colors[window.currentLang || 'en'] || currentProduct.colors['en'] || []);
+                }
+
+                if (colorArray && colorArray.length > 0) {
+                    colorSection.style.display = 'block';
+                    colorArray.forEach(color => {
+                        const btn = document.createElement('button');
+                        btn.className = 'select-btn color-btn';
+                        btn.innerText = color;
+                        btn.onclick = () => {
+                            selectedColor = color;
+                            document.getElementById('colorWarning').style.display = 'none';
+                            document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('selected'));
+                            btn.classList.add('selected');
+                        };
+                        colorsContainer.appendChild(btn);
+                    });
+                } else {
+                    selectedColor = "Default";
+                }
+
+                // Sizes
+                const sizesContainer = document.getElementById('productSizes');
+                sizesContainer.innerHTML = '';
+                if (currentProduct.sizes && Array.isArray(currentProduct.sizes)) {
+                    currentProduct.sizes.forEach(size => {
+                        const btn = document.createElement('button');
+                        btn.className = 'select-btn size-btn';
+                        btn.innerText = size;
+                        btn.onclick = () => {
+                            selectedSize = size;
+                            document.getElementById('sizeWarning').style.display = 'none';
+                            document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('selected'));
+                            btn.classList.add('selected');
+
+                            const guide = document.getElementById('sizeGuideDisplay');
+                            if (currentProduct.sizeMeasurements && currentProduct.sizeMeasurements[size]) {
+                                guide.style.display = 'block';
+                                guide.innerHTML = currentProduct.sizeMeasurements[size][window.currentLang || 'en'] || currentProduct.sizeMeasurements[size]['en'] || "";
+                            } else {
+                                guide.style.display = 'none';
+                            }
+                        };
+                        sizesContainer.appendChild(btn);
+                    });
+                }
+
+                // Details
+                const detailsList = document.getElementById('productDetails');
+                detailsList.innerHTML = '';
+                let detailsArray = [];
+                if (currentProduct.details) {
+                    detailsArray = Array.isArray(currentProduct.details) ? currentProduct.details : (currentProduct.details[window.currentLang || 'en'] || currentProduct.details['en'] || []);
+                }
+                
+                if (detailsArray && Array.isArray(detailsArray)) {
+                    detailsArray.forEach(d => {
+                        const li = document.createElement('li');
+                        li.innerText = d;
+                        detailsList.appendChild(li);
+                    });
+                }
+
+            } catch (error) {
+                console.error("Fatal Error Loading Product:", error);
+                document.getElementById('productTitle').innerText = "System Error";
+                document.getElementById('productDesc').innerText = "A script error occurred while loading this product. Please try refreshing the page.";
             }
         }
 
@@ -276,11 +313,13 @@
             if (!selectedColor) { document.getElementById('colorWarning').style.display = 'inline'; valid = false; }
             if (!valid) return false;
 
-            let name = typeof currentProduct.title === 'string' ? currentProduct.title : currentProduct.title.en;
+            let name = typeof currentProduct.title === 'string' ? currentProduct.title : (currentProduct.title[window.currentLang || 'en'] || currentProduct.title.en);
             if (selectedColor !== "Default") name += ` (${selectedColor})`;
 
             if (typeof window.addToCart === "function") {
                 window.addToCart(name, currentProduct.price, selectedSize);
+            } else {
+                console.warn("Cart function not loaded yet.");
             }
             return true;
         }
@@ -297,8 +336,10 @@
             }
         });
 
-        document.addEventListener('DOMContentLoaded', () => {
-            setTimeout(loadProductDetails, 150);
+        // FIX: Replaced 'DOMContentLoaded' with 'window.addEventListener("load")'
+        // This forces iPhone Safari to wait until app.js and products.js are fully processed before running this script
+        window.addEventListener('load', () => {
+            setTimeout(loadProductDetails, 100);
         });
     </script>
 </body>
