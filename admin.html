@@ -53,7 +53,7 @@
         .error-msg { color: red; font-size: 12px; margin-top: 10px; display: none; }
 
         /* --- DASHBOARD STYLES --- */
-        #main-dashboard { display: none; } /* Hidden until logged in */
+        #main-dashboard { display: none; }
         
         .header {
             background-color: #8b0000;
@@ -128,6 +128,7 @@
         .confirm-btn {
             padding: 6px 12px; background-color: #2e8b57; color: white;
             border: none; border-radius: 4px; cursor: pointer; font-size: 12px;
+            transition: background-color 0.3s ease;
         }
         .confirm-btn:hover { background-color: #236b43; }
 
@@ -135,6 +136,28 @@
         table { width: 100%; border-collapse: collapse; margin-top: 10px; min-width: 800px; }
         th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; font-size: 14px; vertical-align: top;}
         th { background-color: #f8f8f8; color: #333; }
+
+        /* --- PRODUCT UPLOAD FORM STYLES --- */
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .form-group { display: flex; flex-direction: column; margin-bottom: 15px; }
+        .form-group label { margin-bottom: 5px; font-weight: bold; font-size: 14px; color: #333; }
+        .form-group input, .form-group textarea {
+            padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-family: inherit;
+        }
+        .form-group input[type="file"] { border: none; padding: 0; }
+        .full-width { grid-column: span 2; }
+        
+        .upload-submit-btn {
+            padding: 12px; background-color: #8b0000; color: white; border: none;
+            border-radius: 4px; cursor: pointer; font-size: 16px; font-weight: bold; width: 100%;
+        }
+        .upload-submit-btn:hover { background-color: #600000; }
+        .upload-submit-btn:disabled { background-color: #ccc; cursor: not-allowed; }
+        #upload-status { margin-top: 10px; font-weight: bold; text-align: center; }
     </style>
 </head>
 <body>
@@ -163,7 +186,7 @@
 
         <div class="dashboard-container">
             
-            <!-- Top Stats Row -->
+            <!-- Top Stats Row (Insights) -->
             <div class="stats-grid">
                 <div class="stat-card">
                     <h3>Total Sales</h3>
@@ -183,7 +206,7 @@
                 </div>
             </div>
 
-            <!-- Orders Table -->
+            <!-- Manage Customer Orders -->
             <div class="admin-card">
                 <div class="admin-card-header">
                     <h2>Manage Customer Orders</h2>
@@ -206,6 +229,56 @@
                         </tr>
                     </tbody>
                 </table>
+            </div>
+
+            <!-- ADD NEW PRODUCT SECTION -->
+            <div class="admin-card">
+                <div class="admin-card-header">
+                    <h2>Upload New Product to Website</h2>
+                </div>
+                <form id="add-product-form">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Product Title</label>
+                            <input type="text" id="prod-title" placeholder="e.g. Peach Vila 3-Piece" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Price (৳)</label>
+                            <input type="number" id="prod-price" placeholder="e.g. 3200" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Colors (Comma Separated)</label>
+                            <input type="text" id="prod-colors" placeholder="e.g. Peach Pink, Navy Blue" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Sizes (Comma Separated)</label>
+                            <input type="text" id="prod-sizes" placeholder="e.g. 38 (M), 42 (L), 44-46 (XL)" required>
+                        </div>
+                        
+                        <div class="form-group full-width">
+                            <label>Size Measurements & Guide</label>
+                            <textarea id="prod-measurements" rows="3" placeholder="e.g. Body/Chest: 38&#10;Waist: 34-36&#10;Hip: 40-42..."></textarea>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label>Main Description</label>
+                            <textarea id="prod-desc" rows="3" placeholder="A premium embroidered 3-piece ensemble..."></textarea>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label>Product Details (Put each point on a new line)</label>
+                            <textarea id="prod-details" rows="5" placeholder="Shirt Fabric: Premium Soft Cotton (80 GSM)&#10;Trouser Fabric: Premium Soft Cotton (80 GSM)&#10;Dupatta: Soft Tissue Chiffon..."></textarea>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label>Product Images (Select multiple files)</label>
+                            <input type="file" id="prod-images" accept="image/*" multiple required>
+                            <small style="color: #666; margin-top: 5px;">Highlight and select multiple image files at once (main picture + thumbnails).</small>
+                        </div>
+                    </div>
+                    <button type="submit" class="upload-submit-btn" id="upload-btn">Upload Product to Live Website</button>
+                    <div id="upload-status"></div>
+                </form>
             </div>
 
             <!-- Inventory Tracker -->
@@ -237,7 +310,8 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-        import { getFirestore, collection, onSnapshot, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        import { getFirestore, collection, onSnapshot, doc, updateDoc, addDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyALxypXDkF9QexbD_wE7-ADALIdj5vd-rY",
@@ -251,6 +325,7 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
+        const storage = getStorage(app);
 
         const adminEmail = "mushfiqurrahman2222@gmail.com"; 
 
@@ -264,13 +339,11 @@
         // --- AUTHENTICATION LOGIC ---
         onAuthStateChanged(auth, (user) => {
             if (user && user.email === adminEmail) {
-                // Admin is logged in -> Show Dashboard
                 loginSection.style.display = 'none';
                 mainDashboard.style.display = 'block';
                 document.getElementById('user-email').innerText = user.email;
-                fetchOrders(); // Load the database data
+                fetchOrders(); 
             } else if (user) {
-                // A normal customer tried to access admin page -> Log them out
                 signOut(auth).then(() => {
                     loginSection.style.display = 'flex';
                     mainDashboard.style.display = 'none';
@@ -278,7 +351,6 @@
                     errorMsg.style.display = 'block';
                 });
             } else {
-                // Nobody logged in -> Show Login Screen
                 loginSection.style.display = 'flex';
                 mainDashboard.style.display = 'none';
             }
@@ -310,14 +382,12 @@
 
         // --- FIRESTORE DATABASE LOGIC ---
         function fetchOrders() {
-            // Listen to "orders" collection in real-time
             onSnapshot(collection(db, "orders"), (snapshot) => {
                 let totalSales = 0;
                 let totalOrders = 0;
                 let pendingActions = 0;
                 let tableRows = '';
 
-                // Convert snapshot to array so we can sort it newest first
                 let ordersArray = [];
                 snapshot.forEach(doc => {
                     ordersArray.push({ id: doc.id, ...doc.data() });
@@ -327,7 +397,6 @@
                 ordersArray.forEach(order => {
                     totalOrders++;
                     
-                    // Calculate stats
                     if (order.status !== 'Cancelled') {
                         totalSales += Number(order.totalAmount || 0);
                     }
@@ -335,7 +404,6 @@
                         pendingActions++;
                     }
 
-                    // Format Items
                     let itemsHtml = '<span style="color:#888;">No items detailed</span>';
                     if (order.items && Array.isArray(order.items)) {
                         itemsHtml = order.items.map(item => 
@@ -346,7 +414,6 @@
                     const currentStatus = order.status || 'Pending';
                     const orderDate = order.orderDate ? new Date(order.orderDate).toLocaleDateString() : 'N/A';
 
-                    // Build Row HTML
                     tableRows += `
                         <tr>
                             <td style="font-size: 11px; color: #666;">${order.id}</td>
@@ -380,34 +447,108 @@
                     tableRows = `<tr><td colspan="6" style="text-align:center;">No orders found yet.</td></tr>`;
                 }
 
-                // Update DOM
                 document.getElementById('orders-table-body').innerHTML = tableRows;
                 document.getElementById('stat-sales').innerText = '৳' + totalSales.toLocaleString();
                 document.getElementById('stat-orders').innerText = totalOrders;
                 document.getElementById('stat-pending').innerText = pendingActions;
 
-                // Attach Event Listeners to the new Update buttons
+                // Attach Event Listeners to Update buttons with visual feedback
                 document.querySelectorAll('.update-btn').forEach(btn => {
                     btn.addEventListener('click', (e) => {
                         const orderId = e.target.getAttribute('data-id');
                         const selectEl = document.querySelector(`.status-select[data-id="${orderId}"]`);
-                        updateOrderStatus(orderId, selectEl.value);
+                        updateOrderStatus(orderId, selectEl.value, e.target);
                     });
                 });
             });
         }
 
-        // Update Order in Database
-        async function updateOrderStatus(orderId, newStatus) {
+        // Update Order in Database with Visual Indicator Feedback
+        async function updateOrderStatus(orderId, newStatus, buttonEl) {
+            const originalText = buttonEl.innerText;
+            const originalBg = buttonEl.style.backgroundColor;
+
             try {
+                buttonEl.innerText = "...";
                 const orderRef = doc(db, "orders", orderId);
                 await updateDoc(orderRef, { status: newStatus });
-                // Optional: You could trigger a small popup here saying "Updated!"
+                
+                // Success indicator feedback
+                buttonEl.innerText = "✓ Saved";
+                buttonEl.style.backgroundColor = "#27ae60";
+
+                setTimeout(() => {
+                    buttonEl.innerText = originalText;
+                    buttonEl.style.backgroundColor = originalBg;
+                }, 2000);
+
             } catch (error) {
                 console.error("Error updating status:", error);
-                alert("Failed to update status.");
+                buttonEl.innerText = "Error";
+                buttonEl.style.backgroundColor = "red";
+                setTimeout(() => {
+                    buttonEl.innerText = originalText;
+                    buttonEl.style.backgroundColor = originalBg;
+                }, 2000);
             }
         }
+
+        // --- PRODUCT UPLOAD LOGIC ---
+        const addProductForm = document.getElementById('add-product-form');
+        const uploadBtn = document.getElementById('upload-btn');
+        const uploadStatus = document.getElementById('upload-status');
+
+        addProductForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            uploadBtn.disabled = true;
+            uploadBtn.innerText = "Uploading Images & Saving Product...";
+            uploadStatus.innerText = "";
+
+            try {
+                const title = document.getElementById('prod-title').value.trim();
+                const price = Number(document.getElementById('prod-price').value);
+                const colors = document.getElementById('prod-colors').value.split(',').map(c => c.trim());
+                const sizes = document.getElementById('prod-sizes').value.split(',').map(s => s.trim());
+                const measurements = document.getElementById('prod-measurements').value.trim();
+                const desc = document.getElementById('prod-desc').value.trim();
+                const details = document.getElementById('prod-details').value.split('\n').filter(d => d.trim() !== '');
+
+                const files = document.getElementById('prod-images').files;
+                let imageUrls = [];
+                
+                for (let i = 0; i < files.length; i++) {
+                    const file = files[i];
+                    const storageRef = ref(storage, `products/${Date.now()}_${file.name}`);
+                    const uploadTask = await uploadBytesResumable(storageRef, file);
+                    const downloadURL = await getDownloadURL(uploadTask.ref);
+                    imageUrls.push(downloadURL);
+                }
+
+                await addDoc(collection(db, "products"), {
+                    title: title,
+                    price: price,
+                    colors: colors,
+                    sizes: sizes,
+                    measurements: measurements,
+                    description: desc,
+                    details: details,
+                    images: imageUrls,
+                    createdAt: new Date().toISOString()
+                });
+
+                uploadStatus.style.color = "green";
+                uploadStatus.innerText = "✓ Product successfully uploaded to live website!";
+                addProductForm.reset();
+
+            } catch (error) {
+                console.error("Upload error: ", error);
+                uploadStatus.style.color = "red";
+                uploadStatus.innerText = "Error: " + error.message;
+            } finally {
+                uploadBtn.disabled = false;
+                uploadBtn.innerText = "Upload Product to Live Website";
+            }
+        });
 
         // CSV Export Placeholder
         document.getElementById('export-csv-btn').addEventListener('click', () => {
