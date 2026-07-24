@@ -81,6 +81,9 @@
         .product-category-label { font-size: 11px; color: var(--text-light); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; font-family: 'Montserrat', sans-serif; }
         .product-details-card h3 { font-size: 15px; font-weight: 600; margin-bottom: 8px; font-family: 'Montserrat', sans-serif; }
         .product-price { color: var(--primary-gold); font-weight: 600; font-size: 16px; margin-bottom: 15px; }
+        
+        .quick-view-btn { background: var(--deep-black); color: var(--white); border: none; padding: 10px; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; width: 100%; transition: var(--transition); margin-top: 15px; font-weight: 600;}
+        .quick-view-btn:hover { background: var(--primary-gold); }
 
         /* --- Product Quick View Modal --- */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 3000; display: flex; justify-content: center; align-items: center; opacity: 0; visibility: hidden; transition: var(--transition); padding: 20px; }
@@ -429,24 +432,177 @@
                         images: data.images || [],
                         colors: data.colors || [],
                         sizes: data.sizes || [],
-                        sizeMeasurements: data.sizeMeasurements || {},
+                        sizeMeasurements: data.sizeMeasurements || {}, 
+                        measurementsGuide: data.measurementsGuide || "", 
                         description: data.description || "",
                         details: data.details || []
                     });
                 });
 
-                // If products exist in Firestore, make them available globally or inject them into your render function
                 if (dynamicProducts.length > 0) {
                     window.firestoreProducts = dynamicProducts;
-                    // Trigger your storefront render function if defined in app.js
-                    if (typeof window.renderProducts === 'function') {
-                        window.renderProducts(window.firestoreProducts);
-                    }
+                    renderStorefrontGrid(window.firestoreProducts);
+                } else {
+                    productGrid.innerHTML = "<p style='text-align:center; color:#888; grid-column: 1/-1;'>No products available right now.</p>";
                 }
             } catch (error) {
                 console.error("Error loading products from database:", error);
             }
         }
+
+        // --- RENDER GRID WITH PROPER IMAGE HANDLING ---
+        function renderStorefrontGrid(products) {
+            const grid = document.getElementById('productGrid');
+            grid.innerHTML = products.map(p => {
+                const mainImage = p.images && p.images.length > 0 ? p.images[0] : '';
+                return `
+                <div class="product-card" onclick="window.openQuickView('${p.id}')">
+                    <div class="image-container">
+                        <img src="${mainImage}" alt="${p.title}" class="product-image">
+                    </div>
+                    <div class="product-details-card">
+                        <div>
+                            <span class="product-category-label">Three Piece</span>
+                            <h3>${p.title}</h3>
+                            <div class="product-price">৳${p.price}</div>
+                        </div>
+                        <button class="quick-view-btn">Select Size & Add to Cart</button>
+                    </div>
+                </div>
+                `;
+            }).join('');
+        }
+
+        // --- DYNAMIC QUICK VIEW MODAL & SIZE POPUP LOGIC ---
+        window.openQuickView = function(productId) {
+            const product = window.firestoreProducts.find(p => p.id === productId);
+            if (!product) return;
+
+            // Fill text fields
+            document.getElementById('modalTitle').innerText = product.title;
+            document.getElementById('modalPrice').innerText = '৳' + product.price;
+            document.getElementById('modalDesc').innerText = product.description;
+            document.getElementById('modalDetails').innerHTML = product.details.map(d => `<li>${d}</li>`).join('');
+
+            // Fill images
+            const mainImg = document.getElementById('modalMainImage');
+            const thumbContainer = document.getElementById('modalThumbnails');
+            if (product.images && product.images.length > 0) {
+                mainImg.src = product.images[0];
+                thumbContainer.innerHTML = product.images.map((imgUrl, idx) => `
+                    <img src="${imgUrl}" class="thumbnail ${idx === 0 ? 'active' : ''}" onclick="window.changeModalImage('${imgUrl}', this)">
+                `).join('');
+            } else {
+                mainImg.src = '';
+                thumbContainer.innerHTML = '';
+            }
+
+            // Fill colors
+            const colorSec = document.getElementById('colorSection');
+            const colorContainer = document.getElementById('modalColors');
+            if (product.colors && product.colors.length > 0) {
+                colorSec.style.display = 'block';
+                colorContainer.innerHTML = product.colors.map((c, i) => `
+                    <button type="button" class="select-btn ${i === 0 ? 'selected' : ''}" onclick="window.selectColor(this)">${c}</button>
+                `).join('');
+            } else {
+                colorSec.style.display = 'none';
+            }
+
+            // Fill sizes & handle DYNAMIC SIZE GUIDE TEXT
+            const sizeContainer = document.getElementById('modalSizes');
+            const sizeGuideDisplay = document.getElementById('sizeGuideDisplay');
+            
+            if (product.sizes && product.sizes.length > 0) {
+                sizeContainer.innerHTML = product.sizes.map((s, i) => {
+                    // Extract specific details for this size
+                    let specificDetails = "";
+                    if (product.sizeMeasurements && product.sizeMeasurements[s]) {
+                         specificDetails = product.sizeMeasurements[s].join('<br>');
+                    } else if (product.measurementsGuide) {
+                         specificDetails = product.measurementsGuide;
+                    }
+
+                    // Format string so it doesn't break HTML attributes
+                    const safeDetails = specificDetails.replace(/'/g, "&apos;").replace(/"/g, "&quot;").replace(/\n/g, "<br>");
+                    
+                    return `<button type="button" class="select-btn ${i === 0 ? 'selected' : ''}" onclick="window.selectSize('${s}', '${safeDetails}', this)">${s}</button>`;
+                }).join('');
+                
+                // Setup the display for whichever size is selected first by default
+                const firstSize = product.sizes[0];
+                if (product.sizeMeasurements && product.sizeMeasurements[firstSize] && product.sizeMeasurements[firstSize].length > 0) {
+                    sizeGuideDisplay.innerHTML = product.sizeMeasurements[firstSize].join('<br>');
+                } else {
+                    sizeGuideDisplay.innerHTML = product.measurementsGuide ? product.measurementsGuide.replace(/\n/g, '<br>') : '';
+                }
+            } else {
+                sizeContainer.innerHTML = '<span>Free Size</span>';
+                sizeGuideDisplay.innerHTML = '';
+            }
+
+            // Setup 'Add to Cart' click event
+            const addBtn = document.getElementById('modalAddToCartBtn');
+            addBtn.onclick = function() {
+                const selectedSizeEl = document.querySelector('#modalSizes .select-btn.selected');
+                const selectedColorEl = document.querySelector('#modalColors .select-btn.selected');
+                
+                const chosenSize = selectedSizeEl ? selectedSizeEl.innerText : 'Free Size';
+                const chosenColor = selectedColorEl ? selectedColorEl.innerText : '';
+
+                if (typeof window.addToCart === 'function') {
+                    window.addToCart({
+                        id: product.id,
+                        title: product.title,
+                        price: product.price,
+                        image: product.images[0] || '',
+                        size: chosenSize,
+                        color: chosenColor,
+                        qty: 1
+                    });
+                } else {
+                    alert("Cart system is currently initializing. Please try again.");
+                }
+                document.getElementById('productModal').classList.remove('active');
+            };
+
+            // Show the modal
+            document.getElementById('productModal').classList.add('active');
+        };
+
+        // Modal Action Helpers
+        window.changeModalImage = function(url, el) {
+            document.getElementById('modalMainImage').src = url;
+            document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
+            el.classList.add('active');
+        };
+
+        window.selectColor = function(btn) {
+            document.querySelectorAll('#modalColors .select-btn').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+        };
+
+        window.selectSize = function(sizeName, detailsText, btn) {
+            document.querySelectorAll('#modalSizes .select-btn').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+
+            const guideDisplay = document.getElementById('sizeGuideDisplay');
+            if (detailsText) {
+                guideDisplay.innerHTML = detailsText;
+            } else {
+                guideDisplay.innerHTML = '';
+            }
+        };
+
+        // Close Modal Setup
+        document.getElementById('closeModalBtn').addEventListener('click', () => {
+            document.getElementById('productModal').classList.remove('active');
+        });
+        document.getElementById('productModal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('productModal')) {
+                document.getElementById('productModal').classList.remove('active');
+            }
+        });
 
         // Run product loader on page load
         document.addEventListener("DOMContentLoaded", () => {
