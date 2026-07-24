@@ -29,7 +29,8 @@
             --text-dark: #222;
             --text-light: #666;
             --white: #ffffff;
-            --transition: all 0.3s ease;
+            --transition: all 0.4s ease;
+            --radius: 8px; /* Added universal soft radius */
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -47,7 +48,7 @@
         .cart-badge { background: var(--primary-gold); color: var(--white); border-radius: 50%; padding: 2px 8px; font-size: 12px; }
         .menu-toggle { display: none; font-size: 24px; background: none; border: none; cursor: pointer; color: var(--deep-black); }
         
-        .lang-btn { background: var(--deep-black); color: var(--white); border: none; padding: 5px 10px; font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 600; cursor: pointer; border-radius: 3px; letter-spacing: 1px;}
+        .lang-btn { background: var(--deep-black); color: var(--white); border: none; padding: 5px 10px; font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 600; cursor: pointer; border-radius: 4px; letter-spacing: 1px;}
         .lang-btn:hover { background: var(--primary-gold); }
 
         /* --- Hero Section --- */
@@ -58,65 +59,150 @@
         .shop-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid var(--border-color); flex-wrap: wrap; gap: 15px; }
         .shop-header h2 { font-size: 28px; }
         .shop-controls { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
-        .sort-box select { padding: 10px 15px; border: 1px solid var(--border-color); background: var(--white); font-family: 'Montserrat', sans-serif; font-size: 13px; outline: none; cursor: pointer; }
-        .mobile-filter-btn { display: none; background: var(--deep-black); color: var(--white); border: none; padding: 10px 20px; font-size: 13px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; }
+        
+        /* Form Inputs Modernization */
+        #searchInput, .sort-box select { 
+            padding: 12px 15px !important; 
+            border: 1px solid #ddd !important; 
+            background: var(--white); 
+            font-family: 'Montserrat', sans-serif; 
+            font-size: 13px; 
+            outline: none; 
+            border-radius: 4px;
+            transition: var(--transition);
+        }
+        #searchInput:focus, .sort-box select:focus { border-color: var(--deep-black) !important; }
+        
+        .mobile-filter-btn { display: none; background: var(--deep-black); color: var(--white); border: none; padding: 10px 20px; font-size: 13px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; border-radius: 4px; }
         .shop-layout { display: flex; gap: 40px; align-items: flex-start; }
 
         /* Sidebar Filters */
         .sidebar { width: 250px; flex-shrink: 0; position: sticky; top: 100px; }
         .filter-group { margin-bottom: 30px; }
-        .filter-group h3 { font-size: 16px; margin-bottom: 15px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; border-bottom: 2px solid var(--soft-gray); padding-bottom: 5px; font-family: 'Montserrat', sans-serif; }
+        .filter-group h3 { font-size: 16px; margin-bottom: 15px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.5px; border-bottom: 2px solid var(--soft-gray); padding-bottom: 5px; font-family: 'Montserrat', sans-serif; }
         .filter-group ul { list-style: none; }
-        .filter-group li { margin-bottom: 12px; font-size: 14px; color: var(--text-light); display: flex; align-items: center; gap: 10px; cursor: pointer; }
+        .filter-group li { margin-bottom: 12px; font-size: 14px; color: var(--text-light); display: flex; align-items: center; gap: 10px; cursor: pointer; transition: var(--transition); }
+        .filter-group li:hover { color: var(--primary-gold); }
         .filter-group input[type="checkbox"] { accent-color: var(--primary-gold); width: 16px; height: 16px; cursor: pointer; }
 
-        /* Product Grid */
-        .product-grid { flex: 1; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 30px; }
-        .product-card { background: var(--white); transition: var(--transition); display: flex; flex-direction: column; border: 1px solid var(--soft-gray); cursor: pointer; }
-        .product-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); border-color: var(--primary-gold); }
-        .image-container { height: 350px; overflow: hidden; background: var(--soft-gray); position: relative; }
-        .product-image { width: 100%; height: 100%; object-fit: cover; transition: transform 0.7s ease; }
-        .product-card:hover .product-image { transform: scale(1.05); }
-        .product-details-card { padding: 20px 15px; text-align: center; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
-        .product-category-label { font-size: 11px; color: var(--text-light); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; font-family: 'Montserrat', sans-serif; }
-        .product-details-card h3 { font-size: 15px; font-weight: 600; margin-bottom: 8px; font-family: 'Montserrat', sans-serif; }
-        .product-price { color: var(--primary-gold); font-weight: 600; font-size: 16px; margin-bottom: 15px; }
+        /* PREMIUM PRODUCT GRID ENHANCEMENTS */
+        .product-grid { flex: 1; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 40px 30px; }
+        
+        .product-card { 
+            background: var(--white); 
+            transition: var(--transition); 
+            display: flex; 
+            flex-direction: column; 
+            border: 1px solid #f0f0f0; 
+            border-radius: var(--radius);
+            overflow: hidden; /* Ensures image respects the rounded corners */
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03); /* Soft, elegant shadow */
+            cursor: pointer; 
+        }
+        
+        .product-card:hover { 
+            transform: translateY(-8px); 
+            box-shadow: 0 15px 35px rgba(0,0,0,0.08); 
+            border-color: transparent; 
+        }
+        
+        .image-container { height: 360px; overflow: hidden; background: var(--soft-gray); position: relative; }
+        .product-image { width: 100%; height: 100%; object-fit: cover; transition: transform 0.8s ease; }
+        .product-card:hover .product-image { transform: scale(1.06); }
+        
+        .product-details-card { 
+            padding: 25px 20px; /* Added more breathing room */
+            text-align: center; 
+            flex-grow: 1; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: space-between; 
+        }
+        
+        .product-category-label { 
+            font-size: 10px; 
+            color: #999; 
+            text-transform: uppercase; 
+            letter-spacing: 2px; 
+            margin-bottom: 8px; 
+            font-family: 'Montserrat', sans-serif; 
+            display: block;
+        }
+        
+        .product-details-card h3 { 
+            font-size: 16px; 
+            font-weight: 500; 
+            margin-bottom: 10px; 
+            font-family: 'Playfair Display', serif; /* Gives the brand a luxury feel */
+            color: var(--deep-black);
+        }
+        
+        .product-price { 
+            color: var(--primary-gold); 
+            font-weight: 600; 
+            font-size: 16px; 
+            margin-bottom: 15px; 
+        }
+
+        /* PREMIUM BUTTON OVERRIDE (Fixes the dull grey button) */
+        .product-details-card button {
+            background: transparent !important;
+            color: var(--deep-black) !important;
+            border: 1px solid var(--deep-black) !important;
+            padding: 12px 10px !important;
+            font-size: 11px !important;
+            text-transform: uppercase !important;
+            letter-spacing: 1.5px !important;
+            cursor: pointer !important;
+            width: 100% !important;
+            transition: all 0.4s ease !important;
+            font-weight: 600 !important;
+            border-radius: 4px !important;
+            font-family: 'Montserrat', sans-serif !important;
+            margin-top: auto !important;
+        }
+        
+        .product-details-card button:hover {
+            background: var(--deep-black) !important;
+            color: var(--white) !important;
+            transform: translateY(-2px) !important;
+            box-shadow: 0 5px 12px rgba(0,0,0,0.15) !important;
+        }
 
         /* --- Product Quick View Modal --- */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 3000; display: flex; justify-content: center; align-items: center; opacity: 0; visibility: hidden; transition: var(--transition); padding: 20px; }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 3000; display: flex; justify-content: center; align-items: center; opacity: 0; visibility: hidden; transition: var(--transition); padding: 20px; backdrop-filter: blur(3px); }
         .modal-overlay.active { opacity: 1; visibility: visible; }
-        .modal-content { background: var(--white); width: 100%; max-width: 1000px; max-height: 95vh; overflow-y: auto; position: relative; display: flex; flex-direction: row; box-shadow: 0 20px 40px rgba(0,0,0,0.2); transform: translateY(20px); transition: transform 0.3s ease; }
+        .modal-content { background: var(--white); width: 100%; max-width: 1000px; max-height: 95vh; overflow-y: auto; position: relative; display: flex; flex-direction: row; box-shadow: 0 20px 50px rgba(0,0,0,0.3); transform: translateY(20px); transition: transform 0.4s ease; border-radius: var(--radius); overflow: hidden; }
         .modal-overlay.active .modal-content { transform: translateY(0); }
-        .close-modal { position: absolute; top: 15px; right: 20px; font-size: 30px; cursor: pointer; color: var(--text-dark); z-index: 10; line-height: 1; }
-        .close-modal:hover { color: var(--primary-gold); }
+        .close-modal { position: absolute; top: 15px; right: 20px; font-size: 30px; cursor: pointer; color: var(--text-dark); z-index: 10; line-height: 1; transition: var(--transition); }
+        .close-modal:hover { color: var(--primary-gold); transform: rotate(90deg); }
 
-        .modal-image-sec { flex: 1; background: var(--soft-gray); padding: 20px; display: flex; flex-direction: column; align-items: center; }
-        .main-image-wrapper { width: 100%; max-height: 500px; display: flex; justify-content: center; overflow: hidden; background: #fff; }
-        .main-image-wrapper img { max-width: 100%; max-height: 100%; object-fit: contain; }
+        .modal-image-sec { flex: 1; background: var(--soft-gray); padding: 30px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .main-image-wrapper { width: 100%; max-height: 500px; display: flex; justify-content: center; overflow: hidden; background: transparent; }
+        .main-image-wrapper img { max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 4px; }
         .thumbnail-gallery { display: flex; gap: 10px; margin-top: 20px; overflow-x: auto; max-width: 100%; padding-bottom: 10px; }
-        .thumbnail { width: 70px; height: 90px; object-fit: cover; cursor: pointer; border: 2px solid transparent; transition: var(--transition); opacity: 0.7; }
+        .thumbnail { width: 70px; height: 90px; object-fit: cover; cursor: pointer; border: 2px solid transparent; transition: var(--transition); opacity: 0.6; border-radius: 4px; }
         .thumbnail:hover { opacity: 1; }
         .thumbnail.active { border-color: var(--primary-gold); opacity: 1; }
         
-        .modal-info-sec { flex: 1; padding: 40px 30px; display: flex; flex-direction: column; }
-        .modal-info-sec h2 { font-size: 24px; margin-bottom: 10px; color: var(--deep-black); }
+        .modal-info-sec { flex: 1.2; padding: 40px 40px; display: flex; flex-direction: column; }
+        .modal-info-sec h2 { font-size: 26px; margin-bottom: 10px; color: var(--deep-black); }
         .modal-info-sec .modal-price { font-size: 22px; color: var(--primary-gold); font-weight: 600; margin-bottom: 25px; }
         
         .selector-section { margin-bottom: 25px; }
-        .selector-section h4 { font-family: 'Montserrat', sans-serif; font-size: 13px; text-transform: uppercase; margin-bottom: 10px; font-weight: 600; letter-spacing: 1px; }
+        .selector-section h4 { font-family: 'Montserrat', sans-serif; font-size: 13px; text-transform: uppercase; margin-bottom: 12px; font-weight: 600; letter-spacing: 1px; }
         .selector-options { display: flex; gap: 10px; flex-wrap: wrap; }
-        .select-btn { border: 1px solid var(--border-color); background: var(--white); padding: 8px 15px; font-family: 'Montserrat', sans-serif; font-size: 13px; cursor: pointer; transition: var(--transition); min-width: 45px; text-align: center; }
-        .select-btn:hover { border-color: var(--primary-gold); }
-        .select-btn.selected { background: var(--deep-black); color: var(--white); border-color: var(--deep-black); }
+        .select-btn { border: 1px solid var(--border-color); background: var(--white); padding: 10px 18px; font-family: 'Montserrat', sans-serif; font-size: 13px; cursor: pointer; transition: var(--transition); min-width: 45px; text-align: center; border-radius: 4px; font-weight: 500; }
+        .select-btn:hover { border-color: var(--deep-black); }
+        .select-btn.selected { background: var(--deep-black); color: var(--white); border-color: var(--deep-black); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
 
         .desc-section, .details-section { margin-bottom: 25px; }
-        .desc-section h4, .details-section h4 { font-family: 'Montserrat', sans-serif; font-size: 13px; text-transform: uppercase; margin-bottom: 8px; font-weight: 600; letter-spacing: 1px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px; }
-        .desc-section p { font-size: 14px; color: var(--text-light); line-height: 1.7; }
-        .details-section ul { list-style: square inside; color: var(--text-light); font-size: 14px; }
-        .details-section li { margin-bottom: 5px; }
+        .desc-section h4, .details-section h4 { font-family: 'Montserrat', sans-serif; font-size: 13px; text-transform: uppercase; margin-bottom: 10px; font-weight: 600; letter-spacing: 1px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; }
+        .desc-section p { font-size: 14px; color: var(--text-light); line-height: 1.8; }
+        .details-section ul { list-style: square inside; color: var(--text-light); font-size: 14px; line-height: 1.8; }
 
-        .add-to-cart-btn { background: var(--deep-black); color: var(--white); border: none; padding: 15px; font-family: 'Montserrat', sans-serif; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; transition: var(--transition); width: 100%; margin-top: auto; }
-        .add-to-cart-btn:hover { background: var(--primary-gold); }
+        .add-to-cart-btn { background: var(--primary-gold); color: var(--white); border: none; padding: 16px; font-family: 'Montserrat', sans-serif; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; transition: var(--transition); width: 100%; margin-top: auto; border-radius: 4px; box-shadow: 0 5px 15px rgba(201, 161, 74, 0.3); }
+        .add-to-cart-btn:hover { background: var(--deep-black); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.2); }
 
         /* Floating WhatsApp Button */
         .floating-wa { position: fixed; bottom: 30px; right: 30px; background-color: #25d366; color: white; border-radius: 50%; width: 60px; height: 60px; display: flex; justify-content: center; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.2); z-index: 4000; transition: transform 0.3s ease; text-decoration: none; }
@@ -124,12 +210,13 @@
         .floating-wa svg { fill: white; width: 35px; height: 35px; }
 
         /* --- Cart Sidebar Modal --- */
-        .cart-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; opacity: 0; visibility: hidden; transition: var(--transition); }
+        .cart-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; opacity: 0; visibility: hidden; transition: var(--transition); backdrop-filter: blur(2px); }
         .cart-overlay.active { opacity: 1; visibility: visible; }
-        .cart-sidebar { position: fixed; top: 0; right: -400px; width: 100%; max-width: 400px; height: 100vh; background: var(--white); z-index: 2001; transition: right 0.4s ease; display: flex; flex-direction: column; box-shadow: -5px 0 15px rgba(0,0,0,0.1); }
+        .cart-sidebar { position: fixed; top: 0; right: -400px; width: 100%; max-width: 400px; height: 100vh; background: var(--white); z-index: 2001; transition: right 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); display: flex; flex-direction: column; box-shadow: -10px 0 30px rgba(0,0,0,0.1); }
         .cart-sidebar.active { right: 0; }
-        .cart-header { padding: 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
-        .close-cart { font-size: 28px; cursor: pointer; line-height: 1; font-family: 'Montserrat', sans-serif; }
+        .cart-header { padding: 25px 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: #fafafa; }
+        .close-cart { font-size: 28px; cursor: pointer; line-height: 1; font-family: 'Montserrat', sans-serif; transition: var(--transition); }
+        .close-cart:hover { color: #d9534f; }
         .cart-items { flex-grow: 1; overflow-y: auto; padding: 20px; }
         .cart-item { display: flex; justify-content: space-between; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid var(--soft-gray); font-size: 14px; }
         .cart-item-info span { font-size: 12px; color: var(--text-light); display: block; margin-top: 3px; }
@@ -138,15 +225,15 @@
 
         @media (max-width: 900px) {
             .shop-layout { flex-direction: column; }
-            .sidebar { width: 100%; display: none; background: var(--soft-gray); padding: 20px; position: static; margin-bottom: 20px; }
+            .sidebar { width: 100%; display: none; background: var(--soft-gray); padding: 20px; position: static; margin-bottom: 20px; border-radius: var(--radius); }
             .sidebar.active { display: block; }
             .mobile-filter-btn { display: block; }
-            .nav-links { display: none; flex-direction: column; position: absolute; top: 100%; left: 0; width: 100%; background: var(--white); padding: 20px 0; box-shadow: 0 5px 10px rgba(0,0,0,0.05); }
+            .nav-links { display: none; flex-direction: column; position: absolute; top: 100%; left: 0; width: 100%; background: var(--white); padding: 20px 0; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
             .nav-links.active { display: flex; }
             .nav-links a { margin: 15px 0; }
             .menu-toggle { display: block; }
-            .modal-content { flex-direction: column; }
-            .modal-info-sec { padding: 20px; }
+            .modal-content { flex-direction: column; border-radius: 0; height: 100vh; max-height: 100vh; }
+            .modal-info-sec { padding: 30px 20px; }
             #searchInput { width: 100%; margin-bottom: 10px; }
         }
     </style>
@@ -177,8 +264,7 @@
             <h2 data-i18n="shopTitle">Our Collection</h2>
             <div class="shop-controls">
                 
-                <!-- NEW SMART SEARCH BAR -->
-                <input type="text" id="searchInput" placeholder="Search dresses, formal, khadi..." data-i18n-placeholder="searchPlaceholder" style="padding: 10px 15px; border: 1px solid var(--border-color); background: var(--white); font-family: 'Montserrat', sans-serif; font-size: 13px; outline: none; min-width: 250px;">
+                <input type="text" id="searchInput" placeholder="Search dresses, formal, khadi..." data-i18n-placeholder="searchPlaceholder" style="min-width: 250px;">
                 
                 <button type="button" class="mobile-filter-btn" id="mobileFilterBtn" data-i18n="filterBtn">Filters</button>
                 <div class="sort-box">
@@ -280,50 +366,50 @@
         <div class="cart-footer" data-nosnippet>
             
             <div class="checkout-form" style="margin-bottom: 15px; text-align: left;">
-                <input type="text" id="custName" placeholder="Full Name *" data-i18n-placeholder="checkoutName" style="width: 100%; padding: 8px; margin-bottom: 8px; border: 1px solid var(--border-color); font-family: 'Montserrat', sans-serif; font-size: 12px; outline: none;">
-                <input type="tel" id="custPhone" placeholder="Mobile Number *" data-i18n-placeholder="checkoutPhone" style="width: 100%; padding: 8px; margin-bottom: 8px; border: 1px solid var(--border-color); font-family: 'Montserrat', sans-serif; font-size: 12px; outline: none;">
-                <textarea id="deliveryAddress" rows="2" data-i18n-placeholder="checkoutAddress" style="width: 100%; padding: 8px; border: 1px solid var(--border-color); font-family: 'Montserrat', sans-serif; font-size: 12px; outline: none; resize: none; margin-bottom: 8px;" placeholder="Complete Delivery Address *"></textarea>
+                <input type="text" id="custName" placeholder="Full Name *" data-i18n-placeholder="checkoutName" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid var(--border-color); font-family: 'Montserrat', sans-serif; font-size: 12px; outline: none; border-radius: 4px;">
+                <input type="tel" id="custPhone" placeholder="Mobile Number *" data-i18n-placeholder="checkoutPhone" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid var(--border-color); font-family: 'Montserrat', sans-serif; font-size: 12px; outline: none; border-radius: 4px;">
+                <textarea id="deliveryAddress" rows="2" data-i18n-placeholder="checkoutAddress" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); font-family: 'Montserrat', sans-serif; font-size: 12px; outline: none; resize: none; margin-bottom: 10px; border-radius: 4px;" placeholder="Complete Delivery Address *"></textarea>
                 
-                <select id="deliveryZone" style="width: 100%; padding: 8px; margin-bottom: 8px; border: 1px solid var(--border-color); font-family: 'Montserrat', sans-serif; font-size: 12px; outline: none; background: white; cursor: pointer;" onchange="window.updateDeliveryPolicyAndTotal()">
+                <select id="deliveryZone" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid var(--border-color); font-family: 'Montserrat', sans-serif; font-size: 12px; outline: none; background: white; cursor: pointer; border-radius: 4px;" onchange="window.updateDeliveryPolicyAndTotal()">
                     <option value="" disabled selected data-i18n="selectDeliveryZone">Select Delivery Zone *</option>
                     <option value="80" data-i18n="zoneInside">Inside Sylhet (৳80)</option>
                     <option value="150" data-i18n="zoneOutside">Outside Sylhet (৳150)</option>
                 </select>
                 
-                <div id="dynamicPolicyDisplay" style="font-size: 11px; color: var(--text-light); margin-bottom: 15px; background: var(--soft-gray); padding: 10px; border-radius: 4px; display: none;">
+                <div id="dynamicPolicyDisplay" style="font-size: 11px; color: var(--text-light); margin-bottom: 15px; background: var(--soft-gray); padding: 12px; border-radius: 4px; display: none; line-height: 1.5;">
                     <!-- Policy text will inject here automatically -->
                 </div>
                 
-                <div style="font-size: 11px; color: var(--text-light); line-height: 1.4; display: flex; align-items: flex-start; gap: 5px;">
-                    <input type="checkbox" id="policyAgree" style="accent-color: var(--primary-gold); margin-top: 2px; cursor: pointer;">
+                <div style="font-size: 11px; color: var(--text-light); line-height: 1.5; display: flex; align-items: flex-start; gap: 8px;">
+                    <input type="checkbox" id="policyAgree" style="accent-color: var(--primary-gold); margin-top: 2px; cursor: pointer; width: 14px; height: 14px;">
                     <label for="policyAgree">
                         <span data-i18n="policyAgreeText">I agree to the</span> 
-                        <a href="policy.html" style="color: var(--primary-gold); text-decoration: underline;" data-i18n="policyLink">Delivery & Order Confirmation Policy</a>.
+                        <a href="policy.html" style="color: var(--primary-gold); text-decoration: underline; font-weight: 500;" data-i18n="policyLink">Delivery & Order Confirmation Policy</a>.
                     </label>
                 </div>
             </div>
 
             <div class="cart-summary" style="margin-bottom: 20px; font-family: 'Montserrat', sans-serif;">
-                <div style="display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 13px; color: var(--text-light);">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 13px; color: var(--text-light);">
                     <span data-i18n="cartSubtotal">Subtotal:</span>
                     <span>৳<span id="cartSubtotalValue">0</span></span>
                 </div>
-                <div style="display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 13px; color: var(--text-light);">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 15px; font-size: 13px; color: var(--text-light);">
                     <span data-i18n="cartDelivery">Delivery Charge:</span>
                     <span>৳<span id="cartDeliveryValue">0</span></span>
                 </div>
-                <div class="cart-total" style="display: flex; justify-content: space-between; font-weight: 600; font-size: 18px; font-family: 'Playfair Display', serif; border-top: 1px solid var(--border-color); padding-top: 12px;">
+                <div class="cart-total" style="display: flex; justify-content: space-between; font-weight: 600; font-size: 18px; font-family: 'Playfair Display', serif; border-top: 1px solid var(--border-color); padding-top: 15px;">
                     <span data-i18n="cartTotal">Final Total:</span>
                     <span>৳<span id="cartTotalValue">0</span></span>
                 </div>
             </div>
 
             <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px;">
-                <button type="button" id="adminOrderBtn" onclick="window.checkoutToAdmin()" style="width: 100%; background: var(--deep-black); color: var(--white); padding: 15px; border: none; font-family: 'Montserrat', sans-serif; font-size: 13px; font-weight: 600; text-transform: uppercase; cursor: pointer; transition: var(--transition);" data-i18n="btnConfirmOrder">
+                <button type="button" id="adminOrderBtn" onclick="window.checkoutToAdmin()" style="width: 100%; background: var(--deep-black); color: var(--white); padding: 15px; border: none; font-family: 'Montserrat', sans-serif; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; transition: var(--transition); border-radius: 4px;" data-i18n="btnConfirmOrder">
                     Confirm Order (Website)
                 </button>
                 
-                <button type="button" onclick="window.checkoutToWhatsApp()" style="width: 100%; background-color: #25D366; color: white; padding: 15px; border: none; font-family: 'Montserrat', sans-serif; font-size: 13px; font-weight: 600; text-transform: uppercase; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: var(--transition);">
+                <button type="button" onclick="window.checkoutToWhatsApp()" style="width: 100%; background-color: #25D366; color: white; padding: 15px; border: none; font-family: 'Montserrat', sans-serif; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: var(--transition); border-radius: 4px;">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
                         <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
                     </svg>
@@ -336,60 +422,60 @@
     <!-- Account / Profile Modal -->
     <div class="cart-overlay" id="accountOverlay"></div>
     <div class="cart-sidebar" id="accountSidebar" style="padding: 20px; overflow-y: auto;">
-        <div class="cart-header" style="padding: 0 0 20px 0;">
+        <div class="cart-header" style="padding: 0 0 20px 0; background: transparent; border-bottom: 1px solid var(--border-color);">
             <h3 id="accountModalTitle" data-i18n="accTitle">Customer Account</h3>
             <button type="button" class="close-cart" id="closeAccountBtn" style="border: none; background: none; font-size: 28px; cursor: pointer;">&times;</button>
         </div>
 
         <div id="authView" style="margin-top: 20px;">
             <div id="loginFormContainer">
-                <h4 style="margin-bottom: 15px; font-size: 16px;" data-i18n="accLoginTitle">Login to Your Account</h4>
-                <input type="email" id="loginEmail" placeholder="Email Address" data-i18n-placeholder="accEmailPlaceholder" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid var(--border-color);">
-                <input type="password" id="loginPassword" placeholder="Password" data-i18n-placeholder="accPassPlaceholder" style="width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid var(--border-color);">
-                <button type="button" onclick="window.handleLogin()" style="width: 100%; background: var(--deep-black); color: white; padding: 12px; border: none; font-weight: 600; cursor: pointer; margin-bottom: 10px;" data-i18n="accLoginBtn">LOG IN</button>
+                <h4 style="margin-bottom: 15px; font-size: 16px; font-family: 'Playfair Display', serif;" data-i18n="accLoginTitle">Login to Your Account</h4>
+                <input type="email" id="loginEmail" placeholder="Email Address" data-i18n-placeholder="accEmailPlaceholder" style="width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid var(--border-color); border-radius: 4px; outline: none; font-family: 'Montserrat', sans-serif; font-size: 12px;">
+                <input type="password" id="loginPassword" placeholder="Password" data-i18n-placeholder="accPassPlaceholder" style="width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid var(--border-color); border-radius: 4px; outline: none; font-family: 'Montserrat', sans-serif; font-size: 12px;">
+                <button type="button" onclick="window.handleLogin()" style="width: 100%; background: var(--deep-black); color: white; padding: 14px; border: none; font-weight: 600; font-family: 'Montserrat', sans-serif; letter-spacing: 1px; cursor: pointer; margin-bottom: 12px; border-radius: 4px;" data-i18n="accLoginBtn">LOG IN</button>
                 <p style="text-align: center; font-size: 12px; color: var(--text-light); cursor: pointer;" onclick="window.toggleAuthMode()">
                     <span data-i18n="accNoAccount">Don't have an account?</span> 
-                    <span style="color: var(--primary-gold); text-decoration: underline;" data-i18n="accSignUpLink">Sign up</span>
+                    <span style="color: var(--primary-gold); text-decoration: underline; font-weight: 600;" data-i18n="accSignUpLink">Sign up</span>
                 </p>
             </div>
 
             <div id="signupFormContainer" style="display: none;">
-                <h4 style="margin-bottom: 15px; font-size: 16px;" data-i18n="accSignupTitle">Create an Account</h4>
-                <input type="text" id="signupName" placeholder="Full Name" data-i18n-placeholder="accNamePlaceholder" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid var(--border-color);">
-                <input type="email" id="signupEmail" placeholder="Email Address" data-i18n-placeholder="accEmailPlaceholder" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid var(--border-color);">
-                <input type="password" id="signupPassword" placeholder="Password (min 6 chars)" data-i18n-placeholder="accPassMinPlaceholder" style="width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid var(--border-color);">
-                <button type="button" onclick="window.handleSignup()" style="width: 100%; background: var(--deep-black); color: white; padding: 12px; border: none; font-weight: 600; cursor: pointer; margin-bottom: 10px;" data-i18n="accSignupBtn">SIGN UP</button>
+                <h4 style="margin-bottom: 15px; font-size: 16px; font-family: 'Playfair Display', serif;" data-i18n="accSignupTitle">Create an Account</h4>
+                <input type="text" id="signupName" placeholder="Full Name" data-i18n-placeholder="accNamePlaceholder" style="width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid var(--border-color); border-radius: 4px; outline: none; font-family: 'Montserrat', sans-serif; font-size: 12px;">
+                <input type="email" id="signupEmail" placeholder="Email Address" data-i18n-placeholder="accEmailPlaceholder" style="width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid var(--border-color); border-radius: 4px; outline: none; font-family: 'Montserrat', sans-serif; font-size: 12px;">
+                <input type="password" id="signupPassword" placeholder="Password (min 6 chars)" data-i18n-placeholder="accPassMinPlaceholder" style="width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid var(--border-color); border-radius: 4px; outline: none; font-family: 'Montserrat', sans-serif; font-size: 12px;">
+                <button type="button" onclick="window.handleSignup()" style="width: 100%; background: var(--deep-black); color: white; padding: 14px; border: none; font-weight: 600; font-family: 'Montserrat', sans-serif; letter-spacing: 1px; cursor: pointer; margin-bottom: 12px; border-radius: 4px;" data-i18n="accSignupBtn">SIGN UP</button>
                 <p style="text-align: center; font-size: 12px; color: var(--text-light); cursor: pointer;" onclick="window.toggleAuthMode()">
                     <span data-i18n="accHasAccount">Already have an account?</span> 
-                    <span style="color: var(--primary-gold); text-decoration: underline;" data-i18n="accLoginLink">Log in</span>
+                    <span style="color: var(--primary-gold); text-decoration: underline; font-weight: 600;" data-i18n="accLoginLink">Log in</span>
                 </p>
             </div>
         </div>
 
         <div id="profileView" style="display: none; margin-top: 10px;">
-            <div style="background: var(--soft-gray); padding: 15px; border-radius: 4px; margin-bottom: 20px;">
-                <p style="font-size: 13px; color: var(--text-light);" data-i18n="accLoggedInAs">Logged in as:</p>
-                <strong id="userProfileEmail" style="font-size: 14px; display: block; margin-bottom: 10px;"></strong>
-                <button type="button" onclick="window.handleLogout()" style="background: #d9534f; color: white; border: none; padding: 6px 12px; font-size: 11px; font-weight: 600; cursor: pointer;" data-i18n="accLogoutBtn">LOG OUT</button>
+            <div style="background: var(--soft-gray); padding: 18px; border-radius: 4px; margin-bottom: 25px; border: 1px solid var(--border-color);">
+                <p style="font-size: 12px; color: var(--text-light); margin-bottom: 5px;" data-i18n="accLoggedInAs">Logged in as:</p>
+                <strong id="userProfileEmail" style="font-size: 14px; display: block; margin-bottom: 15px; color: var(--deep-black);"></strong>
+                <button type="button" onclick="window.handleLogout()" style="background: transparent; color: #d9534f; border: 1px solid #d9534f; padding: 8px 15px; font-size: 11px; font-family: 'Montserrat', sans-serif; font-weight: 600; letter-spacing: 1px; cursor: pointer; border-radius: 4px; transition: var(--transition);">LOG OUT</button>
             </div>
 
-            <h4 style="font-size: 14px; text-transform: uppercase; margin-bottom: 10px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px;" data-i18n="accSavedProfile">Saved Profile</h4>
-            <div style="margin-bottom: 20px;">
-                <input type="text" id="profileName" placeholder="Full Name" data-i18n-placeholder="accNamePlaceholder" style="width: 100%; padding: 8px; margin-bottom: 8px; border: 1px solid var(--border-color); font-size: 12px;">
-                <input type="text" id="profilePhone" placeholder="Default Phone" data-i18n-placeholder="accPhonePlaceholder" style="width: 100%; padding: 8px; margin-bottom: 8px; border: 1px solid var(--border-color); font-size: 12px;">
-                <textarea id="profileAddress" placeholder="Default Delivery Address" data-i18n-placeholder="accAddressPlaceholder" rows="2" style="width: 100%; padding: 8px; margin-bottom: 8px; border: 1px solid var(--border-color); font-size: 12px; resize: none;"></textarea>
-                <button type="button" onclick="window.saveUserProfile()" style="background: var(--primary-gold); color: white; border: none; padding: 8px 15px; font-size: 12px; font-weight: 600; cursor: pointer;" data-i18n="accSaveProfileBtn">Save Profile</button>
+            <h4 style="font-size: 13px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; color: var(--deep-black);" data-i18n="accSavedProfile">Saved Profile</h4>
+            <div style="margin-bottom: 25px;">
+                <input type="text" id="profileName" placeholder="Full Name" data-i18n-placeholder="accNamePlaceholder" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid var(--border-color); border-radius: 4px; font-family: 'Montserrat', sans-serif; font-size: 12px; outline: none;">
+                <input type="text" id="profilePhone" placeholder="Default Phone" data-i18n-placeholder="accPhonePlaceholder" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid var(--border-color); border-radius: 4px; font-family: 'Montserrat', sans-serif; font-size: 12px; outline: none;">
+                <textarea id="profileAddress" placeholder="Default Delivery Address" data-i18n-placeholder="accAddressPlaceholder" rows="2" style="width: 100%; padding: 10px; margin-bottom: 12px; border: 1px solid var(--border-color); border-radius: 4px; font-family: 'Montserrat', sans-serif; font-size: 12px; resize: none; outline: none;"></textarea>
+                <button type="button" onclick="window.saveUserProfile()" style="background: var(--primary-gold); color: white; border: none; padding: 12px 15px; font-size: 12px; font-family: 'Montserrat', sans-serif; letter-spacing: 1px; font-weight: 600; cursor: pointer; border-radius: 4px; width: 100%; transition: var(--transition);" data-i18n="accSaveProfileBtn">Save Profile</button>
             </div>
 
-            <h4 style="font-size: 14px; text-transform: uppercase; margin-bottom: 10px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px;" data-i18n="accOrderHistory">My Order History</h4>
-            <div id="userOrderHistoryContainer" style="max-height: 250px; overflow-y: auto; font-size: 12px;">
+            <h4 style="font-size: 13px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; color: var(--deep-black);" data-i18n="accOrderHistory">My Order History</h4>
+            <div id="userOrderHistoryContainer" style="max-height: 250px; overflow-y: auto; font-size: 12px; padding-right: 5px;">
                 <p style="color: var(--text-light);" data-i18n="accLoadingOrders">Loading orders...</p>
             </div>
         </div>
     </div>
 
-    <footer data-nosnippet>
-        <p style="font-size: 12px; color: #777;" data-i18n="footerText">&copy; 2026 Mohor Clothings Bangladesh. All Rights Reserved.</p>
+    <footer data-nosnippet style="padding: 20px; text-align: center; border-top: 1px solid var(--border-color); margin-top: 40px;">
+        <p style="font-size: 12px; color: #777; font-weight: 500;" data-i18n="footerText">&copy; 2026 Mohor Clothings Bangladesh. All Rights Reserved.</p>
     </footer>
 
     <!-- Firebase CDN SDKs -->
@@ -412,7 +498,6 @@
         window.db = firebase.firestore();
         
         // --- SAFE FIRESTORE DATA FETCHING ---
-        // This quietly grabs dynamic products and pushes them to app.js rendering logic
         async function loadStoreProductsFromDatabase() {
             try {
                 const querySnapshot = await window.db.collection("products").get();
@@ -455,50 +540,32 @@
         // --- AUTO-FILL CART & PROFILE WITH USER DATA ---
         firebase.auth().onAuthStateChanged((user) => {
             if (user) {
-                // Fetch user data from Firestore
                 window.db.collection("users").doc(user.uid).get().then((doc) => {
                     let userData = {};
                     if (doc.exists) {
                         userData = doc.data();
                     }
                         
-                    // 1. Auto-fill Cart Checkout Form
                     const custName = document.getElementById("custName");
                     const custPhone = document.getElementById("custPhone");
                     const deliveryAddress = document.getElementById("deliveryAddress");
                     
                     let savedName = userData.customerName || userData.name || userData.fullName || user.displayName || "";
                     
-                    if (custName && savedName) {
-                        custName.value = savedName;
-                    }
-                    if (custPhone && (userData.customerPhone || userData.phone)) {
-                        custPhone.value = userData.customerPhone || userData.phone;
-                    }
-                    if (deliveryAddress && (userData.deliveryAddress || userData.address)) {
-                        deliveryAddress.value = userData.deliveryAddress || userData.address;
-                    }
+                    if (custName && savedName) custName.value = savedName;
+                    if (custPhone && (userData.customerPhone || userData.phone)) custPhone.value = userData.customerPhone || userData.phone;
+                    if (deliveryAddress && (userData.deliveryAddress || userData.address)) deliveryAddress.value = userData.deliveryAddress || userData.address;
 
-                    // 2. Auto-fill Profile Address Book (in Account Modal)
                     const profileName = document.getElementById("profileName");
                     const profilePhone = document.getElementById("profilePhone");
                     const profileAddress = document.getElementById("profileAddress");
                     
-                    if (profileName && savedName) {
-                        profileName.value = savedName;
-                    }
-                    if (profilePhone && (userData.customerPhone || userData.phone)) {
-                        profilePhone.value = userData.customerPhone || userData.phone;
-                    }
-                    if (profileAddress && (userData.deliveryAddress || userData.address)) {
-                        profileAddress.value = userData.deliveryAddress || userData.address;
-                    }
+                    if (profileName && savedName) profileName.value = savedName;
+                    if (profilePhone && (userData.customerPhone || userData.phone)) profilePhone.value = userData.customerPhone || userData.phone;
+                    if (profileAddress && (userData.deliveryAddress || userData.address)) profileAddress.value = userData.deliveryAddress || userData.address;
                     
-                }).catch((error) => {
-                    console.error("Error fetching user data:", error);
-                });
+                }).catch((error) => console.error("Error fetching user data:", error));
             } else {
-                // Clear fields if logged out so next guest starts fresh
                 if(document.getElementById("custName")) document.getElementById("custName").value = "";
                 if(document.getElementById("custPhone")) document.getElementById("custPhone").value = "";
                 if(document.getElementById("deliveryAddress")) document.getElementById("deliveryAddress").value = "";
