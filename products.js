@@ -1,4 +1,4 @@
-const productsData = [
+window.productsData = [
     {
         id: 1,
         title: { 
