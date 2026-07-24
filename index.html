@@ -391,10 +391,10 @@
         <p style="font-size: 12px; color: #777;" data-i18n="footerText">&copy; 2026 Mohor Clothings Bangladesh. All Rights Reserved.</p>
     </footer>
 
-    <!-- Firebase CDN SDKs with DEFER -->
-    <script defer src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-    <script defer src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-    <script defer src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+    <!-- Firebase CDN SDKs (DEFER REMOVED) -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
     <script>
         const firebaseConfig = {
@@ -415,6 +415,6 @@
     <script src="products.js"></script>
     <script src="app.js"></script>
     <script src="cart.js"></script> 
-    <script src="auth.js"></script>
+    <script type="module" src="auth.js"></script>
 </body>
 </html>
