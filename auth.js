@@ -1,38 +1,11 @@
-// --- AUTHENTICATION & PROFILE LOGIC (Modular Firebase) ---
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { 
-    getAuth, 
-    signInWithEmailAndPassword, 
-    createUserWithEmailAndPassword, 
-    signOut, 
-    onAuthStateChanged 
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { 
-    getFirestore, 
-    doc, 
-    setDoc, 
-    getDoc, 
-    collection, 
-    query, 
-    where, 
-    getDocs 
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-const firebaseConfig = {
-    apiKey: "AIzaSyALxypXDkF9QexbD_wE7-ADALIdj5vd-rY",
-    authDomain: "mohor-app.firebaseapp.com",
-    projectId: "mohor-app",
-    storageBucket: "mohor-app.firebasestorage.app",
-    messagingSenderId: "989000457004",
-    appId: "1:989000457004:web:5679b256e20d94e27daa89"
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+// --- AUTHENTICATION & PROFILE LOGIC (Firebase Compat) ---
 
 // Expose globally so cart.js and other files can check who is logged in
 window.currentUser = null;
+
+// Use the database and auth already initialized in index.html!
+const db = window.db;
+const auth = firebase.auth();
 
 // Modal Elements Setup
 const accountOverlay = document.getElementById('accountOverlay');
@@ -71,7 +44,7 @@ window.toggleAuthMode = function() {
 }
 
 // Monitor Auth State Changes
-onAuthStateChanged(auth, async (user) => {
+auth.onAuthStateChanged(async (user) => {
     window.currentUser = user;
     const authView = document.getElementById('authView');
     const profileView = document.getElementById('profileView');
@@ -79,8 +52,10 @@ onAuthStateChanged(auth, async (user) => {
     if (user) {
         if (authView) authView.style.display = 'none';
         if (profileView) profileView.style.display = 'block';
-        if (document.getElementById('userProfileEmail')) {
-            document.getElementById('userProfileEmailinnerText') || (document.getElementById('userProfileEmail').innerText = user.email);
+        
+        const emailDisplay = document.getElementById('userProfileEmail');
+        if (emailDisplay) {
+            emailDisplay.innerText = user.email;
         }
         
         await loadUserData(user.uid);
@@ -104,12 +79,15 @@ window.handleSignup = async function() {
     if (!email || !password) { alert("Please enter email and password."); return; }
 
     try {
-        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        await setDoc(doc(db, "users", userCredential.user.uid), { 
-            name, 
-            email, 
+        const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+        
+        // Save user info to Firestore database
+        await db.collection("users").doc(userCredential.user.uid).set({ 
+            name: name, 
+            email: email, 
             createdAt: new Date().toISOString() 
         });
+        
         alert("Account created successfully!");
     } catch (error) {
         alert("Signup failed: " + error.message);
@@ -127,7 +105,7 @@ window.handleLogin = async function() {
     if (!email || !password) { alert("Please enter email and password."); return; }
 
     try {
-        await signInWithEmailAndPassword(auth, email, password);
+        await auth.signInWithEmailAndPassword(email, password);
         alert("Logged in successfully!");
     } catch (error) {
         alert("Login failed: " + error.message);
@@ -137,7 +115,7 @@ window.handleLogin = async function() {
 // Handle Logout
 window.handleLogout = async function() {
     try {
-        await signOut(auth);
+        await auth.signOut();
         alert("Logged out successfully.");
     } catch (error) {
         alert("Logout error: " + error.message);
@@ -157,9 +135,11 @@ window.saveUserProfile = async function() {
     const address = addressInput ? addressInput.value.trim() : "";
 
     try {
-        await setDoc(doc(db, "users", window.currentUser.uid), {
-            phone, address
-        }, { merge: true });
+        await db.collection("users").doc(window.currentUser.uid).set({
+            phone: phone, 
+            address: address
+        }, { merge: true }); // Merge ensures we don't delete their name/email
+        
         alert("Address saved successfully!");
     } catch (error) {
         alert("Error saving address: " + error.message);
@@ -169,16 +149,20 @@ window.saveUserProfile = async function() {
 // Load saved user data and auto-fill checkout fields if empty
 async function loadUserData(uid) {
     try {
-        const userDoc = await getDoc(doc(db, "users", uid));
-        if (userDoc.exists()) {
+        const userDoc = await db.collection("users").doc(uid).get();
+        if (userDoc.exists) {
             const data = userDoc.data();
-            if (data.phone) {
-                if (document.getElementById('profilePhone')) document.getElementById('profilePhone').value = data.phone;
-                if (document.getElementById('custPhone') && !document.getElementById('custPhone').value) document.getElementById('custPhone').value = data.phone;
+            
+            // 1. Fill Profile Tab Displays
+            if (data.phone && document.getElementById('profilePhone')) document.getElementById('profilePhone').value = data.phone;
+            if (data.address && document.getElementById('profileAddress')) document.getElementById('profileAddress').value = data.address;
+            
+            // 2. Auto-fill Cart Checkout inputs so the user doesn't have to type them again
+            if (data.phone && document.getElementById('custPhone') && !document.getElementById('custPhone').value) {
+                document.getElementById('custPhone').value = data.phone;
             }
-            if (data.address) {
-                if (document.getElementById('profileAddress')) document.getElementById('profileAddress').value = data.address;
-                if (document.getElementById('deliveryAddress') && !document.getElementById('deliveryAddress').value) document.getElementById('deliveryAddress').value = data.address;
+            if (data.address && document.getElementById('deliveryAddress') && !document.getElementById('deliveryAddress').value) {
+                document.getElementById('deliveryAddress').value = data.address;
             }
             if (data.name && document.getElementById('custName') && !document.getElementById('custName').value) {
                 document.getElementById('custName').value = data.name;
@@ -193,8 +177,8 @@ async function loadUserOrders(uid) {
     if (!container) return;
 
     try {
-        const q = query(collection(db, "orders"), where("userId", "==", uid));
-        const querySnapshot = await getDocs(q);
+        // Query the database for orders matching this user's ID
+        const querySnapshot = await db.collection("orders").where("userId", "==", uid).get();
         
         if (querySnapshot.empty) {
             container.innerHTML = `<p style="color: var(--text-light); padding: 10px 0;">No order history found.</p>`;
@@ -205,6 +189,8 @@ async function loadUserOrders(uid) {
         querySnapshot.forEach((documentSnapshot) => {
             const order = documentSnapshot.data();
             const formattedDate = order.orderDate ? new Date(order.orderDate).toLocaleDateString() : "Recent";
+            
+            // Add order visual card to the drawer
             container.innerHTML += `
                 <div style="border: 1px solid var(--border-color); padding: 10px; margin-bottom: 10px; border-radius: 4px;">
                     <strong>Total: ৳${order.totalAmount}</strong> <span style="float: right; color: var(--primary-gold);">${order.status || 'New'}</span>
