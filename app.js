@@ -94,10 +94,13 @@ function updateUIText() {
     if (typeof window.updateDeliveryPolicyAndTotal === "function") window.updateDeliveryPolicyAndTotal();
 }
 
-document.getElementById('langToggleBtn').addEventListener('click', () => {
-    window.currentLang = (window.currentLang === 'en') ? 'bn' : 'en';
-    updateUIText();
-});
+const langToggleBtn = document.getElementById('langToggleBtn');
+if (langToggleBtn) {
+    langToggleBtn.addEventListener('click', () => {
+        window.currentLang = (window.currentLang === 'en') ? 'bn' : 'en';
+        updateUIText();
+    });
+}
 
 
 // --- PRODUCT RENDERING & FILTERING ---
@@ -338,12 +341,19 @@ if (modalAddToCartBtn) {
 }
 
 // Mobile Menu
-document.getElementById('menuToggle').addEventListener('click', () => { document.getElementById('navLinks').classList.toggle('active'); });
+const menuToggle = document.getElementById('menuToggle');
+if (menuToggle) {
+    menuToggle.addEventListener('click', () => { 
+        const navLinks = document.getElementById('navLinks');
+        if (navLinks) navLinks.classList.toggle('active'); 
+    });
+}
+
 const mobileFilterBtn = document.getElementById('mobileFilterBtn');
 if(mobileFilterBtn) {
     mobileFilterBtn.addEventListener('click', function() {
         const sidebar = document.getElementById('sidebar');
-        sidebar.classList.toggle('active');
+        if (sidebar) sidebar.classList.toggle('active');
         this.innerText = window.uiTranslations[window.currentLang].filterBtn;
     });
 }
