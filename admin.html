@@ -256,9 +256,8 @@
                         </div>
                         
                         <div class="form-group full-width">
-                            <label>Size Measurements & Guide (Appears when size is clicked)</label>
-                            <textarea id="prod-measurements" rows="5" placeholder="Body/Chest: 42&#10;Waist: 38-40&#10;Hip: 44-46&#10;Shoulder: 15.5&#10;Sleeve: 21&#10;Length: 44-45"></textarea>
-                            <small style="color: #666; margin-top: 5px;">Put each measurement point on a new line to match your live storefront layout.</small>
+                            <label>Size Measurements & Guide</label>
+                            <textarea id="prod-measurements" rows="3" placeholder="e.g. Body/Chest: 38&#10;Waist: 34-36&#10;Hip: 40-42..."></textarea>
                         </div>
 
                         <div class="form-group full-width">
@@ -312,7 +311,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
         import { getFirestore, collection, onSnapshot, doc, updateDoc, addDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
+        import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyALxypXDkF9QexbD_wE7-ADALIdj5vd-rY",
@@ -330,12 +329,14 @@
 
         const adminEmail = "mushfiqurrahman2222@gmail.com"; 
 
+        // DOM Elements
         const loginSection = document.getElementById('login-section');
         const mainDashboard = document.getElementById('main-dashboard');
         const loginBtn = document.getElementById('login-btn');
         const logoutBtn = document.getElementById('logout-btn');
         const errorMsg = document.getElementById('login-error');
 
+        // --- AUTHENTICATION LOGIC ---
         onAuthStateChanged(auth, (user) => {
             if (user && user.email === adminEmail) {
                 loginSection.style.display = 'none';
@@ -355,6 +356,7 @@
             }
         });
 
+        // Login Button Click
         loginBtn.addEventListener('click', () => {
             const email = document.getElementById('login-email').value.trim();
             const pass = document.getElementById('login-password').value.trim();
@@ -373,10 +375,12 @@
                 });
         });
 
+        // Logout Button Click
         logoutBtn.addEventListener('click', () => {
             signOut(auth);
         });
 
+        // --- FIRESTORE DATABASE LOGIC ---
         function fetchOrders() {
             onSnapshot(collection(db, "orders"), (snapshot) => {
                 let totalSales = 0;
@@ -448,6 +452,7 @@
                 document.getElementById('stat-orders').innerText = totalOrders;
                 document.getElementById('stat-pending').innerText = pendingActions;
 
+                // Attach Event Listeners to Update buttons with visual feedback
                 document.querySelectorAll('.update-btn').forEach(btn => {
                     btn.addEventListener('click', (e) => {
                         const orderId = e.target.getAttribute('data-id');
@@ -458,6 +463,7 @@
             });
         }
 
+        // Update Order in Database with Visual Indicator Feedback
         async function updateOrderStatus(orderId, newStatus, buttonEl) {
             const originalText = buttonEl.innerText;
             const originalBg = buttonEl.style.backgroundColor;
@@ -467,6 +473,7 @@
                 const orderRef = doc(db, "orders", orderId);
                 await updateDoc(orderRef, { status: newStatus });
                 
+                // Success indicator feedback
                 buttonEl.innerText = "✓ Saved";
                 buttonEl.style.backgroundColor = "#27ae60";
 
@@ -512,8 +519,8 @@
                     const file = files[i];
                     uploadBtn.innerText = `Uploading Image ${i + 1} of ${files.length}...`;
                     const storageRef = ref(storage, `products/${Date.now()}_${file.name}`);
-                    const snapshot = await uploadBytes(storageRef, file);
-                    const downloadURL = await getDownloadURL(snapshot.ref);
+                    const uploadTask = await uploadBytesResumable(storageRef, file);
+                    const downloadURL = await getDownloadURL(uploadTask.ref);
                     imageUrls.push(downloadURL);
                 }
 
@@ -544,6 +551,7 @@
             }
         });
 
+        // CSV Export Placeholder
         document.getElementById('export-csv-btn').addEventListener('click', () => {
             alert("This will generate a spreadsheet of your orders.");
         });
