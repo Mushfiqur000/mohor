@@ -168,7 +168,7 @@ window.uiTranslations = {
         policy3Title: "৩. রিটার্ন ও এক্সচেঞ্জ পলিসি",
         policy3Text: "আমরা আমাদের হাতে তৈরি পোশাকের মানের বিষয়ে গর্ববোধ করি। তবে, যদি আপনি কোনো ত্রুটিপূর্ণ বা ভুল পণ্য পান, অনুগ্রহ করে ডেলিভারি পাওয়ার ২৪ ঘণ্টার মধ্যে আমাদের জানান। পণ্যটি অবশ্যই অব্যবহৃত, ধোয়া হয়নি এমন, এবং অরিজিনাল প্যাকেজিং ও ট্যাগযুক্ত থাকতে হবে। কোনো ক্ষতি বা ত্রুটি দাবি করার জন্য অনুগ্রহ করে একটি আনবক্সিং ভিডিও রেকর্ড করুন।",
         policy4Title: "৪. রঙের ডিসক্লেইমার",
-        policy4Text: "যদিও আমরা নিশ্চিত করার চেষ্টা করি যে আমাদের ছবিগুলো পণ্যের সঠিক রং উপস্থাপন করে, ফটোগ্রাফির সময় আলোর কারণে বা আপনার ডিভাইসের ডিসপ্লে সেটিংসের কারণে আসল রং সামান্য ভিন্ন হতে পারে। শুধুমাত্র সামান্য রঙের পার্থক্যের কারণে কোনো এক্সচেঞ্জ গ্রহণ করা হবে না।"
+        policy4Text: "যদিও আমরা নিশ্চিত করার চেষ্টা করি যে আমাদের ছবিগুলো পণ্যের সঠিক রং উপস্থাপন করে, ফটোগ্রাফির সময় আলোর কারণে বা আপনার ডিভাইসের ডিসপ্লে সেটিংসের কারণে আসল রং সামান্য ভিন্ন হতে পারে। শুধুমাত্র সামান্য রঙের পার্থক্যের কারণে কোনো এক্সচেঞ্জ গ্রহণ করা হবে ঘন হবে না।"
     }
 };
 
@@ -232,11 +232,19 @@ function renderProducts(productsToRender) {
     productsToRender.forEach(product => {
         const card = document.createElement('div');
         card.className = 'product-card';
+        
+        // --- HYBRID RESPONSIVE VIEW LOGIC ADDED HERE ---
         card.onclick = () => {
-            if (typeof window.openQuickView === "function") {
-                window.openQuickView(product.id);
+            if (window.innerWidth <= 900) {
+                // Mobile: Navigate to dedicated product page
+                window.location.href = `product.html?id=${product.id}`;
             } else {
-                openProductModal(product);
+                // Desktop: Open Modal
+                if (typeof window.openQuickView === "function") {
+                    window.openQuickView(product.id);
+                } else {
+                    openProductModal(product);
+                }
             }
         };
         
@@ -481,6 +489,28 @@ if(mobileFilterBtn) {
         if (sidebar) sidebar.classList.toggle('active');
         this.innerText = window.uiTranslations[window.currentLang].filterBtn;
     });
+}
+
+// --- HYBRID RESPONSIVE ROUTING FOR CART ---
+// This safely intercepts the Cart button click on mobile devices
+const topNavCartBtn = document.getElementById('openCartBtn');
+if (topNavCartBtn) {
+    topNavCartBtn.addEventListener('click', (e) => {
+        if (window.innerWidth <= 900) {
+            // Stop cart.js from opening the sidebar on mobile and redirect instead
+            e.preventDefault();
+            e.stopPropagation(); 
+            window.location.href = 'cart.html';
+        } else {
+            // On desktop, safely ensure the cart sidebar opens
+            const cartOverlay = document.getElementById('cartOverlay');
+            const cartSidebar = document.getElementById('cartSidebar');
+            if(cartOverlay && cartSidebar) {
+                cartOverlay.classList.add('active');
+                cartSidebar.classList.add('active');
+            }
+        }
+    }, true); // We use 'true' to capture the event before cart.js can trigger
 }
 
 // Initialize Translations on Page Load
