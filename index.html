@@ -95,9 +95,10 @@
             flex-direction: column; 
             border: 1px solid #f0f0f0; 
             border-radius: var(--radius);
-            overflow: hidden; /* Ensures image respects the rounded corners */
-            box-shadow: 0 4px 15px rgba(0,0,0,0.03); /* Soft, elegant shadow */
+            overflow: hidden; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03); 
             cursor: pointer; 
+            -webkit-tap-highlight-color: transparent; /* Mobile tap fix */
         }
         
         .product-card:hover { 
@@ -107,11 +108,20 @@
         }
         
         .image-container { height: 360px; overflow: hidden; background: var(--soft-gray); position: relative; }
-        .product-image { width: 100%; height: 100%; object-fit: cover; transition: transform 0.8s ease; }
+        
+        /* Mobile Touch Trapping Fix */
+        .product-image { 
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover; 
+            transition: transform 0.8s ease; 
+            pointer-events: none; 
+        }
+        
         .product-card:hover .product-image { transform: scale(1.06); }
         
         .product-details-card { 
-            padding: 25px 20px; /* Added more breathing room */
+            padding: 25px 20px; 
             text-align: center; 
             flex-grow: 1; 
             display: flex; 
@@ -133,7 +143,7 @@
             font-size: 16px; 
             font-weight: 500; 
             margin-bottom: 10px; 
-            font-family: 'Playfair Display', serif; /* Gives the brand a luxury feel */
+            font-family: 'Playfair Display', serif; 
             color: var(--deep-black);
         }
         
@@ -144,7 +154,7 @@
             margin-bottom: 15px; 
         }
 
-        /* PREMIUM BUTTON OVERRIDE (Fixes the dull grey button) */
+        /* PREMIUM BUTTON OVERRIDE */
         .product-details-card button {
             background: transparent !important;
             color: var(--deep-black) !important;
@@ -169,10 +179,42 @@
             box-shadow: 0 5px 12px rgba(0,0,0,0.15) !important;
         }
 
-        /* --- Product Quick View Modal --- */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 3000; display: flex; justify-content: center; align-items: center; opacity: 0; visibility: hidden; transition: var(--transition); padding: 20px; backdrop-filter: blur(3px); }
+        /* --- Product Quick View Modal (MOBILE FIXED) --- */
+        .modal-overlay { 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            background: rgba(0,0,0,0.75); /* Removed backdrop filter */
+            z-index: 3000; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            opacity: 0; 
+            visibility: hidden; 
+            transition: var(--transition); 
+            padding: 20px; 
+        }
+        
         .modal-overlay.active { opacity: 1; visibility: visible; }
-        .modal-content { background: var(--white); width: 100%; max-width: 1000px; max-height: 95vh; overflow-y: auto; position: relative; display: flex; flex-direction: row; box-shadow: 0 20px 50px rgba(0,0,0,0.3); transform: translateY(20px); transition: transform 0.4s ease; border-radius: var(--radius); overflow: hidden; }
+        
+        .modal-content { 
+            background: var(--white); 
+            width: 100%; 
+            max-width: 1000px; 
+            max-height: 90vh; 
+            overflow-y: auto !important; /* Mobile scroll fix */
+            -webkit-overflow-scrolling: touch; 
+            position: relative; 
+            display: flex; 
+            flex-direction: row; 
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3); 
+            transform: translateY(20px); 
+            transition: transform 0.4s ease; 
+            border-radius: var(--radius); 
+        }
+        
         .modal-overlay.active .modal-content { transform: translateY(0); }
         .close-modal { position: absolute; top: 15px; right: 20px; font-size: 30px; cursor: pointer; color: var(--text-dark); z-index: 10; line-height: 1; transition: var(--transition); }
         .close-modal:hover { color: var(--primary-gold); transform: rotate(90deg); }
@@ -210,7 +252,7 @@
         .floating-wa svg { fill: white; width: 35px; height: 35px; }
 
         /* --- Cart Sidebar Modal --- */
-        .cart-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; opacity: 0; visibility: hidden; transition: var(--transition); backdrop-filter: blur(2px); }
+        .cart-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; opacity: 0; visibility: hidden; transition: var(--transition); }
         .cart-overlay.active { opacity: 1; visibility: visible; }
         .cart-sidebar { position: fixed; top: 0; right: -400px; width: 100%; max-width: 400px; height: 100vh; background: var(--white); z-index: 2001; transition: right 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); display: flex; flex-direction: column; box-shadow: -10px 0 30px rgba(0,0,0,0.1); }
         .cart-sidebar.active { right: 0; }
@@ -223,6 +265,7 @@
         .remove-item { color: #d9534f; cursor: pointer; font-size: 12px; border: none; background: none; margin-top: 5px; text-transform: uppercase; font-weight: 600;}
         .cart-footer { padding: 20px; border-top: 1px solid var(--border-color); background: var(--soft-gray); }
 
+        /* SPECIFIC MOBILE RESPONSIVE FIXES */
         @media (max-width: 900px) {
             .shop-layout { flex-direction: column; }
             .sidebar { width: 100%; display: none; background: var(--soft-gray); padding: 20px; position: static; margin-bottom: 20px; border-radius: var(--radius); }
@@ -232,7 +275,16 @@
             .nav-links.active { display: flex; }
             .nav-links a { margin: 15px 0; }
             .menu-toggle { display: block; }
-            .modal-content { flex-direction: column; border-radius: 0; height: 100vh; max-height: 100vh; }
+            
+            .modal-overlay { padding: 10px; }
+            .modal-content { 
+                flex-direction: column; 
+                max-height: 92vh; 
+                overflow-y: auto !important; 
+                border-radius: var(--radius); 
+            }
+            .modal-image-sec { padding: 15px; }
+            .main-image-wrapper { max-height: 320px; }
             .modal-info-sec { padding: 30px 20px; }
             #searchInput { width: 100%; margin-bottom: 10px; }
         }
