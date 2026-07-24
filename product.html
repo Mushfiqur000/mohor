@@ -87,7 +87,7 @@
         <div class="thumbnail-gallery" id="productThumbnails"></div>
 
         <div class="info-section">
-            <h1 id="productTitle">Loading product...</h1>
+            <h1 id="productTitle">Initializing...</h1>
             <div class="price-tag" id="productPrice"></div>
 
             <div class="selector-section" id="colorSection" style="display:none;">
@@ -113,7 +113,6 @@
         </div>
     </div>
 
-    <!-- Mobile Fixed Action Bar -->
     <div class="sticky-bottom-bar">
         <button type="button" class="add-cart-btn" id="addToCartBtn" data-i18n="addToCart">Add to Cart</button>
         <button type="button" class="buy-now-btn" id="buyNowBtn">Buy Now</button>
@@ -124,9 +123,10 @@
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
-    <script src="products.js"></script>
-    <script src="cart.js"></script>
-    <script src="app.js"></script>
+    <!-- Version 3 Tags to force cache refresh -->
+    <script src="products.js?v=3"></script>
+    <script src="cart.js?v=3"></script>
+    <script src="app.js?v=3"></script>
 
     <script>
         let currentProduct = null;
@@ -140,18 +140,16 @@
             return dataField[window.currentLang || 'en'] || dataField['en'] || "";
         }
 
-        async function loadProductDetails() {
+        function loadProductDetails() {
             try {
-                // 1. Get ID from URL
                 const params = new URLSearchParams(window.location.search);
                 const targetId = params.get('id');
                 
                 if (!targetId) {
-                    document.getElementById('productTitle').innerText = "No Product ID provided in URL.";
+                    document.getElementById('productTitle').innerText = "No ID in URL.";
                     return;
                 }
 
-                // 2. Force iPhone to search all possible data sources
                 let sourceList = [];
                 if (typeof window.productsData !== 'undefined' && Array.isArray(window.productsData)) {
                     sourceList = window.productsData;
@@ -159,25 +157,21 @@
                     sourceList = productsData;
                 }
 
-                // 3. Find the specific product
                 if (sourceList.length > 0) {
                     currentProduct = sourceList.find(p => String(p.id) === String(targetId));
                 }
 
-                // 4. Validate Product Exists
                 if (!currentProduct) {
-                    document.getElementById('productTitle').innerText = "Product Not Found in products.js";
+                    document.getElementById('productTitle').innerText = "Product Not Found";
                     document.getElementById('productTitle').style.color = "#d9534f";
-                    document.getElementById('productDesc').innerText = "Check if ID '" + targetId + "' exists in your products.js file.";
+                    document.getElementById('productDesc').innerText = "Could not find ID: " + targetId;
                     return;
                 }
 
-                // 5. Inject the UI Data Safely
                 document.getElementById('productTitle').innerText = getSafeText(currentProduct.title);
                 document.getElementById('productPrice').innerText = `৳ ${currentProduct.price}`;
                 document.getElementById('productDesc').innerText = getSafeText(currentProduct.description);
 
-                // Images
                 const mainImg = document.getElementById('productMainImage');
                 const thumbGallery = document.getElementById('productThumbnails');
                 
@@ -196,10 +190,8 @@
                     });
                 }
 
-                // Colors
                 const colorsContainer = document.getElementById('productColors');
                 const colorSection = document.getElementById('colorSection');
-                
                 let colorArray = [];
                 if (currentProduct.colors) {
                     colorArray = Array.isArray(currentProduct.colors) ? currentProduct.colors : (currentProduct.colors['en'] || []);
@@ -223,7 +215,6 @@
                     selectedColor = "Default";
                 }
 
-                // Sizes
                 const sizesContainer = document.getElementById('productSizes');
                 if (currentProduct.sizes && Array.isArray(currentProduct.sizes)) {
                     currentProduct.sizes.forEach(size => {
@@ -240,7 +231,6 @@
                     });
                 }
 
-                // Details
                 const detailsList = document.getElementById('productDetails');
                 let detailsArray = [];
                 if (currentProduct.details) {
@@ -256,16 +246,13 @@
                 }
 
             } catch (error) {
-                // ERROR LOGGER: This prints the exact reason why it failed to your screen
                 console.error(error);
                 document.getElementById('productTitle').innerText = "Script Crash!";
                 document.getElementById('productTitle').style.color = "red";
-                document.getElementById('productPrice').innerText = "";
                 document.getElementById('productDesc').innerText = "Error: " + error.message;
             }
         }
 
-        // Add to Cart handler
         function handleAddToCart() {
             let valid = true;
             if (!selectedSize) { document.getElementById('sizeWarning').style.display = 'inline'; valid = false; }
@@ -289,10 +276,12 @@
             if (handleAddToCart()) window.location.href = 'cart.html';
         });
 
-        // Ensure everything is fully downloaded before running
-        window.addEventListener('load', () => {
-            setTimeout(loadProductDetails, 200);
-        });
+        // FIX: Execute instantly, do not wait for Firebase or window.onload
+        try {
+            loadProductDetails();
+        } catch (e) {
+            document.getElementById('productTitle').innerText = "Critical Start Error";
+        }
     </script>
 </body>
 </html>
