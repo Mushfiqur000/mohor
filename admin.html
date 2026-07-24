@@ -251,13 +251,15 @@
                             <input type="text" id="prod-colors" placeholder="e.g. Peach Pink, Navy Blue" required>
                         </div>
                         <div class="form-group">
-                            <label>Sizes (Comma Separated)</label>
+                            <label>Sizes & Size-Specific Measurements</label>
                             <input type="text" id="prod-sizes" placeholder="e.g. 38 (M), 42 (L), 44-46 (XL)" required>
+                            <small style="color: #666; margin-top: 3px;">List available sizes separated by commas.</small>
                         </div>
                         
                         <div class="form-group full-width">
-                            <label>Size Measurements & Guide</label>
-                            <textarea id="prod-measurements" rows="3" placeholder="e.g. Body/Chest: 38&#10;Waist: 34-36&#10;Hip: 40-42..."></textarea>
+                            <label>Size Guide Details (Pop-up measurements per size selection)</label>
+                            <textarea id="prod-measurements" rows="5" placeholder="Format example:&#10;38 (M): Body/Chest: 38, Waist: 34-36, Hip: 40-42&#10;42 (L): Body/Chest: 42, Waist: 38-40, Hip: 44-46&#10;44-46 (XL): Body/Chest: 44-46, Waist: 42-44, Hip: 48-50"></textarea>
+                            <small style="color: #666; margin-top: 5px;">Write measurements corresponding to each size so they appear dynamically when a customer clicks a size button on your live storefront.</small>
                         </div>
 
                         <div class="form-group full-width">
@@ -329,14 +331,12 @@
 
         const adminEmail = "mushfiqurrahman2222@gmail.com"; 
 
-        // DOM Elements
         const loginSection = document.getElementById('login-section');
         const mainDashboard = document.getElementById('main-dashboard');
         const loginBtn = document.getElementById('login-btn');
         const logoutBtn = document.getElementById('logout-btn');
         const errorMsg = document.getElementById('login-error');
 
-        // --- AUTHENTICATION LOGIC ---
         onAuthStateChanged(auth, (user) => {
             if (user && user.email === adminEmail) {
                 loginSection.style.display = 'none';
@@ -356,7 +356,6 @@
             }
         });
 
-        // Login Button Click
         loginBtn.addEventListener('click', () => {
             const email = document.getElementById('login-email').value.trim();
             const pass = document.getElementById('login-password').value.trim();
@@ -375,12 +374,10 @@
                 });
         });
 
-        // Logout Button Click
         logoutBtn.addEventListener('click', () => {
             signOut(auth);
         });
 
-        // --- FIRESTORE DATABASE LOGIC ---
         function fetchOrders() {
             onSnapshot(collection(db, "orders"), (snapshot) => {
                 let totalSales = 0;
@@ -452,7 +449,6 @@
                 document.getElementById('stat-orders').innerText = totalOrders;
                 document.getElementById('stat-pending').innerText = pendingActions;
 
-                // Attach Event Listeners to Update buttons with visual feedback
                 document.querySelectorAll('.update-btn').forEach(btn => {
                     btn.addEventListener('click', (e) => {
                         const orderId = e.target.getAttribute('data-id');
@@ -463,7 +459,6 @@
             });
         }
 
-        // Update Order in Database with Visual Indicator Feedback
         async function updateOrderStatus(orderId, newStatus, buttonEl) {
             const originalText = buttonEl.innerText;
             const originalBg = buttonEl.style.backgroundColor;
@@ -473,7 +468,6 @@
                 const orderRef = doc(db, "orders", orderId);
                 await updateDoc(orderRef, { status: newStatus });
                 
-                // Success indicator feedback
                 buttonEl.innerText = "✓ Saved";
                 buttonEl.style.backgroundColor = "#27ae60";
 
@@ -551,7 +545,6 @@
             }
         });
 
-        // CSV Export Placeholder
         document.getElementById('export-csv-btn').addEventListener('click', () => {
             alert("This will generate a spreadsheet of your orders.");
         });
