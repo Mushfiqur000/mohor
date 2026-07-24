@@ -82,6 +82,9 @@
         .product-details-card h3 { font-size: 15px; font-weight: 600; margin-bottom: 8px; font-family: 'Montserrat', sans-serif; }
         .product-price { color: var(--primary-gold); font-weight: 600; font-size: 16px; margin-bottom: 15px; }
 
+        .quick-view-btn { background: var(--deep-black); color: var(--white); border: none; padding: 10px; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; width: 100%; transition: var(--transition); margin-top: 15px; font-weight: 600;}
+        .quick-view-btn:hover { background: var(--primary-gold); }
+
         /* --- Product Quick View Modal --- */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 3000; display: flex; justify-content: center; align-items: center; opacity: 0; visibility: hidden; transition: var(--transition); padding: 20px; }
         .modal-overlay.active { opacity: 1; visibility: visible; }
@@ -157,7 +160,9 @@
         <a href="index.html" class="brand-logo">Mohor</a>
         <div class="nav-right">
             <button type="button" id="langToggleBtn" class="lang-btn">EN / বাং</button>
-            <button type="button" class="cart-toggle-btn" id="openAccountBtn" style="background:none; border:none; cursor:pointer; font-weight:600; font-size:13px; text-transform: uppercase;">Account</button>
+            <button type="button" class="cart-toggle-btn" id="openAccountBtn" style="background:none; border:none; cursor:pointer; font-weight:600; font-size:13px; text-transform: uppercase;">
+                <span data-i18n="navAccount">Account</span>
+            </button>
             <button type="button" class="cart-toggle-btn" id="openCartBtn"><span data-i18n="navCart">Cart</span> <span class="cart-badge" id="cartBadge">0</span></button>
             <button type="button" class="menu-toggle" id="menuToggle">&#8942;</button>
         </div>
@@ -214,7 +219,7 @@
             </aside>
 
             <div class="product-grid" id="productGrid">
-                <!-- Products dynamically loaded -->
+                <!-- Products dynamically loaded from database -->
             </div>
         </div>
     </section>
@@ -256,7 +261,6 @@
                     <ul id="modalDetails"></ul>
                 </div>
 
-                <!-- FIX 1: TYPE="BUTTON" ADDED HERE TO PREVENT PAGE RELOAD -->
                 <button type="button" class="add-to-cart-btn" id="modalAddToCartBtn" data-i18n="addToCart">Add to Cart</button>
             </div>
         </div>
@@ -281,9 +285,9 @@
         <div class="cart-footer" data-nosnippet>
             
             <div class="checkout-form" style="margin-bottom: 15px; text-align: left;">
-                <input type="text" id="custName" placeholder="Full Name *" style="width: 100%; padding: 8px; margin-bottom: 8px; border: 1px solid var(--border-color); font-family: 'Montserrat', sans-serif; font-size: 12px; outline: none;">
-                <input type="tel" id="custPhone" placeholder="Mobile Number *" style="width: 100%; padding: 8px; margin-bottom: 8px; border: 1px solid var(--border-color); font-family: 'Montserrat', sans-serif; font-size: 12px; outline: none;">
-                <textarea id="deliveryAddress" rows="2" style="width: 100%; padding: 8px; border: 1px solid var(--border-color); font-family: 'Montserrat', sans-serif; font-size: 12px; outline: none; resize: none; margin-bottom: 8px;" placeholder="Complete Delivery Address *"></textarea>
+                <input type="text" id="custName" placeholder="Full Name *" data-i18n-placeholder="checkoutName" style="width: 100%; padding: 8px; margin-bottom: 8px; border: 1px solid var(--border-color); font-family: 'Montserrat', sans-serif; font-size: 12px; outline: none;">
+                <input type="tel" id="custPhone" placeholder="Mobile Number *" data-i18n-placeholder="checkoutPhone" style="width: 100%; padding: 8px; margin-bottom: 8px; border: 1px solid var(--border-color); font-family: 'Montserrat', sans-serif; font-size: 12px; outline: none;">
+                <textarea id="deliveryAddress" rows="2" data-i18n-placeholder="checkoutAddress" style="width: 100%; padding: 8px; border: 1px solid var(--border-color); font-family: 'Montserrat', sans-serif; font-size: 12px; outline: none; resize: none; margin-bottom: 8px;" placeholder="Complete Delivery Address *"></textarea>
                 
                 <select id="deliveryZone" style="width: 100%; padding: 8px; margin-bottom: 8px; border: 1px solid var(--border-color); font-family: 'Montserrat', sans-serif; font-size: 12px; outline: none; background: white; cursor: pointer;" onchange="window.updateDeliveryPolicyAndTotal()">
                     <option value="" disabled selected data-i18n="selectDeliveryZone">Select Delivery Zone *</option>
@@ -322,7 +326,7 @@
             <!-- DUAL CHECKOUT BUTTONS (Stacked & Clear) -->
             <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px;">
                 <!-- ADMIN CHECKOUT (Black Button) -->
-                <button type="button" id="adminOrderBtn" onclick="window.checkoutToAdmin()" style="width: 100%; background: var(--deep-black); color: var(--white); padding: 15px; border: none; font-family: 'Montserrat', sans-serif; font-size: 13px; font-weight: 600; text-transform: uppercase; cursor: pointer; transition: var(--transition);">
+                <button type="button" id="adminOrderBtn" onclick="window.checkoutToAdmin()" style="width: 100%; background: var(--deep-black); color: var(--white); padding: 15px; border: none; font-family: 'Montserrat', sans-serif; font-size: 13px; font-weight: 600; text-transform: uppercase; cursor: pointer; transition: var(--transition);" data-i18n="btnConfirmOrder">
                     Confirm Order (Website)
                 </button>
                 
@@ -331,7 +335,7 @@
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
                         <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
                     </svg>
-                    Order by WhatsApp
+                    <span data-i18n="btnWhatsApp">Order by WhatsApp</span>
                 </button>
             </div>
         </div>
@@ -341,50 +345,55 @@
     <div class="cart-overlay" id="accountOverlay"></div>
     <div class="cart-sidebar" id="accountSidebar" style="padding: 20px; overflow-y: auto;">
         <div class="cart-header" style="padding: 0 0 20px 0;">
-            <h3 id="accountModalTitle">Customer Account</h3>
+            <h3 id="accountModalTitle" data-i18n="accTitle">Customer Account</h3>
             <button type="button" class="close-cart" id="closeAccountBtn" style="border: none; background: none; font-size: 28px; cursor: pointer;">&times;</button>
         </div>
 
         <!-- VIEW 1: NOT LOGGED IN (Login / Signup Form) -->
         <div id="authView" style="margin-top: 20px;">
             <div id="loginFormContainer">
-                <h4 style="margin-bottom: 15px; font-size: 16px;">Login to Your Account</h4>
-                <input type="email" id="loginEmail" placeholder="Email Address" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid var(--border-color);">
-                <input type="password" id="loginPassword" placeholder="Password" style="width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid var(--border-color);">
-                <button type="button" onclick="window.handleLogin()" style="width: 100%; background: var(--deep-black); color: white; padding: 12px; border: none; font-weight: 600; cursor: pointer; margin-bottom: 10px;">LOG IN</button>
-                <p style="text-align: center; font-size: 12px; color: var(--text-light); cursor: pointer;" onclick="window.toggleAuthMode()">Don't have an account? <span style="color: var(--primary-gold); text-decoration: underline;">Sign up</span></p>
+                <h4 style="margin-bottom: 15px; font-size: 16px;" data-i18n="accLoginTitle">Login to Your Account</h4>
+                <input type="email" id="loginEmail" placeholder="Email Address" data-i18n-placeholder="accEmailPlaceholder" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid var(--border-color);">
+                <input type="password" id="loginPassword" placeholder="Password" data-i18n-placeholder="accPassPlaceholder" style="width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid var(--border-color);">
+                <button type="button" onclick="window.handleLogin()" style="width: 100%; background: var(--deep-black); color: white; padding: 12px; border: none; font-weight: 600; cursor: pointer; margin-bottom: 10px;" data-i18n="accLoginBtn">LOG IN</button>
+                <p style="text-align: center; font-size: 12px; color: var(--text-light); cursor: pointer;" onclick="window.toggleAuthMode()">
+                    <span data-i18n="accNoAccount">Don't have an account?</span> 
+                    <span style="color: var(--primary-gold); text-decoration: underline;" data-i18n="accSignUpLink">Sign up</span>
+                </p>
             </div>
 
             <div id="signupFormContainer" style="display: none;">
-                <h4 style="margin-bottom: 15px; font-size: 16px;">Create an Account</h4>
-                <input type="text" id="signupName" placeholder="Full Name" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid var(--border-color);">
-                <input type="email" id="signupEmail" placeholder="Email Address" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid var(--border-color);">
-                <input type="password" id="signupPassword" placeholder="Password (min 6 chars)" style="width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid var(--border-color);">
-                <button type="button" onclick="window.handleSignup()" style="width: 100%; background: var(--deep-black); color: white; padding: 12px; border: none; font-weight: 600; cursor: pointer; margin-bottom: 10px;">SIGN UP</button>
-                <p style="text-align: center; font-size: 12px; color: var(--text-light); cursor: pointer;" onclick="window.toggleAuthMode()">Already have an account? <span style="color: var(--primary-gold); text-decoration: underline;">Log in</span></p>
+                <h4 style="margin-bottom: 15px; font-size: 16px;" data-i18n="accSignupTitle">Create an Account</h4>
+                <input type="text" id="signupName" placeholder="Full Name" data-i18n-placeholder="accNamePlaceholder" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid var(--border-color);">
+                <input type="email" id="signupEmail" placeholder="Email Address" data-i18n-placeholder="accEmailPlaceholder" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid var(--border-color);">
+                <input type="password" id="signupPassword" placeholder="Password (min 6 chars)" data-i18n-placeholder="accPassMinPlaceholder" style="width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid var(--border-color);">
+                <button type="button" onclick="window.handleSignup()" style="width: 100%; background: var(--deep-black); color: white; padding: 12px; border: none; font-weight: 600; cursor: pointer; margin-bottom: 10px;" data-i18n="accSignupBtn">SIGN UP</button>
+                <p style="text-align: center; font-size: 12px; color: var(--text-light); cursor: pointer;" onclick="window.toggleAuthMode()">
+                    <span data-i18n="accHasAccount">Already have an account?</span> 
+                    <span style="color: var(--primary-gold); text-decoration: underline;" data-i18n="accLoginLink">Log in</span>
+                </p>
             </div>
         </div>
 
         <!-- VIEW 2: LOGGED IN (Profile, Address Book & Order History) -->
         <div id="profileView" style="display: none; margin-top: 10px;">
             <div style="background: var(--soft-gray); padding: 15px; border-radius: 4px; margin-bottom: 20px;">
-                <p style="font-size: 13px; color: var(--text-light);">Logged in as:</p>
+                <p style="font-size: 13px; color: var(--text-light);" data-i18n="accLoggedInAs">Logged in as:</p>
                 <strong id="userProfileEmail" style="font-size: 14px; display: block; margin-bottom: 10px;"></strong>
-                <button type="button" onclick="window.handleLogout()" style="background: #d9534f; color: white; border: none; padding: 6px 12px; font-size: 11px; font-weight: 600; cursor: pointer;">LOG OUT</button>
+                <button type="button" onclick="window.handleLogout()" style="background: #d9534f; color: white; border: none; padding: 6px 12px; font-size: 11px; font-weight: 600; cursor: pointer;" data-i18n="accLogoutBtn">LOG OUT</button>
             </div>
 
-            <h4 style="font-size: 14px; text-transform: uppercase; margin-bottom: 10px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px;">Saved Profile</h4>
+            <h4 style="font-size: 14px; text-transform: uppercase; margin-bottom: 10px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px;" data-i18n="accSavedProfile">Saved Profile</h4>
             <div style="margin-bottom: 20px;">
-                <!-- NEW: Profile Name Field -->
-                <input type="text" id="profileName" placeholder="Full Name" style="width: 100%; padding: 8px; margin-bottom: 8px; border: 1px solid var(--border-color); font-size: 12px;">
-                <input type="text" id="profilePhone" placeholder="Default Phone" style="width: 100%; padding: 8px; margin-bottom: 8px; border: 1px solid var(--border-color); font-size: 12px;">
-                <textarea id="profileAddress" placeholder="Default Delivery Address" rows="2" style="width: 100%; padding: 8px; margin-bottom: 8px; border: 1px solid var(--border-color); font-size: 12px; resize: none;"></textarea>
-                <button type="button" onclick="window.saveUserProfile()" style="background: var(--primary-gold); color: white; border: none; padding: 8px 15px; font-size: 12px; font-weight: 600; cursor: pointer;">Save Profile</button>
+                <input type="text" id="profileName" placeholder="Full Name" data-i18n-placeholder="accNamePlaceholder" style="width: 100%; padding: 8px; margin-bottom: 8px; border: 1px solid var(--border-color); font-size: 12px;">
+                <input type="text" id="profilePhone" placeholder="Default Phone" data-i18n-placeholder="accPhonePlaceholder" style="width: 100%; padding: 8px; margin-bottom: 8px; border: 1px solid var(--border-color); font-size: 12px;">
+                <textarea id="profileAddress" placeholder="Default Delivery Address" data-i18n-placeholder="accAddressPlaceholder" rows="2" style="width: 100%; padding: 8px; margin-bottom: 8px; border: 1px solid var(--border-color); font-size: 12px; resize: none;"></textarea>
+                <button type="button" onclick="window.saveUserProfile()" style="background: var(--primary-gold); color: white; border: none; padding: 8px 15px; font-size: 12px; font-weight: 600; cursor: pointer;" data-i18n="accSaveProfileBtn">Save Profile</button>
             </div>
 
-            <h4 style="font-size: 14px; text-transform: uppercase; margin-bottom: 10px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px;">My Order History</h4>
+            <h4 style="font-size: 14px; text-transform: uppercase; margin-bottom: 10px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px;" data-i18n="accOrderHistory">My Order History</h4>
             <div id="userOrderHistoryContainer" style="max-height: 250px; overflow-y: auto; font-size: 12px;">
-                <p style="color: var(--text-light);">Loading orders...</p>
+                <p style="color: var(--text-light);" data-i18n="accLoadingOrders">Loading orders...</p>
             </div>
         </div>
     </div>
@@ -393,7 +402,7 @@
         <p style="font-size: 12px; color: #777;" data-i18n="footerText">&copy; 2026 Mohor Clothings Bangladesh. All Rights Reserved.</p>
     </footer>
 
-    <!-- Firebase CDN SDKs (DEFER REMOVED) -->
+    <!-- Firebase CDN SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
@@ -412,54 +421,233 @@
         // Initialize Firestore
         window.db = firebase.firestore();
 
-        // --- NEW: AUTO-FILL CART & PROFILE WITH USER DATA ---
+        // --- FETCH PRODUCTS FROM FIRESTORE DATABASE DYNAMICALLY ---
+        async function loadStoreProductsFromDatabase() {
+            const productGrid = document.getElementById('productGrid');
+            if (!productGrid) return;
+
+            try {
+                const querySnapshot = await window.db.collection("products").get();
+                let dynamicProducts = [];
+
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    dynamicProducts.push({
+                        id: doc.id,
+                        title: data.title || "Dress",
+                        category: data.category || "three-piece",
+                        price: Number(data.price || 0),
+                        images: data.images || [],
+                        colors: data.colors || [],
+                        sizes: data.sizes || [],
+                        sizeMeasurements: data.sizeMeasurements || {}, 
+                        measurementsGuide: data.measurementsGuide || "", 
+                        description: data.description || "",
+                        details: data.details || []
+                    });
+                });
+
+                if (dynamicProducts.length > 0) {
+                    window.firestoreProducts = dynamicProducts;
+                    renderStorefrontGrid(window.firestoreProducts);
+                } else {
+                    productGrid.innerHTML = "<p style='text-align:center; color:#888; grid-column: 1/-1;'>No products available right now.</p>";
+                }
+            } catch (error) {
+                console.error("Error loading products from database:", error);
+            }
+        }
+
+        // --- RENDER GRID WITH PROPER IMAGE HANDLING ---
+        function renderStorefrontGrid(products) {
+            const grid = document.getElementById('productGrid');
+            grid.innerHTML = products.map(p => {
+                const mainImage = p.images && p.images.length > 0 ? p.images[0] : '';
+                return `
+                <div class="product-card" onclick="window.openQuickView('${p.id}')">
+                    <div class="image-container">
+                        <img src="${mainImage}" alt="${p.title}" class="product-image">
+                    </div>
+                    <div class="product-details-card">
+                        <div>
+                            <span class="product-category-label">Three Piece</span>
+                            <h3>${p.title}</h3>
+                            <div class="product-price">৳${p.price}</div>
+                        </div>
+                        <button class="quick-view-btn">Select Size & Add to Cart</button>
+                    </div>
+                </div>
+                `;
+            }).join('');
+        }
+
+        // --- DYNAMIC QUICK VIEW MODAL & SIZE POPUP LOGIC ---
+        window.openQuickView = function(productId) {
+            const product = window.firestoreProducts.find(p => p.id === productId);
+            if (!product) return;
+
+            // Fill text fields
+            document.getElementById('modalTitle').innerText = product.title;
+            document.getElementById('modalPrice').innerText = '৳' + product.price;
+            document.getElementById('modalDesc').innerText = product.description;
+            document.getElementById('modalDetails').innerHTML = product.details.map(d => `<li>${d}</li>`).join('');
+
+            // Fill images and thumbnails directly from the ImgBB Links array
+            const mainImg = document.getElementById('modalMainImage');
+            const thumbContainer = document.getElementById('modalThumbnails');
+            if (product.images && product.images.length > 0) {
+                mainImg.src = product.images[0];
+                thumbContainer.innerHTML = product.images.map((imgUrl, idx) => `
+                    <img src="${imgUrl}" class="thumbnail ${idx === 0 ? 'active' : ''}" onclick="window.changeModalImage('${imgUrl}', this)">
+                `).join('');
+            } else {
+                mainImg.src = '';
+                thumbContainer.innerHTML = '';
+            }
+
+            // Fill colors dynamically
+            const colorSec = document.getElementById('colorSection');
+            const colorContainer = document.getElementById('modalColors');
+            if (product.colors && product.colors.length > 0 && product.colors[0] !== "") {
+                colorSec.style.display = 'block';
+                colorContainer.innerHTML = product.colors.map((c, i) => `
+                    <button type="button" class="select-btn ${i === 0 ? 'selected' : ''}" onclick="window.selectColor(this)">${c}</button>
+                `).join('');
+            } else {
+                colorSec.style.display = 'none';
+            }
+
+            // Fill sizes & handle DYNAMIC SIZE GUIDE TEXT changes on click
+            const sizeContainer = document.getElementById('modalSizes');
+            const sizeGuideDisplay = document.getElementById('sizeGuideDisplay');
+            
+            if (product.sizes && product.sizes.length > 0 && product.sizes[0] !== "") {
+                sizeContainer.innerHTML = product.sizes.map((s, i) => {
+                    // Extract specific details for this size
+                    let specificDetails = "";
+                    if (product.sizeMeasurements && product.sizeMeasurements[s] && product.sizeMeasurements[s].length > 0) {
+                         specificDetails = product.sizeMeasurements[s].join('<br>');
+                    } else if (product.measurementsGuide) {
+                         specificDetails = product.measurementsGuide.replace(/\n/g, '<br>');
+                    }
+
+                    // Format string so it doesn't break HTML attributes (convert quotes)
+                    const safeDetails = specificDetails.replace(/'/g, "&apos;").replace(/"/g, "&quot;");
+                    
+                    return `<button type="button" class="select-btn ${i === 0 ? 'selected' : ''}" onclick="window.selectSize('${s}', '${safeDetails}', this)">${s}</button>`;
+                }).join('');
+                
+                // Set the default displayed size guide for whichever size is selected first
+                const firstSize = product.sizes[0];
+                if (product.sizeMeasurements && product.sizeMeasurements[firstSize] && product.sizeMeasurements[firstSize].length > 0) {
+                    sizeGuideDisplay.innerHTML = product.sizeMeasurements[firstSize].join('<br>');
+                } else {
+                    sizeGuideDisplay.innerHTML = product.measurementsGuide ? product.measurementsGuide.replace(/\n/g, '<br>') : '';
+                }
+            } else {
+                sizeContainer.innerHTML = '<span>Free Size</span>';
+                sizeGuideDisplay.innerHTML = '';
+            }
+
+            // Setup 'Add to Cart' click event
+            const addBtn = document.getElementById('modalAddToCartBtn');
+            addBtn.onclick = function() {
+                const selectedSizeEl = document.querySelector('#modalSizes .select-btn.selected');
+                const selectedColorEl = document.querySelector('#modalColors .select-btn.selected');
+                
+                const chosenSize = selectedSizeEl ? selectedSizeEl.innerText : 'Free Size';
+                const chosenColor = selectedColorEl ? selectedColorEl.innerText : 'Default Color';
+
+                if (typeof window.addToCart === 'function') {
+                    window.addToCart({
+                        id: product.id,
+                        title: product.title,
+                        price: product.price,
+                        image: product.images[0] || '',
+                        size: chosenSize,
+                        color: chosenColor,
+                        qty: 1
+                    });
+                    document.getElementById('productModal').classList.remove('active');
+                } else {
+                    alert("Cart functionality is loading. Make sure cart.js is connected.");
+                }
+            };
+
+            // Display the modal instantly
+            document.getElementById('productModal').classList.add('active');
+        };
+
+        // UI Modal Helpers
+        window.changeModalImage = function(url, el) {
+            document.getElementById('modalMainImage').src = url;
+            document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
+            el.classList.add('active');
+        };
+
+        window.selectColor = function(btn) {
+            document.querySelectorAll('#modalColors .select-btn').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+        };
+
+        window.selectSize = function(sizeName, detailsText, btn) {
+            document.querySelectorAll('#modalSizes .select-btn').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+
+            const guideDisplay = document.getElementById('sizeGuideDisplay');
+            if (detailsText) {
+                guideDisplay.innerHTML = detailsText;
+            } else {
+                guideDisplay.innerHTML = '';
+            }
+        };
+
+        // Modal Close Button Listeners
+        document.getElementById('closeModalBtn').addEventListener('click', () => {
+            document.getElementById('productModal').classList.remove('active');
+        });
+        document.getElementById('productModal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('productModal')) {
+                document.getElementById('productModal').classList.remove('active');
+            }
+        });
+
+        // Start initialization immediately
+        document.addEventListener("DOMContentLoaded", () => {
+            loadStoreProductsFromDatabase();
+        });
+
+        // --- AUTO-FILL CART & PROFILE WITH USER DATA ---
         firebase.auth().onAuthStateChanged((user) => {
             if (user) {
-                // Fetch user data from Firestore
                 window.db.collection("users").doc(user.uid).get().then((doc) => {
                     let userData = {};
                     if (doc.exists) {
                         userData = doc.data();
                     }
                         
-                    // 1. Auto-fill Cart Checkout Form
                     const custName = document.getElementById("custName");
                     const custPhone = document.getElementById("custPhone");
                     const deliveryAddress = document.getElementById("deliveryAddress");
                     
-                    // FIX: Check multiple possible database keys AND the Firebase Auth profile name
                     let savedName = userData.customerName || userData.name || userData.fullName || user.displayName || "";
                     
-                    if (custName && savedName) {
-                        custName.value = savedName;
-                    }
-                    if (custPhone && (userData.customerPhone || userData.phone)) {
-                        custPhone.value = userData.customerPhone || userData.phone;
-                    }
-                    if (deliveryAddress && (userData.deliveryAddress || userData.address)) {
-                        deliveryAddress.value = userData.deliveryAddress || userData.address;
-                    }
+                    if (custName && savedName) { custName.value = savedName; }
+                    if (custPhone && (userData.customerPhone || userData.phone)) { custPhone.value = userData.customerPhone || userData.phone; }
+                    if (deliveryAddress && (userData.deliveryAddress || userData.address)) { deliveryAddress.value = userData.deliveryAddress || userData.address; }
 
-                    // 2. Auto-fill Profile Address Book (in Account Modal)
                     const profileName = document.getElementById("profileName");
                     const profilePhone = document.getElementById("profilePhone");
                     const profileAddress = document.getElementById("profileAddress");
                     
-                    if (profileName && savedName) {
-                        profileName.value = savedName;
-                    }
-                    if (profilePhone && (userData.customerPhone || userData.phone)) {
-                        profilePhone.value = userData.customerPhone || userData.phone;
-                    }
-                    if (profileAddress && (userData.deliveryAddress || userData.address)) {
-                        profileAddress.value = userData.deliveryAddress || userData.address;
-                    }
+                    if (profileName && savedName) { profileName.value = savedName; }
+                    if (profilePhone && (userData.customerPhone || userData.phone)) { profilePhone.value = userData.customerPhone || userData.phone; }
+                    if (profileAddress && (userData.deliveryAddress || userData.address)) { profileAddress.value = userData.deliveryAddress || userData.address; }
                     
                 }).catch((error) => {
                     console.error("Error fetching user data:", error);
                 });
             } else {
-                // Clear fields if logged out so next guest starts fresh
                 if(document.getElementById("custName")) document.getElementById("custName").value = "";
                 if(document.getElementById("custPhone")) document.getElementById("custPhone").value = "";
                 if(document.getElementById("deliveryAddress")) document.getElementById("deliveryAddress").value = "";
