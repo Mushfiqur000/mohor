@@ -132,6 +132,12 @@
         }
         .confirm-btn:hover { background-color: #236b43; }
 
+        .delete-btn {
+            padding: 6px 12px; background-color: #c0392b; color: white;
+            border: none; border-radius: 4px; cursor: pointer; font-size: 12px;
+        }
+        .delete-btn:hover { background-color: #962d22; }
+
         /* Table Styles */
         table { width: 100%; border-collapse: collapse; margin-top: 10px; min-width: 800px; }
         th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; font-size: 14px; vertical-align: top;}
@@ -230,6 +236,29 @@
                 </table>
             </div>
 
+            <!-- MANAGE STORE PRODUCTS CATALOG -->
+            <div class="admin-card">
+                <div class="admin-card-header">
+                    <h2>Manage Live Store Products (Catalog View & Delete)</h2>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Image</th>
+                            <th>Title & Price</th>
+                            <th>Stock</th>
+                            <th>Sizes</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-products-table-body">
+                        <tr>
+                            <td colspan="5" style="text-align: center; color: #888;">Loading product catalog...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
             <!-- ADD NEW PRODUCT SECTION -->
             <div class="admin-card">
                 <div class="admin-card-header">
@@ -255,7 +284,7 @@
                         </div>
                         
                         <div class="form-group full-width">
-                            <label>Sizes & Size-Specific Measurements (Format: Size: Details)</label>
+                            <label>Sizes & Specific Measurements (Format: Size: Details)</label>
                             <textarea id="prod-sizes" rows="4" placeholder="38 (M): Body/Chest: 38&#10;Waist: 34-36&#10;42 (L): Body/Chest: 42&#10;Waist: 38-40" required></textarea>
                             <small style="color: #666; margin-top: 5px;">Enter each size and its specific measurements so it updates dynamically when clicked on the website.</small>
                         </div>
@@ -322,7 +351,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-        import { getFirestore, collection, onSnapshot, doc, updateDoc, addDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        import { getFirestore, collection, onSnapshot, doc, updateDoc, addDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyALxypXDkF9QexbD_wE7-ADALIdj5vd-rY",
@@ -353,6 +382,7 @@
                 mainDashboard.style.display = 'block';
                 document.getElementById('user-email').innerText = user.email;
                 fetchOrders(); 
+                fetchAdminProducts();
             } else if (user) {
                 signOut(auth).then(() => {
                     loginSection.style.display = 'flex';
@@ -462,7 +492,6 @@
                 document.getElementById('stat-orders').innerText = totalOrders;
                 document.getElementById('stat-pending').innerText = pendingActions;
 
-                // Attach Event Listeners to Update buttons with visual feedback
                 document.querySelectorAll('.update-btn').forEach(btn => {
                     btn.addEventListener('click', (e) => {
                         const orderId = e.target.getAttribute('data-id');
@@ -473,7 +502,6 @@
             });
         }
 
-        // Update Order in Database with Visual Indicator Feedback
         async function updateOrderStatus(orderId, newStatus, buttonEl) {
             const originalText = buttonEl.innerText;
             const originalBg = buttonEl.style.backgroundColor;
@@ -483,7 +511,6 @@
                 const orderRef = doc(db, "orders", orderId);
                 await updateDoc(orderRef, { status: newStatus });
                 
-                // Success indicator feedback
                 buttonEl.innerText = "✓ Saved";
                 buttonEl.style.backgroundColor = "#27ae60";
 
@@ -500,6 +527,42 @@
                     buttonEl.innerText = originalText;
                     buttonEl.style.backgroundColor = originalBg;
                 }, 2000);
+            }
+        }
+
+        // --- FETCH & DELETE LIVE PRODUCTS IN ADMIN ---
+        function fetchAdminProducts() {
+            onSnapshot(collection(db, "products"), (snapshot) => {
+                let rows = '';
+                snapshot.forEach((docSnap) => {
+                    const prod = docSnap.data();
+                    const img = prod.images && prod.images.length > 0 ? prod.images[0] : '';
+                    const sizesStr = Array.isArray(prod.sizes) ? prod.sizes.join(', ') : '';
+
+                    rows += `
+                        <tr>
+                            <td><img src="${img}" alt="" style="width: 45px; height: 55px; object-fit: cover; border-radius: 4px;"></td>
+                            <td><strong>${prod.title}</strong><br><span style="color:#C9A14A; font-weight:600;">৳${prod.price}</span></td>
+                            <td>${prod.quantity || 0}</td>
+                            <td style="font-size: 12px; color: #666;">${sizesStr}</td>
+                            <td><button class="delete-btn" onclick="window.deleteProduct('${docSnap.id}')">Delete</button></td>
+                        </tr>
+                    `;
+                });
+                if(rows === '') rows = `<tr><td colspan="5" style="text-align:center;">No products uploaded yet.</td></tr>`;
+                document.getElementById('admin-products-table-body').innerHTML = rows;
+            });
+        }
+
+        window.deleteProduct = async function(productId) {
+            if(confirm("Are you sure you want to delete this product from your store?")) {
+                try {
+                    await deleteDoc(doc(db, "products", productId));
+                    alert("Product deleted successfully!");
+                } catch(err) {
+                    console.error("Delete error:", err);
+                    alert("Failed to delete product.");
+                }
             }
         }
 
@@ -520,7 +583,6 @@
                 const quantity = Number(document.getElementById('prod-qty').value);
                 const colors = document.getElementById('prod-colors').value.split(',').map(c => c.trim());
                 
-                // Parse sizes and specific measurements map structured input
                 const rawSizesInput = document.getElementById('prod-sizes').value.trim();
                 let sizesArray = [];
                 let sizeMeasurementsMap = {};
@@ -549,7 +611,6 @@
                 const details = document.getElementById('prod-details').value.split('\n').filter(d => d.trim() !== '');
                 const seoKeywords = document.getElementById('prod-seo').value.split(',').map(k => k.trim()).filter(k => k !== '');
 
-                // Read ImgBB image URLs from textarea (one link per line)
                 const imageUrls = document.getElementById('prod-images').value.split('\n').map(url => url.trim()).filter(url => url !== '');
 
                 await addDoc(collection(db, "products"), {
