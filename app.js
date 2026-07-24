@@ -3,22 +3,79 @@ window.currentLang = 'en';
 
 window.uiTranslations = {
     en: {
-        navShop: "Shop", navAbout: "About Us", navPolicy: "Policy", navCart: "Cart", shopTitle: "Our Collection", filterBtn: "Filters",
-        sortDefault: "Sort by: Default", sortLowHigh: "Price: Low to High", sortHighLow: "Price: High to Low",
-        catTitle: "Categories", catKurti: "Kurti", catThreePiece: "Three Piece", catKhadi: "Khadi", catFormal: "Formal Wear",
-        priceTitle: "Price", price1: "Under ৳1500", price2: "৳1500 - ৳2500", price3: "Above ৳2500",
-        noProducts: "No products match your filters.", sizeSelect: "Select Size", sizeWarning: "*Please select a size",
-        colorSelect: "Select Color", colorWarning: "*Please select a color", descTitle: "Description",
-        detailsTitle: "Product Details", addToCart: "Add to Cart", cartTitle: "Your Cart", cartEmpty: "Your cart is empty.",
-        cartSubtotal: "Subtotal:", cartDelivery: "Delivery Charge:", cartTotal: "Final Total:",
-        orderWhatsapp: "Confirm Order", footerText: "© 2026 Mohor Clothings Bangladesh. All Rights Reserved.",
-        selectOptions: "Select Size & Add to Cart", searchPlaceholder: "Search dresses, formal, khadi...",
+        navShop: "Shop", 
+        navAbout: "About Us", 
+        navPolicy: "Policy", 
+        navAccount: "Account",
+        navCart: "Cart", 
+        shopTitle: "Our Collection", 
+        filterBtn: "Filters",
+        sortDefault: "Sort by: Default", 
+        sortLowHigh: "Price: Low to High", 
+        sortHighLow: "Price: High to Low",
+        catTitle: "Categories", 
+        catKurti: "Kurti", 
+        catThreePiece: "Three Piece", 
+        catKhadi: "Khadi", 
+        catFormal: "Formal Wear",
+        priceTitle: "Price", 
+        price1: "Under ৳1500", 
+        price2: "৳1500 - ৳2500", 
+        price3: "Above ৳2500",
+        noProducts: "No products match your filters.", 
+        sizeSelect: "Select Size", 
+        sizeWarning: "*Please select a size",
+        colorSelect: "Select Color", 
+        colorWarning: "*Please select a color", 
+        descTitle: "Description",
+        detailsTitle: "Product Details", 
+        addToCart: "Add to Cart", 
+        cartTitle: "Your Cart", 
+        cartEmpty: "Your cart is empty.",
+        cartSubtotal: "Subtotal:", 
+        cartDelivery: "Delivery Charge:", 
+        cartTotal: "Final Total:",
+        btnConfirmOrder: "Confirm Order (Website)",
+        btnWhatsApp: "Order by WhatsApp",
+        footerText: "© 2026 Mohor Clothings Bangladesh. All Rights Reserved.",
+        selectOptions: "Select Size & Add to Cart", 
+        searchPlaceholder: "Search dresses, formal, khadi...",
+        checkoutName: "Full Name *",
+        checkoutPhone: "Mobile Number *",
+        checkoutAddress: "Complete Delivery Address *",
+        deliveryAddressLabel: "Delivery Address *", 
+        policyAgreeText: "I agree to the", 
+        policyLink: "Delivery & Return Policy",
+        selectDeliveryZone: "Select Delivery Zone *", 
+        zoneInside: "Inside Sylhet (৳80)", 
+        zoneOutside: "Outside Sylhet (৳150)",
         aboutTitle: "About Mohor Clothings",
         aboutText: "Welcome to Mohor Clothings, your premier destination for handcrafted luxury fashion in Bangladesh. From our breathable, premium soft cotton Three-Piece ensembles to our elegantly tailored Kurtis and authentic Khadi wear, every piece is designed with the modern woman in mind. Whether you are stepping into a university classroom, leading a corporate meeting, or celebrating a festive occasion, our collections offer the perfect fit. Proudly serving Sylhet and customers nationwide, we are dedicated to bringing you high-quality embroidery and timeless designs that empower your everyday wardrobe.",
-        deliveryAddressLabel: "Delivery Address *", policyAgreeText: "I agree to the", policyLink: "Delivery & Return Policy",
-        selectDeliveryZone: "Select Delivery Zone *", zoneInside: "Inside Sylhet (৳80)", zoneOutside: "Outside Sylhet (৳150)",
         
-        // NEW POLICY PAGE TRANSLATIONS
+        // ACCOUNT & PROFILE TRANSLATIONS
+        accTitle: "Customer Account",
+        accLoginTitle: "Login to Your Account",
+        accEmailPlaceholder: "Email Address",
+        accPassPlaceholder: "Password",
+        accLoginBtn: "LOG IN",
+        accNoAccount: "Don't have an account?",
+        accSignUpLink: "Sign up",
+        accSignupTitle: "Create an Account",
+        accNamePlaceholder: "Full Name",
+        accPassMinPlaceholder: "Password (min 6 chars)",
+        accSignupBtn: "SIGN UP",
+        accHasAccount: "Already have an account?",
+        accLoginLink: "Log in",
+        accLoggedInAs: "Logged in as:",
+        accLogoutBtn: "LOG OUT",
+        accSavedProfile: "Saved Profile",
+        accPhonePlaceholder: "Default Phone",
+        accAddressPlaceholder: "Default Delivery Address",
+        accSaveProfileBtn: "Save Profile",
+        accOrderHistory: "My Order History",
+        accLoadingOrders: "Loading orders...",
+
+        // POLICY PAGE TRANSLATIONS
         policyPageTitle: "Delivery & Return Policy",
         policy1Title: "1. Delivery Information",
         policy1Text: "<ul style='margin-left: 15px; margin-top: 5px;'><li>Estimated delivery time: 1–2 business days.</li><li>Delivery time may vary due to weather or courier delays.</li><li>Our delivery partner will contact you before delivery.</li></ul>",
@@ -30,22 +87,79 @@ window.uiTranslations = {
         policy4Text: "While we strive to ensure our images accurately represent the product, actual colors may slightly vary due to lighting during photography or your device's display settings. Exchanges will not be accommodated purely for slight color variations."
     },
     bn: {
-        navShop: "শপ", navAbout: "আমাদের সম্পর্কে", navPolicy: "পলিসি", navCart: "কার্ট", shopTitle: "আমাদের কালেকশন", filterBtn: "ফিল্টার",
-        sortDefault: "সর্ট: ডিফল্ট", sortLowHigh: "দাম: কম থেকে বেশি", sortHighLow: "দাম: বেশি থেকে কম",
-        catTitle: "ক্যাটাগরি", catKurti: "কুর্তি", catThreePiece: "থ্রি-পিস", catKhadi: "খাদি", catFormal: "ফরমাল ওয়্যার",
-        priceTitle: "দাম", price1: "৳১৫০০ এর নিচে", price2: "৳১৫০০ - ৳২৫০০", price3: "৳২৫০০ এর উপরে",
-        noProducts: "আপনার ফিল্টারের সাথে মিলে এমন কোনো পণ্য নেই।", sizeSelect: "সাইজ নির্বাচন করুন", sizeWarning: "*দয়া করে একটি সাইজ নির্বাচন করুন",
-        colorSelect: "রং নির্বাচন করুন", colorWarning: "*দয়া করে একটি রং নির্বাচন করুন", descTitle: "বিবরণ",
-        detailsTitle: "পণ্যের বিস্তারিত", addToCart: "কার্টে যোগ করুন", cartTitle: "আপনার কার্ট", cartEmpty: "আপনার কার্ট খালি।",
-        cartSubtotal: "সাবটোটাল:", cartDelivery: "ডেলিভারি চার্জ:", cartTotal: "মোট মূল্য:",
-        orderWhatsapp: "কনফার্ম অর্ডার", footerText: "© ২০২৬ মোহর ক্লথিংস বাংলাদেশ। সর্বস্বত্ব সংরক্ষিত।",
-        selectOptions: "সাইজ নির্বাচন করুন", searchPlaceholder: "ড্রেস, ফরমাল, খাদি খুঁজুন...",
+        navShop: "শপ", 
+        navAbout: "আমাদের সম্পর্কে", 
+        navPolicy: "পলিসি", 
+        navAccount: "অ্যাকাউন্ট",
+        navCart: "কার্ট", 
+        shopTitle: "আমাদের কালেকশন", 
+        filterBtn: "ফিল্টার",
+        sortDefault: "সর্ট: ডিফল্ট", 
+        sortLowHigh: "দাম: কম থেকে বেশি", 
+        sortHighLow: "দাম: বেশি থেকে কম",
+        catTitle: "ক্যাটাগরি", 
+        catKurti: "কুর্তি", 
+        catThreePiece: "থ্রি-পিস", 
+        catKhadi: "খাদি", 
+        catFormal: "ফরমাল ওয়্যার",
+        priceTitle: "দাম", 
+        price1: "৳১৫০০ এর নিচে", 
+        price2: "৳১৫০০ - ৳২৫০০", 
+        price3: "৳২৫০০ এর উপরে",
+        noProducts: "আপনার ফিল্টারের সাথে মিলে এমন কোনো পণ্য নেই।", 
+        sizeSelect: "সাইজ নির্বাচন করুন", 
+        sizeWarning: "*দয়া করে একটি সাইজ নির্বাচন করুন",
+        colorSelect: "রং নির্বাচন করুন", 
+        colorWarning: "*দয়া করে একটি রং নির্বাচন করুন", 
+        descTitle: "বিবরণ",
+        detailsTitle: "পণ্যের বিস্তারিত", 
+        addToCart: "কার্টে যোগ করুন", 
+        cartTitle: "আপনার কার্ট", 
+        cartEmpty: "আপনার কার্ট খালি।",
+        cartSubtotal: "সাবটোটাল:", 
+        cartDelivery: "ডেলিভারি চার্জ:", 
+        cartTotal: "মোট মূল্য:",
+        btnConfirmOrder: "অর্ডার কনফার্ম করুন (ওয়েবসাইট)",
+        btnWhatsApp: "হোয়াটসঅ্যাপে অর্ডার করুন",
+        footerText: "© ২০২৬ মোহর ক্লথিংস বাংলাদেশ। সর্বস্বত্ব সংরক্ষিত।",
+        selectOptions: "সাইজ নির্বাচন করুন", 
+        searchPlaceholder: "ড্রেস, ফরমাল, খাদি খুঁজুন...",
+        checkoutName: "সম্পূর্ণ নাম *",
+        checkoutPhone: "মোবাইল নম্বর *",
+        checkoutAddress: "সম্পূর্ণ ডেলিভারি ঠিকানা *",
+        deliveryAddressLabel: "ডেলিভারি ঠিকানা *", 
+        policyAgreeText: "আমি সম্মত হচ্ছি", 
+        policyLink: "ডেলিভারি ও রিটার্ন পলিসিতে",
+        selectDeliveryZone: "ডেলিভারি জোন নির্বাচন করুন *", 
+        zoneInside: "সিলেটের ভেতরে (৳৮০)", 
+        zoneOutside: "সিলেটের বাইরে (৳১৫০)",
         aboutTitle: "মোহর ক্লথিংস সম্পর্কে",
         aboutText: "মোহর ক্লথিংস-এ আপনাকে স্বাগতম, বাংলাদেশে হাতে তৈরি লাক্সারি ফ্যাশনের অন্যতম বিশ্বস্ত নাম। আমাদের আরামদায়ক প্রিমিয়াম সফট কটন থ্রি-পিস থেকে শুরু করে আকর্ষণীয় কুর্তি এবং ঐতিহ্যবাহী খাদি পোশাক—প্রতিটি ডিজাইন তৈরি করা হয়েছে আধুনিক নারীদের কথা মাথায় রেখে। আপনি ইউনিভার্সিটির ক্লাসে যান, কর্পোরেট মিটিং পরিচালনা করুন বা কোনো উৎসব উদযাপন করুন, আমাদের কালেকশনে আপনার জন্য মানানসই পোশাক রয়েছে। সিলেট থেকে শুরু করে সারা দেশের গ্রাহকদের জন্য উচ্চমানের এমব্রয়ডারি এবং মানসম্মত ডিজাইনের পোশাক পৌঁছে দিতে আমরা প্রতিশ্রুতিবদ্ধ।",
-        deliveryAddressLabel: "ডেলিভারি ঠিকানা *", policyAgreeText: "আমি সম্মত হচ্ছি", policyLink: "ডেলিভারি ও রিটার্ন পলিসিতে",
-        selectDeliveryZone: "ডেলিভারি জোন নির্বাচন করুন *", zoneInside: "সিলেটের ভেতরে (৳৮০)", zoneOutside: "সিলেটের বাইরে (৳১৫০)",
         
-        // NEW POLICY PAGE TRANSLATIONS
+        // ACCOUNT & PROFILE TRANSLATIONS
+        accTitle: "গ্রাহক অ্যাকাউন্ট",
+        accLoginTitle: "আপনার অ্যাকাউন্টে লগইন করুন",
+        accEmailPlaceholder: "ইমেইল ঠিকানা",
+        accPassPlaceholder: "পাসওয়ার্ড",
+        accLoginBtn: "লগইন করুন",
+        accNoAccount: "অ্যাকাউন্ট নেই?",
+        accSignUpLink: "সাইন আপ করুন",
+        accSignupTitle: "নতুন অ্যাকাউন্ট তৈরি করুন",
+        accNamePlaceholder: "সম্পূর্ণ নাম",
+        accPassMinPlaceholder: "পাসওয়ার্ড (সর্বনিম্ন ৬ অক্ষর)",
+        accSignupBtn: "সাইন আপ করুন",
+        accHasAccount: "ইতিমধ্যে একটি অ্যাকাউন্ট আছে?",
+        accLoginLink: "লগইন করুন",
+        accLoggedInAs: "লগইন করা আছে:",
+        accLogoutBtn: "লগ আউট",
+        accSavedProfile: "সংরক্ষিত প্রোফাইল",
+        accPhonePlaceholder: "ডিফল্ট ফোন নম্বর",
+        accAddressPlaceholder: "ডিফল্ট ডেলিভারি ঠিকানা",
+        accSaveProfileBtn: "প্রোফাইল সেভ করুন",
+        accOrderHistory: "আমার অর্ডার হিস্ট্রি",
+        accLoadingOrders: "অর্ডার লোড হচ্ছে...",
+
+        // POLICY PAGE TRANSLATIONS
         policyPageTitle: "ডেলিভারি ও রিটার্ন পলিসি",
         policy1Title: "১. ডেলিভারি তথ্য",
         policy1Text: "<ul style='margin-left: 15px; margin-top: 5px;'><li>আনুমানিক ডেলিভারি সময়: ১-২ কর্মদিবস।</li><li>আবহাওয়া বা কুরিয়ার বিলম্বের কারণে সময় পরিবর্তিত হতে পারে।</li><li>ডেলিভারির আগে আমাদের পার্টনার যোগাযোগ করবে।</li></ul>",
@@ -54,7 +168,7 @@ window.uiTranslations = {
         policy3Title: "৩. রিটার্ন ও এক্সচেঞ্জ পলিসি",
         policy3Text: "আমরা আমাদের হাতে তৈরি পোশাকের মানের বিষয়ে গর্ববোধ করি। তবে, যদি আপনি কোনো ত্রুটিপূর্ণ বা ভুল পণ্য পান, অনুগ্রহ করে ডেলিভারি পাওয়ার ২৪ ঘণ্টার মধ্যে আমাদের জানান। পণ্যটি অবশ্যই অব্যবহৃত, ধোয়া হয়নি এমন, এবং অরিজিনাল প্যাকেজিং ও ট্যাগযুক্ত থাকতে হবে। কোনো ক্ষতি বা ত্রুটি দাবি করার জন্য অনুগ্রহ করে একটি আনবক্সিং ভিডিও রেকর্ড করুন।",
         policy4Title: "৪. রঙের ডিসক্লেইমার",
-        policy4Text: "যদিও আমরা নিশ্চিত করার চেষ্টা করি যে আমাদের ছবিগুলো পণ্যের সঠিক রং উপস্থাপন করে, ফটোগ্রাফির সময় আলোর কারণে বা আপনার ডিভাইসের ডিসপ্লে সেটিংসের কারণে আসল রং সামান্য ভিন্ন হতে পারে। শুধুমাত্র সামান্য রঙের পার্থক্যের কারণে কোনো এক্সচেঞ্জ গ্রহণ করা হবেচ্ছ না।"
+        policy4Text: "যদিও আমরা নিশ্চিত করার চেষ্টা করি যে আমাদের ছবিগুলো পণ্যের সঠিক রং উপস্থাপন করে, ফটোগ্রাফির সময় আলোর কারণে বা আপনার ডিভাইসের ডিসপ্লে সেটিংসের কারণে আসল রং সামান্য ভিন্ন হতে পারে। শুধুমাত্র সামান্য রঙের পার্থক্যের কারণে কোনো এক্সচেঞ্জ গ্রহণ করা হবে না।"
     }
 };
 
@@ -65,9 +179,10 @@ function getText(dataField) {
 }
 
 function updateUIText() {
+    // Translate plain text elements
     document.querySelectorAll('[data-i18n]').forEach(el => {
         const key = el.getAttribute('data-i18n');
-        if (window.uiTranslations[window.currentLang][key]) {
+        if (window.uiTranslations[window.currentLang] && window.uiTranslations[window.currentLang][key]) {
             if (el.tagName === 'OPTION') {
                 el.innerText = window.uiTranslations[window.currentLang][key];
             } else {
@@ -76,20 +191,20 @@ function updateUIText() {
         }
     });
 
-    // Update search bar placeholder language
+    // Translate input placeholders
     document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
         const key = el.getAttribute('data-i18n-placeholder');
-        if (window.uiTranslations[window.currentLang][key]) {
+        if (window.uiTranslations[window.currentLang] && window.uiTranslations[window.currentLang][key]) {
             el.placeholder = window.uiTranslations[window.currentLang][key];
         }
     });
     
-    // Only try to update products if the grid actually exists on the page
+    // Refresh product grid if exists
     if (document.getElementById('productGrid')) { 
         updateProducts(); 
     }
     
-    // Call UI updates from cart.js safely
+    // Call external UI update functions safely
     if (typeof window.updateCartUI === "function") window.updateCartUI();
     if (typeof window.updateDeliveryPolicyAndTotal === "function") window.updateDeliveryPolicyAndTotal();
 }
@@ -117,21 +232,29 @@ function renderProducts(productsToRender) {
     productsToRender.forEach(product => {
         const card = document.createElement('div');
         card.className = 'product-card';
-        card.onclick = () => openProductModal(product);
+        card.onclick = () => {
+            if (typeof window.openQuickView === "function") {
+                window.openQuickView(product.id);
+            } else {
+                openProductModal(product);
+            }
+        };
         
         const coverImage = product.images && product.images.length > 0 ? product.images[0] : '';
         const displayTitle = getText(product.title);
-        const displayCategory = product.category.replace('-', ' ');
+        const displayCategory = (product.category || "").replace('-', ' ');
 
         card.innerHTML = `
             <div class="image-container">
                 <img src="${coverImage}" alt="${displayTitle}" class="product-image" onerror="this.src='https://via.placeholder.com/300x400/f9f9f9/666?text=Mohor'">
             </div>
             <div class="product-details-card">
-                <span class="product-category-label">${displayCategory}</span>
-                <h3>${displayTitle}</h3>
-                <p class="product-price">৳ ${product.price}</p>
-                <button class="add-to-cart-btn" style="padding: 10px; margin-top: 10px; font-size: 11px; width: 100%; border-radius: 4px;">${window.uiTranslations[window.currentLang].selectOptions}</button>
+                <div>
+                    <span class="product-category-label">${displayCategory}</span>
+                    <h3>${displayTitle}</h3>
+                    <div class="product-price">৳ ${product.price}</div>
+                </div>
+                <button class="quick-view-btn">${window.uiTranslations[window.currentLang].selectOptions}</button>
             </div>
         `;
         productGrid.appendChild(card);
@@ -139,7 +262,13 @@ function renderProducts(productsToRender) {
 }
 
 function updateProducts() {
-    if (typeof productsData === 'undefined') return;
+    // Prefer Firestore database products if loaded, fallback to static products.js
+    let sourceData = (typeof window.firestoreProducts !== 'undefined' && window.firestoreProducts.length > 0) 
+        ? window.firestoreProducts 
+        : (typeof productsData !== 'undefined' ? productsData : []);
+
+    if (sourceData.length === 0) return;
+
     const sortSelect = document.getElementById('sortSelect');
     const searchInput = document.getElementById('searchInput'); 
     if (!sortSelect) return; 
@@ -149,7 +278,7 @@ function updateProducts() {
     const sortValue = sortSelect.value;
     const searchTerm = searchInput ? searchInput.value.toLowerCase().trim() : ''; 
 
-    let filtered = productsData.filter(product => {
+    let filtered = sourceData.filter(product => {
         let catMatch = activeCategories.length === 0 || activeCategories.includes(product.category);
         let priceMatch = activePrices.length === 0;
         
@@ -162,7 +291,7 @@ function updateProducts() {
         // --- SMART BROAD SEARCH LOGIC ---
         let searchMatch = true;
         if (searchTerm !== '') {
-            let productText = `${getText(product.title)} ${product.category} ${getText(product.description) || ''}`.toLowerCase();
+            let productText = `${getText(product.title)} ${product.category || ''} ${getText(product.description) || ''}`.toLowerCase();
             
             if (productText.includes('formal')) productText += ' dress outfit wear office professional corporate';
             if (productText.includes('kurti')) productText += ' dress outfit single shirt top casual';
@@ -182,7 +311,7 @@ function updateProducts() {
     renderProducts(filtered);
 }
 
-// Attach event listeners only if elements exist
+// Attach event listeners for filters & search
 const checkboxes = document.querySelectorAll('.filter-checkbox');
 checkboxes.forEach(cb => cb.addEventListener('change', updateProducts));
 
@@ -197,7 +326,7 @@ if (searchInput) {
 }
 
 
-// --- MODAL LOGIC ---
+// --- MODAL LOGIC (FALLBACK) ---
 let currentViewingProduct = null;
 let selectedSize = null;
 let selectedColor = null;
@@ -209,12 +338,10 @@ function openProductModal(product) {
     currentViewingProduct = product;
     selectedSize = null;
     selectedColor = null;
-    document.getElementById('sizeWarning').style.display = 'none';
-    document.getElementById('colorWarning').style.display = 'none';
     
-    if(document.getElementById('sizeGuideDisplay')) {
-        document.getElementById('sizeGuideDisplay').innerHTML = ""; 
-    }
+    if (document.getElementById('sizeWarning')) document.getElementById('sizeWarning').style.display = 'none';
+    if (document.getElementById('colorWarning')) document.getElementById('colorWarning').style.display = 'none';
+    if (document.getElementById('sizeGuideDisplay')) document.getElementById('sizeGuideDisplay').innerHTML = ""; 
 
     document.getElementById('modalTitle').innerText = getText(product.title);
     document.getElementById('modalPrice').innerText = `৳ ${product.price}`;
@@ -289,11 +416,11 @@ function openProductModal(product) {
 function selectOption(clickedBtn, value, type) {
     if (type === 'size') {
         selectedSize = value;
-        document.getElementById('sizeWarning').style.display = 'none';
+        if(document.getElementById('sizeWarning')) document.getElementById('sizeWarning').style.display = 'none';
         document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('selected'));
         
         const sizeGuideDisplay = document.getElementById('sizeGuideDisplay');
-        if (sizeGuideDisplay) {
+        if (sizeGuideDisplay && currentViewingProduct) {
             if (currentViewingProduct.sizeMeasurements && currentViewingProduct.sizeMeasurements[value]) {
                 sizeGuideDisplay.innerHTML = currentViewingProduct.sizeMeasurements[value][window.currentLang] || currentViewingProduct.sizeMeasurements[value]['en'];
             } else {
@@ -302,7 +429,7 @@ function selectOption(clickedBtn, value, type) {
         }
     } else if (type === 'color') {
         selectedColor = value;
-        document.getElementById('colorWarning').style.display = 'none';
+        if(document.getElementById('colorWarning')) document.getElementById('colorWarning').style.display = 'none';
         document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('selected'));
     }
     clickedBtn.classList.add('selected');
@@ -320,19 +447,17 @@ if (productModal) {
 
 const modalAddToCartBtn = document.getElementById('modalAddToCartBtn');
 if (modalAddToCartBtn) {
-    // FIX: ADDED 'e' AND 'e.preventDefault()' HERE
     modalAddToCartBtn.addEventListener('click', (e) => {
         e.preventDefault(); 
         
         let valid = true;
-        if (!selectedSize) { document.getElementById('sizeWarning').style.display = 'inline'; valid = false; }
-        if (!selectedColor) { document.getElementById('colorWarning').style.display = 'inline'; valid = false; }
+        if (!selectedSize) { if(document.getElementById('sizeWarning')) document.getElementById('sizeWarning').style.display = 'inline'; valid = false; }
+        if (!selectedColor) { if(document.getElementById('colorWarning')) document.getElementById('colorWarning').style.display = 'inline'; valid = false; }
         if (!valid) return;
 
         let displayName = typeof currentViewingProduct.title === 'string' ? currentViewingProduct.title : currentViewingProduct.title.en;
         if(selectedColor !== "Default") displayName += ` (${selectedColor})`;
 
-        // Calls the cart.js function
         if(typeof window.addToCart === "function") {
             window.addToCart(displayName, currentViewingProduct.price, selectedSize);
         }
@@ -340,7 +465,7 @@ if (modalAddToCartBtn) {
     });
 }
 
-// Mobile Menu
+// Mobile Menu Navigation
 const menuToggle = document.getElementById('menuToggle');
 if (menuToggle) {
     menuToggle.addEventListener('click', () => { 
@@ -358,5 +483,5 @@ if(mobileFilterBtn) {
     });
 }
 
-// Initialize on Load
+// Initialize Translations on Page Load
 setTimeout(() => { updateUIText(); }, 100);
