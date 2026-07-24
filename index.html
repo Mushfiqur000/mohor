@@ -373,11 +373,13 @@
                 <button type="button" onclick="window.handleLogout()" style="background: #d9534f; color: white; border: none; padding: 6px 12px; font-size: 11px; font-weight: 600; cursor: pointer;">LOG OUT</button>
             </div>
 
-            <h4 style="font-size: 14px; text-transform: uppercase; margin-bottom: 10px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px;">Saved Address Book</h4>
+            <h4 style="font-size: 14px; text-transform: uppercase; margin-bottom: 10px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px;">Saved Profile</h4>
             <div style="margin-bottom: 20px;">
+                <!-- NEW: Profile Name Field -->
+                <input type="text" id="profileName" placeholder="Full Name" style="width: 100%; padding: 8px; margin-bottom: 8px; border: 1px solid var(--border-color); font-size: 12px;">
                 <input type="text" id="profilePhone" placeholder="Default Phone" style="width: 100%; padding: 8px; margin-bottom: 8px; border: 1px solid var(--border-color); font-size: 12px;">
                 <textarea id="profileAddress" placeholder="Default Delivery Address" rows="2" style="width: 100%; padding: 8px; margin-bottom: 8px; border: 1px solid var(--border-color); font-size: 12px; resize: none;"></textarea>
-                <button type="button" onclick="window.saveUserProfile()" style="background: var(--primary-gold); color: white; border: none; padding: 8px 15px; font-size: 12px; font-weight: 600; cursor: pointer;">Save Address</button>
+                <button type="button" onclick="window.saveUserProfile()" style="background: var(--primary-gold); color: white; border: none; padding: 8px 15px; font-size: 12px; font-weight: 600; cursor: pointer;">Save Profile</button>
             </div>
 
             <h4 style="font-size: 14px; text-transform: uppercase; margin-bottom: 10px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px;">My Order History</h4>
@@ -439,9 +441,13 @@
                     }
 
                     // 2. Auto-fill Profile Address Book (in Account Modal)
+                    const profileName = document.getElementById("profileName");
                     const profilePhone = document.getElementById("profilePhone");
                     const profileAddress = document.getElementById("profileAddress");
                     
+                    if (profileName && savedName) {
+                        profileName.value = savedName;
+                    }
                     if (profilePhone && (userData.customerPhone || userData.phone)) {
                         profilePhone.value = userData.customerPhone || userData.phone;
                     }
@@ -457,6 +463,7 @@
                 if(document.getElementById("custName")) document.getElementById("custName").value = "";
                 if(document.getElementById("custPhone")) document.getElementById("custPhone").value = "";
                 if(document.getElementById("deliveryAddress")) document.getElementById("deliveryAddress").value = "";
+                if(document.getElementById("profileName")) document.getElementById("profileName").value = "";
                 if(document.getElementById("profilePhone")) document.getElementById("profilePhone").value = "";
                 if(document.getElementById("profileAddress")) document.getElementById("profileAddress").value = "";
             }
