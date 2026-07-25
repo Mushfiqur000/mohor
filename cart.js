@@ -247,9 +247,17 @@ window.checkoutToAdmin = async function() {
     }
 
     try {
+        // UPGRADE: Bulletproof check for logged-in user directly from Firebase Auth
+        let activeUid = "guest";
+        if (typeof firebase !== 'undefined' && firebase.auth().currentUser) {
+            activeUid = firebase.auth().currentUser.uid;
+        } else if (typeof window.currentUser !== 'undefined' && window.currentUser) {
+            activeUid = window.currentUser.uid;
+        }
+
         // 2. Package the order data including user tracking
         const newOrder = {
-            userId: (typeof window.currentUser !== 'undefined' && window.currentUser) ? window.currentUser.uid : "guest",
+            userId: activeUid,
             customerName: orderData.name,
             customerPhone: orderData.phone,
             deliveryAddress: orderData.address,
@@ -277,7 +285,7 @@ window.checkoutToAdmin = async function() {
         if(cartOverlay) cartOverlay.classList.remove('active');
 
         // 7. Clear the input fields (Keep name/address if user is logged in, clear if guest)
-        if (typeof window.currentUser === 'undefined' || !window.currentUser) {
+        if (activeUid === "guest") {
             const nameEl = document.getElementById('custName') || document.getElementById('checkoutName');
             const phoneEl = document.getElementById('custPhone') || document.getElementById('checkoutPhone');
             const addressEl = document.getElementById('deliveryAddress') || document.getElementById('checkoutAddress');
@@ -292,9 +300,9 @@ window.checkoutToAdmin = async function() {
         const policyDisplay = document.getElementById('dynamicPolicyDisplay');
         if(policyDisplay) policyDisplay.style.display = 'none';
 
-        // 8. Refresh order history if user is logged in
-        if (typeof window.currentUser !== 'undefined' && window.currentUser && typeof loadUserOrders === 'function') {
-            loadUserOrders(window.currentUser.uid);
+        // 8. Refresh order history if user is logged in (using bulletproof auth check)
+        if (activeUid !== "guest" && typeof loadUserOrders === 'function') {
+            loadUserOrders(activeUid);
         }
 
     } catch (error) {
