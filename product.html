@@ -142,11 +142,35 @@
         <button class="btn-buy" id="buyNowBtn">Buy Now</button>
     </div>
 
-    <!-- CACHE BUSTERS: Updated to v=13 so browsers pull the new unselect code -->
-    <script src="products.js?v=13"></script>
-    <script src="app.js?v=13"></script>
+    <!-- Firebase SDKs (Required for cart.js and auth integrations) -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+    <!-- NEW: Firebase Configuration Block to Fix Error -->
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyALxypXDkF9QexbD_wE7-ADALIdj5vd-rY",
+            authDomain: "mohor-app.firebaseapp.com",
+            projectId: "mohor-app",
+            storageBucket: "mohor-app.firebasestorage.app",
+            messagingSenderId: "989000457004",
+            appId: "1:989000457004:web:5679b256e20d94e27daa89"
+        };
+        // Initialize Firebase
+        if (typeof firebase !== 'undefined' && !firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        // Initialize Firestore
+        window.db = firebase.firestore();
+    </script>
+
+    <!-- CACHE BUSTERS: Updated to v=15 so browsers pull the new code uniformly -->
+    <script src="products.js?v=15"></script>
+    <script src="app.js?v=15"></script>
     <!-- UPGRADE: MUST include cart.js so the Add to Cart button functions! -->
-    <script src="cart.js?v=13"></script>
+    <script src="cart.js?v=15"></script>
+    <script type="module" src="auth.js?v=15"></script>
 
     <script>
         let currentSelectedSize = null;
