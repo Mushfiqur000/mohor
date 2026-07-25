@@ -145,8 +145,31 @@
     <div id="productGrid" style="display:none;"></div>
     <select id="sortSelect" style="display:none;"></select>
 
-    <!-- Logic Files -->
-    <script src="products.js"></script>
-    <script src="app.js"></script>
+    <!-- Firebase CDN SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+    <!-- Firebase Configuration Block -->
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyALxypXDkF9QexbD_wE7-ADALIdj5vd-rY",
+            authDomain: "mohor-app.firebaseapp.com",
+            projectId: "mohor-app",
+            storageBucket: "mohor-app.firebasestorage.app",
+            messagingSenderId: "989000457004",
+            appId: "1:989000457004:web:5679b256e20d94e27daa89"
+        };
+        if (typeof firebase !== 'undefined' && !firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        window.db = firebase.firestore();
+    </script>
+
+    <!-- Logic Files with Cache Busters -->
+    <script src="products.js?v=16"></script>
+    <script src="app.js?v=16"></script>
+    <script src="cart.js?v=16"></script>
+    <script type="module" src="auth.js?v=16"></script>
 </body>
 </html>
