@@ -368,6 +368,19 @@
 
         const adminEmail = "mushfiqurrahman2222@gmail.com"; 
 
+        // SECURITY: orders (customerName, customerPhone, deliveryAddress, item
+        // names) can be submitted by anyone, including logged-out guests, and
+        // are rendered here as HTML. Without escaping, a malicious "customer
+        // name" like <img src=x onerror=...> would execute in the ADMIN's
+        // authenticated session the moment this dashboard loads — a stored
+        // XSS that could hijack the admin account. Always escape untrusted
+        // data before it goes into innerHTML.
+        function escapeHtml(value) {
+            return String(value ?? '').replace(/[&<>"']/g, (ch) => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+            }[ch]));
+        }
+
         // DOM Elements
         const loginSection = document.getElementById('login-section');
         const mainDashboard = document.getElementById('main-dashboard');
@@ -410,7 +423,11 @@
 
             signInWithEmailAndPassword(auth, email, pass)
                 .catch((error) => {
-                    errorMsg.innerText = "Login failed: " + error.message;
+                    // SECURITY: don't echo raw Firebase error messages (they can
+                    // reveal whether an account exists). Show a generic message
+                    // and log the detail for debugging instead.
+                    console.error("Admin login error:", error);
+                    errorMsg.innerText = "Login failed. Check your email and password.";
                     errorMsg.style.display = 'block';
                 });
         });
@@ -447,7 +464,7 @@
                     let itemsHtml = '<span style="color:#888;">No items detailed</span>';
                     if (order.items && Array.isArray(order.items)) {
                         itemsHtml = order.items.map(item => 
-                            `<strong>${item.name || 'Dress'}</strong> (${item.size || 'Free Size'}) x${item.qty || 1}`
+                            `<strong>${escapeHtml(item.name || 'Dress')}</strong> (${escapeHtml(item.size || 'Free Size')}) x${Number(item.qty) || 1}`
                         ).join('<br>');
                     }
 
@@ -456,19 +473,19 @@
 
                     tableRows += `
                         <tr>
-                            <td style="font-size: 11px; color: #666;">${order.id}</td>
+                            <td style="font-size: 11px; color: #666;">${escapeHtml(order.id)}</td>
                             <td>
-                                <strong>${order.customerName || 'N/A'}</strong><br>
-                                <span style="font-size: 12px; color: #555;">📞 ${order.customerPhone || 'N/A'}</span><br>
-                                <span style="font-size: 11px; color: #888;">${order.deliveryAddress || ''}</span>
+                                <strong>${escapeHtml(order.customerName || 'N/A')}</strong><br>
+                                <span style="font-size: 12px; color: #555;">📞 ${escapeHtml(order.customerPhone || 'N/A')}</span><br>
+                                <span style="font-size: 11px; color: #888;">${escapeHtml(order.deliveryAddress || '')}</span>
                             </td>
                             <td style="font-size: 12px;">${itemsHtml}</td>
                             <td>
-                                <strong>৳${order.totalAmount || 0}</strong><br>
+                                <strong>৳${Number(order.totalAmount) || 0}</strong><br>
                                 <span style="font-size: 11px; color: #888;">${orderDate}</span>
                             </td>
                             <td>
-                                <select class="status-select" data-id="${order.id}">
+                                <select class="status-select" data-id="${escapeHtml(order.id)}">
                                     <option value="Pending" ${currentStatus==='Pending'?'selected':''}>Pending</option>
                                     <option value="Confirmed" ${currentStatus==='Confirmed'?'selected':''}>Confirmed</option>
                                     <option value="Shipped" ${currentStatus==='Shipped'?'selected':''}>Shipped</option>
@@ -477,7 +494,7 @@
                                 </select>
                             </td>
                             <td>
-                                <button class="confirm-btn update-btn" data-id="${order.id}">Update</button>
+                                <button class="confirm-btn update-btn" data-id="${escapeHtml(order.id)}">Update</button>
                             </td>
                         </tr>
                     `;
@@ -541,11 +558,11 @@
 
                     rows += `
                         <tr>
-                            <td><img src="${img}" alt="" style="width: 45px; height: 55px; object-fit: cover; border-radius: 4px;"></td>
-                            <td><strong>${prod.title}</strong><br><span style="color:#C9A14A; font-weight:600;">৳${prod.price}</span></td>
-                            <td>${prod.quantity || 0}</td>
-                            <td style="font-size: 12px; color: #666;">${sizesStr}</td>
-                            <td><button class="delete-btn" onclick="window.deleteProduct('${docSnap.id}')">Delete</button></td>
+                            <td><img src="${escapeHtml(img)}" alt="" style="width: 45px; height: 55px; object-fit: cover; border-radius: 4px;"></td>
+                            <td><strong>${escapeHtml(prod.title)}</strong><br><span style="color:#C9A14A; font-weight:600;">৳${Number(prod.price) || 0}</span></td>
+                            <td>${Number(prod.quantity) || 0}</td>
+                            <td style="font-size: 12px; color: #666;">${escapeHtml(sizesStr)}</td>
+                            <td><button class="delete-btn" onclick="window.deleteProduct('${escapeHtml(docSnap.id)}')">Delete</button></td>
                         </tr>
                     `;
                 });
