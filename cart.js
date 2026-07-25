@@ -1,15 +1,18 @@
 // --- CART, QUANTITY & UI LOGIC ---
 
-// FIX 1: LocalStorage added so cart doesn't empty on page reload
+// 1. MEMORY FIX: Load cart from storage so it survives page reloads on mobile
 window.cart = JSON.parse(localStorage.getItem('mohor_cart')) || [];
 
 const cartOverlay = document.getElementById('cartOverlay');
 const cartSidebar = document.getElementById('cartSidebar');
-const cartItemsContainer = document.getElementById('cartItems'); // Updated to match cart.html ID
+// 2. ID FIX: Support both PC container ID and Mobile cart page ID
+const cartItemsContainer = document.getElementById('cartItemsContainer') || document.getElementById('cartItems');
 const cartBadge = document.getElementById('cartBadge');
 
-if (document.getElementById('openCartBtn')) {
-    document.getElementById('openCartBtn').addEventListener('click', () => { 
+// Safely attach sidebar events (in case they don't exist on the mobile page)
+const openBtn = document.getElementById('openCartBtn');
+if(openBtn) {
+    openBtn.addEventListener('click', () => { 
         if(cartSidebar) cartSidebar.classList.add('active'); 
         if(cartOverlay) cartOverlay.classList.add('active'); 
     });
@@ -18,8 +21,9 @@ const closeCart = () => {
     if(cartSidebar) cartSidebar.classList.remove('active'); 
     if(cartOverlay) cartOverlay.classList.remove('active'); 
 };
-if (document.getElementById('closeCartBtn')) document.getElementById('closeCartBtn').addEventListener('click', closeCart);
-if (cartOverlay) cartOverlay.addEventListener('click', closeCart);
+const closeBtn = document.getElementById('closeCartBtn');
+if(closeBtn) closeBtn.addEventListener('click', closeCart);
+if(cartOverlay) cartOverlay.addEventListener('click', closeCart);
 
 // Attached to window so app.js can trigger it from the product modal
 window.addToCart = function(name, price, size) {
@@ -32,8 +36,14 @@ window.addToCart = function(name, price, size) {
     }
     
     window.updateCartUI();
-    if(cartSidebar && cartOverlay) {
-        cartSidebar.classList.add('active'); cartOverlay.classList.add('active');
+    
+    if (cartSidebar && cartOverlay) {
+        cartSidebar.classList.add('active'); 
+        cartOverlay.classList.add('active');
+    } else {
+        // Fallback alert for mobile if sidebar doesn't exist
+        const msg = (window.currentLang === 'en') ? "Added to Cart!" : "কার্টে যোগ করা হয়েছে!";
+        alert(msg);
     }
 }
 
@@ -50,19 +60,18 @@ window.removeFromCart = function(index) {
     window.updateCartUI();
 }
 
-// RESTORED: Your original Delivery Policy display logic
 window.updateDeliveryPolicyAndTotal = function() {
     const zoneSelect = document.getElementById('deliveryZone');
     const policyDisplay = document.getElementById('dynamicPolicyDisplay');
     
     if (zoneSelect && policyDisplay) {
-        // Updated to match the "inside" and "outside" values in your cart.html
-        if (zoneSelect.value === "inside") {
+        // Supports your original "80"/"150" values and the mobile "inside"/"outside" values
+        if (zoneSelect.value === "80" || zoneSelect.value === "inside") {
             policyDisplay.style.display = "block";
-            policyDisplay.innerHTML = window.uiTranslations ? window.uiTranslations[window.currentLang].policy1Text : "Inside Sylhet Delivery Policy";
-        } else if (zoneSelect.value === "outside") {
+            policyDisplay.innerHTML = window.uiTranslations[window.currentLang].policy1Text;
+        } else if (zoneSelect.value === "150" || zoneSelect.value === "outside") {
             policyDisplay.style.display = "block";
-            policyDisplay.innerHTML = window.uiTranslations ? window.uiTranslations[window.currentLang].policy2Text : "Outside Sylhet Delivery Policy";
+            policyDisplay.innerHTML = window.uiTranslations[window.currentLang].policy2Text;
         } else {
             policyDisplay.style.display = "none";
         }
@@ -71,43 +80,43 @@ window.updateDeliveryPolicyAndTotal = function() {
 }
 
 window.updateCartUI = function() {
-    // Save to memory every time cart updates
+    // 3. MEMORY FIX: Save cart to storage every time UI updates
     localStorage.setItem('mohor_cart', JSON.stringify(window.cart));
 
-    if (cartItemsContainer) {
-        cartItemsContainer.innerHTML = ''; 
-    }
-    
+    if(cartItemsContainer) cartItemsContainer.innerHTML = ''; 
     let subtotal = 0;
     let totalItems = 0;
     
-    if (window.cart.length === 0 && cartItemsContainer) {
-        // RESTORED: Your translation logic for empty cart
-        const emptyMsg = window.uiTranslations ? window.uiTranslations[window.currentLang].cartEmpty : "Your cart is empty.";
-        cartItemsContainer.innerHTML = `<p style="text-align: center; color: #666; margin-top: 20px;">${emptyMsg}</p>`;
+    if (window.cart.length === 0) {
+        if(cartItemsContainer) {
+            // Safely check for translation text
+            const emptyTxt = (window.uiTranslations && window.uiTranslations[window.currentLang]) ? window.uiTranslations[window.currentLang].cartEmpty : "Your cart is empty";
+            cartItemsContainer.innerHTML = `<p style="text-align: center; color: #666; margin-top: 20px;">${emptyTxt}</p>`;
+        }
     } else {
         window.cart.forEach((item, index) => {
             let itemTotal = item.price * item.qty;
             subtotal += itemTotal;
             totalItems += item.qty;
             
-            if (cartItemsContainer) {
+            // Added type="button" to the -, +, and Remove buttons to prevent page reloads
+            if(cartItemsContainer) {
                 cartItemsContainer.innerHTML += `
                     <div class="cart-item" style="align-items: center;">
                         <div class="cart-item-info" style="flex: 1;">
                             <strong style="display: block; margin-bottom: 3px;">${item.name}</strong>
-                            <span style="font-size: 11px; color: var(--text-light, #666); text-transform: uppercase;">Size: ${item.size}</span>
+                            <span style="font-size: 11px; color: var(--text-light); text-transform: uppercase;">Size: ${item.size}</span>
                             
                             <div style="display: flex; align-items: center; gap: 10px; margin-top: 8px;">
-                                <button type="button" onclick="changeQty(${index}, -1)" style="border: 1px solid var(--border-color, #eaeaea); background: var(--soft-gray, #f9f9f9); width: 22px; height: 22px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: bold; border-radius: 2px;">-</button>
+                                <button type="button" onclick="changeQty(${index}, -1)" style="border: 1px solid var(--border-color); background: var(--soft-gray); width: 22px; height: 22px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: bold; border-radius: 2px;">-</button>
                                 <span style="font-size: 13px; font-weight: 600;">${item.qty}</span>
-                                <button type="button" onclick="changeQty(${index}, 1)" style="border: 1px solid var(--border-color, #eaeaea); background: var(--soft-gray, #f9f9f9); width: 22px; height: 22px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: bold; border-radius: 2px;">+</button>
+                                <button type="button" onclick="changeQty(${index}, 1)" style="border: 1px solid var(--border-color); background: var(--soft-gray); width: 22px; height: 22px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: bold; border-radius: 2px;">+</button>
                             </div>
                         </div>
                         
                         <div style="text-align: right;">
-                            <div style="font-weight:600; color:var(--primary-gold, #C9A14A); margin-bottom: 5px;">৳${itemTotal}</div>
-                            <button type="button" class="remove-item" onclick="removeFromCart(${index})" style="font-size: 10px; background: none; border: none; color: #d9534f; cursor: pointer; text-transform: uppercase;">Remove</button>
+                            <div style="font-weight:600; color:var(--primary-gold); margin-bottom: 5px;">৳${itemTotal}</div>
+                            <button type="button" class="remove-item" onclick="removeFromCart(${index})" style="font-size: 10px; background:none; border:none; color:red; cursor:pointer;">Remove</button>
                         </div>
                     </div>`;
             }
@@ -117,39 +126,51 @@ window.updateCartUI = function() {
     const zoneSelect = document.getElementById('deliveryZone');
     let deliveryFee = 0;
     if (zoneSelect && zoneSelect.value && window.cart.length > 0) {
-        // Calculates fee based on HTML select values
-        deliveryFee = (zoneSelect.value === 'outside') ? 150 : 80;
+        if(zoneSelect.value === "outside" || zoneSelect.value === "150") deliveryFee = 150;
+        else if(zoneSelect.value === "inside" || zoneSelect.value === "80") deliveryFee = 80;
+        else deliveryFee = parseInt(zoneSelect.value) || 0;
     }
     
     const finalTotal = subtotal + deliveryFee;
     
-    // Updated IDs to match cart.html
-    if(document.getElementById('cartSubtotal')) document.getElementById('cartSubtotal').innerText = '৳' + subtotal;
-    if(document.getElementById('cartDelivery')) document.getElementById('cartDelivery').innerText = '৳' + deliveryFee;
-    if(document.getElementById('cartTotal')) document.getElementById('cartTotal').innerText = '৳' + finalTotal;
+    // Support both PC and Phone HTML IDs
+    const subEl = document.getElementById('cartSubtotalValue') || document.getElementById('cartSubtotal');
+    const delEl = document.getElementById('cartDeliveryValue') || document.getElementById('cartDelivery');
+    const totEl = document.getElementById('cartTotalValue') || document.getElementById('cartTotal');
+    
+    if(subEl) subEl.innerText = subtotal;
+    if(delEl) delEl.innerText = deliveryFee;
+    if(totEl) totEl.innerText = finalTotal;
     
     if(cartBadge) cartBadge.innerText = totalItems;
-    if(document.getElementById('cartCountDisplay')) document.getElementById('cartCountDisplay').innerText = `Cart (${totalItems})`;
+    
+    const cartCountNav = document.getElementById('cartCountDisplay');
+    if(cartCountNav) cartCountNav.innerText = `Cart (${totalItems})`;
 }
 
 // --- DUAL CHECKOUT LOGIC ---
 
-// Helper function to validate all inputs
+// Helper function to validate all inputs before sending order anywhere
 function validateCheckoutInputs() {
     if (window.cart.length === 0) { 
         alert(window.currentLang === 'en' ? "Your cart is empty." : "আপনার কার্ট খালি।"); 
         return null; 
     }
     
-    // FIX 2: Updated IDs to match your cart.html file exactly
-    const nameInput = document.getElementById('checkoutName') ? document.getElementById('checkoutName').value.trim() : "";
-    const phoneInput = document.getElementById('checkoutPhone') ? document.getElementById('checkoutPhone').value.trim() : "";
-    const addressElement = document.getElementById('checkoutAddress');
+    // Looks for PC input IDs first, falls back to Mobile input IDs
+    const nameEl = document.getElementById('custName') || document.getElementById('checkoutName');
+    const phoneEl = document.getElementById('custPhone') || document.getElementById('checkoutPhone');
+    const addressEl = document.getElementById('deliveryAddress') || document.getElementById('checkoutAddress');
+    
     const zoneSelect = document.getElementById('deliveryZone');
     const policyElement = document.getElementById('policyAgree');
     
-    const addressInput = addressElement ? addressElement.value.trim() : "";
-    const policyAgree = policyElement ? policyElement.checked : true; // Defaults to true if checkbox isn't in HTML
+    const nameInput = nameEl ? nameEl.value.trim() : "";
+    const phoneInput = phoneEl ? phoneEl.value.trim() : "";
+    const addressInput = addressEl ? addressEl.value.trim() : "";
+    
+    // If the checkbox doesn't exist on the mobile page, default to true so it doesn't block checkout
+    const policyAgree = policyElement ? policyElement.checked : true;
 
     if (!nameInput) { alert(window.currentLang === 'en' ? "Please enter your Full Name." : "অনুগ্রহ করে আপনার পুরো নাম দিন।"); return null; }
     if (!phoneInput) { alert(window.currentLang === 'en' ? "Please enter your Mobile Number." : "অনুগ্রহ করে আপনার মোবাইল নম্বর দিন।"); return null; }
@@ -158,7 +179,11 @@ function validateCheckoutInputs() {
     if (policyElement && !policyAgree) { alert(window.currentLang === 'en' ? "Please agree to the Delivery & Return Policy." : "অনুগ্রহ করে ডেলিভারি ও রিটার্ন পলিসিতে সম্মত হোন।"); return null; }
 
     const zoneText = zoneSelect.options[zoneSelect.selectedIndex].text;
-    const deliveryFee = (zoneSelect.value === 'outside') ? 150 : 80;
+    
+    let deliveryFee = 0;
+    if(zoneSelect.value === "outside" || zoneSelect.value === "150") deliveryFee = 150;
+    else if(zoneSelect.value === "inside" || zoneSelect.value === "80") deliveryFee = 80;
+    else deliveryFee = parseInt(zoneSelect.value) || 0;
     
     let subtotal = 0;
     window.cart.forEach(item => subtotal += (item.price * item.qty));
@@ -202,7 +227,8 @@ window.checkoutToAdmin = async function() {
     const orderData = validateCheckoutInputs();
     if (!orderData) return; 
     
-    const confirmBtn = document.getElementById('btnConfirmOrder');
+    // 1. Temporarily disable the button so the user doesn't double-click (Checks PC ID then Mobile ID)
+    const confirmBtn = document.getElementById('adminOrderBtn') || document.getElementById('btnConfirmOrder');
     let originalText = confirmBtn ? confirmBtn.innerHTML : "Confirm Order";
     if (confirmBtn) {
         confirmBtn.innerHTML = window.currentLang === 'en' ? "Processing..." : "প্রসেস হচ্ছে...";
@@ -210,6 +236,7 @@ window.checkoutToAdmin = async function() {
     }
 
     try {
+        // 2. Package the order data including user tracking
         const newOrder = {
             userId: (typeof window.currentUser !== 'undefined' && window.currentUser) ? window.currentUser.uid : "guest",
             customerName: orderData.name,
@@ -224,20 +251,28 @@ window.checkoutToAdmin = async function() {
             status: "New" 
         };
 
+        // 3. Send the data to your Firebase 'orders' collection
         await window.db.collection("orders").add(newOrder);
 
+        // 4. Show success message
         alert(window.currentLang === 'en' ? "Order placed successfully! We will contact you soon." : "আপনার অর্ডারটি সফলভাবে সম্পন্ন হয়েছে! আমরা শীঘ্রই যোগাযোগ করব।");
         
+        // 5. Empty the cart and update the UI
         window.cart = [];
         window.updateCartUI();
         
-        if (cartSidebar) cartSidebar.classList.remove('active');
-        if (cartOverlay) cartOverlay.classList.remove('active');
+        // 6. Close the cart sidebar automatically
+        if(cartSidebar) cartSidebar.classList.remove('active');
+        if(cartOverlay) cartOverlay.classList.remove('active');
 
+        // 7. Clear the input fields (Keep name/address if user is logged in, clear if guest)
         if (typeof window.currentUser === 'undefined' || !window.currentUser) {
-            if(document.getElementById('checkoutName')) document.getElementById('checkoutName').value = '';
-            if(document.getElementById('checkoutPhone')) document.getElementById('checkoutPhone').value = '';
-            if(document.getElementById('checkoutAddress')) document.getElementById('checkoutAddress').value = '';
+            const nameEl = document.getElementById('custName') || document.getElementById('checkoutName');
+            const phoneEl = document.getElementById('custPhone') || document.getElementById('checkoutPhone');
+            const addressEl = document.getElementById('deliveryAddress') || document.getElementById('checkoutAddress');
+            if(nameEl) nameEl.value = '';
+            if(phoneEl) phoneEl.value = '';
+            if(addressEl) addressEl.value = '';
         }
         
         if(document.getElementById('deliveryZone')) document.getElementById('deliveryZone').value = '';
@@ -246,7 +281,7 @@ window.checkoutToAdmin = async function() {
         const policyDisplay = document.getElementById('dynamicPolicyDisplay');
         if(policyDisplay) policyDisplay.style.display = 'none';
 
-        // RESTORED: Your user history reload logic
+        // 8. Refresh order history if user is logged in
         if (typeof window.currentUser !== 'undefined' && window.currentUser && typeof loadUserOrders === 'function') {
             loadUserOrders(window.currentUser.uid);
         }
@@ -255,6 +290,7 @@ window.checkoutToAdmin = async function() {
         console.error("Error saving order: ", error);
         alert(window.currentLang === 'en' ? "There was an error placing your order. Please try WhatsApp instead." : "অর্ডার প্লেস করতে সমস্যা হয়েছে। অনুগ্রহ করে হোয়াটসঅ্যাপে চেষ্টা করুন।");
     } finally {
+        // 9. Turn the button back on
         if (confirmBtn) {
             confirmBtn.innerHTML = originalText;
             confirmBtn.disabled = false;
@@ -262,13 +298,14 @@ window.checkoutToAdmin = async function() {
     }
 }
 
-// Auto-bind checkout buttons if on cart.html
+// Ensure Mobile cart page connects buttons immediately
 document.addEventListener('DOMContentLoaded', () => {
     const btnWhatsApp = document.getElementById('btnWhatsAppOrder');
-    if (btnWhatsApp) btnWhatsApp.onclick = window.checkoutToWhatsApp;
+    if (btnWhatsApp) btnWhatsApp.addEventListener('click', window.checkoutToWhatsApp);
 
     const btnConfirm = document.getElementById('btnConfirmOrder');
-    if (btnConfirm) btnConfirm.onclick = window.checkoutToAdmin;
+    if (btnConfirm) btnConfirm.addEventListener('click', window.checkoutToAdmin);
 
+    // Refresh UI on load
     window.updateCartUI();
 });
