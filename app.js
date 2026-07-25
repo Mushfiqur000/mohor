@@ -230,6 +230,11 @@ if (langToggleBtn) {
         
         // Dispatch custom event to notify product.html to re-render dynamic text
         window.dispatchEvent(new Event('languageChanged'));
+
+        // Safely reloads only the product page to translate dynamic database content
+        if (window.location.pathname.includes('product.html')) {
+            window.location.reload();
+        }
     });
 }
 
