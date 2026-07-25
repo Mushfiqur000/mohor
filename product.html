@@ -71,7 +71,7 @@
         .cart-nav-icon { position: relative; color: var(--deep-black); display: flex; align-items: center; text-decoration: none; margin-right: 10px; }
         .cart-nav-icon svg { transition: transform 0.2s ease; }
         .cart-nav-icon:hover svg { transform: scale(1.1); }
-        .cart-nav-icon .badge { position: absolute; top: -5px; right: -10px; background: var(--primary-gold); color: var(--white); font-size: 11px; font-weight: 700; height: 18px; width: 18px; display: flex; justify-content: center; align-items: center; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.15); display: none; /* Hidden by default until items are added */ }
+        .cart-nav-icon .badge { position: absolute; top: -5px; right: -10px; background: var(--primary-gold); color: var(--white); font-size: 11px; font-weight: 700; height: 18px; width: 18px; display: flex; justify-content: center; align-items: center; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.15); display: none; }
     </style>
 </head>
 <body>
@@ -80,7 +80,6 @@
         <a href="index.html" style="text-decoration: none; color: black; font-weight: 600;">&#8592; Back</a>
         <a href="index.html" class="brand-logo">Mohor</a>
         
-        <!-- UPGRADE: Beautiful Cart Logo replaced the old text -->
         <a href="cart.html" class="cart-nav-icon">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
@@ -142,11 +141,12 @@
         <button class="btn-buy" id="buyNowBtn">Buy Now</button>
     </div>
 
-    <!-- Firebase CDN SDKs -->
+    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
+    <!-- Firebase Configuration Block -->
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyALxypXDkF9QexbD_wE7-ADALIdj5vd-rY",
@@ -156,24 +156,21 @@
             messagingSenderId: "989000457004",
             appId: "1:989000457004:web:5679b256e20d94e27daa89"
         };
-        // Initialize Firebase
         if (typeof firebase !== 'undefined' && !firebase.apps.length) {
             firebase.initializeApp(firebaseConfig);
         }
-        // Initialize Firestore
         window.db = firebase.firestore();
 
-        // Fetch Firestore Products for the product details page
-        async function loadProductDetailsFromDatabase() {
+        // Load Products from Firestore to support dynamic database product pages
+        async function loadProductPageFromDatabase() {
             try {
                 const querySnapshot = await window.db.collection("products").get();
                 let dynamicProducts = [];
-
                 querySnapshot.forEach((doc) => {
                     const data = doc.data();
                     dynamicProducts.push({
-                        id: String(doc.id),
-                        title: { en: data.title || "Dress", bn: data.title || "পোশাক" },
+                        id: doc.id,
+                        title: typeof data.title === 'string' ? { en: data.title, bn: data.title } : (data.title || { en: "Dress" }),
                         category: data.category || "three-piece",
                         price: Number(data.price || 0),
                         images: data.images || [],
@@ -181,25 +178,23 @@
                         sizes: data.sizes || [],
                         sizeMeasurements: data.sizeMeasurements || {},
                         measurementsGuide: data.measurementsGuide || "",
-                        description: { en: data.description || "", bn: data.description || "" },
+                        description: typeof data.description === 'string' ? { en: data.description, bn: data.description } : (data.description || { en: "" }),
                         details: { en: data.details || [], bn: data.details || [] }
                     });
                 });
-
                 if (dynamicProducts.length > 0) {
                     window.firestoreProducts = dynamicProducts;
                 }
             } catch (error) {
-                console.error("Error loading product from database:", error);
+                console.error("Error loading products for product page:", error);
             }
         }
-        loadProductDetailsFromDatabase();
+        loadProductPageFromDatabase();
     </script>
 
-    <!-- CACHE BUSTERS: Updated to v=16 so browsers pull the new code uniformly -->
+    <!-- Script Links with v=16 Cache Busters -->
     <script src="products.js?v=16"></script>
     <script src="app.js?v=16"></script>
-    <!-- UPGRADE: MUST include cart.js so the Add to Cart button functions! -->
     <script src="cart.js?v=16"></script>
     <script type="module" src="auth.js?v=16"></script>
 
@@ -208,7 +203,6 @@
         let currentSelectedColor = null;
         let activeProduct = null;
         
-        // Default language set to English. 
         const currentLang = 'en'; 
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -216,7 +210,7 @@
                 const params = new URLSearchParams(window.location.search);
                 const targetId = params.get('id');
 
-                // Check Firestore products first, then fallback to local productsData
+                // FIX: Check both Firestore products and local fallback products so IDs match perfectly
                 const allProducts = (window.firestoreProducts && window.firestoreProducts.length > 0) 
                     ? window.firestoreProducts 
                     : (window.productsData || []);
@@ -228,26 +222,28 @@
                     return;
                 }
 
-                // Helper to get text based on currentLang object/string format
-                function getProdText(field) {
+                // Helper text parser
+                function getLocalizedText(field) {
                     if (!field) return "";
                     if (typeof field === 'string') return field;
                     return field[currentLang] || field['en'] || "";
                 }
 
                 // 1. Populate Basic Info
-                document.getElementById('prodTitle').innerText = getProdText(activeProduct.title);
+                document.getElementById('prodTitle').innerText = getLocalizedText(activeProduct.title);
                 document.getElementById('prodPrice').innerText = "৳ " + activeProduct.price;
-                document.getElementById('prodDesc').innerHTML = getProdText(activeProduct.description);
+                document.getElementById('prodDesc').innerHTML = getLocalizedText(activeProduct.description);
 
                 // 2. Populate Bullet Point Details
                 const detailsList = document.getElementById('prodDetails');
                 const detailsSection = document.getElementById('detailsSection');
-                let prodDetailsArray = Array.isArray(activeProduct.details) ? activeProduct.details : (activeProduct.details[currentLang] || activeProduct.details['en'] || []);
-                
-                if (prodDetailsArray && prodDetailsArray.length > 0) {
+                let detailsArray = activeProduct.details;
+                if (detailsArray && typeof detailsArray === 'object' && !Array.isArray(detailsArray)) {
+                    detailsArray = detailsArray[currentLang] || detailsArray['en'] || [];
+                }
+                if (Array.isArray(detailsArray) && detailsArray.length > 0) {
                     detailsSection.style.display = 'block';
-                    prodDetailsArray.forEach(detailText => {
+                    detailsArray.forEach(detailText => {
                         const li = document.createElement('li');
                         li.innerText = detailText;
                         detailsList.appendChild(li);
@@ -286,22 +282,19 @@
                         btn.innerText = size;
                         
                         btn.onclick = () => {
-                            // If it is already selected, unselect it
                             if (btn.classList.contains('selected')) {
                                 btn.classList.remove('selected');
                                 currentSelectedSize = null;
                                 measurementBox.style.display = 'none';
                             } else {
-                                // Otherwise, select it
                                 document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('selected'));
                                 btn.classList.add('selected');
                                 currentSelectedSize = size;
 
                                 if (activeProduct.sizeMeasurements && activeProduct.sizeMeasurements[size]) {
                                     measurementBox.style.display = 'block';
-                                    measurementBox.innerHTML = typeof activeProduct.sizeMeasurements[size] === 'string' 
-                                        ? activeProduct.sizeMeasurements[size] 
-                                        : (activeProduct.sizeMeasurements[size][currentLang] || activeProduct.sizeMeasurements[size]['en'] || "");
+                                    const measureVal = activeProduct.sizeMeasurements[size];
+                                    measurementBox.innerHTML = (typeof measureVal === 'object') ? (measureVal[currentLang] || measureVal['en'] || '') : measureVal;
                                 }
                             }
                         };
@@ -313,22 +306,23 @@
                 const colorContainer = document.getElementById('colorOptions');
                 const colorSection = document.getElementById('colorSection');
                 
-                let prodColorsArray = Array.isArray(activeProduct.colors) ? activeProduct.colors : (activeProduct.colors[currentLang] || activeProduct.colors['en'] || []);
+                let colorArray = activeProduct.colors;
+                if (colorArray && typeof colorArray === 'object' && !Array.isArray(colorArray)) {
+                    colorArray = colorArray[currentLang] || colorArray['en'] || [];
+                }
 
-                if (prodColorsArray && prodColorsArray.length > 0) {
+                if (Array.isArray(colorArray) && colorArray.length > 0) {
                     colorSection.style.display = 'block';
-                    prodColorsArray.forEach(color => {
+                    colorArray.forEach(color => {
                         const btn = document.createElement('button');
                         btn.className = 'option-btn color-btn';
                         btn.innerText = color;
                         
                         btn.onclick = () => {
-                            // If it is already selected, unselect it
                             if (btn.classList.contains('selected')) {
                                 btn.classList.remove('selected');
                                 currentSelectedColor = null;
                             } else {
-                                // Otherwise, select it
                                 document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('selected'));
                                 btn.classList.add('selected');
                                 currentSelectedColor = color;
@@ -346,11 +340,11 @@
                     }
                     
                     if (typeof window.addToCart === 'function') {
-                        let itemName = getProdText(activeProduct.title);
+                        let displayName = getLocalizedText(activeProduct.title);
                         if (currentSelectedColor && currentSelectedColor !== "Default") {
-                            itemName += ` (${currentSelectedColor})`;
+                            displayName += ` (${currentSelectedColor})`;
                         }
-                        window.addToCart(itemName, activeProduct.price, currentSelectedSize || "Standard");
+                        window.addToCart(displayName, activeProduct.price, currentSelectedSize || "Standard");
                     } else {
                         console.error("addToCart function not found. Check cart.js connection.");
                     }
@@ -362,8 +356,8 @@
                         alert("Please select a size first before buying!");
                         return;
                     }
-                    document.getElementById('addToCartBtn').click(); // Adds to cart
-                    window.location.href = "cart.html"; // Redirects immediately
+                    document.getElementById('addToCartBtn').click(); 
+                    window.location.href = "cart.html"; 
                 };
 
                 // ==========================================
@@ -373,12 +367,10 @@
                 const modalImg = document.getElementById("modalImg");
                 let currentImageIndex = 0;
 
-                // Open Modal
                 mainImg.onclick = function(){
                     if (!activeProduct || !activeProduct.images) return;
                     modal.style.display = "block";
                     
-                    // Find index of currently displayed image based on what mainImg is showing
                     const currentSrc = new URL(mainImg.src).pathname;
                     currentImageIndex = activeProduct.images.findIndex(img => currentSrc.includes(img));
                     if (currentImageIndex === -1) currentImageIndex = 0;
@@ -386,19 +378,16 @@
                     modalImg.src = activeProduct.images[currentImageIndex];
                 }
 
-                // Close Modal
                 document.getElementById("closeModal").onclick = function() {
                     modal.style.display = "none";
                 }
 
-                // Click outside image to close
                 modal.onclick = function(e) {
                     if(e.target === modal) {
                         modal.style.display = "none";
                     }
                 }
 
-                // Next / Previous Buttons
                 document.getElementById("nextModal").onclick = function() { changeImage(1); }
                 document.getElementById("prevModal").onclick = function() { changeImage(-1); }
 
@@ -409,12 +398,10 @@
                     modalImg.src = activeProduct.images[currentImageIndex];
                 }
 
-                // Mobile Touch Swipe Support
                 let touchstartX = 0;
                 let touchendX = 0;
 
                 modal.addEventListener('touchstart', e => {
-                    // Only register swipe if user is using 1 finger (not pinch-zooming)
                     if(e.touches.length === 1) {
                         touchstartX = e.changedTouches[0].screenX;
                     }
@@ -428,15 +415,15 @@
                 });
 
                 function handleSwipe() {
-                    const swipeThreshold = 50; // Minimum distance to register as a swipe
+                    const swipeThreshold = 50; 
                     if (touchendX < touchstartX - swipeThreshold) {
-                        changeImage(1); // Swipe Left -> Next Image
+                        changeImage(1); 
                     }
                     if (touchendX > touchstartX + swipeThreshold) {
-                        changeImage(-1); // Swipe Right -> Previous Image
+                        changeImage(-1); 
                     }
                 }
-            }, 600); // Small 600ms buffer to ensure Firestore loads the dynamic products first
+            }, 300); // 300ms buffer to ensure Firestore loads dynamic products before lookup
         });
     </script>
 </body>
