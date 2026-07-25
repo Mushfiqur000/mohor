@@ -25,7 +25,11 @@
         /* Header */
         nav { display: flex; justify-content: space-between; align-items: center; padding: 15px 5%; background: var(--white); position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid var(--border-color); }
         .back-btn { text-decoration: none; color: var(--deep-black); font-size: 20px; font-weight: 600; display: flex; align-items: center; gap: 5px; }
+        
+        /* UPDATED: Added alignment for the new logo and title */
+        .title-wrapper { display: flex; align-items: center; gap: 8px; color: var(--deep-black); }
         .page-title { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700; color: var(--deep-black); }
+        
         .lang-btn { background: var(--deep-black); color: var(--white); border: none; padding: 5px 10px; font-size: 11px; font-weight: 600; cursor: pointer; border-radius: 4px; }
 
         /* Main Container */
@@ -65,7 +69,17 @@
 
     <nav>
         <a href="index.html" class="back-btn">&#8592;</a>
-        <div class="page-title" data-i18n="cartTitle">Checkout</div>
+        
+        <!-- UPDATED: Beautiful Cart Logo added to the Header -->
+        <div class="title-wrapper">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <path d="M16 10a4 4 0 0 1-8 0"></path>
+            </svg>
+            <div class="page-title" data-i18n="cartTitle">Checkout</div>
+        </div>
+
         <button type="button" id="langToggleBtn" class="lang-btn">EN / বাং</button>
     </nav>
 
@@ -147,6 +161,38 @@
             if (typeof updateCartUI === 'function') {
                 updateCartUI();
             }
+        });
+    </script>
+
+    <!-- UPDATED: FIREBASE AUTO-FILL SCRIPT -->
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            // A slight delay ensures app.js has finished initializing Firebase
+            setTimeout(() => {
+                if (typeof firebase !== 'undefined' && firebase.auth) {
+                    firebase.auth().onAuthStateChanged((user) => {
+                        if (user) {
+                            // User is logged in! Fetch their profile from the 'users' collection
+                            firebase.firestore().collection("users").doc(user.uid).get()
+                            .then((doc) => {
+                                if (doc.exists) {
+                                    const userData = doc.data();
+                                    
+                                    // Target your exact input fields
+                                    const nameEl = document.getElementById('checkoutName');
+                                    const phoneEl = document.getElementById('checkoutPhone');
+                                    const addressEl = document.getElementById('checkoutAddress');
+                                    
+                                    // Inject the data automatically
+                                    if(nameEl && userData.name) nameEl.value = userData.name;
+                                    if(phoneEl && userData.phone) phoneEl.value = userData.phone;
+                                    if(addressEl && userData.address) addressEl.value = userData.address;
+                                }
+                            }).catch(error => console.error("Error fetching user data for auto-fill:", error));
+                        }
+                    });
+                }
+            }, 1000); 
         });
     </script>
 </body>
