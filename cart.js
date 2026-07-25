@@ -1,14 +1,25 @@
 // --- CART, QUANTITY & UI LOGIC ---
-window.cart = [];
+
+// FIX 1: LocalStorage added so cart doesn't empty on page reload
+window.cart = JSON.parse(localStorage.getItem('mohor_cart')) || [];
+
 const cartOverlay = document.getElementById('cartOverlay');
 const cartSidebar = document.getElementById('cartSidebar');
-const cartItemsContainer = document.getElementById('cartItemsContainer');
+const cartItemsContainer = document.getElementById('cartItems'); // Updated to match cart.html ID
 const cartBadge = document.getElementById('cartBadge');
 
-document.getElementById('openCartBtn').addEventListener('click', () => { cartSidebar.classList.add('active'); cartOverlay.classList.add('active'); });
-const closeCart = () => { cartSidebar.classList.remove('active'); cartOverlay.classList.remove('active'); };
-document.getElementById('closeCartBtn').addEventListener('click', closeCart);
-cartOverlay.addEventListener('click', closeCart);
+if (document.getElementById('openCartBtn')) {
+    document.getElementById('openCartBtn').addEventListener('click', () => { 
+        if(cartSidebar) cartSidebar.classList.add('active'); 
+        if(cartOverlay) cartOverlay.classList.add('active'); 
+    });
+}
+const closeCart = () => { 
+    if(cartSidebar) cartSidebar.classList.remove('active'); 
+    if(cartOverlay) cartOverlay.classList.remove('active'); 
+};
+if (document.getElementById('closeCartBtn')) document.getElementById('closeCartBtn').addEventListener('click', closeCart);
+if (cartOverlay) cartOverlay.addEventListener('click', closeCart);
 
 // Attached to window so app.js can trigger it from the product modal
 window.addToCart = function(name, price, size) {
@@ -21,7 +32,9 @@ window.addToCart = function(name, price, size) {
     }
     
     window.updateCartUI();
-    cartSidebar.classList.add('active'); cartOverlay.classList.add('active');
+    if(cartSidebar && cartOverlay) {
+        cartSidebar.classList.add('active'); cartOverlay.classList.add('active');
+    }
 }
 
 window.changeQty = function(index, delta) {
@@ -37,17 +50,19 @@ window.removeFromCart = function(index) {
     window.updateCartUI();
 }
 
+// RESTORED: Your original Delivery Policy display logic
 window.updateDeliveryPolicyAndTotal = function() {
     const zoneSelect = document.getElementById('deliveryZone');
     const policyDisplay = document.getElementById('dynamicPolicyDisplay');
     
     if (zoneSelect && policyDisplay) {
-        if (zoneSelect.value === "80") {
+        // Updated to match the "inside" and "outside" values in your cart.html
+        if (zoneSelect.value === "inside") {
             policyDisplay.style.display = "block";
-            policyDisplay.innerHTML = window.uiTranslations[window.currentLang].policy1Text;
-        } else if (zoneSelect.value === "150") {
+            policyDisplay.innerHTML = window.uiTranslations ? window.uiTranslations[window.currentLang].policy1Text : "Inside Sylhet Delivery Policy";
+        } else if (zoneSelect.value === "outside") {
             policyDisplay.style.display = "block";
-            policyDisplay.innerHTML = window.uiTranslations[window.currentLang].policy2Text;
+            policyDisplay.innerHTML = window.uiTranslations ? window.uiTranslations[window.currentLang].policy2Text : "Outside Sylhet Delivery Policy";
         } else {
             policyDisplay.style.display = "none";
         }
@@ -56,81 +71,94 @@ window.updateDeliveryPolicyAndTotal = function() {
 }
 
 window.updateCartUI = function() {
-    cartItemsContainer.innerHTML = ''; 
+    // Save to memory every time cart updates
+    localStorage.setItem('mohor_cart', JSON.stringify(window.cart));
+
+    if (cartItemsContainer) {
+        cartItemsContainer.innerHTML = ''; 
+    }
+    
     let subtotal = 0;
     let totalItems = 0;
     
-    if (window.cart.length === 0) {
-        cartItemsContainer.innerHTML = `<p style="text-align: center; color: #666; margin-top: 20px;">${window.uiTranslations[window.currentLang].cartEmpty}</p>`;
+    if (window.cart.length === 0 && cartItemsContainer) {
+        // RESTORED: Your translation logic for empty cart
+        const emptyMsg = window.uiTranslations ? window.uiTranslations[window.currentLang].cartEmpty : "Your cart is empty.";
+        cartItemsContainer.innerHTML = `<p style="text-align: center; color: #666; margin-top: 20px;">${emptyMsg}</p>`;
     } else {
         window.cart.forEach((item, index) => {
             let itemTotal = item.price * item.qty;
             subtotal += itemTotal;
             totalItems += item.qty;
             
-            // Added type="button" to the -, +, and Remove buttons to prevent page reloads
-            cartItemsContainer.innerHTML += `
-                <div class="cart-item" style="align-items: center;">
-                    <div class="cart-item-info" style="flex: 1;">
-                        <strong style="display: block; margin-bottom: 3px;">${item.name}</strong>
-                        <span style="font-size: 11px; color: var(--text-light); text-transform: uppercase;">Size: ${item.size}</span>
-                        
-                        <div style="display: flex; align-items: center; gap: 10px; margin-top: 8px;">
-                            <button type="button" onclick="changeQty(${index}, -1)" style="border: 1px solid var(--border-color); background: var(--soft-gray); width: 22px; height: 22px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: bold; border-radius: 2px;">-</button>
-                            <span style="font-size: 13px; font-weight: 600;">${item.qty}</span>
-                            <button type="button" onclick="changeQty(${index}, 1)" style="border: 1px solid var(--border-color); background: var(--soft-gray); width: 22px; height: 22px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: bold; border-radius: 2px;">+</button>
+            if (cartItemsContainer) {
+                cartItemsContainer.innerHTML += `
+                    <div class="cart-item" style="align-items: center;">
+                        <div class="cart-item-info" style="flex: 1;">
+                            <strong style="display: block; margin-bottom: 3px;">${item.name}</strong>
+                            <span style="font-size: 11px; color: var(--text-light, #666); text-transform: uppercase;">Size: ${item.size}</span>
+                            
+                            <div style="display: flex; align-items: center; gap: 10px; margin-top: 8px;">
+                                <button type="button" onclick="changeQty(${index}, -1)" style="border: 1px solid var(--border-color, #eaeaea); background: var(--soft-gray, #f9f9f9); width: 22px; height: 22px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: bold; border-radius: 2px;">-</button>
+                                <span style="font-size: 13px; font-weight: 600;">${item.qty}</span>
+                                <button type="button" onclick="changeQty(${index}, 1)" style="border: 1px solid var(--border-color, #eaeaea); background: var(--soft-gray, #f9f9f9); width: 22px; height: 22px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: bold; border-radius: 2px;">+</button>
+                            </div>
                         </div>
-                    </div>
-                    
-                    <div style="text-align: right;">
-                        <div style="font-weight:600; color:var(--primary-gold); margin-bottom: 5px;">৳${itemTotal}</div>
-                        <button type="button" class="remove-item" onclick="removeFromCart(${index})" style="font-size: 10px;">Remove</button>
-                    </div>
-                </div>`;
+                        
+                        <div style="text-align: right;">
+                            <div style="font-weight:600; color:var(--primary-gold, #C9A14A); margin-bottom: 5px;">৳${itemTotal}</div>
+                            <button type="button" class="remove-item" onclick="removeFromCart(${index})" style="font-size: 10px; background: none; border: none; color: #d9534f; cursor: pointer; text-transform: uppercase;">Remove</button>
+                        </div>
+                    </div>`;
+            }
         });
     }
     
     const zoneSelect = document.getElementById('deliveryZone');
     let deliveryFee = 0;
     if (zoneSelect && zoneSelect.value && window.cart.length > 0) {
-        deliveryFee = parseInt(zoneSelect.value);
+        // Calculates fee based on HTML select values
+        deliveryFee = (zoneSelect.value === 'outside') ? 150 : 80;
     }
     
     const finalTotal = subtotal + deliveryFee;
     
-    if(document.getElementById('cartSubtotalValue')) document.getElementById('cartSubtotalValue').innerText = subtotal;
-    if(document.getElementById('cartDeliveryValue')) document.getElementById('cartDeliveryValue').innerText = deliveryFee;
-    if(document.getElementById('cartTotalValue')) document.getElementById('cartTotalValue').innerText = finalTotal;
+    // Updated IDs to match cart.html
+    if(document.getElementById('cartSubtotal')) document.getElementById('cartSubtotal').innerText = '৳' + subtotal;
+    if(document.getElementById('cartDelivery')) document.getElementById('cartDelivery').innerText = '৳' + deliveryFee;
+    if(document.getElementById('cartTotal')) document.getElementById('cartTotal').innerText = '৳' + finalTotal;
     
     if(cartBadge) cartBadge.innerText = totalItems;
+    if(document.getElementById('cartCountDisplay')) document.getElementById('cartCountDisplay').innerText = `Cart (${totalItems})`;
 }
 
 // --- DUAL CHECKOUT LOGIC ---
 
-// Helper function to validate all inputs before sending order anywhere
+// Helper function to validate all inputs
 function validateCheckoutInputs() {
     if (window.cart.length === 0) { 
         alert(window.currentLang === 'en' ? "Your cart is empty." : "আপনার কার্ট খালি।"); 
         return null; 
     }
     
-    const nameInput = document.getElementById('custName') ? document.getElementById('custName').value.trim() : "";
-    const phoneInput = document.getElementById('custPhone') ? document.getElementById('custPhone').value.trim() : "";
-    const addressElement = document.getElementById('deliveryAddress');
+    // FIX 2: Updated IDs to match your cart.html file exactly
+    const nameInput = document.getElementById('checkoutName') ? document.getElementById('checkoutName').value.trim() : "";
+    const phoneInput = document.getElementById('checkoutPhone') ? document.getElementById('checkoutPhone').value.trim() : "";
+    const addressElement = document.getElementById('checkoutAddress');
     const zoneSelect = document.getElementById('deliveryZone');
     const policyElement = document.getElementById('policyAgree');
     
     const addressInput = addressElement ? addressElement.value.trim() : "";
-    const policyAgree = policyElement ? policyElement.checked : false;
+    const policyAgree = policyElement ? policyElement.checked : true; // Defaults to true if checkbox isn't in HTML
 
     if (!nameInput) { alert(window.currentLang === 'en' ? "Please enter your Full Name." : "অনুগ্রহ করে আপনার পুরো নাম দিন।"); return null; }
     if (!phoneInput) { alert(window.currentLang === 'en' ? "Please enter your Mobile Number." : "অনুগ্রহ করে আপনার মোবাইল নম্বর দিন।"); return null; }
     if (!addressInput) { alert(window.currentLang === 'en' ? "Please enter your delivery address." : "অনুগ্রহ করে আপনার ডেলিভারি ঠিকানা দিন।"); return null; }
     if (!zoneSelect || !zoneSelect.value) { alert(window.currentLang === 'en' ? "Please select a Delivery Zone." : "অনুগ্রহ করে ডেলিভারি জোন নির্বাচন করুন।"); return null; }
-    if (!policyAgree) { alert(window.currentLang === 'en' ? "Please agree to the Delivery & Return Policy." : "অনুগ্রহ করে ডেলিভারি ও রিটার্ন পলিসিতে সম্মত হোন।"); return null; }
+    if (policyElement && !policyAgree) { alert(window.currentLang === 'en' ? "Please agree to the Delivery & Return Policy." : "অনুগ্রহ করে ডেলিভারি ও রিটার্ন পলিসিতে সম্মত হোন।"); return null; }
 
     const zoneText = zoneSelect.options[zoneSelect.selectedIndex].text;
-    const deliveryFee = parseInt(zoneSelect.value);
+    const deliveryFee = (zoneSelect.value === 'outside') ? 150 : 80;
     
     let subtotal = 0;
     window.cart.forEach(item => subtotal += (item.price * item.qty));
@@ -164,6 +192,8 @@ window.checkoutToWhatsApp = function() {
     message += `%0A*FINAL TOTAL: ৳${orderData.finalTotal}*%0A`;
     message += `%0A*CUSTOMER DETAILS:*%0AName: ${orderData.name}%0APhone: ${orderData.phone}%0AAddress: ${orderData.address}`;
     
+    window.cart = [];
+    window.updateCartUI();
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${message}`, '_blank');
 }
 
@@ -172,8 +202,7 @@ window.checkoutToAdmin = async function() {
     const orderData = validateCheckoutInputs();
     if (!orderData) return; 
     
-    // 1. Temporarily disable the button so the user doesn't double-click
-    const confirmBtn = document.getElementById('adminOrderBtn');
+    const confirmBtn = document.getElementById('btnConfirmOrder');
     let originalText = confirmBtn ? confirmBtn.innerHTML : "Confirm Order";
     if (confirmBtn) {
         confirmBtn.innerHTML = window.currentLang === 'en' ? "Processing..." : "প্রসেস হচ্ছে...";
@@ -181,7 +210,6 @@ window.checkoutToAdmin = async function() {
     }
 
     try {
-        // 2. Package the order data including user tracking
         const newOrder = {
             userId: (typeof window.currentUser !== 'undefined' && window.currentUser) ? window.currentUser.uid : "guest",
             customerName: orderData.name,
@@ -196,25 +224,20 @@ window.checkoutToAdmin = async function() {
             status: "New" 
         };
 
-        // 3. Send the data to your Firebase 'orders' collection
         await window.db.collection("orders").add(newOrder);
 
-        // 4. Show success message
         alert(window.currentLang === 'en' ? "Order placed successfully! We will contact you soon." : "আপনার অর্ডারটি সফলভাবে সম্পন্ন হয়েছে! আমরা শীঘ্রই যোগাযোগ করব।");
         
-        // 5. Empty the cart and update the UI
         window.cart = [];
         window.updateCartUI();
         
-        // 6. Close the cart sidebar automatically
-        document.getElementById('cartSidebar').classList.remove('active');
-        document.getElementById('cartOverlay').classList.remove('active');
+        if (cartSidebar) cartSidebar.classList.remove('active');
+        if (cartOverlay) cartOverlay.classList.remove('active');
 
-        // 7. Clear the input fields (Keep name/address if user is logged in, clear if guest)
         if (typeof window.currentUser === 'undefined' || !window.currentUser) {
-            if(document.getElementById('custName')) document.getElementById('custName').value = '';
-            if(document.getElementById('custPhone')) document.getElementById('custPhone').value = '';
-            if(document.getElementById('deliveryAddress')) document.getElementById('deliveryAddress').value = '';
+            if(document.getElementById('checkoutName')) document.getElementById('checkoutName').value = '';
+            if(document.getElementById('checkoutPhone')) document.getElementById('checkoutPhone').value = '';
+            if(document.getElementById('checkoutAddress')) document.getElementById('checkoutAddress').value = '';
         }
         
         if(document.getElementById('deliveryZone')) document.getElementById('deliveryZone').value = '';
@@ -223,7 +246,7 @@ window.checkoutToAdmin = async function() {
         const policyDisplay = document.getElementById('dynamicPolicyDisplay');
         if(policyDisplay) policyDisplay.style.display = 'none';
 
-        // 8. Refresh order history if user is logged in
+        // RESTORED: Your user history reload logic
         if (typeof window.currentUser !== 'undefined' && window.currentUser && typeof loadUserOrders === 'function') {
             loadUserOrders(window.currentUser.uid);
         }
@@ -232,10 +255,20 @@ window.checkoutToAdmin = async function() {
         console.error("Error saving order: ", error);
         alert(window.currentLang === 'en' ? "There was an error placing your order. Please try WhatsApp instead." : "অর্ডার প্লেস করতে সমস্যা হয়েছে। অনুগ্রহ করে হোয়াটসঅ্যাপে চেষ্টা করুন।");
     } finally {
-        // 9. Turn the button back on
         if (confirmBtn) {
             confirmBtn.innerHTML = originalText;
             confirmBtn.disabled = false;
         }
     }
 }
+
+// Auto-bind checkout buttons if on cart.html
+document.addEventListener('DOMContentLoaded', () => {
+    const btnWhatsApp = document.getElementById('btnWhatsAppOrder');
+    if (btnWhatsApp) btnWhatsApp.onclick = window.checkoutToWhatsApp;
+
+    const btnConfirm = document.getElementById('btnConfirmOrder');
+    if (btnConfirm) btnConfirm.onclick = window.checkoutToAdmin;
+
+    window.updateCartUI();
+});
