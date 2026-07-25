@@ -3,285 +3,121 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Product Details | Mohor Clothings</title>
+    <title>Product Details | Mohor</title>
 
-    <link rel="icon" type="image/jpeg" href="favicon.jpeg">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 
     <style>
-        :root {
-            --primary-gold: #C9A14A;
-            --deep-black: #0c0c0c;
-            --soft-gray: #f9f9f9;
-            --border-color: #eaeaea;
-            --text-dark: #222;
-            --text-light: #666;
-            --white: #ffffff;
-            --radius: 8px;
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Montserrat', sans-serif; background-color: var(--white); color: var(--text-dark); line-height: 1.6; padding-bottom: 90px; }
-        h1, h2, h3, h4, .brand-logo { font-family: 'Playfair Display', serif; }
-
-        /* Top Navigation Header */
-        nav { display: flex; justify-content: space-between; align-items: center; padding: 15px 5%; background: var(--white); position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid var(--border-color); }
-        .back-btn { text-decoration: none; color: var(--deep-black); font-size: 20px; font-weight: 600; display: flex; align-items: center; gap: 5px; }
-        .brand-logo { font-size: 22px; font-weight: 700; letter-spacing: 2px; text-decoration: none; color: var(--deep-black); text-transform: uppercase; }
-        .nav-right { display: flex; align-items: center; gap: 15px; }
-        .cart-toggle-btn { background: none; border: none; font-family: 'Montserrat', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px; text-transform: uppercase; }
-        .cart-badge { background: var(--primary-gold); color: var(--white); border-radius: 50%; padding: 2px 8px; font-size: 11px; }
-        .lang-btn { background: var(--deep-black); color: var(--white); border: none; padding: 5px 10px; font-size: 11px; font-weight: 600; cursor: pointer; border-radius: 4px; }
-
-        /* Product Content Container */
-        .product-container { max-width: 600px; margin: 0 auto; padding: 20px 5%; }
+        /* Essential Clean Styles */
+        :root { --primary-gold: #C9A14A; --deep-black: #0c0c0c; --white: #ffffff; --border: #eaeaea; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Montserrat', sans-serif; }
+        body { background-color: var(--white); color: var(--deep-black); padding-bottom: 90px; }
         
-        .main-image-wrapper { width: 100%; height: 380px; background: var(--soft-gray); border-radius: var(--radius); overflow: hidden; display: flex; justify-content: center; align-items: center; border: 1px solid var(--border-color); }
-        .main-image-wrapper img { width: 100%; height: 100%; object-fit: contain; }
-
-        .thumbnail-gallery { display: flex; gap: 10px; margin-top: 12px; overflow-x: auto; padding-bottom: 5px; }
-        .thumbnail { width: 65px; height: 80px; object-fit: cover; border-radius: 4px; border: 2px solid transparent; opacity: 0.6; cursor: pointer; flex-shrink: 0; }
-        .thumbnail.active { border-color: var(--primary-gold); opacity: 1; }
-
-        .info-section { margin-top: 25px; }
-        .info-section h1 { font-size: 24px; color: var(--deep-black); margin-bottom: 8px; }
-        .price-tag { font-size: 20px; color: var(--primary-gold); font-weight: 600; margin-bottom: 20px; }
-
-        .selector-section { margin-bottom: 20px; }
-        .selector-section h4 { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; font-weight: 600; }
-        .selector-options { display: flex; gap: 10px; flex-wrap: wrap; }
-        .select-btn { border: 1px solid var(--border-color); background: var(--white); padding: 10px 16px; font-size: 13px; font-family: 'Montserrat', sans-serif; border-radius: 4px; cursor: pointer; min-width: 45px; text-align: center; }
-        .select-btn.selected { background: var(--deep-black); color: var(--white); border-color: var(--deep-black); }
-
-        .warning-msg { color: #d9534f; font-size: 11px; display: none; margin-left: 8px; }
-        #sizeGuideDisplay { font-size: 12px; color: var(--text-light); margin-top: 10px; line-height: 1.6; background: var(--soft-gray); padding: 10px; border-radius: 4px; display: none; }
-
-        .desc-box { margin-bottom: 20px; }
-        .desc-box h4 { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; font-weight: 600; border-bottom: 1px solid var(--border-color); padding-bottom: 5px; }
-        .desc-box p, .desc-box ul { font-size: 13px; color: var(--text-light); line-height: 1.7; }
-        .desc-box ul { list-style: square inside; }
-
-        /* Sticky Bottom Action Bar for Mobile */
-        .sticky-bottom-bar { position: fixed; bottom: 0; left: 0; right: 0; background: var(--white); padding: 12px 5%; border-top: 1px solid var(--border-color); display: flex; gap: 10px; z-index: 2000; box-shadow: 0 -5px 15px rgba(0,0,0,0.05); }
-        .add-cart-btn { flex: 1; background: var(--primary-gold); color: var(--white); border: none; padding: 14px; font-family: 'Montserrat', sans-serif; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; border-radius: 4px; cursor: pointer; }
-        .buy-now-btn { flex: 1; background: var(--deep-black); color: var(--white); border: none; padding: 14px; font-family: 'Montserrat', sans-serif; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; border-radius: 4px; cursor: pointer; }
+        nav { display: flex; justify-content: space-between; padding: 15px 5%; border-bottom: 1px solid var(--border); }
+        .brand-logo { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; text-decoration: none; color: var(--deep-black); text-transform: uppercase; }
+        
+        .product-container { max-width: 600px; margin: 0 auto; padding: 20px 5%; }
+        .main-image { width: 100%; height: 380px; object-fit: contain; background: #f9f9f9; border: 1px solid var(--border); border-radius: 8px; }
+        
+        .info-section { margin-top: 20px; }
+        h1 { font-family: 'Playfair Display', serif; font-size: 24px; margin-bottom: 5px; }
+        .price { font-size: 20px; color: var(--primary-gold); font-weight: 600; margin-bottom: 20px; }
+        
+        .btn-group { display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap; }
+        .option-btn { border: 1px solid var(--border); background: var(--white); padding: 10px 15px; cursor: pointer; border-radius: 4px; }
+        .option-btn.selected { background: var(--deep-black); color: var(--white); border-color: var(--deep-black); }
+        
+        .desc-box { margin-top: 25px; font-size: 13px; line-height: 1.6; color: #555; }
+        .desc-box h4 { font-weight: 600; margin-bottom: 8px; color: var(--deep-black); text-transform: uppercase; }
+        
+        .bottom-bar { position: fixed; bottom: 0; width: 100%; display: flex; padding: 10px; background: var(--white); border-top: 1px solid var(--border); }
+        .bottom-bar button { flex: 1; padding: 15px; font-weight: 600; border: none; cursor: pointer; text-transform: uppercase; }
+        .btn-add { background: var(--primary-gold); color: var(--white); margin-right: 5px; }
+        .btn-buy { background: var(--deep-black); color: var(--white); margin-left: 5px; }
     </style>
 </head>
 <body>
 
     <nav>
-        <a href="index.html" class="back-btn">&#8592;</a>
+        <a href="index.html" style="text-decoration: none; color: black; font-weight: bold;">&#8592; Back</a>
         <a href="index.html" class="brand-logo">Mohor</a>
-        <div class="nav-right">
-            <button type="button" id="langToggleBtn" class="lang-btn">EN / বাং</button>
-            <a href="cart.html" class="cart-toggle-btn" style="text-decoration:none; color:inherit;">
-                <span data-i18n="navCart">Cart</span> <span class="cart-badge" id="cartBadge">0</span>
-            </a>
-        </div>
+        <span>Cart (0)</span>
     </nav>
 
     <div class="product-container">
-        <div class="main-image-wrapper">
-            <img id="productMainImage" src="" alt="Product Image">
-        </div>
-        <div class="thumbnail-gallery" id="productThumbnails"></div>
-
+        <img id="mainImage" class="main-image" src="" alt="Loading...">
+        
         <div class="info-section">
-            <h1 id="productTitle">Initializing...</h1>
-            <div class="price-tag" id="productPrice"></div>
-
-            <div class="selector-section" id="colorSection" style="display:none;">
-                <h4><span data-i18n="colorSelect">Select Color</span><span id="colorWarning" class="warning-msg" data-i18n="colorWarning">*Required</span></h4>
-                <div class="selector-options" id="productColors"></div>
-            </div>
-
-            <div class="selector-section">
-                <h4><span data-i18n="sizeSelect">Select Size</span><span id="sizeWarning" class="warning-msg" data-i18n="sizeWarning">*Required</span></h4>
-                <div class="selector-options" id="productSizes"></div>
-                <div id="sizeGuideDisplay"></div>
+            <h1 id="prodTitle">Loading Product...</h1>
+            <div id="prodPrice" class="price"></div>
+            
+            <div class="desc-box">
+                <h4>Sizes Available</h4>
+                <div id="sizeOptions" class="btn-group"></div>
             </div>
 
             <div class="desc-box">
-                <h4 data-i18n="descTitle">Description</h4>
-                <p id="productDesc"></p>
-            </div>
-
-            <div class="desc-box">
-                <h4 data-i18n="detailsTitle">Product Details</h4>
-                <ul id="productDetails"></ul>
+                <h4>Description</h4>
+                <p id="prodDesc"></p>
             </div>
         </div>
     </div>
 
-    <div class="sticky-bottom-bar">
-        <button type="button" class="add-cart-btn" id="addToCartBtn" data-i18n="addToCart">Add to Cart</button>
-        <button type="button" class="buy-now-btn" id="buyNowBtn">Buy Now</button>
+    <div class="bottom-bar">
+        <button class="btn-add">Add to Cart</button>
+        <button class="btn-buy">Buy Now</button>
     </div>
-
-    <!-- Firebase SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-
-    <!-- Version 3 Tags to force cache refresh -->
-    <script src="products.js?v=3"></script>
-    <script src="cart.js?v=3"></script>
-    <script src="app.js?v=3"></script>
 
     <script>
-        let currentProduct = null;
-        let selectedSize = null;
-        let selectedColor = null;
-
-        function getSafeText(dataField) {
-            if (typeof window.getText === 'function') return window.getText(dataField);
-            if (!dataField) return "";
-            if (typeof dataField === 'string') return dataField; 
-            return dataField[window.currentLang || 'en'] || dataField['en'] || "";
-        }
-
-        function loadProductDetails() {
-            try {
-                const params = new URLSearchParams(window.location.search);
-                const targetId = params.get('id');
-                
-                if (!targetId) {
-                    document.getElementById('productTitle').innerText = "No ID in URL.";
-                    return;
-                }
-
-                let sourceList = [];
-                if (typeof window.productsData !== 'undefined' && Array.isArray(window.productsData)) {
-                    sourceList = window.productsData;
-                } else if (typeof productsData !== 'undefined' && Array.isArray(productsData)) {
-                    sourceList = productsData;
-                }
-
-                if (sourceList.length > 0) {
-                    currentProduct = sourceList.find(p => String(p.id) === String(targetId));
-                }
-
-                if (!currentProduct) {
-                    document.getElementById('productTitle').innerText = "Product Not Found";
-                    document.getElementById('productTitle').style.color = "#d9534f";
-                    document.getElementById('productDesc').innerText = "Could not find ID: " + targetId;
-                    return;
-                }
-
-                document.getElementById('productTitle').innerText = getSafeText(currentProduct.title);
-                document.getElementById('productPrice').innerText = `৳ ${currentProduct.price}`;
-                document.getElementById('productDesc').innerText = getSafeText(currentProduct.description);
-
-                const mainImg = document.getElementById('productMainImage');
-                const thumbGallery = document.getElementById('productThumbnails');
-                
-                if (currentProduct.images && currentProduct.images.length > 0) {
-                    mainImg.src = currentProduct.images[0];
-                    currentProduct.images.forEach((imgSrc, idx) => {
-                        const thumb = document.createElement('img');
-                        thumb.src = imgSrc;
-                        thumb.className = 'thumbnail' + (idx === 0 ? ' active' : '');
-                        thumb.onclick = () => {
-                            mainImg.src = imgSrc;
-                            document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
-                            thumb.classList.add('active');
-                        };
-                        thumbGallery.appendChild(thumb);
-                    });
-                }
-
-                const colorsContainer = document.getElementById('productColors');
-                const colorSection = document.getElementById('colorSection');
-                let colorArray = [];
-                if (currentProduct.colors) {
-                    colorArray = Array.isArray(currentProduct.colors) ? currentProduct.colors : (currentProduct.colors['en'] || []);
-                }
-
-                if (colorArray.length > 0) {
-                    colorSection.style.display = 'block';
-                    colorArray.forEach(color => {
-                        const btn = document.createElement('button');
-                        btn.className = 'select-btn color-btn';
-                        btn.innerText = color;
-                        btn.onclick = () => {
-                            selectedColor = color;
-                            document.getElementById('colorWarning').style.display = 'none';
-                            document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('selected'));
-                            btn.classList.add('selected');
-                        };
-                        colorsContainer.appendChild(btn);
-                    });
-                } else {
-                    selectedColor = "Default";
-                }
-
-                const sizesContainer = document.getElementById('productSizes');
-                if (currentProduct.sizes && Array.isArray(currentProduct.sizes)) {
-                    currentProduct.sizes.forEach(size => {
-                        const btn = document.createElement('button');
-                        btn.className = 'select-btn size-btn';
-                        btn.innerText = size;
-                        btn.onclick = () => {
-                            selectedSize = size;
-                            document.getElementById('sizeWarning').style.display = 'none';
-                            document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('selected'));
-                            btn.classList.add('selected');
-                        };
-                        sizesContainer.appendChild(btn);
-                    });
-                }
-
-                const detailsList = document.getElementById('productDetails');
-                let detailsArray = [];
-                if (currentProduct.details) {
-                    detailsArray = Array.isArray(currentProduct.details) ? currentProduct.details : (currentProduct.details['en'] || []);
-                }
-                
-                if (detailsArray.length > 0) {
-                    detailsArray.forEach(d => {
-                        const li = document.createElement('li');
-                        li.innerText = d;
-                        detailsList.appendChild(li);
-                    });
-                }
-
-            } catch (error) {
-                console.error(error);
-                document.getElementById('productTitle').innerText = "Script Crash!";
-                document.getElementById('productTitle').style.color = "red";
-                document.getElementById('productDesc').innerText = "Error: " + error.message;
+        // 1. WE PUT THE DATA DIRECTLY IN THIS FILE SO IT CANNOT FAIL TO LOAD
+        const myProducts = [
+            {
+                id: 1,
+                title: "Peach Vila 3-Piece",
+                price: 3200,
+                image: "images/peach-vila-3piece/peach_vila1.jpg",
+                sizes: ["38 (M)", "42 (L)", "44-46 (XL)"],
+                desc: "A premium embroidered 3-piece ensemble featuring high-quality detailing. Designed with a loose fit for ultimate comfort."
             }
-        }
+        ];
 
-        function handleAddToCart() {
-            let valid = true;
-            if (!selectedSize) { document.getElementById('sizeWarning').style.display = 'inline'; valid = false; }
-            if (!selectedColor) { document.getElementById('colorWarning').style.display = 'inline'; valid = false; }
-            if (!valid) return false;
+        // 2. RUN THE LOAD FUNCTION IMMEDIATELY
+        function loadPage() {
+            // Check URL for ID (defaults to 1 if none found for testing)
+            const params = new URLSearchParams(window.location.search);
+            const targetId = params.get('id') || 1; 
 
-            let name = typeof currentProduct.title === 'string' ? currentProduct.title : currentProduct.title.en;
-            if (selectedColor !== "Default") name += ` (${selectedColor})`;
+            // Find product
+            const product = myProducts.find(p => p.id == targetId);
 
-            if (typeof window.addToCart === "function") {
-                window.addToCart(name, currentProduct.price, selectedSize);
+            if (!product) {
+                document.getElementById('prodTitle').innerText = "Product Not Found";
+                return;
             }
-            return true;
+
+            // Inject Data into HTML
+            document.getElementById('prodTitle').innerText = product.title;
+            document.getElementById('prodPrice').innerText = "৳ " + product.price;
+            document.getElementById('mainImage').src = product.image;
+            document.getElementById('prodDesc').innerText = product.desc;
+
+            // Generate Size Buttons
+            const sizeContainer = document.getElementById('sizeOptions');
+            product.sizes.forEach(size => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = size;
+                btn.onclick = () => {
+                    document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+                    btn.classList.add('selected');
+                };
+                sizeContainer.appendChild(btn);
+            });
         }
 
-        document.getElementById('addToCartBtn').addEventListener('click', () => {
-            if (handleAddToCart()) alert("Item added to cart!");
-        });
-
-        document.getElementById('buyNowBtn').addEventListener('click', () => {
-            if (handleAddToCart()) window.location.href = 'cart.html';
-        });
-
-        // FIX: Execute instantly, do not wait for Firebase or window.onload
-        try {
-            loadProductDetails();
-        } catch (e) {
-            document.getElementById('productTitle').innerText = "Critical Start Error";
-        }
+        // Trigger the script
+        loadPage();
     </script>
+
 </body>
 </html>
