@@ -71,7 +71,7 @@
         .cart-nav-icon { position: relative; color: var(--deep-black); display: flex; align-items: center; text-decoration: none; margin-right: 10px; }
         .cart-nav-icon svg { transition: transform 0.2s ease; }
         .cart-nav-icon:hover svg { transform: scale(1.1); }
-        .cart-nav-icon .badge { position: absolute; top: -5px; right: -10px; background: var(--primary-gold); color: var(--white); font-size: 11px; font-weight: 700; height: 18px; width: 18px; display: flex; justify-content: center; align-items: center; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.15); display: none; /* Hidden by default until items are added */ }
+        .cart-nav-icon .badge { position: absolute; top: -5px; right: -10px; background: var(--primary-gold); color: var(--white); font-size: 11px; font-weight: 700; height: 18px; width: 18px; display: flex; justify-content: center; align-items: center; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.15); display: none; }
     </style>
 </head>
 <body>
@@ -179,7 +179,7 @@
         // Default language set to English. 
         const currentLang = 'en'; 
 
-        // Function to safely extract translated strings (handles strings or objects)
+        // Function to safely extract translated strings (handles strings or multi-lang objects)
         function getProductText(field) {
             if (!field) return "";
             if (typeof field === 'string') return field;
@@ -231,7 +231,7 @@
                 return;
             }
 
-            // 1. Populate Basic Info (Safely handles both string/object formats)
+            // 1. Populate Basic Info
             document.getElementById('prodTitle').innerText = getProductText(activeProduct.title);
             document.getElementById('prodPrice').innerText = "৳ " + activeProduct.price;
             document.getElementById('prodDesc').innerHTML = getProductText(activeProduct.description);
