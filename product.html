@@ -142,11 +142,11 @@
         <button class="btn-buy" id="buyNowBtn">Buy Now</button>
     </div>
 
-    <!-- CACHE BUSTERS: Updated to v=12 -->
-    <script src="products.js?v=12"></script>
-    <script src="app.js?v=12"></script>
+    <!-- CACHE BUSTERS: Updated to v=13 so browsers pull the new unselect code -->
+    <script src="products.js?v=13"></script>
+    <script src="app.js?v=13"></script>
     <!-- UPGRADE: MUST include cart.js so the Add to Cart button functions! -->
-    <script src="cart.js?v=12"></script>
+    <script src="cart.js?v=13"></script>
 
     <script>
         let currentSelectedSize = null;
@@ -206,7 +206,7 @@
                 });
             }
 
-            // 4. Handle Sizes & Dynamic Measurements
+            // 4. Handle Sizes (UPGRADE: TOGGLE LOGIC TO UNSELECT)
             const sizeContainer = document.getElementById('sizeOptions');
             const measurementBox = document.getElementById('sizeMeasurements');
             
@@ -217,20 +217,28 @@
                     btn.innerText = size;
                     
                     btn.onclick = () => {
-                        document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('selected'));
-                        btn.classList.add('selected');
-                        currentSelectedSize = size;
+                        // If it is already selected, unselect it
+                        if (btn.classList.contains('selected')) {
+                            btn.classList.remove('selected');
+                            currentSelectedSize = null;
+                            measurementBox.style.display = 'none';
+                        } else {
+                            // Otherwise, select it
+                            document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('selected'));
+                            btn.classList.add('selected');
+                            currentSelectedSize = size;
 
-                        if (activeProduct.sizeMeasurements && activeProduct.sizeMeasurements[size]) {
-                            measurementBox.style.display = 'block';
-                            measurementBox.innerHTML = activeProduct.sizeMeasurements[size][currentLang];
+                            if (activeProduct.sizeMeasurements && activeProduct.sizeMeasurements[size]) {
+                                measurementBox.style.display = 'block';
+                                measurementBox.innerHTML = activeProduct.sizeMeasurements[size][currentLang];
+                            }
                         }
                     };
                     sizeContainer.appendChild(btn);
                 });
             }
 
-            // 5. Handle Colors (FIXED LOGIC)
+            // 5. Handle Colors (UPGRADE: TOGGLE LOGIC & NO AUTO-SELECT)
             const colorContainer = document.getElementById('colorOptions');
             const colorSection = document.getElementById('colorSection');
             
@@ -242,17 +250,18 @@
                     btn.innerText = color;
                     
                     btn.onclick = () => {
-                        document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('selected'));
-                        btn.classList.add('selected');
-                        currentSelectedColor = color;
+                        // If it is already selected, unselect it
+                        if (btn.classList.contains('selected')) {
+                            btn.classList.remove('selected');
+                            currentSelectedColor = null;
+                        } else {
+                            // Otherwise, select it
+                            document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('selected'));
+                            btn.classList.add('selected');
+                            currentSelectedColor = color;
+                        }
                     };
                     colorContainer.appendChild(btn);
-                    
-                    // FIX: Automatically force the selection class if there's only 1 color
-                    if (activeProduct.colors[currentLang].length === 1) {
-                        btn.classList.add('selected');
-                        currentSelectedColor = color;
-                    }
                 });
             }
 
