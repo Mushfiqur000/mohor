@@ -8,7 +8,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 
     <style>
-        /* Essential Clean Styles */
         :root { --primary-gold: #C9A14A; --deep-black: #0c0c0c; --white: #ffffff; --border: #eaeaea; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Montserrat', sans-serif; }
         body { background-color: var(--white); color: var(--deep-black); padding-bottom: 90px; }
@@ -17,107 +16,216 @@
         .brand-logo { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; text-decoration: none; color: var(--deep-black); text-transform: uppercase; }
         
         .product-container { max-width: 600px; margin: 0 auto; padding: 20px 5%; }
-        .main-image { width: 100%; height: 380px; object-fit: contain; background: #f9f9f9; border: 1px solid var(--border); border-radius: 8px; }
+        .main-image { width: 100%; height: 450px; object-fit: cover; background: #f9f9f9; border: 1px solid var(--border); border-radius: 8px; }
+        
+        .thumbnail-row { display: flex; gap: 10px; margin-top: 10px; overflow-x: auto; padding-bottom: 5px; }
+        .thumbnail { width: 70px; height: 90px; object-fit: cover; cursor: pointer; border: 1px solid var(--border); border-radius: 4px; opacity: 0.6; transition: 0.3s; }
+        .thumbnail:hover, .thumbnail.active { opacity: 1; border-color: var(--primary-gold); }
         
         .info-section { margin-top: 20px; }
         h1 { font-family: 'Playfair Display', serif; font-size: 24px; margin-bottom: 5px; }
         .price { font-size: 20px; color: var(--primary-gold); font-weight: 600; margin-bottom: 20px; }
         
-        .btn-group { display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap; }
-        .option-btn { border: 1px solid var(--border); background: var(--white); padding: 10px 15px; cursor: pointer; border-radius: 4px; }
+        .btn-group { display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
+        .option-btn { border: 1px solid var(--border); background: var(--white); padding: 10px 15px; cursor: pointer; border-radius: 4px; font-size: 13px; transition: 0.2s; }
         .option-btn.selected { background: var(--deep-black); color: var(--white); border-color: var(--deep-black); }
         
-        .desc-box { margin-top: 25px; font-size: 13px; line-height: 1.6; color: #555; }
-        .desc-box h4 { font-weight: 600; margin-bottom: 8px; color: var(--deep-black); text-transform: uppercase; }
+        .desc-box { margin-top: 25px; font-size: 13.5px; line-height: 1.6; color: #444; }
+        .desc-box h4 { font-weight: 600; margin-bottom: 8px; color: var(--deep-black); text-transform: uppercase; letter-spacing: 0.5px; }
         
-        .bottom-bar { position: fixed; bottom: 0; width: 100%; display: flex; padding: 10px; background: var(--white); border-top: 1px solid var(--border); }
-        .bottom-bar button { flex: 1; padding: 15px; font-weight: 600; border: none; cursor: pointer; text-transform: uppercase; }
-        .btn-add { background: var(--primary-gold); color: var(--white); margin-right: 5px; }
-        .btn-buy { background: var(--deep-black); color: var(--white); margin-left: 5px; }
+        .measurements-box { margin-top: 10px; padding: 10px; background: #f9f9f9; border: 1px solid var(--border); border-radius: 4px; font-size: 12.5px; display: none; }
+        
+        .details-list { margin-top: 10px; padding-left: 20px; }
+        .details-list li { margin-bottom: 5px; }
+
+        .bottom-bar { position: fixed; bottom: 0; width: 100%; display: flex; padding: 10px; background: var(--white); border-top: 1px solid var(--border); z-index: 100; }
+        .bottom-bar button { flex: 1; padding: 15px; font-weight: 600; border: none; cursor: pointer; text-transform: uppercase; font-size: 14px; }
+        .btn-add { background: var(--primary-gold); color: var(--white); margin-right: 5px; border-radius: 4px; }
+        .btn-buy { background: var(--deep-black); color: var(--white); margin-left: 5px; border-radius: 4px; }
     </style>
 </head>
 <body>
 
     <nav>
-        <a href="index.html" style="text-decoration: none; color: black; font-weight: bold;">&#8592; Back</a>
+        <a href="index.html" style="text-decoration: none; color: black; font-weight: 600;">&#8592; Back</a>
         <a href="index.html" class="brand-logo">Mohor</a>
-        <span>Cart (0)</span>
+        <span id="cartCountDisplay" style="font-weight: 500;">Cart (0)</span>
     </nav>
 
     <div class="product-container">
+        <!-- Images -->
         <img id="mainImage" class="main-image" src="" alt="Loading...">
+        <div id="thumbnailContainer" class="thumbnail-row"></div>
         
         <div class="info-section">
+            <!-- Title & Price -->
             <h1 id="prodTitle">Loading Product...</h1>
             <div id="prodPrice" class="price"></div>
             
-            <div class="desc-box">
-                <h4>Sizes Available</h4>
-                <div id="sizeOptions" class="btn-group"></div>
+            <!-- Color Options -->
+            <div class="desc-box" id="colorSection" style="display: none;">
+                <h4>Select Color</h4>
+                <div id="colorOptions" class="btn-group"></div>
             </div>
 
+            <!-- Size Options -->
+            <div class="desc-box">
+                <h4>Select Size</h4>
+                <div id="sizeOptions" class="btn-group"></div>
+                <!-- Dynamic Measurements Box -->
+                <div id="sizeMeasurements" class="measurements-box"></div>
+            </div>
+
+            <!-- Description -->
             <div class="desc-box">
                 <h4>Description</h4>
                 <p id="prodDesc"></p>
+            </div>
+
+            <!-- Details (Bullet Points) -->
+            <div class="desc-box" id="detailsSection" style="display: none;">
+                <h4>Details</h4>
+                <ul id="prodDetails" class="details-list"></ul>
             </div>
         </div>
     </div>
 
     <div class="bottom-bar">
-        <button class="btn-add">Add to Cart</button>
-        <button class="btn-buy">Buy Now</button>
+        <button class="btn-add" id="addToCartBtn">Add to Cart</button>
+        <button class="btn-buy" id="buyNowBtn">Buy Now</button>
     </div>
 
+    <!-- CACHE BUSTERS: Updated to v=11 to force the phone to pull the new structure -->
+    <script src="products.js?v=11"></script>
+    <script src="app.js?v=11"></script>
+
     <script>
-        // 1. WE PUT THE DATA DIRECTLY IN THIS FILE SO IT CANNOT FAIL TO LOAD
-        const myProducts = [
-            {
-                id: 1,
-                title: "Peach Vila 3-Piece",
-                price: 3200,
-                image: "images/peach-vila-3piece/peach_vila1.jpg",
-                sizes: ["38 (M)", "42 (L)", "44-46 (XL)"],
-                desc: "A premium embroidered 3-piece ensemble featuring high-quality detailing. Designed with a loose fit for ultimate comfort."
-            }
-        ];
+        let currentSelectedSize = null;
+        let currentSelectedColor = null;
+        let activeProduct = null;
+        
+        // Default language set to English. 
+        // If your app.js handles language switching, you can change this variable dynamically.
+        const currentLang = 'en'; 
 
-        // 2. RUN THE LOAD FUNCTION IMMEDIATELY
-        function loadPage() {
-            // Check URL for ID (defaults to 1 if none found for testing)
+        document.addEventListener('DOMContentLoaded', () => {
             const params = new URLSearchParams(window.location.search);
-            const targetId = params.get('id') || 1; 
+            const targetId = params.get('id');
 
-            // Find product
-            const product = myProducts.find(p => p.id == targetId);
+            // Pull data from window.productsData (matching your exact array name)
+            const allProducts = window.productsData || [];
+            activeProduct = allProducts.find(p => String(p.id) === String(targetId));
 
-            if (!product) {
+            if (!activeProduct) {
                 document.getElementById('prodTitle').innerText = "Product Not Found";
                 return;
             }
 
-            // Inject Data into HTML
-            document.getElementById('prodTitle').innerText = product.title;
-            document.getElementById('prodPrice').innerText = "৳ " + product.price;
-            document.getElementById('mainImage').src = product.image;
-            document.getElementById('prodDesc').innerText = product.desc;
+            // 1. Populate Basic Info (Extracting the English data)
+            document.getElementById('prodTitle').innerText = activeProduct.title[currentLang];
+            document.getElementById('prodPrice').innerText = "৳ " + activeProduct.price;
+            
+            // Using innerHTML here because your description might contain formatting
+            document.getElementById('prodDesc').innerHTML = activeProduct.description[currentLang];
 
-            // Generate Size Buttons
+            // 2. Populate Bullet Point Details
+            const detailsList = document.getElementById('prodDetails');
+            const detailsSection = document.getElementById('detailsSection');
+            if (activeProduct.details && activeProduct.details[currentLang]) {
+                detailsSection.style.display = 'block';
+                activeProduct.details[currentLang].forEach(detailText => {
+                    const li = document.createElement('li');
+                    li.innerText = detailText;
+                    detailsList.appendChild(li);
+                });
+            }
+
+            // 3. Handle Images & Thumbnails
+            const mainImg = document.getElementById('mainImage');
+            const thumbContainer = document.getElementById('thumbnailContainer');
+            
+            if (activeProduct.images && activeProduct.images.length > 0) {
+                mainImg.src = activeProduct.images[0]; 
+                
+                activeProduct.images.forEach((imgSrc, index) => {
+                    const thumb = document.createElement('img');
+                    thumb.src = imgSrc;
+                    thumb.className = index === 0 ? 'thumbnail active' : 'thumbnail';
+                    
+                    thumb.onclick = () => {
+                        mainImg.src = imgSrc;
+                        document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
+                        thumb.classList.add('active');
+                    };
+                    thumbContainer.appendChild(thumb);
+                });
+            }
+
+            // 4. Handle Sizes & Dynamic Measurements
             const sizeContainer = document.getElementById('sizeOptions');
-            product.sizes.forEach(size => {
-                const btn = document.createElement('button');
-                btn.className = 'option-btn';
-                btn.innerText = size;
-                btn.onclick = () => {
-                    document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
-                    btn.classList.add('selected');
-                };
-                sizeContainer.appendChild(btn);
-            });
-        }
+            const measurementBox = document.getElementById('sizeMeasurements');
+            
+            if (activeProduct.sizes && activeProduct.sizes.length > 0) {
+                activeProduct.sizes.forEach(size => {
+                    const btn = document.createElement('button');
+                    btn.className = 'option-btn size-btn';
+                    btn.innerText = size;
+                    
+                    btn.onclick = () => {
+                        // Highlight selected button
+                        document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('selected'));
+                        btn.classList.add('selected');
+                        currentSelectedSize = size;
 
-        // Trigger the script
-        loadPage();
+                        // Show specific size measurements (using innerHTML because you have <br> tags in your data)
+                        if (activeProduct.sizeMeasurements && activeProduct.sizeMeasurements[size]) {
+                            measurementBox.style.display = 'block';
+                            measurementBox.innerHTML = activeProduct.sizeMeasurements[size][currentLang];
+                        }
+                    };
+                    sizeContainer.appendChild(btn);
+                });
+            }
+
+            // 5. Handle Colors
+            const colorContainer = document.getElementById('colorOptions');
+            const colorSection = document.getElementById('colorSection');
+            
+            if (activeProduct.colors && activeProduct.colors[currentLang] && activeProduct.colors[currentLang].length > 0) {
+                colorSection.style.display = 'block';
+                activeProduct.colors[currentLang].forEach(color => {
+                    const btn = document.createElement('button');
+                    btn.className = 'option-btn color-btn';
+                    btn.innerText = color;
+                    btn.onclick = () => {
+                        document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('selected'));
+                        btn.classList.add('selected');
+                        currentSelectedColor = color;
+                    };
+                    colorContainer.appendChild(btn);
+                    
+                    // Auto-select if there is only one color
+                    if (activeProduct.colors[currentLang].length === 1) {
+                        btn.click();
+                    }
+                });
+            }
+
+            // 6. Bind Add to Cart
+            document.getElementById('addToCartBtn').onclick = () => {
+                if (activeProduct.sizes && !currentSelectedSize) {
+                    alert("Please select a size first!");
+                    return;
+                }
+                
+                if (typeof window.addToCart === 'function') {
+                    window.addToCart(activeProduct.id, currentSelectedSize, currentSelectedColor);
+                    alert("Added to Cart!");
+                } else {
+                    console.error("addToCart function not found. Check app.js connection.");
+                }
+            };
+        });
     </script>
-
 </body>
 </html>
