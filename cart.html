@@ -150,6 +150,22 @@
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
+    <!-- NEW: Firebase Configuration Block to Fix Error -->
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyALxypXDkF9QexbD_wE7-ADALIdj5vd-rY",
+            authDomain: "mohor-app.firebaseapp.com",
+            projectId: "mohor-app",
+            storageBucket: "mohor-app.firebasestorage.app",
+            messagingSenderId: "989000457004",
+            appId: "1:989000457004:web:5679b256e20d94e27daa89"
+        };
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        // Initialize Firestore
+        window.db = firebase.firestore();
+    </script>
+
     <!-- Essential Scripts -->
     <script src="products.js?v=15"></script>
     <script src="app.js?v=15"></script>
