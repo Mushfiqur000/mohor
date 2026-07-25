@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <!-- UPGRADE: Removed 'user-scalable=no' so users can pinch to zoom -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
     <title>Product Details | Mohor</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
@@ -16,7 +17,8 @@
         .brand-logo { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; text-decoration: none; color: var(--deep-black); text-transform: uppercase; }
         
         .product-container { max-width: 600px; margin: 0 auto; padding: 20px 5%; }
-        .main-image { width: 100%; height: 450px; object-fit: cover; background: #f9f9f9; border: 1px solid var(--border); border-radius: 8px; }
+        /* UPGRADE: Added cursor: zoom-in */
+        .main-image { width: 100%; height: 450px; object-fit: cover; background: #f9f9f9; border: 1px solid var(--border); border-radius: 8px; cursor: zoom-in; }
         
         .thumbnail-row { display: flex; gap: 10px; margin-top: 10px; overflow-x: auto; padding-bottom: 5px; }
         .thumbnail { width: 70px; height: 90px; object-fit: cover; cursor: pointer; border: 1px solid var(--border); border-radius: 4px; opacity: 0.6; transition: 0.3s; }
@@ -42,6 +44,17 @@
         .bottom-bar button { flex: 1; padding: 15px; font-weight: 600; border: none; cursor: pointer; text-transform: uppercase; font-size: 14px; }
         .btn-add { background: var(--primary-gold); color: var(--white); margin-right: 5px; border-radius: 4px; }
         .btn-buy { background: var(--deep-black); color: var(--white); margin-left: 5px; border-radius: 4px; }
+
+        /* ========================================= */
+        /* UPGRADE: LIGHTBOX MODAL CSS               */
+        /* ========================================= */
+        .modal { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.95); overflow: auto; }
+        .modal-content { margin: auto; display: block; max-width: 100%; max-height: 90vh; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); object-fit: contain; }
+        .close-modal { position: absolute; top: 15px; right: 25px; color: #f1f1f1; font-size: 35px; font-weight: bold; cursor: pointer; z-index: 10000; padding: 10px; }
+        .prev-modal, .next-modal { cursor: pointer; position: absolute; top: 50%; width: auto; padding: 20px; margin-top: -30px; color: white; font-weight: bold; font-size: 24px; transition: 0.3s; user-select: none; z-index: 10000; background: rgba(0,0,0,0.3); border-radius: 4px; }
+        .prev-modal { left: 10px; }
+        .next-modal { right: 10px; }
+        .prev-modal:hover, .next-modal:hover { background-color: rgba(0,0,0,0.8); }
     </style>
 </head>
 <body>
@@ -49,7 +62,9 @@
     <nav>
         <a href="index.html" style="text-decoration: none; color: black; font-weight: 600;">&#8592; Back</a>
         <a href="index.html" class="brand-logo">Mohor</a>
-        <span id="cartCountDisplay" style="font-weight: 500;">Cart (0)</span>
+        <a href="cart.html" style="text-decoration: none; color: black;">
+            <span id="cartCountDisplay" style="font-weight: 500;">Cart (0)</span>
+        </a>
     </nav>
 
     <div class="product-container">
@@ -57,6 +72,14 @@
         <img id="mainImage" class="main-image" src="" alt="Loading...">
         <div id="thumbnailContainer" class="thumbnail-row"></div>
         
+        <!-- UPGRADE: FULL SCREEN IMAGE MODAL -->
+        <div id="imageModal" class="modal">
+            <span class="close-modal" id="closeModal">&times;</span>
+            <span class="prev-modal" id="prevModal">&#10094;</span>
+            <img class="modal-content" id="modalImg">
+            <span class="next-modal" id="nextModal">&#10095;</span>
+        </div>
+
         <div class="info-section">
             <!-- Title & Price -->
             <h1 id="prodTitle">Loading Product...</h1>
@@ -95,9 +118,11 @@
         <button class="btn-buy" id="buyNowBtn">Buy Now</button>
     </div>
 
-    <!-- CACHE BUSTERS: Updated to v=11 to force the phone to pull the new structure -->
-    <script src="products.js?v=11"></script>
-    <script src="app.js?v=11"></script>
+    <!-- CACHE BUSTERS: Updated to v=12 -->
+    <script src="products.js?v=12"></script>
+    <script src="app.js?v=12"></script>
+    <!-- UPGRADE: MUST include cart.js so the Add to Cart button functions! -->
+    <script src="cart.js?v=12"></script>
 
     <script>
         let currentSelectedSize = null;
@@ -105,14 +130,12 @@
         let activeProduct = null;
         
         // Default language set to English. 
-        // If your app.js handles language switching, you can change this variable dynamically.
         const currentLang = 'en'; 
 
         document.addEventListener('DOMContentLoaded', () => {
             const params = new URLSearchParams(window.location.search);
             const targetId = params.get('id');
 
-            // Pull data from window.productsData (matching your exact array name)
             const allProducts = window.productsData || [];
             activeProduct = allProducts.find(p => String(p.id) === String(targetId));
 
@@ -121,11 +144,9 @@
                 return;
             }
 
-            // 1. Populate Basic Info (Extracting the English data)
+            // 1. Populate Basic Info
             document.getElementById('prodTitle').innerText = activeProduct.title[currentLang];
             document.getElementById('prodPrice').innerText = "৳ " + activeProduct.price;
-            
-            // Using innerHTML here because your description might contain formatting
             document.getElementById('prodDesc').innerHTML = activeProduct.description[currentLang];
 
             // 2. Populate Bullet Point Details
@@ -172,12 +193,10 @@
                     btn.innerText = size;
                     
                     btn.onclick = () => {
-                        // Highlight selected button
                         document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('selected'));
                         btn.classList.add('selected');
                         currentSelectedSize = size;
 
-                        // Show specific size measurements (using innerHTML because you have <br> tags in your data)
                         if (activeProduct.sizeMeasurements && activeProduct.sizeMeasurements[size]) {
                             measurementBox.style.display = 'block';
                             measurementBox.innerHTML = activeProduct.sizeMeasurements[size][currentLang];
@@ -204,7 +223,6 @@
                     };
                     colorContainer.appendChild(btn);
                     
-                    // Auto-select if there is only one color
                     if (activeProduct.colors[currentLang].length === 1) {
                         btn.click();
                     }
@@ -219,12 +237,93 @@
                 }
                 
                 if (typeof window.addToCart === 'function') {
-                    window.addToCart(activeProduct.id, currentSelectedSize, currentSelectedColor);
-                    alert("Added to Cart!");
+                    // UPGRADE: Matches the exact structure your upgraded cart.js requires (Name, Price, Size)
+                    window.addToCart(activeProduct.title['en'], activeProduct.price, currentSelectedSize);
                 } else {
-                    console.error("addToCart function not found. Check app.js connection.");
+                    console.error("addToCart function not found. Check cart.js connection.");
                 }
             };
+
+            // 7. UPGRADE: Added functionality for the Buy Now button
+            document.getElementById('buyNowBtn').onclick = () => {
+                if (activeProduct.sizes && !currentSelectedSize) {
+                    alert("Please select a size first before buying!");
+                    return;
+                }
+                document.getElementById('addToCartBtn').click(); // Adds to cart
+                window.location.href = "cart.html"; // Redirects immediately
+            };
+
+            // ==========================================
+            // UPGRADE: LIGHTBOX, ZOOM & SWIPE LOGIC
+            // ==========================================
+            const modal = document.getElementById("imageModal");
+            const modalImg = document.getElementById("modalImg");
+            let currentImageIndex = 0;
+
+            // Open Modal
+            mainImg.onclick = function(){
+                if (!activeProduct || !activeProduct.images) return;
+                modal.style.display = "block";
+                
+                // Find index of currently displayed image based on what mainImg is showing
+                const currentSrc = new URL(mainImg.src).pathname;
+                currentImageIndex = activeProduct.images.findIndex(img => currentSrc.includes(img));
+                if (currentImageIndex === -1) currentImageIndex = 0;
+                
+                modalImg.src = activeProduct.images[currentImageIndex];
+            }
+
+            // Close Modal
+            document.getElementById("closeModal").onclick = function() {
+                modal.style.display = "none";
+            }
+
+            // Click outside image to close
+            modal.onclick = function(e) {
+                if(e.target === modal) {
+                    modal.style.display = "none";
+                }
+            }
+
+            // Next / Previous Buttons
+            document.getElementById("nextModal").onclick = function() { changeImage(1); }
+            document.getElementById("prevModal").onclick = function() { changeImage(-1); }
+
+            function changeImage(direction) {
+                currentImageIndex += direction;
+                if (currentImageIndex >= activeProduct.images.length) currentImageIndex = 0;
+                if (currentImageIndex < 0) currentImageIndex = activeProduct.images.length - 1;
+                modalImg.src = activeProduct.images[currentImageIndex];
+            }
+
+            // Mobile Touch Swipe Support
+            let touchstartX = 0;
+            let touchendX = 0;
+
+            modal.addEventListener('touchstart', e => {
+                // Only register swipe if user is using 1 finger (not pinch-zooming)
+                if(e.touches.length === 1) {
+                    touchstartX = e.changedTouches[0].screenX;
+                }
+            });
+
+            modal.addEventListener('touchend', e => {
+                if(e.changedTouches.length === 1) {
+                    touchendX = e.changedTouches[0].screenX;
+                    handleSwipe();
+                }
+            });
+
+            function handleSwipe() {
+                const swipeThreshold = 50; // Minimum distance to register as a swipe
+                if (touchendX < touchstartX - swipeThreshold) {
+                    changeImage(1); // Swipe Left -> Next Image
+                }
+                if (touchendX > touchstartX + swipeThreshold) {
+                    changeImage(-1); // Swipe Right -> Previous Image
+                }
+            }
         });
     </script>
 </body>
