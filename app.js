@@ -4,8 +4,9 @@ if (typeof window.productsData !== 'undefined') {
     window.productsData.forEach(p => p.id = String(p.id));
 }
 
-// --- LANGUAGE DICTIONARY ---
-window.currentLang = 'en';
+// --- LANGUAGE DICTIONARY & LOCAL STORAGE FIX ---
+// This saves the language so it doesn't reset when opening product pages
+window.currentLang = localStorage.getItem('mohor_lang') || 'en';
 
 window.uiTranslations = {
     en: {
@@ -36,6 +37,8 @@ window.uiTranslations = {
         descTitle: "Description",
         detailsTitle: "Product Details", 
         addToCart: "Add to Cart", 
+        buyNow: "Buy Now",
+        backBtn: "&#8592; Back",
         cartTitle: "Your Cart", 
         cartEmpty: "Your cart is empty.",
         cartSubtotal: "Subtotal:", 
@@ -120,6 +123,8 @@ window.uiTranslations = {
         descTitle: "বিবরণ",
         detailsTitle: "পণ্যের বিস্তারিত", 
         addToCart: "কার্টে যোগ করুন", 
+        buyNow: "এখনি কিনুন",
+        backBtn: "&#8592; ফিরে যান",
         cartTitle: "আপনার কার্ট", 
         cartEmpty: "আপনার কার্ট খালি।",
         cartSubtotal: "সাবটোটাল:", 
@@ -219,7 +224,12 @@ const langToggleBtn = document.getElementById('langToggleBtn');
 if (langToggleBtn) {
     langToggleBtn.addEventListener('click', () => {
         window.currentLang = (window.currentLang === 'en') ? 'bn' : 'en';
+        // UPGRADE: Save to local storage so memory persists
+        localStorage.setItem('mohor_lang', window.currentLang);
         updateUIText();
+        
+        // Dispatch custom event to notify product.html to re-render dynamic text
+        window.dispatchEvent(new Event('languageChanged'));
     });
 }
 
