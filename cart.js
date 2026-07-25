@@ -1,5 +1,30 @@
 // --- CART, QUANTITY & UI LOGIC ---
 
+// SECURITY: escape any value before it is concatenated into innerHTML.
+// Cart item names/sizes ultimately come from productsData, but this keeps
+// rendering safe even if that ever changes or gets out of sync.
+function escapeHtml(value) {
+    return String(value ?? '').replace(/[&<>"']/g, (ch) => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    }[ch]));
+}
+
+// SECURITY: look up the real, current price for a product from the
+// canonical product catalog instead of trusting whatever price was cached
+// on the cart item (which lives in localStorage and can be edited by
+// anyone via devtools before checkout).
+function getCanonicalPrice(itemName, fallbackPrice) {
+    if (!Array.isArray(window.productsData)) return fallbackPrice;
+    const match = window.productsData.find(p =>
+        p.title && (p.title.en === itemName || p.title.bn === itemName)
+    );
+    if (!match) {
+        console.warn('Could not verify price for "' + itemName + '" against catalog; using cached price.');
+        return fallbackPrice;
+    }
+    return match.price;
+}
+
 // 1. MEMORY FIX: Load cart from storage so it survives page reloads on mobile
 window.cart = JSON.parse(localStorage.getItem('mohor_cart')) || [];
 
@@ -104,8 +129,8 @@ window.updateCartUI = function() {
                 cartItemsContainer.innerHTML += `
                     <div class="cart-item" style="align-items: center;">
                         <div class="cart-item-info" style="flex: 1;">
-                            <strong style="display: block; margin-bottom: 3px;">${item.name}</strong>
-                            <span style="font-size: 11px; color: var(--text-light); text-transform: uppercase;">Size: ${item.size}</span>
+                            <strong style="display: block; margin-bottom: 3px;">${escapeHtml(item.name)}</strong>
+                            <span style="font-size: 11px; color: var(--text-light); text-transform: uppercase;">Size: ${escapeHtml(item.size)}</span>
                             
                             <div style="display: flex; align-items: center; gap: 10px; margin-top: 8px;">
                                 <button type="button" onclick="changeQty(${index}, -1)" style="border: 1px solid var(--border-color); background: var(--soft-gray); width: 22px; height: 22px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: bold; border-radius: 2px;">-</button>
@@ -255,6 +280,21 @@ window.checkoutToAdmin = async function() {
             activeUid = window.currentUser.uid;
         }
 
+        // SECURITY: never trust prices coming from the client cart/localStorage
+        // directly — recompute each line item and the total from the
+        // canonical product catalog so a tampered `window.cart.price` in
+        // devtools can't be used to place an underpriced order.
+        // NOTE: this is a client-side mitigation only. The authoritative fix
+        // is to validate/recompute totals in Firestore Security Rules or a
+        // Cloud Function, since anyone can still bypass this file entirely
+        // and call the Firestore SDK directly from the console.
+        const verifiedItems = window.cart.map(item => {
+            const verifiedPrice = getCanonicalPrice(item.name, item.price);
+            return { name: item.name, size: item.size, qty: item.qty, price: verifiedPrice };
+        });
+        const verifiedSubtotal = verifiedItems.reduce((sum, item) => sum + (item.price * item.qty), 0);
+        const verifiedTotal = verifiedSubtotal + orderData.deliveryFee;
+
         // 2. Package the order data including user tracking
         const newOrder = {
             userId: activeUid,
@@ -263,9 +303,9 @@ window.checkoutToAdmin = async function() {
             deliveryAddress: orderData.address,
             deliveryZone: orderData.zoneText,
             deliveryFee: orderData.deliveryFee,
-            subtotal: orderData.subtotal,
-            totalAmount: orderData.finalTotal,
-            items: window.cart,
+            subtotal: verifiedSubtotal,
+            totalAmount: verifiedTotal,
+            items: verifiedItems,
             orderDate: new Date().toISOString(),
             status: "New" 
         };
