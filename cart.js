@@ -319,4 +319,38 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Refresh UI on load
     window.updateCartUI();
+
+    // ==========================================
+    // UPGRADE: ROBUST FIREBASE AUTO-FILL LOGIC
+    // Embedded here so you don't need to touch cart.html
+    // ==========================================
+    setTimeout(() => {
+        if (typeof firebase !== 'undefined' && firebase.auth) {
+            firebase.auth().onAuthStateChanged((user) => {
+                if (user) {
+                    firebase.firestore().collection("users").doc(user.uid).get()
+                    .then((doc) => {
+                        if (doc.exists) {
+                            const userData = doc.data();
+                            
+                            // Find the input fields based on PC or Mobile IDs
+                            const nameEl = document.getElementById('custName') || document.getElementById('checkoutName');
+                            const phoneEl = document.getElementById('custPhone') || document.getElementById('checkoutPhone');
+                            const addressEl = document.getElementById('deliveryAddress') || document.getElementById('checkoutAddress');
+                            
+                            // Search the database for any possible matching name
+                            const userName = userData.name || userData.fullName || userData.displayName || '';
+                            const userPhone = userData.phone || userData.phoneNumber || userData.mobile || '';
+                            const userAddress = userData.address || userData.deliveryAddress || userData.fullAddress || '';
+                            
+                            // Only overwrite the input if it's currently empty
+                            if(nameEl && !nameEl.value && userName) nameEl.value = userName;
+                            if(phoneEl && !phoneEl.value && userPhone) phoneEl.value = userPhone;
+                            if(addressEl && !addressEl.value && userAddress) addressEl.value = userAddress;
+                        }
+                    }).catch(e => console.log("Error fetching user auto-fill data:", e));
+                }
+            });
+        }
+    }, 1500); // 1.5-second delay to ensure Firebase finishes loading first
 });
