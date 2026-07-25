@@ -181,16 +181,26 @@ async function loadUserData(uid) {
             if (data.phone && document.getElementById('profilePhone')) document.getElementById('profilePhone').value = data.phone;
             if (data.address && document.getElementById('profileAddress')) document.getElementById('profileAddress').value = data.address;
             
-            // 2. Auto-fill Cart Checkout inputs
+            // 2. Auto-fill Cart Checkout inputs (For index.html cart sidebar)
             if (savedName && document.getElementById('custName')) {
                 document.getElementById('custName').value = savedName;
             }
-            
             if (data.phone && document.getElementById('custPhone')) {
                 document.getElementById('custPhone').value = data.phone || data.customerPhone || "";
             }
             if (data.address && document.getElementById('deliveryAddress')) {
                 document.getElementById('deliveryAddress').value = data.address || data.deliveryAddress || "";
+            }
+
+            // 3. UPDATED: Auto-fill standalone checkout page (For cart.html)
+            if (savedName && document.getElementById('checkoutName')) {
+                document.getElementById('checkoutName').value = savedName;
+            }
+            if (data.phone && document.getElementById('checkoutPhone')) {
+                document.getElementById('checkoutPhone').value = data.phone || data.customerPhone || "";
+            }
+            if (data.address && document.getElementById('checkoutAddress')) {
+                document.getElementById('checkoutAddress').value = data.address || data.deliveryAddress || "";
             }
         }
     } catch (e) { console.error("Error loading user profile data:", e); }
