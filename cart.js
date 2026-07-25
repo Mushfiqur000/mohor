@@ -144,8 +144,19 @@ window.updateCartUI = function() {
     
     if(cartBadge) cartBadge.innerText = totalItems;
     
+    // Legacy Text Counter
     const cartCountNav = document.getElementById('cartCountDisplay');
     if(cartCountNav) cartCountNav.innerText = `Cart (${totalItems})`;
+
+    // ==========================================
+    // UPGRADE: PREMIUM SVG CART BADGE UPDATE
+    // ==========================================
+    const iconBadge = document.getElementById('cartBadgeIcon');
+    if(iconBadge) {
+        iconBadge.innerText = totalItems;
+        // Dynamically hide the gold circle if the cart is empty for a cleaner UI
+        iconBadge.style.display = totalItems > 0 ? 'flex' : 'none';
+    }
 }
 
 // --- DUAL CHECKOUT LOGIC ---
