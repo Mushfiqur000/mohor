@@ -16,6 +16,11 @@
         nav { display: flex; justify-content: space-between; align-items: center; padding: 15px 5%; border-bottom: 1px solid var(--border); }
         .brand-logo { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; text-decoration: none; color: var(--deep-black); text-transform: uppercase; }
         
+        /* UPGRADE: Added wrapper for nav controls & language button styling */
+        .nav-right { display: flex; align-items: center; }
+        .lang-btn { background: var(--deep-black); color: var(--white); border: none; padding: 5px 10px; font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 600; cursor: pointer; border-radius: 4px; letter-spacing: 1px; margin-right: 15px; }
+        .lang-btn:hover { background: var(--primary-gold); }
+
         .product-container { max-width: 600px; margin: 0 auto; padding: 20px 5%; }
         /* UPGRADE: Added cursor: zoom-in */
         .main-image { width: 100%; height: 450px; object-fit: cover; background: #f9f9f9; border: 1px solid var(--border); border-radius: 8px; cursor: zoom-in; }
@@ -77,18 +82,22 @@
 <body>
 
     <nav>
-        <a href="index.html" style="text-decoration: none; color: black; font-weight: 600;">&#8592; Back</a>
+        <a href="index.html" style="text-decoration: none; color: black; font-weight: 600;" data-i18n="backBtn">&#8592; Back</a>
         <a href="index.html" class="brand-logo">Mohor</a>
         
-        <!-- UPGRADE: Beautiful Cart Logo replaced the old text -->
-        <a href="cart.html" class="cart-nav-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
-                <line x1="3" y1="6" x2="21" y2="6"></line>
-                <path d="M16 10a4 4 0 0 1-8 0"></path>
-            </svg>
-            <span id="cartBadgeIcon" class="badge">0</span>
-        </a>
+        <div class="nav-right">
+            <!-- UPGRADE: Re-Added Lang Toggle to Product Preview -->
+            <button type="button" id="langToggleBtn" class="lang-btn">EN / বাং</button>
+            <!-- UPGRADE: Beautiful Cart Logo replaced the old text -->
+            <a href="cart.html" class="cart-nav-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <path d="M16 10a4 4 0 0 1-8 0"></path>
+                </svg>
+                <span id="cartBadgeIcon" class="badge">0</span>
+            </a>
+        </div>
     </nav>
 
     <div class="product-container">
@@ -111,13 +120,13 @@
             
             <!-- Color Options -->
             <div class="desc-box" id="colorSection" style="display: none;">
-                <h4>Select Color</h4>
+                <h4 data-i18n="colorSelect">Select Color</h4>
                 <div id="colorOptions" class="btn-group"></div>
             </div>
 
             <!-- Size Options -->
             <div class="desc-box">
-                <h4>Select Size</h4>
+                <h4 data-i18n="sizeSelect">Select Size</h4>
                 <div id="sizeOptions" class="btn-group"></div>
                 <!-- Dynamic Measurements Box -->
                 <div id="sizeMeasurements" class="measurements-box"></div>
@@ -125,21 +134,21 @@
 
             <!-- Description -->
             <div class="desc-box">
-                <h4>Description</h4>
+                <h4 data-i18n="descTitle">Description</h4>
                 <p id="prodDesc"></p>
             </div>
 
             <!-- Details (Bullet Points) -->
             <div class="desc-box" id="detailsSection" style="display: none;">
-                <h4>Details</h4>
+                <h4 data-i18n="detailsTitle">Details</h4>
                 <ul id="prodDetails" class="details-list"></ul>
             </div>
         </div>
     </div>
 
     <div class="bottom-bar">
-        <button class="btn-add" id="addToCartBtn">Add to Cart</button>
-        <button class="btn-buy" id="buyNowBtn">Buy Now</button>
+        <button class="btn-add" id="addToCartBtn" data-i18n="addToCart">Add to Cart</button>
+        <button class="btn-buy" id="buyNowBtn" data-i18n="buyNow">Buy Now</button>
     </div>
 
     <!-- Firebase SDKs (Required for cart.js and auth integrations) -->
@@ -176,15 +185,55 @@
         let currentSelectedColor = null;
         let activeProduct = null;
         
-        // Default language set to English. 
-        const currentLang = 'en'; 
+        // UPGRADE: Removed hardcoded const currentLang = 'en'; 
+        // Now it dynamically uses window.currentLang from app.js memory!
 
         // Function to safely extract translated strings (handles strings or multi-lang objects)
         function getProductText(field) {
             if (!field) return "";
             if (typeof field === 'string') return field;
-            return field[currentLang] || field['en'] || "";
+            // UPGRADE: Changed to use window.currentLang
+            return field[window.currentLang] || field['en'] || "";
         }
+
+        // UPGRADE: Function to update dynamic text whenever language changes
+        function renderDynamicText() {
+            if (!activeProduct) return;
+
+            document.getElementById('prodTitle').innerText = getProductText(activeProduct.title);
+            document.getElementById('prodDesc').innerHTML = getProductText(activeProduct.description);
+
+            const detailsList = document.getElementById('prodDetails');
+            const detailsSection = document.getElementById('detailsSection');
+            detailsList.innerHTML = ''; 
+            
+            let detailsArray = [];
+            if (activeProduct.details) {
+                detailsArray = Array.isArray(activeProduct.details) ? activeProduct.details : (activeProduct.details[window.currentLang] || activeProduct.details['en'] || []);
+            }
+            if (detailsArray.length > 0) {
+                detailsSection.style.display = 'block';
+                detailsArray.forEach(detailText => {
+                    const li = document.createElement('li');
+                    li.innerText = detailText;
+                    detailsList.appendChild(li);
+                });
+            } else {
+                detailsSection.style.display = 'none';
+            }
+
+            // Re-render size measurements if active
+            if (currentSelectedSize && activeProduct.sizeMeasurements && activeProduct.sizeMeasurements[currentSelectedSize]) {
+                const measurementBox = document.getElementById('sizeMeasurements');
+                const measureData = activeProduct.sizeMeasurements[currentSelectedSize];
+                measurementBox.innerHTML = (typeof measureData === 'string') ? measureData : (measureData[window.currentLang] || measureData['en'] || "");
+            }
+        }
+
+        // UPGRADE: Listen for the custom languageChanged event triggered by app.js
+        window.addEventListener('languageChanged', () => {
+            renderDynamicText();
+        });
 
         document.addEventListener('DOMContentLoaded', async () => {
             const params = new URLSearchParams(window.location.search);
@@ -231,26 +280,9 @@
                 return;
             }
 
-            // 1. Populate Basic Info
-            document.getElementById('prodTitle').innerText = getProductText(activeProduct.title);
+            // 1 & 2. Populate Basic Info & Bullet Point Details
             document.getElementById('prodPrice').innerText = "৳ " + activeProduct.price;
-            document.getElementById('prodDesc').innerHTML = getProductText(activeProduct.description);
-
-            // 2. Populate Bullet Point Details
-            const detailsList = document.getElementById('prodDetails');
-            const detailsSection = document.getElementById('detailsSection');
-            let detailsArray = [];
-            if (activeProduct.details) {
-                detailsArray = Array.isArray(activeProduct.details) ? activeProduct.details : (activeProduct.details[currentLang] || activeProduct.details['en'] || []);
-            }
-            if (detailsArray.length > 0) {
-                detailsSection.style.display = 'block';
-                detailsArray.forEach(detailText => {
-                    const li = document.createElement('li');
-                    li.innerText = detailText;
-                    detailsList.appendChild(li);
-                });
-            }
+            renderDynamicText(); // UPGRADE: Calls the new rendering function
 
             // 3. Handle Images & Thumbnails
             const mainImg = document.getElementById('mainImage');
@@ -298,7 +330,8 @@
                             if (activeProduct.sizeMeasurements && activeProduct.sizeMeasurements[size]) {
                                 measurementBox.style.display = 'block';
                                 const measureData = activeProduct.sizeMeasurements[size];
-                                measurementBox.innerHTML = (typeof measureData === 'string') ? measureData : (measureData[currentLang] || measureData['en'] || "");
+                                // UPGRADE: Uses window.currentLang
+                                measurementBox.innerHTML = (typeof measureData === 'string') ? measureData : (measureData[window.currentLang] || measureData['en'] || "");
                             }
                         }
                     };
@@ -312,7 +345,8 @@
             
             let colorArray = [];
             if (activeProduct.colors) {
-                colorArray = Array.isArray(activeProduct.colors) ? activeProduct.colors : (activeProduct.colors[currentLang] || activeProduct.colors['en'] || []);
+                // UPGRADE: Uses window.currentLang
+                colorArray = Array.isArray(activeProduct.colors) ? activeProduct.colors : (activeProduct.colors[window.currentLang] || activeProduct.colors['en'] || []);
             }
 
             if (colorArray.length > 0) {
