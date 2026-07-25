@@ -150,7 +150,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
-    <!-- Essential Scripts with Updated Cache Busters -->
+    <!-- Essential Scripts -->
     <script src="products.js?v=15"></script>
     <script src="app.js?v=15"></script>
     <script src="cart.js?v=15"></script>
@@ -161,6 +161,38 @@
             if (typeof updateCartUI === 'function') {
                 updateCartUI();
             }
+        });
+    </script>
+
+    <!-- UPDATED: FIREBASE AUTO-FILL SCRIPT -->
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            // A slight delay ensures app.js has finished initializing Firebase
+            setTimeout(() => {
+                if (typeof firebase !== 'undefined' && firebase.auth) {
+                    firebase.auth().onAuthStateChanged((user) => {
+                        if (user) {
+                            // User is logged in! Fetch their profile from the 'users' collection
+                            firebase.firestore().collection("users").doc(user.uid).get()
+                            .then((doc) => {
+                                if (doc.exists) {
+                                    const userData = doc.data();
+                                    
+                                    // Target your exact input fields
+                                    const nameEl = document.getElementById('checkoutName');
+                                    const phoneEl = document.getElementById('checkoutPhone');
+                                    const addressEl = document.getElementById('checkoutAddress');
+                                    
+                                    // Inject the data automatically
+                                    if(nameEl && userData.name) nameEl.value = userData.name;
+                                    if(phoneEl && userData.phone) phoneEl.value = userData.phone;
+                                    if(addressEl && userData.address) addressEl.value = userData.address;
+                                }
+                            }).catch(error => console.error("Error fetching user data for auto-fill:", error));
+                        }
+                    });
+                }
+            }, 1000); 
         });
     </script>
 </body>
