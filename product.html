@@ -13,7 +13,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Montserrat', sans-serif; }
         body { background-color: var(--white); color: var(--deep-black); padding-bottom: 90px; }
         
-        nav { display: flex; justify-content: space-between; padding: 15px 5%; border-bottom: 1px solid var(--border); }
+        nav { display: flex; justify-content: space-between; align-items: center; padding: 15px 5%; border-bottom: 1px solid var(--border); }
         .brand-logo { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; text-decoration: none; color: var(--deep-black); text-transform: uppercase; }
         
         .product-container { max-width: 600px; margin: 0 auto; padding: 20px 5%; }
@@ -55,6 +55,14 @@
         .prev-modal { left: 10px; }
         .next-modal { right: 10px; }
         .prev-modal:hover, .next-modal:hover { background-color: rgba(0,0,0,0.8); }
+
+        /* ========================================= */
+        /* UPGRADE: PREMIUM CART ICON STYLES         */
+        /* ========================================= */
+        .cart-nav-icon { position: relative; color: var(--deep-black); display: flex; align-items: center; text-decoration: none; margin-right: 10px; }
+        .cart-nav-icon svg { transition: transform 0.2s ease; }
+        .cart-nav-icon:hover svg { transform: scale(1.1); }
+        .cart-nav-icon .badge { position: absolute; top: -5px; right: -10px; background: var(--primary-gold); color: var(--white); font-size: 11px; font-weight: 700; height: 18px; width: 18px; display: flex; justify-content: center; align-items: center; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.15); display: none; /* Hidden by default until items are added */ }
     </style>
 </head>
 <body>
@@ -62,8 +70,15 @@
     <nav>
         <a href="index.html" style="text-decoration: none; color: black; font-weight: 600;">&#8592; Back</a>
         <a href="index.html" class="brand-logo">Mohor</a>
-        <a href="cart.html" style="text-decoration: none; color: black;">
-            <span id="cartCountDisplay" style="font-weight: 500;">Cart (0)</span>
+        
+        <!-- UPGRADE: Beautiful Cart Logo replaced the old text -->
+        <a href="cart.html" class="cart-nav-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <path d="M16 10a4 4 0 0 1-8 0"></path>
+            </svg>
+            <span id="cartBadgeIcon" class="badge">0</span>
         </a>
     </nav>
 
