@@ -107,6 +107,35 @@
         <p style="font-size: 12px; color: #777;" data-i18n="footerText">&copy; 2026 Mohor Clothings Bangladesh. All Rights Reserved.</p>
     </footer>
 
-    <script src="app.js"></script>
+    <!-- Hidden placeholders to prevent JS errors -->
+    <div id="productGrid" style="display:none;"></div>
+    <select id="sortSelect" style="display:none;"></select>
+
+    <!-- Firebase CDN SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+    <!-- Firebase Configuration Block -->
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyALxypXDkF9QexbD_wE7-ADALIdj5vd-rY",
+            authDomain: "mohor-app.firebaseapp.com",
+            projectId: "mohor-app",
+            storageBucket: "mohor-app.firebasestorage.app",
+            messagingSenderId: "989000457004",
+            appId: "1:989000457004:web:5679b256e20d94e27daa89"
+        };
+        if (typeof firebase !== 'undefined' && !firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        window.db = firebase.firestore();
+    </script>
+
+    <!-- Logic Files with Cache Busters -->
+    <script src="products.js?v=16"></script>
+    <script src="app.js?v=16"></script>
+    <script src="cart.js?v=16"></script>
+    <script type="module" src="auth.js?v=16"></script>
 </body>
 </html>
