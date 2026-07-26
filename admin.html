@@ -498,43 +498,57 @@ tbody tr:hover { background: rgba(245,241,236,0.6); }
             </div>
             <form id="add-product-form">
               <div class="form-grid">
+                
+                <!-- UPGRADE: Added English & Bengali dual fields -->
                 <div class="form-group">
-                  <label for="prod-title">Product Title</label>
-                  <input type="text" id="prod-title" placeholder="e.g. Peach Vila 3-Piece" required>
+                  <label>Product Title</label>
+                  <input type="text" id="prod-title-en" placeholder="English (e.g. Peach Vila 3-Piece)" required style="margin-bottom:8px;">
+                  <input type="text" id="prod-title-bn" placeholder="Bengali (e.g. পিচ ভিলা থ্রি-পিস)">
                 </div>
+
                 <div class="form-group">
                   <label for="prod-price">Price (&#2547;)</label>
                   <input type="number" id="prod-price" min="0" placeholder="e.g. 3200" required>
                 </div>
+
                 <div class="form-group">
                   <label for="prod-qty">Quantity / Stock</label>
                   <input type="number" id="prod-qty" min="0" placeholder="e.g. 15" required>
                 </div>
+
+                <!-- UPGRADE: Added English & Bengali dual fields -->
                 <div class="form-group">
-                  <label for="prod-colors">Colors (comma separated)</label>
-                  <input type="text" id="prod-colors" placeholder="e.g. Peach Pink, Navy Blue" required>
+                  <label>Colors (comma separated)</label>
+                  <input type="text" id="prod-colors-en" placeholder="English: Peach Pink, Navy Blue" required style="margin-bottom:8px;">
+                  <input type="text" id="prod-colors-bn" placeholder="Bengali: পিচ পিঙ্ক, নেভি ব্লু">
                 </div>
 
                 <div class="form-group full-width">
                   <label>Sizes &amp; Measurements</label>
                   <div class="size-blocks-wrap" id="size-blocks-container"></div>
                   <button type="button" class="btn btn-ghost btn-sm" id="add-size-btn" style="align-self:flex-start;">+ Add another size</button>
-                  <div class="form-hint">One block per size. List each measurement on its own line, e.g. &quot;Body/Chest: 38&quot;.</div>
+                  <div class="form-hint">One block per size. List each measurement on its own line.</div>
                 </div>
 
+                <!-- UPGRADE: Added English & Bengali dual fields -->
                 <div class="form-group full-width">
-                  <label for="prod-measurements">Size Guide (pop-up shown on the storefront)</label>
-                  <textarea id="prod-measurements" rows="4" placeholder="38 (M): Body/Chest: 38, Waist: 34-36, Hip: 40-42&#10;40 (L): Body/Chest: 40, Waist: 36-38, Hip: 42-44"></textarea>
+                  <label>Size Guide (pop-up shown on the storefront)</label>
+                  <textarea id="prod-measurements-en" rows="3" placeholder="English Size Guide..." style="margin-bottom:8px;"></textarea>
+                  <textarea id="prod-measurements-bn" rows="3" placeholder="Bengali Size Guide..."></textarea>
                 </div>
 
+                <!-- UPGRADE: Added English & Bengali dual fields -->
                 <div class="form-group full-width">
-                  <label for="prod-desc">Main Description</label>
-                  <textarea id="prod-desc" rows="3" placeholder="A premium embroidered 3-piece ensemble&hellip;"></textarea>
+                  <label>Main Description</label>
+                  <textarea id="prod-desc-en" rows="3" placeholder="English Description..." style="margin-bottom:8px;"></textarea>
+                  <textarea id="prod-desc-bn" rows="3" placeholder="Bengali Description..."></textarea>
                 </div>
 
+                <!-- UPGRADE: Added English & Bengali dual fields -->
                 <div class="form-group full-width">
-                  <label for="prod-details">Product Details (one point per line)</label>
-                  <textarea id="prod-details" rows="5" placeholder="Shirt Fabric: Premium Soft Cotton (80 GSM)&#10;Trouser Fabric: Premium Soft Cotton (80 GSM)&#10;Dupatta: Soft Tissue Chiffon"></textarea>
+                  <label>Product Details (one point per line)</label>
+                  <textarea id="prod-details-en" rows="4" placeholder="English Details (e.g. Fabric: Cotton)..." style="margin-bottom:8px;"></textarea>
+                  <textarea id="prod-details-bn" rows="4" placeholder="Bengali Details..."></textarea>
                 </div>
 
                 <div class="form-group full-width">
@@ -630,6 +644,18 @@ let productPage = 1;
 const PRODUCTS_PER_PAGE = 10;
 
 let lowStockThreshold = 5;
+
+/* ---------- UPGRADE: Safe translation extraction helpers ---------- */
+function getSafeStr(field, lang) {
+  if (!field) return '';
+  if (typeof field === 'string') return lang === 'en' ? field : '';
+  return field[lang] || '';
+}
+function getSafeArr(field, lang) {
+  if (!field) return [];
+  if (Array.isArray(field)) return lang === 'en' ? field : [];
+  return field[lang] || [];
+}
 
 /* ---------- SMALL HELPERS ---------- */
 function escapeHtml(str) {
@@ -1046,7 +1072,11 @@ function stockBadge(qty) {
 
 function renderProductsTable() {
   const q = productSearch.trim().toLowerCase();
-  const filtered = allProducts.filter(p => !q || (p.title || '').toLowerCase().includes(q));
+  const filtered = allProducts.filter(p => {
+      const pTitle = typeof p.title === 'string' ? p.title : (p.title?.en || '');
+      return !q || pTitle.toLowerCase().includes(q);
+  });
+  
   const totalPages = Math.max(1, Math.ceil(filtered.length / PRODUCTS_PER_PAGE));
   productPage = Math.min(productPage, totalPages);
   const pageItems = filtered.slice((productPage - 1) * PRODUCTS_PER_PAGE, productPage * PRODUCTS_PER_PAGE);
@@ -1058,10 +1088,12 @@ function renderProductsTable() {
     tbody.innerHTML = pageItems.map(prod => {
       const img = prod.images && prod.images.length > 0 ? prod.images[0] : '';
       const sizesStr = Array.isArray(prod.sizes) ? prod.sizes.join(', ') : '';
+      const displayTitle = typeof prod.title === 'string' ? prod.title : (prod.title?.en || '');
+      
       return `
         <tr>
           <td>${img ? `<img src="${escapeHtml(img)}" alt="" style="width:44px;height:54px;object-fit:cover;border-radius:6px;">` : '<div style="width:44px;height:54px;background:#F5F1EC;border-radius:6px;"></div>'}</td>
-          <td><strong>${escapeHtml(prod.title || '')}</strong><br><span class="mono" style="color:#C9A14A;font-weight:600;">${money(prod.price)}</span></td>
+          <td><strong>${escapeHtml(displayTitle)}</strong><br><span class="mono" style="color:#C9A14A;font-weight:600;">${money(prod.price)}</span></td>
           <td>${stockBadge(prod.quantity)}</td>
           <td style="font-size:12px;color:#665f5b;">${escapeHtml(sizesStr)}</td>
           <td style="white-space:nowrap;">
@@ -1082,7 +1114,7 @@ document.getElementById('product-search').addEventListener('input', (e) => { pro
 
 function handleDeleteProduct(id) {
   const prod = allProducts.find(p => p.id === id);
-  const name = prod ? prod.title : 'this product';
+  const name = prod ? (typeof prod.title === 'string' ? prod.title : prod.title?.en) : 'this product';
   showConfirm(`Delete "${name}" from your store? This cannot be undone.`, async () => {
     try {
       await deleteDoc(doc(db, "products", id));
@@ -1104,12 +1136,15 @@ function renderInventoryTable() {
     tbody.innerHTML = `<tr><td colspan="3" style="text-align:center;color:#888;padding:20px;">Nothing below the threshold right now.</td></tr>`;
     return;
   }
-  tbody.innerHTML = low.map(p => `
+  tbody.innerHTML = low.map(p => {
+    const displayTitle = typeof p.title === 'string' ? p.title : (p.title?.en || '');
+    return `
     <tr>
-      <td><strong>${escapeHtml(p.title || '')}</strong></td>
+      <td><strong>${escapeHtml(displayTitle)}</strong></td>
       <td style="font-size:12px;color:#665f5b;">${escapeHtml(Array.isArray(p.sizes) ? p.sizes.join(', ') : '')}</td>
       <td>${stockBadge(p.quantity)}</td>
-    </tr>`).join('');
+    </tr>`;
+  }).join('');
 }
 
 document.getElementById('low-stock-threshold').addEventListener('input', (e) => {
@@ -1122,18 +1157,21 @@ document.getElementById('low-stock-threshold').addEventListener('input', (e) => 
 /* ---------- ADD / EDIT PRODUCT FORM ---------- */
 const sizeBlocksContainer = document.getElementById('size-blocks-container');
 
-function createSizeBlockHTML(label = '', measurementsText = '') {
+// UPGRADE: Size blocks now load both EN and BN text areas
+function createSizeBlockHTML(label = '', measurementsTextEn = '', measurementsTextBn = '') {
   return `
     <div class="size-block">
       <div class="size-block-header">
         <input type="text" class="size-label-input" placeholder="e.g. 38 (M)" value="${escapeHtml(label)}">
         <button type="button" class="remove-size-btn" title="Remove size">&times;</button>
       </div>
-      <textarea class="size-measurements-input" rows="3" placeholder="Body/Chest: 38&#10;Waist: 34-36&#10;Hip: 40-42">${escapeHtml(measurementsText)}</textarea>
+      <textarea class="size-measurements-input en" rows="2" placeholder="EN: Body/Chest: 38&#10;Waist: 34-36">${escapeHtml(measurementsTextEn)}</textarea>
+      <textarea class="size-measurements-input bn" rows="2" placeholder="BN: বডি/চেস্ট: ৩৮&#10;কোমর: ৩৪-৩৬" style="margin-top: 5px;">${escapeHtml(measurementsTextBn)}</textarea>
     </div>`;
 }
-function addSizeBlock(label = '', measurementsText = '') {
-  sizeBlocksContainer.insertAdjacentHTML('beforeend', createSizeBlockHTML(label, measurementsText));
+
+function addSizeBlock(label = '', measurementsTextEn = '', measurementsTextBn = '') {
+  sizeBlocksContainer.insertAdjacentHTML('beforeend', createSizeBlockHTML(label, measurementsTextEn, measurementsTextBn));
 }
 function resetSizeBlocks() {
   sizeBlocksContainer.innerHTML = '';
@@ -1149,6 +1187,8 @@ sizeBlocksContainer.addEventListener('click', (e) => {
     }
   }
 });
+
+// UPGRADE: This now saves your sizes nicely formatted as an EN/BN object for Firebase
 function collectSizesFromForm() {
   const sizesArray = [];
   const sizeMeasurementsMap = {};
@@ -1156,7 +1196,14 @@ function collectSizesFromForm() {
     const label = block.querySelector('.size-label-input').value.trim();
     if (!label) return;
     sizesArray.push(label);
-    sizeMeasurementsMap[label] = block.querySelector('.size-measurements-input').value.split('\n').map(l => l.trim()).filter(Boolean);
+    
+    const enText = block.querySelector('.size-measurements-input.en').value.trim();
+    const bnText = block.querySelector('.size-measurements-input.bn').value.trim();
+    
+    sizeMeasurementsMap[label] = {
+      en: enText.replace(/\n/g, '<br>'),
+      bn: (bnText || enText).replace(/\n/g, '<br>')
+    };
   });
   return { sizesArray, sizeMeasurementsMap };
 }
@@ -1181,22 +1228,49 @@ function loadProductIntoForm(id) {
   const prod = allProducts.find(p => p.id === id);
   if (!prod) return;
   editingProductId = id;
-  document.getElementById('prod-title').value = prod.title || '';
+  
+  // UPGRADE: Loads data perfectly into English and Bengali inputs safely
+  document.getElementById('prod-title-en').value = getSafeStr(prod.title, 'en');
+  document.getElementById('prod-title-bn').value = getSafeStr(prod.title, 'bn');
+  
   document.getElementById('prod-price').value = prod.price || '';
   document.getElementById('prod-qty').value = prod.quantity || '';
-  document.getElementById('prod-colors').value = Array.isArray(prod.colors) ? prod.colors.join(', ') : '';
-  document.getElementById('prod-measurements').value = prod.measurementsGuide || '';
-  document.getElementById('prod-desc').value = prod.description || '';
-  document.getElementById('prod-details').value = Array.isArray(prod.details) ? prod.details.join('\n') : '';
+  
+  document.getElementById('prod-colors-en').value = getSafeArr(prod.colors, 'en').join(', ');
+  document.getElementById('prod-colors-bn').value = getSafeArr(prod.colors, 'bn').join(', ');
+  
+  document.getElementById('prod-measurements-en').value = getSafeStr(prod.measurementsGuide, 'en');
+  document.getElementById('prod-measurements-bn').value = getSafeStr(prod.measurementsGuide, 'bn');
+  
+  document.getElementById('prod-desc-en').value = getSafeStr(prod.description, 'en');
+  document.getElementById('prod-desc-bn').value = getSafeStr(prod.description, 'bn');
+  
+  document.getElementById('prod-details-en').value = getSafeArr(prod.details, 'en').join('\n');
+  document.getElementById('prod-details-bn').value = getSafeArr(prod.details, 'bn').join('\n');
+  
   document.getElementById('prod-seo').value = Array.isArray(prod.seoKeywords) ? prod.seoKeywords.join(', ') : '';
   document.getElementById('prod-images').value = Array.isArray(prod.images) ? prod.images.join('\n') : '';
   updateImagePreview();
 
   sizeBlocksContainer.innerHTML = '';
   const sizes = Array.isArray(prod.sizes) && prod.sizes.length ? prod.sizes : [''];
-  sizes.forEach(s => addSizeBlock(s, ((prod.sizeMeasurements || {})[s] || []).join('\n')));
+  sizes.forEach(s => {
+    const mData = (prod.sizeMeasurements || {})[s];
+    let mEn = '';
+    let mBn = '';
+    if (typeof mData === 'string') {
+        mEn = mData.replace(/<br>/g, '\n');
+    } else if (Array.isArray(mData)) {
+        mEn = mData.join('\n');
+    } else if (mData) {
+        mEn = (mData.en || '').replace(/<br>/g, '\n');
+        mBn = (mData.bn || '').replace(/<br>/g, '\n');
+    }
+    addSizeBlock(s, mEn, mBn);
+  });
 
-  formHeading.textContent = `Edit Product: ${prod.title || ''}`;
+  const formDisplayTitle = typeof prod.title === 'string' ? prod.title : (prod.title?.en || '');
+  formHeading.textContent = `Edit Product: ${formDisplayTitle}`;
   uploadBtn.textContent = 'Update Product';
   cancelEditBtn.style.display = 'inline-flex';
   uploadStatus.textContent = '';
@@ -1226,14 +1300,41 @@ addProductForm.addEventListener('submit', async (e) => {
   uploadStatus.className = '';
 
   try {
-    const title = document.getElementById('prod-title').value.trim();
+    // UPGRADE: Now collects BOTH languages and compiles them into a clean JSON object for Firebase
+    const title = {
+      en: document.getElementById('prod-title-en').value.trim(),
+      bn: document.getElementById('prod-title-bn').value.trim() || document.getElementById('prod-title-en').value.trim()
+    };
+    
     const price = Number(document.getElementById('prod-price').value);
     const quantity = Number(document.getElementById('prod-qty').value);
-    const colors = document.getElementById('prod-colors').value.split(',').map(c => c.trim()).filter(Boolean);
+    
+    const colorsEn = document.getElementById('prod-colors-en').value.split(',').map(c => c.trim()).filter(Boolean);
+    const colorsBn = document.getElementById('prod-colors-bn').value.split(',').map(c => c.trim()).filter(Boolean);
+    const colors = {
+      en: colorsEn,
+      bn: colorsBn.length > 0 ? colorsBn : colorsEn
+    };
+
     const { sizesArray, sizeMeasurementsMap } = collectSizesFromForm();
-    const measurementsGuide = document.getElementById('prod-measurements').value.trim();
-    const desc = document.getElementById('prod-desc').value.trim();
-    const details = document.getElementById('prod-details').value.split('\n').map(d => d.trim()).filter(Boolean);
+    
+    const measurementsGuide = {
+      en: document.getElementById('prod-measurements-en').value.trim(),
+      bn: document.getElementById('prod-measurements-bn').value.trim() || document.getElementById('prod-measurements-en').value.trim()
+    };
+    
+    const desc = {
+      en: document.getElementById('prod-desc-en').value.trim(),
+      bn: document.getElementById('prod-desc-bn').value.trim() || document.getElementById('prod-desc-en').value.trim()
+    };
+    
+    const detailsEn = document.getElementById('prod-details-en').value.split('\n').map(d => d.trim()).filter(Boolean);
+    const detailsBn = document.getElementById('prod-details-bn').value.split('\n').map(d => d.trim()).filter(Boolean);
+    const details = {
+      en: detailsEn,
+      bn: detailsBn.length > 0 ? detailsBn : detailsEn
+    };
+    
     const seoKeywords = document.getElementById('prod-seo').value.split(',').map(k => k.trim()).filter(Boolean);
     const images = document.getElementById('prod-images').value.split('\n').map(u => u.trim()).filter(Boolean);
 
