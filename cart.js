@@ -13,11 +13,26 @@ function escapeHtml(value) {
 // canonical product catalog instead of trusting whatever price was cached
 // on the cart item (which lives in localStorage and can be edited by
 // anyone via devtools before checkout).
-function getCanonicalPrice(itemName, fallbackPrice) {
-    if (!Array.isArray(window.productsData)) return fallbackPrice;
-    const match = window.productsData.find(p =>
-        p.title && (p.title.en === itemName || p.title.bn === itemName)
-    );
+function getCanonicalPrice(itemName, fallbackPrice, productId) {
+    // Check the live Firestore catalog first (real inventory); only fall
+    // back to the small static demo list if nothing has loaded from Firestore.
+    const catalog = (Array.isArray(window.firestoreProducts) && window.firestoreProducts.length > 0)
+        ? window.firestoreProducts
+        : window.productsData;
+    if (!Array.isArray(catalog)) return fallbackPrice;
+
+    // Prefer matching by ID — reliable even if two products share a title
+    // or a title contains special characters. Fall back to title matching
+    // for cart items saved before this fix (no id yet in localStorage).
+    let match = null;
+    if (productId !== undefined && productId !== null && productId !== '') {
+        match = catalog.find(p => String(p.id) === String(productId));
+    }
+    if (!match) {
+        match = catalog.find(p =>
+            p.title && (p.title.en === itemName || p.title.bn === itemName || p.title === itemName)
+        );
+    }
     if (!match) {
         console.warn('Could not verify price for "' + itemName + '" against catalog; using cached price.');
         return fallbackPrice;
@@ -51,13 +66,13 @@ if(closeBtn) closeBtn.addEventListener('click', closeCart);
 if(cartOverlay) cartOverlay.addEventListener('click', closeCart);
 
 // Attached to window so app.js can trigger it from the product modal
-window.addToCart = function(name, price, size) {
+window.addToCart = function(name, price, size, productId) {
     let existingItem = window.cart.find(item => item.name === name && item.size === size);
     
     if (existingItem) {
         existingItem.qty += 1;
     } else {
-        window.cart.push({ name: name, price: price, size: size, qty: 1 });
+        window.cart.push({ name: name, price: price, size: size, qty: 1, productId: productId });
     }
     
     window.updateCartUI();
@@ -167,7 +182,12 @@ window.updateCartUI = function() {
     if(delEl) delEl.innerText = deliveryFee;
     if(totEl) totEl.innerText = finalTotal;
     
-    if(cartBadge) cartBadge.innerText = totalItems;
+    if(cartBadge) {
+        cartBadge.innerText = totalItems;
+        cartBadge.classList.remove('bump');
+        void cartBadge.offsetWidth; // restart the animation even if it fired a moment ago
+        cartBadge.classList.add('bump');
+    }
     
     // Legacy Text Counter
     const cartCountNav = document.getElementById('cartCountDisplay');
@@ -289,7 +309,7 @@ window.checkoutToAdmin = async function() {
         // Cloud Function, since anyone can still bypass this file entirely
         // and call the Firestore SDK directly from the console.
         const verifiedItems = window.cart.map(item => {
-            const verifiedPrice = getCanonicalPrice(item.name, item.price);
+            const verifiedPrice = getCanonicalPrice(item.name, item.price, item.productId);
             return { name: item.name, size: item.size, qty: item.qty, price: verifiedPrice };
         });
         const verifiedSubtotal = verifiedItems.reduce((sum, item) => sum + (item.price * item.qty), 0);
@@ -307,7 +327,7 @@ window.checkoutToAdmin = async function() {
             totalAmount: verifiedTotal,
             items: verifiedItems,
             orderDate: new Date().toISOString(),
-            status: "New" 
+            status: "Pending" 
         };
 
         // 3. Send the data to your Firebase 'orders' collection
