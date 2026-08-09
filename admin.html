@@ -507,6 +507,17 @@ tbody tr:hover { background: rgba(245,241,236,0.6); }
                 </div>
 
                 <div class="form-group">
+                  <label for="prod-category">Category</label>
+                  <select id="prod-category" required>
+                    <option value="three-piece">Three Piece</option>
+                    <option value="kurti">Kurti</option>
+                    <option value="khadi">Khadi</option>
+                    <option value="formal">Formal Wear</option>
+                  </select>
+                  <div class="form-hint">Must match one of your storefront's sidebar filters.</div>
+                </div>
+
+                <div class="form-group">
                   <label for="prod-price">Price (&#2547;)</label>
                   <input type="number" id="prod-price" min="0" placeholder="e.g. 3200" required>
                 </div>
@@ -1093,7 +1104,7 @@ function renderProductsTable() {
       return `
         <tr>
           <td>${img ? `<img src="${escapeHtml(img)}" alt="" style="width:44px;height:54px;object-fit:cover;border-radius:6px;">` : '<div style="width:44px;height:54px;background:#F5F1EC;border-radius:6px;"></div>'}</td>
-          <td><strong>${escapeHtml(displayTitle)}</strong><br><span class="mono" style="color:#C9A14A;font-weight:600;">${money(prod.price)}</span></td>
+          <td><strong>${escapeHtml(displayTitle)}</strong><br><span class="mono" style="color:#C9A14A;font-weight:600;">${money(prod.price)}</span><br><span style="font-size:11px;color:#a89f9a;text-transform:uppercase;letter-spacing:.3px;">${escapeHtml((prod.category || 'three-piece').replace('-', ' '))}</span></td>
           <td>${stockBadge(prod.quantity)}</td>
           <td style="font-size:12px;color:#665f5b;">${escapeHtml(sizesStr)}</td>
           <td style="white-space:nowrap;">
@@ -1232,6 +1243,7 @@ function loadProductIntoForm(id) {
   // UPGRADE: Loads data perfectly into English and Bengali inputs safely
   document.getElementById('prod-title-en').value = getSafeStr(prod.title, 'en');
   document.getElementById('prod-title-bn').value = getSafeStr(prod.title, 'bn');
+  document.getElementById('prod-category').value = prod.category || 'three-piece';
   
   document.getElementById('prod-price').value = prod.price || '';
   document.getElementById('prod-qty').value = prod.quantity || '';
@@ -1306,6 +1318,7 @@ addProductForm.addEventListener('submit', async (e) => {
       bn: document.getElementById('prod-title-bn').value.trim() || document.getElementById('prod-title-en').value.trim()
     };
     
+    const category = document.getElementById('prod-category').value;
     const price = Number(document.getElementById('prod-price').value);
     const quantity = Number(document.getElementById('prod-qty').value);
     
@@ -1342,7 +1355,7 @@ addProductForm.addEventListener('submit', async (e) => {
     if (images.length === 0) throw new Error('Add at least one image link.');
 
     const payload = {
-      title, price, quantity, colors,
+      title, category, price, quantity, colors,
       sizes: sizesArray, sizeMeasurements: sizeMeasurementsMap,
       measurementsGuide, description: desc, details, seoKeywords, images
     };
