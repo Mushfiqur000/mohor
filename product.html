@@ -9,9 +9,19 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 
     <style>
-        :root { --primary-gold: #C9A14A; --deep-black: #0c0c0c; --white: #ffffff; --border: #eaeaea; }
+        :root { 
+            --primary-gold: #C9A14A; --deep-black: #0c0c0c; --white: #ffffff; --border: #eaeaea; 
+            --ease-smooth: cubic-bezier(0.22, 1, 0.36, 1);
+            --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+            --duration-fast: 0.2s;
+            --duration-base: 0.35s;
+        }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Montserrat', sans-serif; }
-        body { background-color: var(--white); color: var(--deep-black); padding-bottom: 90px; }
+        body { background-color: var(--white); color: var(--deep-black); padding-bottom: 90px; animation: pageFadeIn var(--duration-base) var(--ease-out); }
+        @keyframes pageFadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+        }
         
         nav { display: flex; justify-content: space-between; align-items: center; padding: 15px 5%; border-bottom: 1px solid var(--border); }
         .brand-logo { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; text-decoration: none; color: var(--deep-black); text-transform: uppercase; }
@@ -23,18 +33,29 @@
 
         .product-container { max-width: 600px; margin: 0 auto; padding: 20px 5%; }
         /* UPGRADE: Added cursor: zoom-in */
-        .main-image { width: 100%; height: 450px; object-fit: cover; background: #f9f9f9; border: 1px solid var(--border); border-radius: 8px; cursor: zoom-in; }
+        .main-image { width: 100%; height: 450px; object-fit: cover; background: #f9f9f9; border: 1px solid var(--border); border-radius: 8px; cursor: zoom-in; opacity: 0; transition: opacity var(--duration-base) var(--ease-out); }
+        .main-image.loaded { opacity: 1; }
+        .main-image-wrap { position: relative; }
+        .main-image-wrap.is-loading::before {
+            content: ''; position: absolute; inset: 0; border-radius: 8px;
+            background: linear-gradient(100deg, #f4f4f4 30%, #ececec 50%, #f4f4f4 70%);
+            background-size: 200% 100%; animation: shimmer 1.6s ease-in-out infinite;
+        }
+        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
         
         .thumbnail-row { display: flex; gap: 10px; margin-top: 10px; overflow-x: auto; padding-bottom: 5px; }
-        .thumbnail { width: 70px; height: 90px; object-fit: cover; cursor: pointer; border: 1px solid var(--border); border-radius: 4px; opacity: 0.6; transition: 0.3s; }
+        .thumbnail { width: 70px; height: 90px; object-fit: cover; cursor: pointer; border: 1px solid var(--border); border-radius: 4px; opacity: 0.6; transition: opacity var(--duration-fast) var(--ease-smooth), border-color var(--duration-fast) var(--ease-smooth), transform var(--duration-fast) var(--ease-smooth); }
         .thumbnail:hover, .thumbnail.active { opacity: 1; border-color: var(--primary-gold); }
+        .thumbnail:hover { transform: translateY(-2px); }
         
         .info-section { margin-top: 20px; }
         h1 { font-family: 'Playfair Display', serif; font-size: 24px; margin-bottom: 5px; }
         .price { font-size: 20px; color: var(--primary-gold); font-weight: 600; margin-bottom: 20px; }
         
         .btn-group { display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
-        .option-btn { border: 1px solid var(--border); background: var(--white); padding: 10px 15px; cursor: pointer; border-radius: 4px; font-size: 13px; transition: 0.2s; }
+        .option-btn { border: 1px solid var(--border); background: var(--white); padding: 10px 15px; cursor: pointer; border-radius: 4px; font-size: 13px; transition: background var(--duration-fast) var(--ease-smooth), border-color var(--duration-fast) var(--ease-smooth), transform var(--duration-fast) var(--ease-smooth), box-shadow var(--duration-fast) var(--ease-smooth); }
+        .option-btn:hover { border-color: var(--deep-black); transform: translateY(-1px); }
+        .option-btn:active { transform: translateY(0) scale(0.96); }
         
         /* ========================================= */
         /* FIX: FORCED GOLD SELECTION FOR DARK MODE  */
@@ -49,20 +70,23 @@
         .desc-box { margin-top: 25px; font-size: 13.5px; line-height: 1.6; color: #444; }
         .desc-box h4 { font-weight: 600; margin-bottom: 8px; color: var(--deep-black); text-transform: uppercase; letter-spacing: 0.5px; }
         
-        .measurements-box { margin-top: 10px; padding: 10px; background: #f9f9f9; border: 1px solid var(--border); border-radius: 4px; font-size: 12.5px; display: none; }
+        .measurements-box { margin-top: 10px; padding: 10px; background: #f9f9f9; border: 1px solid var(--border); border-radius: 4px; font-size: 12.5px; display: none; animation: fadeUp var(--duration-fast) var(--ease-out); }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
         
         .details-list { margin-top: 10px; padding-left: 20px; }
         .details-list li { margin-bottom: 5px; }
 
         .bottom-bar { position: fixed; bottom: 0; width: 100%; display: flex; padding: 10px; background: var(--white); border-top: 1px solid var(--border); z-index: 100; }
-        .bottom-bar button { flex: 1; padding: 15px; font-weight: 600; border: none; cursor: pointer; text-transform: uppercase; font-size: 14px; }
+        .bottom-bar button { flex: 1; padding: 15px; font-weight: 600; border: none; cursor: pointer; text-transform: uppercase; font-size: 14px; transition: transform var(--duration-fast) var(--ease-smooth), opacity var(--duration-fast) var(--ease-smooth); }
+        .bottom-bar button:active { transform: scale(0.97); opacity: 0.9; }
         .btn-add { background: var(--primary-gold); color: var(--white); margin-right: 5px; border-radius: 4px; }
         .btn-buy { background: var(--deep-black); color: var(--white); margin-left: 5px; border-radius: 4px; }
 
         /* ========================================= */
         /* UPGRADE: LIGHTBOX MODAL CSS               */
         /* ========================================= */
-        .modal { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.95); overflow: auto; }
+        .modal { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.95); overflow: auto; opacity: 0; transition: opacity var(--duration-base) var(--ease-smooth); }
+        .modal.active { opacity: 1; }
         .modal-content { margin: auto; display: block; max-width: 100%; max-height: 90vh; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); object-fit: contain; }
         .close-modal { position: absolute; top: 15px; right: 25px; color: #f1f1f1; font-size: 35px; font-weight: bold; cursor: pointer; z-index: 10000; padding: 10px; }
         .prev-modal, .next-modal { cursor: pointer; position: absolute; top: 50%; width: auto; padding: 20px; margin-top: -30px; color: white; font-weight: bold; font-size: 24px; transition: 0.3s; user-select: none; z-index: 10000; background: rgba(0,0,0,0.3); border-radius: 4px; }
@@ -102,7 +126,9 @@
 
     <div class="product-container">
         <!-- Images -->
-        <img id="mainImage" class="main-image" src="" alt="Loading...">
+        <div class="main-image-wrap is-loading" id="mainImageWrap">
+            <img id="mainImage" class="main-image" src="" alt="Loading...">
+        </div>
         <div id="thumbnailContainer" class="thumbnail-row"></div>
         
         <!-- UPGRADE: FULL SCREEN IMAGE MODAL -->
@@ -225,8 +251,7 @@
             // Re-render size measurements if active
             if (currentSelectedSize && activeProduct.sizeMeasurements && activeProduct.sizeMeasurements[currentSelectedSize]) {
                 const measurementBox = document.getElementById('sizeMeasurements');
-                const measureData = activeProduct.sizeMeasurements[currentSelectedSize];
-                measurementBox.innerHTML = (typeof measureData === 'string') ? measureData : (measureData[window.currentLang] || measureData['en'] || "");
+                measurementBox.innerHTML = window.formatSizeMeasurement(activeProduct.sizeMeasurements[currentSelectedSize], window.currentLang);
             }
         }
 
@@ -286,10 +311,21 @@
 
             // 3. Handle Images & Thumbnails
             const mainImg = document.getElementById('mainImage');
+            const mainImgWrap = document.getElementById('mainImageWrap');
             const thumbContainer = document.getElementById('thumbnailContainer');
+
+            function setMainProductImage(src) {
+                mainImg.classList.remove('loaded');
+                if (mainImgWrap) mainImgWrap.classList.add('is-loading');
+                mainImg.onload = () => {
+                    mainImg.classList.add('loaded');
+                    if (mainImgWrap) mainImgWrap.classList.remove('is-loading');
+                };
+                mainImg.src = src;
+            }
             
             if (activeProduct.images && activeProduct.images.length > 0) {
-                mainImg.src = activeProduct.images[0]; 
+                setMainProductImage(activeProduct.images[0]); 
                 
                 activeProduct.images.forEach((imgSrc, index) => {
                     const thumb = document.createElement('img');
@@ -297,7 +333,7 @@
                     thumb.className = index === 0 ? 'thumbnail active' : 'thumbnail';
                     
                     thumb.onclick = () => {
-                        mainImg.src = imgSrc;
+                        setMainProductImage(imgSrc);
                         document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
                         thumb.classList.add('active');
                     };
@@ -329,9 +365,7 @@
 
                             if (activeProduct.sizeMeasurements && activeProduct.sizeMeasurements[size]) {
                                 measurementBox.style.display = 'block';
-                                const measureData = activeProduct.sizeMeasurements[size];
-                                // UPGRADE: Uses window.currentLang
-                                measurementBox.innerHTML = (typeof measureData === 'string') ? measureData : (measureData[window.currentLang] || measureData['en'] || "");
+                                measurementBox.innerHTML = window.formatSizeMeasurement(activeProduct.sizeMeasurements[size], window.currentLang);
                             }
                         }
                     };
@@ -385,7 +419,7 @@
                 }
                 
                 if (typeof window.addToCart === 'function') {
-                    window.addToCart(displayName, activeProduct.price, currentSelectedSize || "Standard");
+                    window.addToCart(displayName, activeProduct.price, currentSelectedSize || "Standard", activeProduct.id);
                 } else {
                     console.error("addToCart function not found. Check cart.js connection.");
                 }
@@ -412,6 +446,8 @@
             mainImg.onclick = function(){
                 if (!activeProduct || !activeProduct.images) return;
                 modal.style.display = "block";
+                document.body.style.overflow = 'hidden';
+                requestAnimationFrame(() => requestAnimationFrame(() => modal.classList.add('active')));
                 
                 // Find index of currently displayed image based on what mainImg is showing
                 const currentSrc = new URL(mainImg.src).pathname;
@@ -421,17 +457,23 @@
                 modalImg.src = activeProduct.images[currentImageIndex];
             }
 
-            // Close Modal
-            document.getElementById("closeModal").onclick = function() {
-                modal.style.display = "none";
+            function closeLightbox() {
+                modal.classList.remove('active');
+                document.body.style.overflow = '';
+                setTimeout(() => { modal.style.display = "none"; }, 250);
             }
+
+            // Close Modal
+            document.getElementById("closeModal").onclick = closeLightbox;
 
             // Click outside image to close
             modal.onclick = function(e) {
-                if(e.target === modal) {
-                    modal.style.display = "none";
-                }
+                if(e.target === modal) closeLightbox();
             }
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && modal.style.display === 'block') closeLightbox();
+            });
 
             // Next / Previous Buttons
             document.getElementById("nextModal").onclick = function() { changeImage(1); }
