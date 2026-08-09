@@ -31,11 +31,26 @@
             --white: #ffffff;
             --transition: all 0.4s ease;
             --radius: 8px; /* Added universal soft radius */
+
+            /* --- Motion system: one easing + timing scale used everywhere,
+               so every hover/open/close feels like it belongs to the same page --- */
+            --ease-smooth: cubic-bezier(0.22, 1, 0.36, 1);
+            --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+            --duration-fast: 0.2s;
+            --duration-base: 0.35s;
+            --duration-slow: 0.5s;
+            --shadow-soft: 0 4px 15px rgba(0,0,0,0.03);
+            --shadow-lift: 0 20px 45px rgba(0,0,0,0.12);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Montserrat', sans-serif; background-color: var(--white); color: var(--text-dark); line-height: 1.6; overflow-x: hidden; }
+        body.modal-open, body.no-scroll { overflow: hidden; }
         h1, h2, h3, h4, .brand-logo { font-family: 'Playfair Display', serif; }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+        }
 
         /* --- Navigation --- */
         nav { display: flex; justify-content: space-between; align-items: center; padding: 20px 5%; background: var(--white); position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid var(--border-color); }
@@ -45,7 +60,9 @@
         .nav-links a { text-decoration: none; color: var(--text-dark); margin-left: 30px; font-size: 13px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; transition: var(--transition); }
         .nav-links a:hover { color: var(--primary-gold); }
         .cart-toggle-btn { background: none; border: none; font-family: 'Montserrat', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px; text-transform: uppercase; letter-spacing: 1px; }
-        .cart-badge { background: var(--primary-gold); color: var(--white); border-radius: 50%; padding: 2px 8px; font-size: 12px; }
+        .cart-badge { background: var(--primary-gold); color: var(--white); border-radius: 50%; padding: 2px 8px; font-size: 12px; display: inline-block; }
+        .cart-badge.bump { animation: badgeBump 0.4s var(--ease-smooth); }
+        @keyframes badgeBump { 0% { transform: scale(1); } 35% { transform: scale(1.45); } 100% { transform: scale(1); } }
         .menu-toggle { display: none; font-size: 24px; background: none; border: none; cursor: pointer; color: var(--deep-black); }
         
         .lang-btn { background: var(--deep-black); color: var(--white); border: none; padding: 5px 10px; font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 600; cursor: pointer; border-radius: 4px; letter-spacing: 1px;}
@@ -87,23 +104,64 @@
 
         /* PREMIUM PRODUCT GRID ENHANCEMENTS */
         .product-grid { flex: 1; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 40px 30px; }
-        
+
+        /* --- Grid density: Small / Medium (default) / Large card view --- */
+        .product-grid.density-small { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 22px 18px; }
+        .product-grid.density-small .image-container { height: 220px; }
+        .product-grid.density-small .product-details-card { padding: 14px 12px; }
+        .product-grid.density-small .product-details-card h3 { font-size: 13px; margin-bottom: 6px; }
+        .product-grid.density-small .product-price { font-size: 13px; margin-bottom: 10px; }
+        .product-grid.density-small .product-details-card button { padding: 9px 8px !important; font-size: 10px !important; }
+
+        .product-grid.density-medium { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 40px 30px; }
+
+        .product-grid.density-large { grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 50px 36px; }
+        .product-grid.density-large .image-container { height: 460px; }
+        .product-grid.density-large .product-details-card h3 { font-size: 18px; }
+        .product-grid.density-large .product-price { font-size: 18px; }
+
+        .density-toggle { display: flex; align-items: center; gap: 4px; border: 1px solid #ddd; border-radius: 4px; padding: 3px; background: var(--white); }
+        .density-btn { background: none; border: none; width: 32px; height: 30px; display: flex; align-items: center; justify-content: center; cursor: pointer; border-radius: 3px; color: #999; transition: background var(--duration-fast) var(--ease-smooth), color var(--duration-fast) var(--ease-smooth); }
+        .density-btn:hover { color: var(--deep-black); background: var(--soft-gray); }
+        .density-btn.active { background: var(--deep-black); color: var(--white); }
+        .density-btn svg { width: 15px; height: 15px; }
+
         .product-card { 
             background: var(--white); 
-            transition: var(--transition); 
+            transition: transform var(--duration-base) var(--ease-smooth), box-shadow var(--duration-base) var(--ease-smooth), border-color var(--duration-base) var(--ease-smooth); 
             display: flex; 
             flex-direction: column; 
             border: 1px solid #f0f0f0; 
             border-radius: var(--radius);
             overflow: hidden; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.03); 
+            box-shadow: var(--shadow-soft); 
             cursor: pointer; 
             -webkit-tap-highlight-color: transparent; 
         }
+
+        /* Staggered fade-up entrance whenever the grid (re)renders — filtering,
+           sorting and searching all feel considered instead of an instant snap */
+        .product-card.reveal-on-load {
+            animation: cardRevealUp var(--duration-slow) var(--ease-out) both;
+            animation-delay: calc(var(--stagger, 0) * 55ms);
+        }
+        @keyframes cardRevealUp {
+            from { opacity: 0; transform: translateY(18px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Skeleton loading cards shown while Firestore is still fetching */
+        .skeleton-card { border-radius: var(--radius); overflow: hidden; border: 1px solid #f0f0f0; background: var(--white); }
+        .skeleton-card .image-container { height: 360px; }
+        .skeleton-shimmer { background: linear-gradient(100deg, var(--soft-gray) 30%, #f0f0f0 50%, var(--soft-gray) 70%); background-size: 200% 100%; animation: shimmer 1.6s ease-in-out infinite; }
+        .skeleton-card .image-container { }
+        .skeleton-line { height: 12px; border-radius: 3px; margin: 14px 20px; }
+        .skeleton-line.short { width: 40%; }
+        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
         
         .product-card:hover { 
             transform: translateY(-8px); 
-            box-shadow: 0 15px 35px rgba(0,0,0,0.08); 
+            box-shadow: var(--shadow-lift); 
             border-color: transparent; 
         }
         
@@ -114,7 +172,7 @@
             width: 100%; 
             height: 100%; 
             object-fit: cover; 
-            transition: transform 0.8s ease; 
+            transition: transform 0.8s var(--ease-smooth); 
             pointer-events: none; 
         }
         
@@ -187,14 +245,16 @@
             bottom: 0; 
             width: 100%; 
             height: 100%; 
-            background: rgba(0,0,0,0.75); 
+            background: rgba(12,12,12,0.7); 
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
             z-index: 3000; 
             display: flex; 
             justify-content: center; 
             align-items: center; 
             opacity: 0; 
             visibility: hidden; 
-            transition: var(--transition); 
+            transition: opacity var(--duration-base) var(--ease-smooth), visibility var(--duration-base); 
             padding: 20px; 
         }
         
@@ -211,22 +271,23 @@
             position: relative; 
             display: flex; 
             flex-direction: row; 
-            box-shadow: 0 20px 50px rgba(0,0,0,0.3); 
-            transform: translateY(20px); 
-            transition: transform 0.4s ease; 
+            box-shadow: 0 25px 60px rgba(0,0,0,0.35); 
+            transform: translateY(24px) scale(0.98); 
+            transition: transform var(--duration-base) var(--ease-out); 
             border-radius: var(--radius); 
         }
         
-        .modal-overlay.active .modal-content { transform: translateY(0); }
-        .close-modal { position: absolute; top: 15px; right: 20px; font-size: 30px; cursor: pointer; color: var(--text-dark); z-index: 10; line-height: 1; transition: var(--transition); }
+        .modal-overlay.active .modal-content { transform: translateY(0) scale(1); }
+        .close-modal { position: absolute; top: 15px; right: 20px; font-size: 30px; cursor: pointer; color: var(--text-dark); z-index: 10; line-height: 1; transition: color var(--duration-fast) var(--ease-smooth), transform var(--duration-base) var(--ease-smooth); }
         .close-modal:hover { color: var(--primary-gold); transform: rotate(90deg); }
 
         .modal-image-sec { flex: 1; background: var(--soft-gray); padding: 30px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .main-image-wrapper { width: 100%; max-height: 500px; display: flex; justify-content: center; overflow: hidden; background: transparent; }
-        .main-image-wrapper img { max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 4px; }
+        .main-image-wrapper img { max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 4px; opacity: 0; transform: scale(1.02); transition: opacity var(--duration-base) var(--ease-out), transform var(--duration-base) var(--ease-out); }
+        .main-image-wrapper img.loaded { opacity: 1; transform: scale(1); }
         .thumbnail-gallery { display: flex; gap: 10px; margin-top: 20px; overflow-x: auto; max-width: 100%; padding-bottom: 10px; }
-        .thumbnail { width: 70px; height: 90px; object-fit: cover; cursor: pointer; border: 2px solid transparent; transition: var(--transition); opacity: 0.6; border-radius: 4px; }
-        .thumbnail:hover { opacity: 1; }
+        .thumbnail { width: 70px; height: 90px; object-fit: cover; cursor: pointer; border: 2px solid transparent; transition: opacity var(--duration-fast) var(--ease-smooth), border-color var(--duration-fast) var(--ease-smooth), transform var(--duration-fast) var(--ease-smooth); opacity: 0.6; border-radius: 4px; }
+        .thumbnail:hover { opacity: 1; transform: translateY(-2px); }
         .thumbnail.active { border-color: var(--primary-gold); opacity: 1; }
         
         .modal-info-sec { flex: 1.2; padding: 40px 40px; display: flex; flex-direction: column; }
@@ -236,8 +297,9 @@
         .selector-section { margin-bottom: 25px; }
         .selector-section h4 { font-family: 'Montserrat', sans-serif; font-size: 13px; text-transform: uppercase; margin-bottom: 12px; font-weight: 600; letter-spacing: 1px; }
         .selector-options { display: flex; gap: 10px; flex-wrap: wrap; }
-        .select-btn { border: 1px solid var(--border-color); background: var(--white); padding: 10px 18px; font-family: 'Montserrat', sans-serif; font-size: 13px; cursor: pointer; transition: var(--transition); min-width: 45px; text-align: center; border-radius: 4px; font-weight: 500; }
-        .select-btn:hover { border-color: var(--deep-black); }
+        .select-btn { border: 1px solid var(--border-color); background: var(--white); padding: 10px 18px; font-family: 'Montserrat', sans-serif; font-size: 13px; cursor: pointer; transition: border-color var(--duration-fast) var(--ease-smooth), background var(--duration-fast) var(--ease-smooth), color var(--duration-fast) var(--ease-smooth), transform var(--duration-fast) var(--ease-smooth); min-width: 45px; text-align: center; border-radius: 4px; font-weight: 500; }
+        .select-btn:hover { border-color: var(--deep-black); transform: translateY(-1px); }
+        .select-btn:active { transform: translateY(0) scale(0.97); }
         .select-btn.selected { background: var(--deep-black); color: var(--white); border-color: var(--deep-black); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
 
         .desc-section, .details-section { margin-bottom: 25px; }
@@ -245,8 +307,9 @@
         .desc-section p { font-size: 14px; color: var(--text-light); line-height: 1.8; }
         .details-section ul { list-style: square inside; color: var(--text-light); font-size: 14px; line-height: 1.8; }
 
-        .add-to-cart-btn { background: var(--primary-gold); color: var(--white); border: none; padding: 16px; font-family: 'Montserrat', sans-serif; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; transition: var(--transition); width: 100%; margin-top: auto; border-radius: 4px; box-shadow: 0 5px 15px rgba(201, 161, 74, 0.3); }
+        .add-to-cart-btn { background: var(--primary-gold); color: var(--white); border: none; padding: 16px; font-family: 'Montserrat', sans-serif; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; transition: background var(--duration-fast) var(--ease-smooth), transform var(--duration-fast) var(--ease-smooth), box-shadow var(--duration-fast) var(--ease-smooth); width: 100%; margin-top: auto; border-radius: 4px; box-shadow: 0 5px 15px rgba(201, 161, 74, 0.3); }
         .add-to-cart-btn:hover { background: var(--deep-black); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.2); }
+        .add-to-cart-btn:active { transform: translateY(0) scale(0.98); }
 
         /* Floating WhatsApp Button */
         .floating-wa { position: fixed; bottom: 30px; right: 30px; background-color: #25d366; color: white; border-radius: 50%; width: 60px; height: 60px; display: flex; justify-content: center; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.2); z-index: 4000; transition: transform 0.3s ease; text-decoration: none; }
@@ -271,12 +334,14 @@
         @media (max-width: 900px) {
             .shop-layout { flex-direction: column; }
             .sidebar { width: 100%; display: none; background: var(--soft-gray); padding: 20px; position: static; margin-bottom: 20px; border-radius: var(--radius); }
-            .sidebar.active { display: block; }
+            .sidebar.active { display: block; animation: slideDownFade var(--duration-base) var(--ease-out) both; }
             .mobile-filter-btn { display: block; }
             .nav-links { display: none; flex-direction: column; position: absolute; top: 100%; left: 0; width: 100%; background: var(--white); padding: 20px 0; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-            .nav-links.active { display: flex; }
+            .nav-links.active { display: flex; animation: slideDownFade var(--duration-base) var(--ease-out) both; }
             .nav-links a { margin: 15px 0; }
-            .menu-toggle { display: block; }
+            .menu-toggle { display: block; transition: transform var(--duration-fast) var(--ease-smooth); }
+            .menu-toggle.active { transform: rotate(90deg); }
+            @keyframes slideDownFade { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
             
             .modal-overlay { padding: 10px; }
             .modal-content { 
@@ -300,6 +365,7 @@
             }
             
             #searchInput { width: 100%; margin-bottom: 10px; }
+            .density-toggle { order: 3; }
         }
     </style>
 </head>
@@ -332,6 +398,19 @@
                 <input type="text" id="searchInput" placeholder="Search dresses, formal, khadi..." data-i18n-placeholder="searchPlaceholder" style="min-width: 250px;">
                 
                 <button type="button" class="mobile-filter-btn" id="mobileFilterBtn" data-i18n="filterBtn">Filters</button>
+
+                <div class="density-toggle" role="group" aria-label="Grid view size">
+                    <button type="button" class="density-btn" data-density="small" title="Small" data-i18n-title="densitySmall" aria-label="Small grid view">
+                        <svg viewBox="0 0 24 24" fill="currentColor"><rect x="2" y="2" width="5" height="5"/><rect x="9.5" y="2" width="5" height="5"/><rect x="17" y="2" width="5" height="5"/><rect x="2" y="9.5" width="5" height="5"/><rect x="9.5" y="9.5" width="5" height="5"/><rect x="17" y="9.5" width="5" height="5"/><rect x="2" y="17" width="5" height="5"/><rect x="9.5" y="17" width="5" height="5"/><rect x="17" y="17" width="5" height="5"/></svg>
+                    </button>
+                    <button type="button" class="density-btn" data-density="medium" title="Medium" data-i18n-title="densityMedium" aria-label="Medium grid view">
+                        <svg viewBox="0 0 24 24" fill="currentColor"><rect x="2" y="2" width="9" height="9"/><rect x="13" y="2" width="9" height="9"/><rect x="2" y="13" width="9" height="9"/><rect x="13" y="13" width="9" height="9"/></svg>
+                    </button>
+                    <button type="button" class="density-btn" data-density="large" title="Large" data-i18n-title="densityLarge" aria-label="Large grid view">
+                        <svg viewBox="0 0 24 24" fill="currentColor"><rect x="2" y="2" width="20" height="20" rx="1.5"/></svg>
+                    </button>
+                </div>
+
                 <div class="sort-box">
                     <select id="sortSelect" aria-label="Sort products">
                         <option value="default" data-i18n="sortDefault">Sort by: Default</option>
@@ -364,8 +443,12 @@
                 </div>
             </aside>
 
-            <div class="product-grid" id="productGrid">
-                <!-- Products dynamically loaded here via app.js -->
+            <div class="product-grid density-medium" id="productGrid">
+                <!-- Skeleton cards show instantly while Firestore loads; renderProducts() replaces this whole block -->
+                <div class="skeleton-card"><div class="image-container skeleton-shimmer"></div><div class="skeleton-line skeleton-shimmer"></div><div class="skeleton-line short skeleton-shimmer"></div></div>
+                <div class="skeleton-card"><div class="image-container skeleton-shimmer"></div><div class="skeleton-line skeleton-shimmer"></div><div class="skeleton-line short skeleton-shimmer"></div></div>
+                <div class="skeleton-card"><div class="image-container skeleton-shimmer"></div><div class="skeleton-line skeleton-shimmer"></div><div class="skeleton-line short skeleton-shimmer"></div></div>
+                <div class="skeleton-card"><div class="image-container skeleton-shimmer"></div><div class="skeleton-line skeleton-shimmer"></div><div class="skeleton-line short skeleton-shimmer"></div></div>
             </div>
         </div>
     </section>
