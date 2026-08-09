@@ -8,6 +8,9 @@ if (typeof window.productsData !== 'undefined') {
 // This saves the language so it doesn't reset when opening product pages
 window.currentLang = localStorage.getItem('mohor_lang') || 'en';
 
+// --- GRID DENSITY (Small / Medium / Large card view) ---
+window.gridDensity = localStorage.getItem('mohor_grid_density') || 'medium';
+
 window.uiTranslations = {
     en: {
         navShop: "Shop", 
@@ -17,6 +20,10 @@ window.uiTranslations = {
         navCart: "Cart", 
         shopTitle: "Our Collection", 
         filterBtn: "Filters",
+        densityLabel: "View", 
+        densitySmall: "Small", 
+        densityMedium: "Medium", 
+        densityLarge: "Large",
         sortDefault: "Sort by: Default", 
         sortLowHigh: "Price: Low to High", 
         sortHighLow: "Price: High to Low",
@@ -103,6 +110,10 @@ window.uiTranslations = {
         navCart: "কার্ট", 
         shopTitle: "আমাদের কালেকশন", 
         filterBtn: "ফিল্টার",
+        densityLabel: "ভিউ", 
+        densitySmall: "ছোট", 
+        densityMedium: "মাঝারি", 
+        densityLarge: "বড়",
         sortDefault: "সর্ট: ডিফল্ট", 
         sortLowHigh: "দাম: কম থেকে বেশি", 
         sortHighLow: "দাম: বেশি থেকে কম",
@@ -189,6 +200,19 @@ function getText(dataField) {
     return dataField[window.currentLang] || dataField['en'] || "";
 }
 
+// Handles every shape sizeMeasurements[size] has ever been saved as:
+//  - {en, bn} string pair (current admin panel format)
+//  - a plain string (manual/legacy data)
+//  - an array of measurement lines (pre-bilingual admin panel format)
+// This guarantees the page never renders the literal word "undefined".
+window.formatSizeMeasurement = function(raw, lang) {
+    if (!raw) return "";
+    if (typeof raw === 'string') return raw;
+    if (Array.isArray(raw)) return raw.join('<br>');
+    if (typeof raw === 'object') return raw[lang] || raw['en'] || raw['bn'] || "";
+    return "";
+};
+
 function updateUIText() {
     // Translate plain text elements
     document.querySelectorAll('[data-i18n]').forEach(el => {
@@ -207,6 +231,15 @@ function updateUIText() {
         const key = el.getAttribute('data-i18n-placeholder');
         if (window.uiTranslations[window.currentLang] && window.uiTranslations[window.currentLang][key]) {
             el.placeholder = window.uiTranslations[window.currentLang][key];
+        }
+    });
+
+    // Translate title tooltips / aria-labels
+    document.querySelectorAll('[data-i18n-title]').forEach(el => {
+        const key = el.getAttribute('data-i18n-title');
+        if (window.uiTranslations[window.currentLang] && window.uiTranslations[window.currentLang][key]) {
+            el.title = window.uiTranslations[window.currentLang][key];
+            el.setAttribute('aria-label', window.uiTranslations[window.currentLang][key]);
         }
     });
     
@@ -244,15 +277,17 @@ function renderProducts(productsToRender) {
     const productGrid = document.getElementById('productGrid');
     if (!productGrid) return; 
     
+    productGrid.className = 'product-grid density-' + (window.gridDensity || 'medium');
     productGrid.innerHTML = '';
     if (!productsToRender || productsToRender.length === 0) {
         productGrid.innerHTML = `<p style="grid-column: 1/-1; text-align:center; padding: 40px; color: #666;">${window.uiTranslations[window.currentLang].noProducts}</p>`;
         return;
     }
 
-    productsToRender.forEach(product => {
+    productsToRender.forEach((product, index) => {
         const card = document.createElement('div');
-        card.className = 'product-card';
+        card.className = 'product-card reveal-on-load';
+        card.style.setProperty('--stagger', Math.min(index, 12));
         
         // --- HYBRID RESPONSIVE VIEW LOGIC ---
         card.onclick = () => {
@@ -364,6 +399,12 @@ function openProductModal(product) {
     const productModal = document.getElementById('productModal');
     if (!productModal) return;
 
+    // This modal div is reused for every product — without resetting scroll,
+    // a shopper who scrolled down while viewing one product lands mid-scroll
+    // on the next product they open ("image is deep down" bug).
+    const modalContentEl = productModal.querySelector('.modal-content');
+    if (modalContentEl) modalContentEl.scrollTop = 0;
+
     currentViewingProduct = product;
     selectedSize = null;
     selectedColor = null;
@@ -379,15 +420,23 @@ function openProductModal(product) {
     const mainImage = document.getElementById('modalMainImage');
     const thumbContainer = document.getElementById('modalThumbnails');
     thumbContainer.innerHTML = '';
+
+    // Fades the main image in on every change (double rAF guarantees the
+    // browser paints the "hidden" state first, so cached images still fade).
+    function setMainImage(src) {
+        mainImage.classList.remove('loaded');
+        mainImage.src = src;
+        requestAnimationFrame(() => requestAnimationFrame(() => mainImage.classList.add('loaded')));
+    }
     
     if (product.images && product.images.length > 0) {
-        mainImage.src = product.images[0];
+        setMainImage(product.images[0]);
         product.images.forEach((imgSrc, index) => {
             const thumb = document.createElement('img');
             thumb.src = imgSrc;
             thumb.className = 'thumbnail' + (index === 0 ? ' active' : '');
             thumb.onclick = () => {
-                mainImage.src = imgSrc;
+                setMainImage(imgSrc);
                 document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
                 thumb.classList.add('active');
             };
@@ -440,6 +489,7 @@ function openProductModal(product) {
     });
 
     productModal.classList.add('active');
+    document.body.classList.add('modal-open');
 }
 
 function selectOption(clickedBtn, value, type) {
@@ -450,11 +500,8 @@ function selectOption(clickedBtn, value, type) {
         
         const sizeGuideDisplay = document.getElementById('sizeGuideDisplay');
         if (sizeGuideDisplay && currentViewingProduct) {
-            if (currentViewingProduct.sizeMeasurements && currentViewingProduct.sizeMeasurements[value]) {
-                sizeGuideDisplay.innerHTML = currentViewingProduct.sizeMeasurements[value][window.currentLang] || currentViewingProduct.sizeMeasurements[value]['en'];
-            } else {
-                sizeGuideDisplay.innerHTML = "";
-            }
+            const rawMeasurement = currentViewingProduct.sizeMeasurements && currentViewingProduct.sizeMeasurements[value];
+            sizeGuideDisplay.innerHTML = window.formatSizeMeasurement(rawMeasurement, window.currentLang);
         }
     } else if (type === 'color') {
         selectedColor = value;
@@ -464,15 +511,26 @@ function selectOption(clickedBtn, value, type) {
     clickedBtn.classList.add('selected');
 }
 
+function closeProductModal() {
+    const productModal = document.getElementById('productModal');
+    if (productModal) productModal.classList.remove('active');
+    document.body.classList.remove('modal-open');
+}
+window.closeProductModal = closeProductModal;
+
 const closeModalBtn = document.getElementById('closeModalBtn');
 if (closeModalBtn) {
-    closeModalBtn.addEventListener('click', () => { document.getElementById('productModal').classList.remove('active'); });
+    closeModalBtn.addEventListener('click', closeProductModal);
 }
 
 const productModal = document.getElementById('productModal');
 if (productModal) {
-    productModal.addEventListener('click', (e) => { if (e.target === productModal) productModal.classList.remove('active'); });
+    productModal.addEventListener('click', (e) => { if (e.target === productModal) closeProductModal(); });
 }
+
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && productModal && productModal.classList.contains('active')) closeProductModal();
+});
 
 const modalAddToCartBtn = document.getElementById('modalAddToCartBtn');
 if (modalAddToCartBtn) {
@@ -488,7 +546,7 @@ if (modalAddToCartBtn) {
         if(selectedColor !== "Default") displayName += ` (${selectedColor})`;
 
         if(typeof window.addToCart === "function") {
-            window.addToCart(displayName, currentViewingProduct.price, selectedSize);
+            window.addToCart(displayName, currentViewingProduct.price, selectedSize, currentViewingProduct.id);
         }
         document.getElementById('productModal').classList.remove('active');
     });
@@ -500,6 +558,7 @@ if (menuToggle) {
     menuToggle.addEventListener('click', () => { 
         const navLinks = document.getElementById('navLinks');
         if (navLinks) navLinks.classList.toggle('active'); 
+        menuToggle.classList.toggle('active');
     });
 }
 
@@ -509,6 +568,23 @@ if(mobileFilterBtn) {
         const sidebar = document.getElementById('sidebar');
         if (sidebar) sidebar.classList.toggle('active');
         this.innerText = window.uiTranslations[window.currentLang].filterBtn;
+    });
+}
+
+// --- GRID DENSITY TOGGLE (Small / Medium / Large card view) ---
+function setGridDensity(size) {
+    window.gridDensity = size;
+    localStorage.setItem('mohor_grid_density', size);
+    document.querySelectorAll('.density-btn').forEach(b => b.classList.toggle('active', b.dataset.density === size));
+    if (document.getElementById('productGrid')) updateProducts();
+}
+window.setGridDensity = setGridDensity;
+
+const densityButtons = document.querySelectorAll('.density-btn');
+if (densityButtons.length > 0) {
+    densityButtons.forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.density === window.gridDensity);
+        btn.addEventListener('click', () => setGridDensity(btn.dataset.density));
     });
 }
 
