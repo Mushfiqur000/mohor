@@ -38,10 +38,19 @@
   <script src="auth.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      if (window.currentUser) {
-        window.loadUserOrders(window.currentUser.uid);
+      const container = document.getElementById('userOrderHistoryContainer');
+      // Wait for Firebase auth to initialise and then load orders for the signed-in user.
+      if (typeof firebase !== 'undefined' && firebase.auth) {
+        firebase.auth().onAuthStateChanged((user) => {
+          if (user) {
+            // auth.js will also set window.currentUser, but call loadUserOrders directly to be sure
+            if (typeof window.loadUserOrders === 'function') window.loadUserOrders(user.uid);
+          } else {
+            container.innerHTML = '<p style="color:var(--ink-muted);">Please sign in to view your order history. Open Account (top-right) to log in.</p>';
+          }
+        });
       } else {
-        const container = document.getElementById('userOrderHistoryContainer');
+        // Fallback: if firebase isn't available yet, show sign-in prompt
         container.innerHTML = '<p style="color:var(--ink-muted);">Please sign in to view your order history. Open Account (top-right) to log in.</p>';
       }
     });
