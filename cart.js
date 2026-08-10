@@ -1,321 +1,340 @@
-// --- CART, QUANTITY & UI LOGIC ---
+// ==========================================================================
+// MOHOR CLOTHINGS — cart.js
+// Cart state, cart UI, and the two checkout paths (WhatsApp / website).
+// ==========================================================================
 
-// SECURITY: escape any value before it is concatenated into innerHTML.
-// Cart item names/sizes ultimately come from productsData, but this keeps
-// rendering safe even if that ever changes or gets out of sync.
 function escapeHtml(value) {
     return String(value ?? '').replace(/[&<>"']/g, (ch) => ({
         '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
     }[ch]));
 }
 
-// SECURITY: look up the real, current price for a product from the
-// canonical product catalog instead of trusting whatever price was cached
-// on the cart item (which lives in localStorage and can be edited by
-// anyone via devtools before checkout).
-function getCanonicalPrice(itemName, fallbackPrice, productId) {
-    // Check the live Firestore catalog first (real inventory); only fall
-    // back to the small static demo list if nothing has loaded from Firestore.
+function notify(message, type) {
+    if (typeof window.showToast === 'function') window.showToast(message, type);
+    else alert(message);
+}
+
+// SECURITY: look up the real, current price for a cart line from the
+// canonical product catalog (Firestore if loaded, else the static fallback)
+// instead of trusting whatever price was cached in localStorage, which is
+// editable via devtools before checkout. Matches by product id first, then
+// by base title, then falls back to the legacy display-name match so a
+// cart saved by an older version of this site still verifies correctly.
+// NOTE: this is a client-side mitigation only — the authoritative fix is to
+// re-validate totals in Firestore Security Rules or a Cloud Function, since
+// anyone can bypass this file entirely and call the Firestore SDK directly.
+function getCanonicalPrice(item) {
     const catalog = (Array.isArray(window.firestoreProducts) && window.firestoreProducts.length > 0)
         ? window.firestoreProducts
-        : window.productsData;
-    if (!Array.isArray(catalog)) return fallbackPrice;
+        : (window.productsData || []);
+    if (!Array.isArray(catalog) || catalog.length === 0) return item.price;
 
-    // Prefer matching by ID — reliable even if two products share a title
-    // or a title contains special characters. Fall back to title matching
-    // for cart items saved before this fix (no id yet in localStorage).
     let match = null;
-    if (productId !== undefined && productId !== null && productId !== '') {
-        match = catalog.find(p => String(p.id) === String(productId));
+    if (item.id !== undefined && item.id !== null) {
+        match = catalog.find(p => String(p.id) === String(item.id));
+    }
+    if (!match && item.baseTitle) {
+        match = catalog.find(p => {
+            const title = typeof p.title === 'string' ? p.title : (p.title && (p.title.en || p.title.bn)) || '';
+            return title === item.baseTitle;
+        });
     }
     if (!match) {
-        match = catalog.find(p =>
-            p.title && (p.title.en === itemName || p.title.bn === itemName || p.title === itemName)
-        );
+        match = catalog.find(p => p.title && (p.title.en === item.name || p.title.bn === item.name));
     }
     if (!match) {
-        console.warn('Could not verify price for "' + itemName + '" against catalog; using cached price.');
-        return fallbackPrice;
+        console.warn('Could not verify price for "' + item.name + '" against catalog; using cached price.');
+        return item.price;
     }
     return match.price;
 }
 
-// 1. MEMORY FIX: Load cart from storage so it survives page reloads on mobile
-window.cart = JSON.parse(localStorage.getItem('mohor_cart')) || [];
+// Load cart from storage so it survives page reloads / mobile navigation.
+window.cart = JSON.parse(localStorage.getItem('mohor_cart') || '[]');
 
 const cartOverlay = document.getElementById('cartOverlay');
 const cartSidebar = document.getElementById('cartSidebar');
-// 2. ID FIX: Support both PC container ID and Mobile cart page ID
 const cartItemsContainer = document.getElementById('cartItemsContainer') || document.getElementById('cartItems');
 const cartBadge = document.getElementById('cartBadge');
 
-// Safely attach sidebar events (in case they don't exist on the mobile page)
-const openBtn = document.getElementById('openCartBtn');
-if(openBtn) {
-    openBtn.addEventListener('click', () => { 
-        if(cartSidebar) cartSidebar.classList.add('active'); 
-        if(cartOverlay) cartOverlay.classList.add('active'); 
-    });
-}
-const closeCart = () => { 
-    if(cartSidebar) cartSidebar.classList.remove('active'); 
-    if(cartOverlay) cartOverlay.classList.remove('active'); 
+window.closeCartSidebar = function() {
+    if (cartSidebar) cartSidebar.classList.remove('active');
+    if (cartOverlay) cartOverlay.classList.remove('active');
 };
-const closeBtn = document.getElementById('closeCartBtn');
-if(closeBtn) closeBtn.addEventListener('click', closeCart);
-if(cartOverlay) cartOverlay.addEventListener('click', closeCart);
+window.openCartSidebar = function() {
+    if (cartSidebar) cartSidebar.classList.add('active');
+    if (cartOverlay) cartOverlay.classList.add('active');
+};
 
-// Attached to window so app.js can trigger it from the product modal
-window.addToCart = function(name, price, size, productId) {
-    let existingItem = window.cart.find(item => item.name === name && item.size === size);
-    
+document.addEventListener('DOMContentLoaded', () => {
+    const openBtn = document.getElementById('openCartBtn');
+    if (openBtn) openBtn.addEventListener('click', () => window.openCartSidebar());
+    const closeBtn = document.getElementById('closeCartBtn');
+    if (closeBtn) closeBtn.addEventListener('click', window.closeCartSidebar);
+    if (cartOverlay) cartOverlay.addEventListener('click', window.closeCartSidebar);
+});
+
+// Attached to window so the quick-view modal (app.js) and product.html can
+// call it. Takes the full product object (not just a name string) so the
+// cart line can carry a stable id/baseTitle for reliable price verification
+// at checkout, independent of how the display name gets formatted.
+window.addToCart = function(product, size, color) {
+    const baseTitle = getText(product.title) || (typeof product.title === 'string' ? product.title : 'Item');
+    const id = product.id !== undefined ? String(product.id) : null;
+    const price = Number(product.price) || 0;
+
+    const displayColor = (color && color !== 'Default') ? color : null;
+    const displayName = baseTitle + (displayColor ? ` (${displayColor})` : '');
+
+    let existingItem = window.cart.find(item =>
+        (id ? item.id === id : item.name === displayName) && item.size === size && (item.color || null) === displayColor
+    );
+
     if (existingItem) {
         existingItem.qty += 1;
     } else {
-        window.cart.push({ name: name, price: price, size: size, qty: 1, productId: productId });
+        window.cart.push({ id, baseTitle, name: displayName, price, size: size || 'Standard', color: displayColor, qty: 1 });
     }
-    
+
     window.updateCartUI();
-    
+    if (cartBadge) { cartBadge.classList.remove('pop'); void cartBadge.offsetWidth; cartBadge.classList.add('pop'); }
+
     if (cartSidebar && cartOverlay) {
-        cartSidebar.classList.add('active'); 
-        cartOverlay.classList.add('active');
+        window.openCartSidebar();
     } else {
-        // Fallback alert for mobile if sidebar doesn't exist
-        const msg = (window.currentLang === 'en') ? "Added to Cart!" : "কার্টে যোগ করা হয়েছে!";
-        alert(msg);
+        notify(t('addedToCart'), 'success');
     }
-}
+};
 
 window.changeQty = function(index, delta) {
+    if (!window.cart[index]) return;
     window.cart[index].qty += delta;
-    if (window.cart[index].qty <= 0) {
-        window.cart.splice(index, 1);
-    }
+    if (window.cart[index].qty <= 0) window.cart.splice(index, 1);
     window.updateCartUI();
-}
+};
 
 window.removeFromCart = function(index) {
     window.cart.splice(index, 1);
     window.updateCartUI();
+};
+
+function currentDeliveryFee() {
+    const zoneSelect = document.getElementById('deliveryZone');
+    if (!zoneSelect || !zoneSelect.value || window.cart.length === 0) return 0;
+    if (zoneSelect.value === 'outside' || zoneSelect.value === '150') return 150;
+    if (zoneSelect.value === 'inside' || zoneSelect.value === '80') return 80;
+    return parseInt(zoneSelect.value, 10) || 0;
 }
 
 window.updateDeliveryPolicyAndTotal = function() {
     const zoneSelect = document.getElementById('deliveryZone');
     const policyDisplay = document.getElementById('dynamicPolicyDisplay');
-    
+
     if (zoneSelect && policyDisplay) {
-        // Supports your original "80"/"150" values and the mobile "inside"/"outside" values
-        if (zoneSelect.value === "80" || zoneSelect.value === "inside") {
-            policyDisplay.style.display = "block";
-            policyDisplay.innerHTML = window.uiTranslations[window.currentLang].policy1Text;
-        } else if (zoneSelect.value === "150" || zoneSelect.value === "outside") {
-            policyDisplay.style.display = "block";
-            policyDisplay.innerHTML = window.uiTranslations[window.currentLang].policy2Text;
+        if (zoneSelect.value === '80' || zoneSelect.value === 'inside') {
+            policyDisplay.style.display = 'block';
+            policyDisplay.innerHTML = t('zoneDeliveryInside');
+        } else if (zoneSelect.value === '150' || zoneSelect.value === 'outside') {
+            policyDisplay.style.display = 'block';
+            policyDisplay.innerHTML = t('zoneDeliveryOutside');
         } else {
-            policyDisplay.style.display = "none";
+            policyDisplay.style.display = 'none';
         }
     }
-    window.updateCartUI(); 
-}
+    window.updateCartUI();
+};
 
 window.updateCartUI = function() {
-    // 3. MEMORY FIX: Save cart to storage every time UI updates
     localStorage.setItem('mohor_cart', JSON.stringify(window.cart));
 
-    if(cartItemsContainer) cartItemsContainer.innerHTML = ''; 
+    if (cartItemsContainer) cartItemsContainer.innerHTML = '';
     let subtotal = 0;
     let totalItems = 0;
-    
+
     if (window.cart.length === 0) {
-        if(cartItemsContainer) {
-            // Safely check for translation text
-            const emptyTxt = (window.uiTranslations && window.uiTranslations[window.currentLang]) ? window.uiTranslations[window.currentLang].cartEmpty : "Your cart is empty";
-            cartItemsContainer.innerHTML = `<p style="text-align: center; color: #666; margin-top: 20px;">${emptyTxt}</p>`;
+        if (cartItemsContainer) {
+            cartItemsContainer.innerHTML = `
+                <div class="cart-empty">
+                    <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                    <div>${t('cartEmpty')}</div>
+                    <div style="font-size:.78rem;margin:4px 0 16px;">${t('cartEmptySub')}</div>
+                    <button type="button" class="btn btn-outline btn-sm" id="continueShoppingBtn">${t('continueShopping')}</button>
+                </div>`;
+            const csBtn = document.getElementById('continueShoppingBtn');
+            if (csBtn) csBtn.addEventListener('click', () => {
+                window.closeCartSidebar();
+                if (!window.location.pathname.endsWith('index.html') && window.location.pathname !== '/') window.location.href = 'index.html';
+            });
         }
     } else {
         window.cart.forEach((item, index) => {
-            let itemTotal = item.price * item.qty;
+            const itemTotal = item.price * item.qty;
             subtotal += itemTotal;
             totalItems += item.qty;
-            
-            // Added type="button" to the -, +, and Remove buttons to prevent page reloads
-            if(cartItemsContainer) {
-                cartItemsContainer.innerHTML += `
-                    <div class="cart-item" style="align-items: center;">
-                        <div class="cart-item-info" style="flex: 1;">
-                            <strong style="display: block; margin-bottom: 3px;">${escapeHtml(item.name)}</strong>
-                            <span style="font-size: 11px; color: var(--text-light); text-transform: uppercase;">Size: ${escapeHtml(item.size)}</span>
-                            
-                            <div style="display: flex; align-items: center; gap: 10px; margin-top: 8px;">
-                                <button type="button" onclick="changeQty(${index}, -1)" style="border: 1px solid var(--border-color); background: var(--soft-gray); width: 22px; height: 22px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: bold; border-radius: 2px;">-</button>
-                                <span style="font-size: 13px; font-weight: 600;">${item.qty}</span>
-                                <button type="button" onclick="changeQty(${index}, 1)" style="border: 1px solid var(--border-color); background: var(--soft-gray); width: 22px; height: 22px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: bold; border-radius: 2px;">+</button>
-                            </div>
-                        </div>
-                        
-                        <div style="text-align: right;">
-                            <div style="font-weight:600; color:var(--primary-gold); margin-bottom: 5px;">৳${itemTotal}</div>
-                            <button type="button" class="remove-item" onclick="removeFromCart(${index})" style="font-size: 10px; background:none; border:none; color:red; cursor:pointer;">Remove</button>
-                        </div>
-                    </div>`;
-            }
+            if (!cartItemsContainer) return;
+
+            const metaParts = [];
+            if (item.size) metaParts.push('Size: ' + escapeHtml(item.size));
+            if (item.color) metaParts.push('Color: ' + escapeHtml(item.color));
+
+            const row = document.createElement('div');
+            row.className = 'cart-item';
+            row.innerHTML = `
+                <div class="cart-item-info">
+                    <div class="ci-name">${escapeHtml(item.baseTitle || item.name)}</div>
+                    <div class="ci-meta">${metaParts.join(' &middot; ')}</div>
+                    <div class="qty-stepper">
+                        <button type="button" aria-label="Decrease quantity" data-action="dec">−</button>
+                        <span>${item.qty}</span>
+                        <button type="button" aria-label="Increase quantity" data-action="inc">+</button>
+                    </div>
+                </div>
+                <div class="cart-item-right">
+                    <div class="cart-item-price">৳${itemTotal}</div>
+                    <button type="button" class="remove-item">Remove</button>
+                </div>`;
+            row.querySelector('[data-action="dec"]').addEventListener('click', () => window.changeQty(index, -1));
+            row.querySelector('[data-action="inc"]').addEventListener('click', () => window.changeQty(index, 1));
+            row.querySelector('.remove-item').addEventListener('click', () => window.removeFromCart(index));
+            cartItemsContainer.appendChild(row);
         });
     }
-    
-    const zoneSelect = document.getElementById('deliveryZone');
-    let deliveryFee = 0;
-    if (zoneSelect && zoneSelect.value && window.cart.length > 0) {
-        if(zoneSelect.value === "outside" || zoneSelect.value === "150") deliveryFee = 150;
-        else if(zoneSelect.value === "inside" || zoneSelect.value === "80") deliveryFee = 80;
-        else deliveryFee = parseInt(zoneSelect.value) || 0;
-    }
-    
+
+    const deliveryFee = currentDeliveryFee();
     const finalTotal = subtotal + deliveryFee;
-    
-    // Support both PC and Phone HTML IDs
+
     const subEl = document.getElementById('cartSubtotalValue') || document.getElementById('cartSubtotal');
     const delEl = document.getElementById('cartDeliveryValue') || document.getElementById('cartDelivery');
     const totEl = document.getElementById('cartTotalValue') || document.getElementById('cartTotal');
-    
-    if(subEl) subEl.innerText = subtotal;
-    if(delEl) delEl.innerText = deliveryFee;
-    if(totEl) totEl.innerText = finalTotal;
-    
-    if(cartBadge) {
-        cartBadge.innerText = totalItems;
-        cartBadge.classList.remove('bump');
-        void cartBadge.offsetWidth; // restart the animation even if it fired a moment ago
-        cartBadge.classList.add('bump');
-    }
-    
-    // Legacy Text Counter
-    const cartCountNav = document.getElementById('cartCountDisplay');
-    if(cartCountNav) cartCountNav.innerText = `Cart (${totalItems})`;
+    if (subEl) subEl.innerText = subtotal;
+    if (delEl) delEl.innerText = deliveryFee;
+    if (totEl) totEl.innerText = finalTotal;
 
-    // ==========================================
-    // UPGRADE: PREMIUM SVG CART BADGE UPDATE
-    // ==========================================
+    if (cartBadge) { cartBadge.innerText = totalItems; cartBadge.setAttribute('data-count', String(totalItems)); }
     const iconBadge = document.getElementById('cartBadgeIcon');
-    if(iconBadge) {
-        iconBadge.innerText = totalItems;
-        // Dynamically hide the gold circle if the cart is empty for a cleaner UI
-        iconBadge.style.display = totalItems > 0 ? 'flex' : 'none';
-    }
-}
+    if (iconBadge) { iconBadge.innerText = totalItems; iconBadge.style.display = totalItems > 0 ? 'flex' : 'none'; }
+};
 
 // --- DUAL CHECKOUT LOGIC ---
+function fieldFlash(el) {
+    if (!el) return;
+    el.classList.add('field-error', 'shake');
+    setTimeout(() => el.classList.remove('shake'), 480);
+    el.addEventListener('input', function clear() { el.classList.remove('field-error'); el.removeEventListener('input', clear); }, { once: true });
+}
 
-// Helper function to validate all inputs before sending order anywhere
 function validateCheckoutInputs() {
-    if (window.cart.length === 0) { 
-        alert(window.currentLang === 'en' ? "Your cart is empty." : "আপনার কার্ট খালি।"); 
-        return null; 
+    if (window.cart.length === 0) {
+        notify(t('cartEmpty'), 'error');
+        return null;
     }
-    
-    // Looks for PC input IDs first, falls back to Mobile input IDs
+
     const nameEl = document.getElementById('custName') || document.getElementById('checkoutName');
     const phoneEl = document.getElementById('custPhone') || document.getElementById('checkoutPhone');
     const addressEl = document.getElementById('deliveryAddress') || document.getElementById('checkoutAddress');
-    
     const zoneSelect = document.getElementById('deliveryZone');
     const policyElement = document.getElementById('policyAgree');
-    
-    const nameInput = nameEl ? nameEl.value.trim() : "";
-    const phoneInput = phoneEl ? phoneEl.value.trim() : "";
-    const addressInput = addressEl ? addressEl.value.trim() : "";
-    
-    // If the checkbox doesn't exist on the mobile page, default to true so it doesn't block checkout
+
+    const nameInput = nameEl ? nameEl.value.trim() : '';
+    const phoneInput = phoneEl ? phoneEl.value.trim() : '';
+    const addressInput = addressEl ? addressEl.value.trim() : '';
     const policyAgree = policyElement ? policyElement.checked : true;
 
-    if (!nameInput) { alert(window.currentLang === 'en' ? "Please enter your Full Name." : "অনুগ্রহ করে আপনার পুরো নাম দিন।"); return null; }
-    if (!phoneInput) { alert(window.currentLang === 'en' ? "Please enter your Mobile Number." : "অনুগ্রহ করে আপনার মোবাইল নম্বর দিন।"); return null; }
-    if (!addressInput) { alert(window.currentLang === 'en' ? "Please enter your delivery address." : "অনুগ্রহ করে আপনার ডেলিভারি ঠিকানা দিন।"); return null; }
-    if (!zoneSelect || !zoneSelect.value) { alert(window.currentLang === 'en' ? "Please select a Delivery Zone." : "অনুগ্রহ করে ডেলিভারি জোন নির্বাচন করুন।"); return null; }
-    if (policyElement && !policyAgree) { alert(window.currentLang === 'en' ? "Please agree to the Delivery & Return Policy." : "অনুগ্রহ করে ডেলিভারি ও রিটার্ন পলিসিতে সম্মত হোন।"); return null; }
+    if (!nameInput) {
+        notify(window.currentLang === 'en' ? 'Please enter your full name.' : 'অনুগ্রহ করে আপনার পুরো নাম দিন।', 'error');
+        fieldFlash(nameEl); return null;
+    }
+    if (!phoneInput) {
+        notify(window.currentLang === 'en' ? 'Please enter your mobile number.' : 'অনুগ্রহ করে আপনার মোবাইল নম্বর দিন।', 'error');
+        fieldFlash(phoneEl); return null;
+    }
+    if (!addressInput) {
+        notify(window.currentLang === 'en' ? 'Please enter your delivery address.' : 'অনুগ্রহ করে আপনার ডেলিভারি ঠিকানা দিন।', 'error');
+        fieldFlash(addressEl); return null;
+    }
+    if (!zoneSelect || !zoneSelect.value) {
+        notify(window.currentLang === 'en' ? 'Please select a delivery zone.' : 'অনুগ্রহ করে ডেলিভারি জোন নির্বাচন করুন।', 'error');
+        fieldFlash(zoneSelect); return null;
+    }
+    if (policyElement && !policyAgree) {
+        notify(window.currentLang === 'en' ? 'Please agree to the Delivery & Return Policy.' : 'অনুগ্রহ করে ডেলিভারি ও রিটার্ন পলিসিতে সম্মত হোন।', 'error');
+        return null;
+    }
 
     const zoneText = zoneSelect.options[zoneSelect.selectedIndex].text;
-    
-    let deliveryFee = 0;
-    if(zoneSelect.value === "outside" || zoneSelect.value === "150") deliveryFee = 150;
-    else if(zoneSelect.value === "inside" || zoneSelect.value === "80") deliveryFee = 80;
-    else deliveryFee = parseInt(zoneSelect.value) || 0;
-    
+    const deliveryFee = currentDeliveryFee();
     let subtotal = 0;
     window.cart.forEach(item => subtotal += (item.price * item.qty));
 
-    return {
-        name: nameInput,
-        phone: phoneInput,
-        address: addressInput,
-        zoneText: zoneText,
-        deliveryFee: deliveryFee,
-        subtotal: subtotal,
-        finalTotal: subtotal + deliveryFee
-    };
+    return { name: nameInput, phone: phoneInput, address: addressInput, zoneText, deliveryFee, subtotal, finalTotal: subtotal + deliveryFee };
 }
 
-// Option 1: WhatsApp Order
+function resetCheckoutFormsIfGuest(isGuest) {
+    if (isGuest) {
+        const nameEl = document.getElementById('custName') || document.getElementById('checkoutName');
+        const phoneEl = document.getElementById('custPhone') || document.getElementById('checkoutPhone');
+        const addressEl = document.getElementById('deliveryAddress') || document.getElementById('checkoutAddress');
+        if (nameEl) nameEl.value = '';
+        if (phoneEl) phoneEl.value = '';
+        if (addressEl) addressEl.value = '';
+    }
+    const zoneSelect = document.getElementById('deliveryZone');
+    if (zoneSelect) zoneSelect.value = '';
+    const policyEl = document.getElementById('policyAgree');
+    if (policyEl) policyEl.checked = false;
+    const policyDisplay = document.getElementById('dynamicPolicyDisplay');
+    if (policyDisplay) policyDisplay.style.display = 'none';
+}
+
+// Option 1: WhatsApp order
 window.checkoutToWhatsApp = function() {
     const orderData = validateCheckoutInputs();
-    if (!orderData) return; 
+    if (!orderData) return;
 
-    const WHATSAPP_NUMBER = "8801330113027"; 
-    let message = "Hello Mohor Clothings! I would like to order the following items:%0A%0A";
-    
-    window.cart.forEach((item, index) => { 
-        let itemTotal = item.price * item.qty;
-        message += `${index + 1}. ${item.name} (Size: ${item.size}) | Qty: ${item.qty} - ৳${itemTotal}%0A`; 
+    const WHATSAPP_NUMBER = '8801330113027';
+    let message = 'Hello Mohor Clothings! I would like to order the following items:%0A%0A';
+    window.cart.forEach((item, index) => {
+        const itemTotal = item.price * item.qty;
+        message += `${index + 1}. ${item.name} (Size: ${item.size}) | Qty: ${item.qty} - ৳${itemTotal}%0A`;
     });
-    
     message += `%0A*Subtotal: ৳${orderData.subtotal}*`;
     message += `%0A*Delivery (${orderData.zoneText}): ৳${orderData.deliveryFee}*`;
     message += `%0A*FINAL TOTAL: ৳${orderData.finalTotal}*%0A`;
     message += `%0A*CUSTOMER DETAILS:*%0AName: ${orderData.name}%0APhone: ${orderData.phone}%0AAddress: ${orderData.address}`;
-    
+
+    // Open WhatsApp first — only clear the cart once we know the redirect fired,
+    // so a blocked popup doesn't silently wipe the customer's order.
+    const win = window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${message}`, '_blank');
     window.cart = [];
     window.updateCartUI();
-    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${message}`, '_blank');
-}
+    if (!win) notify(window.currentLang === 'en' ? 'Please allow pop-ups to continue to WhatsApp.' : 'হোয়াটসঅ্যাপে যেতে অনুগ্রহ করে পপ-আপের অনুমতি দিন।', 'error');
+};
 
-// Option 2: Direct Admin Order (Firebase Integration)
+// Option 2: Direct website order (Firebase)
 window.checkoutToAdmin = async function() {
     const orderData = validateCheckoutInputs();
-    if (!orderData) return; 
-    
-    // 1. Temporarily disable the button so the user doesn't double-click (Checks PC ID then Mobile ID)
+    if (!orderData) return;
+
     const confirmBtn = document.getElementById('adminOrderBtn') || document.getElementById('btnConfirmOrder');
-    let originalText = confirmBtn ? confirmBtn.innerHTML : "Confirm Order";
-    if (confirmBtn) {
-        confirmBtn.innerHTML = window.currentLang === 'en' ? "Processing..." : "প্রসেস হচ্ছে...";
-        confirmBtn.disabled = true;
-    }
+    if (confirmBtn) { confirmBtn.classList.add('is-loading'); confirmBtn.disabled = true; }
 
     try {
-        // UPGRADE: Bulletproof check for logged-in user directly from Firebase Auth
-        let activeUid = "guest";
+        let activeUid = 'guest';
         if (typeof firebase !== 'undefined' && firebase.auth().currentUser) {
             activeUid = firebase.auth().currentUser.uid;
-        } else if (typeof window.currentUser !== 'undefined' && window.currentUser) {
+        } else if (window.currentUser) {
             activeUid = window.currentUser.uid;
         }
 
-        // SECURITY: never trust prices coming from the client cart/localStorage
-        // directly — recompute each line item and the total from the
-        // canonical product catalog so a tampered `window.cart.price` in
-        // devtools can't be used to place an underpriced order.
-        // NOTE: this is a client-side mitigation only. The authoritative fix
-        // is to validate/recompute totals in Firestore Security Rules or a
-        // Cloud Function, since anyone can still bypass this file entirely
-        // and call the Firestore SDK directly from the console.
-        const verifiedItems = window.cart.map(item => {
-            const verifiedPrice = getCanonicalPrice(item.name, item.price, item.productId);
-            return { name: item.name, size: item.size, qty: item.qty, price: verifiedPrice };
-        });
+        // SECURITY: never trust prices coming from the client cart/localStorage —
+        // recompute each line item from the canonical catalog. Client-side
+        // mitigation only; the real guard belongs in Firestore rules / a Cloud Function.
+        const verifiedItems = window.cart.map(item => ({
+            name: item.name, size: item.size, qty: item.qty, price: getCanonicalPrice(item)
+        }));
         const verifiedSubtotal = verifiedItems.reduce((sum, item) => sum + (item.price * item.qty), 0);
         const verifiedTotal = verifiedSubtotal + orderData.deliveryFee;
 
-        // 2. Package the order data including user tracking
         const newOrder = {
             userId: activeUid,
             customerName: orderData.name,
@@ -327,57 +346,27 @@ window.checkoutToAdmin = async function() {
             totalAmount: verifiedTotal,
             items: verifiedItems,
             orderDate: new Date().toISOString(),
-            status: "Pending" 
+            status: 'New'
         };
 
-        // 3. Send the data to your Firebase 'orders' collection
-        await window.db.collection("orders").add(newOrder);
+        await window.db.collection('orders').add(newOrder);
 
-        // 4. Show success message
-        alert(window.currentLang === 'en' ? "Order placed successfully! We will contact you soon." : "আপনার অর্ডারটি সফলভাবে সম্পন্ন হয়েছে! আমরা শীঘ্রই যোগাযোগ করব।");
-        
-        // 5. Empty the cart and update the UI
+        notify(window.currentLang === 'en' ? 'Order placed successfully! We will contact you soon.' : 'আপনার অর্ডারটি সফলভাবে সম্পন্ন হয়েছে! আমরা শীঘ্রই যোগাযোগ করব।', 'success');
+
         window.cart = [];
         window.updateCartUI();
-        
-        // 6. Close the cart sidebar automatically
-        if(cartSidebar) cartSidebar.classList.remove('active');
-        if(cartOverlay) cartOverlay.classList.remove('active');
+        window.closeCartSidebar();
+        resetCheckoutFormsIfGuest(activeUid === 'guest');
 
-        // 7. Clear the input fields (Keep name/address if user is logged in, clear if guest)
-        if (activeUid === "guest") {
-            const nameEl = document.getElementById('custName') || document.getElementById('checkoutName');
-            const phoneEl = document.getElementById('custPhone') || document.getElementById('checkoutPhone');
-            const addressEl = document.getElementById('deliveryAddress') || document.getElementById('checkoutAddress');
-            if(nameEl) nameEl.value = '';
-            if(phoneEl) phoneEl.value = '';
-            if(addressEl) addressEl.value = '';
-        }
-        
-        if(document.getElementById('deliveryZone')) document.getElementById('deliveryZone').value = '';
-        if(document.getElementById('policyAgree')) document.getElementById('policyAgree').checked = false;
-        
-        const policyDisplay = document.getElementById('dynamicPolicyDisplay');
-        if(policyDisplay) policyDisplay.style.display = 'none';
-
-        // 8. Refresh order history if user is logged in (using bulletproof auth check)
-        if (activeUid !== "guest" && typeof loadUserOrders === 'function') {
-            loadUserOrders(activeUid);
-        }
-
+        if (activeUid !== 'guest' && typeof window.loadUserOrders === 'function') window.loadUserOrders(activeUid);
     } catch (error) {
-        console.error("Error saving order: ", error);
-        alert(window.currentLang === 'en' ? "There was an error placing your order. Please try WhatsApp instead." : "অর্ডার প্লেস করতে সমস্যা হয়েছে। অনুগ্রহ করে হোয়াটসঅ্যাপে চেষ্টা করুন।");
+        console.error('Error saving order: ', error);
+        notify(window.currentLang === 'en' ? 'There was an error placing your order. Please try WhatsApp instead.' : 'অর্ডার প্লেস করতে সমস্যা হয়েছে। অনুগ্রহ করে হোয়াটসঅ্যাপে চেষ্টা করুন।', 'error');
     } finally {
-        // 9. Turn the button back on
-        if (confirmBtn) {
-            confirmBtn.innerHTML = originalText;
-            confirmBtn.disabled = false;
-        }
+        if (confirmBtn) { confirmBtn.classList.remove('is-loading'); confirmBtn.disabled = false; }
     }
-}
+};
 
-// Ensure Mobile cart page connects buttons immediately
 document.addEventListener('DOMContentLoaded', () => {
     const btnWhatsApp = document.getElementById('btnWhatsAppOrder');
     if (btnWhatsApp) btnWhatsApp.addEventListener('click', window.checkoutToWhatsApp);
@@ -385,40 +374,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnConfirm = document.getElementById('btnConfirmOrder');
     if (btnConfirm) btnConfirm.addEventListener('click', window.checkoutToAdmin);
 
-    // Refresh UI on load
-    window.updateCartUI();
+    const zoneSelect = document.getElementById('deliveryZone');
+    if (zoneSelect) zoneSelect.addEventListener('change', window.updateDeliveryPolicyAndTotal);
 
-    // ==========================================
-    // UPGRADE: ROBUST FIREBASE AUTO-FILL LOGIC
-    // Embedded here so you don't need to touch cart.html
-    // ==========================================
-    setTimeout(() => {
-        if (typeof firebase !== 'undefined' && firebase.auth) {
-            firebase.auth().onAuthStateChanged((user) => {
-                if (user) {
-                    firebase.firestore().collection("users").doc(user.uid).get()
-                    .then((doc) => {
-                        if (doc.exists) {
-                            const userData = doc.data();
-                            
-                            // Find the input fields based on PC or Mobile IDs
-                            const nameEl = document.getElementById('custName') || document.getElementById('checkoutName');
-                            const phoneEl = document.getElementById('custPhone') || document.getElementById('checkoutPhone');
-                            const addressEl = document.getElementById('deliveryAddress') || document.getElementById('checkoutAddress');
-                            
-                            // Search the database for any possible matching name
-                            const userName = userData.name || userData.fullName || userData.displayName || '';
-                            const userPhone = userData.phone || userData.phoneNumber || userData.mobile || '';
-                            const userAddress = userData.address || userData.deliveryAddress || userData.fullAddress || '';
-                            
-                            // Only overwrite the input if it's currently empty
-                            if(nameEl && !nameEl.value && userName) nameEl.value = userName;
-                            if(phoneEl && !phoneEl.value && userPhone) phoneEl.value = userPhone;
-                            if(addressEl && !addressEl.value && userAddress) addressEl.value = userAddress;
-                        }
-                    }).catch(e => console.log("Error fetching user auto-fill data:", e));
-                }
-            });
-        }
-    }, 1500); // 1.5-second delay to ensure Firebase finishes loading first
+    window.updateCartUI();
 });
