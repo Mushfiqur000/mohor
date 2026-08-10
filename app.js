@@ -91,12 +91,12 @@ window.uiTranslations = {
         accOrderHistory: "My Order History",
         accLoadingOrders: "Loading orders...",
 
-        // POLICY PAGE TRANSLATIONS
+        // POLICY PAGE TRANSLATIONS (UPDATED WITH EXACT CHARGES & ADVANCE PAYMENT)
         policyPageTitle: "Delivery & Return Policy",
         policy1Title: "1. Delivery Information",
-        policy1Text: "<ul style='margin-left: 15px; margin-top: 5px;'><li>Estimated delivery time: 1–2 business days.</li><li>Delivery time may vary due to weather or courier delays.</li><li>Our delivery partner will contact you before delivery.</li></ul>",
+        policy1Text: "We deliver nationwide across Bangladesh. Delivery charge inside Sylhet is ৳80 (1–3 business days) and outside Sylhet is ৳150 (3–5 business days). Please note that the delivery charge must be paid in advance for order confirmation.",
         policy2Title: "2. Order Confirmation",
-        policy2Text: "<ul style='margin-left: 15px; margin-top: 5px;'><li>Estimated delivery time: 2–5 business days.</li><li>Delivery time may be longer during national holidays.</li><li>Our courier partner may contact you before delivery.</li></ul>",
+        policy2Text: "Once you place an order via WhatsApp or Website, our team will verify product availability and send you a confirmation message along with the final bill (including delivery charges) before processing.",
         policy3Title: "3. Return & Exchange Policy",
         policy3Text: "We take pride in the quality of our handcrafted clothing. However, if you receive a defective or incorrect item, please notify us within 24 hours of receiving the delivery. The item must be unused, unwashed, and in its original packaging with tags intact. Please record an unboxing video to claim any damages or defects.",
         policy4Title: "4. Color Disclaimer",
@@ -181,12 +181,12 @@ window.uiTranslations = {
         accOrderHistory: "আমার অর্ডার হিস্ট্রি",
         accLoadingOrders: "অর্ডার লোড হচ্ছে...",
 
-        // POLICY PAGE TRANSLATIONS
+        // POLICY PAGE TRANSLATIONS (UPDATED WITH EXACT CHARGES & ADVANCE PAYMENT)
         policyPageTitle: "ডেলিভারি ও রিটার্ন পলিসি",
         policy1Title: "১. ডেলিভারি তথ্য",
-        policy1Text: "<ul style='margin-left: 15px; margin-top: 5px;'><li>আনুমানিক ডেলিভারি সময়: ১-২ কর্মদিবস।</li><li>আবহাওয়া বা কুরিয়ার বিলম্বের কারণে সময় পরিবর্তিত হতে পারে।</li><li>ডেলিভারির আগে আমাদের পার্টনার যোগাযোগ করবে।</li></ul>",
+        policy1Text: "আমরা সমগ্র বাংলাদেশে হোম ডেলিভারি দিয়ে থাকি। সিলেটের ভেতরে ডেলিভারি চার্জ ৳৮০ (১-৩ কর্মদিবস) এবং সিলেটের বাইরে ৳১৫০ (৩-৫ কর্মদিবস)। অনুগ্রহ করে মনে রাখবেন যে, অর্ডার কনফার্মেশনের জন্য ডেলিভারি চার্জ অগ্রিম প্রদান করতে হবে।",
         policy2Title: "২. অর্ডার কনফার্মেশন",
-        policy2Text: "<ul style='margin-left: 15px; margin-top: 5px;'><li>আনুমানিক ডেলিভারি সময়: ২-৫ কর্মদিবস।</li><li>জাতীয় ছুটির দিনে সময় দীর্ঘ হতে পারে।</li><li>আমাদের কুরিয়ার পার্টনার যোগাযোগ করতে পারে।</li></ul>",
+        policy2Text: "আপনি হোয়াটসঅ্যাপ বা ওয়েবসাইটের মাধ্যমে অর্ডার করার পর, আমাদের টিম পণ্যের উপযোগিতা যাচাই করবে এবং প্রসেসিংয়ের আগে ডেলিভারি চার্জসহ চূড়ান্ত বিলের কনফার্মেশন মেসেজ পাঠাবে।",
         policy3Title: "৩. রিটার্ন ও এক্সচেঞ্জ পলিসি",
         policy3Text: "আমরা আমাদের হাতে তৈরি পোশাকের মানের বিষয়ে গর্ববোধ করি। তবে, যদি আপনি কোনো ত্রুটিপূর্ণ বা ভুল পণ্য পান, অনুগ্রহ করে ডেলিভারি পাওয়ার ২৪ ঘণ্টার মধ্যে আমাদের জানান। পণ্যটি অবশ্যই অব্যবহৃত, ধোয়া হয়নি এমন, এবং অরিজিনাল প্যাকেজিং ও ট্যাগযুক্ত থাকতেരുവ। কোনো ক্ষতি বা ত্রুটি দাবি করার জন্য অনুগ্রহ করে একটি আনবক্সিং ভিডিও রেকর্ড করুন।",
         policy4Title: "৪. রঙের ডিসক্লেইমার",
