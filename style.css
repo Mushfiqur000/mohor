@@ -751,3 +751,25 @@ select.input {
   .modal-box, .cart-sidebar, .account-sidebar, .auth-card, .checkout-card { background: var(--surface); border-color: var(--border); }
 }
 
+/* Manual theme override via data-theme attribute on <html> */
+:root[data-theme='dark'] {
+  --muslin: #0b0b0c;
+  --parchment: #080808;
+  --surface: #0b0b0c;
+  --ink: #f3efe9;
+  --ink-muted: #cfc9c5;
+  --ink-faint: #9f9a96;
+  --border: #1d1d1d;
+  --border-strong: #2b2b2b;
+  --maroon: #ffb3b3;
+  --brass: #d9b56a;
+}
+
+:root[data-theme='light'] {
+  /* fallback to default light palette (no change needed) */
+}
+
+/* Theme toggle button style */
+#themeToggleBtn { background: none; border: none; font-size: 16px; padding: 8px 10px; border-radius: 8px; }
+#themeToggleBtn:hover { background: var(--brass-soft); }
+
