@@ -1,63 +1,142 @@
-// --- AUTHENTICATION & PROFILE LOGIC (Firebase Compat) ---
+// ==========================================================================
+// MOHOR CLOTHINGS — auth.js
+// Firebase Auth (compat) + customer profile / order history.
+// ==========================================================================
 
-// Expose globally so cart.js and other files can check who is logged in
 window.currentUser = null;
 
-// Use the database and auth already initialized in index.html!
 const db = window.db;
 const auth = firebase.auth();
 
-// Modal Elements Setup
+function notify(message, type) {
+    if (typeof window.showToast === 'function') window.showToast(message, type);
+    else alert(message);
+}
+function tr(key) { return (typeof window.t === 'function') ? window.t(key) : key; }
+
+function setBtnLoading(evt, isLoading) {
+    const btn = evt && evt.currentTarget;
+    if (!btn) return;
+    btn.classList.toggle('is-loading', isLoading);
+    btn.disabled = isLoading;
+}
+
+// --- Account sidebar open/close ---
 const accountOverlay = document.getElementById('accountOverlay');
 const accountSidebar = document.getElementById('accountSidebar');
 const openAccountBtn = document.getElementById('openAccountBtn');
 const closeAccountBtn = document.getElementById('closeAccountBtn');
 
-if (openAccountBtn) {
-    openAccountBtn.addEventListener('click', () => {
-        if (accountSidebar) accountSidebar.classList.add('active');
-        if (accountOverlay) accountOverlay.classList.add('active');
-    });
-}
-
-const closeAccountModal = () => {
+window.closeAccountSidebar = function() {
     if (accountSidebar) accountSidebar.classList.remove('active');
     if (accountOverlay) accountOverlay.classList.remove('active');
 };
+window.openAccountSidebar = function() {
+    if (accountSidebar) accountSidebar.classList.add('active');
+    if (accountOverlay) accountOverlay.classList.add('active');
+};
 
-if (closeAccountBtn) closeAccountBtn.addEventListener('click', closeAccountModal);
-if (accountOverlay) accountOverlay.addEventListener('click', closeAccountModal);
+if (openAccountBtn) openAccountBtn.addEventListener('click', () => window.openAccountSidebar());
+if (closeAccountBtn) closeAccountBtn.addEventListener('click', window.closeAccountSidebar);
+if (accountOverlay) accountOverlay.addEventListener('click', window.closeAccountSidebar);
 
-// Toggle between Login and Signup view inside the Account Modal
+// --- Toggle between Login / Signup views inside the Account sidebar ---
 window.toggleAuthMode = function() {
     const loginCont = document.getElementById('loginFormContainer');
     const signupCont = document.getElementById('signupFormContainer');
-    if (loginCont && signupCont) {
-        if (loginCont.style.display === 'none') {
-            loginCont.style.display = 'block';
-            signupCont.style.display = 'none';
-        } else {
-            loginCont.style.display = 'none';
-            signupCont.style.display = 'block';
-        }
-    }
+    if (!loginCont || !signupCont) return;
+    const showingLogin = loginCont.style.display !== 'none';
+    loginCont.style.display = showingLogin ? 'none' : 'block';
+    signupCont.style.display = showingLogin ? 'block' : 'none';
+};
+
+// --- One canonical place to push saved profile data into every form on the
+// site that can use it (Account > Profile tab, and any checkout fields that
+// are still empty). Consolidates what used to be four separate, slightly
+// inconsistent copies of this logic scattered across pages. ---
+function applyUserDataToForms(data) {
+    if (!data) return;
+    const name = data.customerName || data.name || data.fullName || (window.currentUser && window.currentUser.displayName) || '';
+    const phone = data.phone || data.customerPhone || data.phoneNumber || data.mobile || '';
+    const address = data.address || data.deliveryAddress || data.fullAddress || '';
+
+    const setVal = (id, val) => { const el = document.getElementById(id); if (el && val) el.value = val; };
+    const fillIfEmpty = (id, val) => { const el = document.getElementById(id); if (el && val && !el.value) el.value = val; };
+
+    // Profile tab always mirrors the saved profile.
+    setVal('profileName', name);
+    setVal('profilePhone', phone);
+    setVal('profileAddress', address);
+
+    // Checkout convenience fields: only prefill if the visitor hasn't typed
+    // something already, so we never clobber an in-progress edit.
+    fillIfEmpty('custName', name); fillIfEmpty('checkoutName', name);
+    fillIfEmpty('custPhone', phone); fillIfEmpty('checkoutPhone', phone);
+    fillIfEmpty('deliveryAddress', address); fillIfEmpty('checkoutAddress', address);
+}
+window.applyUserDataToForms = applyUserDataToForms;
+
+async function loadUserData(uid) {
+    try {
+        const userDoc = await db.collection('users').doc(uid).get();
+        if (userDoc.exists) applyUserDataToForms(userDoc.data());
+    } catch (e) { console.error('Error loading user profile data:', e); }
 }
 
-// Monitor Auth State Changes
+async function loadUserOrders(uid) {
+    const container = document.getElementById('userOrderHistoryContainer');
+    if (!container) return;
+    container.innerHTML = `<p class="order-history-loading">${tr('accLoadingOrders')}</p>`;
+
+    try {
+        let querySnapshot;
+        try {
+            querySnapshot = await db.collection('orders').where('userId', '==', uid).orderBy('orderDate', 'desc').get();
+        } catch (indexErr) {
+            // Falls back gracefully if a composite index isn't provisioned yet.
+            querySnapshot = await db.collection('orders').where('userId', '==', uid).get();
+        }
+
+        if (querySnapshot.empty) {
+            container.innerHTML = `<p class="order-history-empty">${tr('accNoOrders')}</p>`;
+            return;
+        }
+
+        const rows = [];
+        querySnapshot.forEach((doc) => {
+            const order = doc.data();
+            const formattedDate = order.orderDate ? new Date(order.orderDate).toLocaleDateString() : 'Recent';
+            const status = order.status ? String(order.status) : 'New';
+            rows.push({ total: Number(order.totalAmount) || 0, status, date: formattedDate, raw: order.orderDate || '' });
+        });
+        rows.sort((a, b) => (a.raw < b.raw ? 1 : -1));
+
+        const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
+        container.innerHTML = rows.map(r => `
+            <div class="order-history-item">
+                <div class="oh-top"><span class="oh-total">৳${r.total}</span><span class="oh-status">${esc(r.status)}</span></div>
+                <div class="oh-date">${esc(r.date)}</div>
+            </div>`).join('');
+    } catch (e) {
+        console.error('Error loading order history:', e);
+        container.innerHTML = `<p class="order-history-empty">Could not load past orders.</p>`;
+    }
+}
+window.loadUserOrders = loadUserOrders;
+
 auth.onAuthStateChanged(async (user) => {
     window.currentUser = user;
     const authView = document.getElementById('authView');
     const profileView = document.getElementById('profileView');
-    
+
     if (user) {
         if (authView) authView.style.display = 'none';
         if (profileView) profileView.style.display = 'block';
-        
         const emailDisplay = document.getElementById('userProfileEmail');
-        if (emailDisplay) {
-            emailDisplay.innerText = user.email;
-        }
-        
+        if (emailDisplay) emailDisplay.innerText = user.email;
+        const avatarInitial = document.getElementById('profileAvatarInitial');
+        if (avatarInitial) avatarInitial.innerText = (user.displayName || user.email || '?').trim().charAt(0).toUpperCase();
+
         await loadUserData(user.uid);
         await loadUserOrders(user.uid);
     } else {
@@ -66,174 +145,86 @@ auth.onAuthStateChanged(async (user) => {
     }
 });
 
-// Handle Customer Signup via Account Modal
-window.handleSignup = async function() {
+window.handleSignup = async function(evt) {
     const nameInput = document.getElementById('signupName');
     const emailInput = document.getElementById('signupEmail');
     const passInput = document.getElementById('signupPassword');
 
-    const name = nameInput ? nameInput.value.trim() : "";
-    const email = emailInput ? emailInput.value.trim() : "";
-    const password = passInput ? passInput.value.trim() : "";
+    const name = nameInput ? nameInput.value.trim() : '';
+    const email = emailInput ? emailInput.value.trim() : '';
+    const password = passInput ? passInput.value.trim() : '';
 
-    if (!email || !password) { alert("Please enter email and password."); return; }
+    if (!email || !password) { notify(window.currentLang === 'en' ? 'Please enter email and password.' : 'অনুগ্রহ করে ইমেইল ও পাসওয়ার্ড দিন।', 'error'); return; }
 
+    setBtnLoading(evt, true);
     try {
         const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-        
-        // NEW: Save name to Firebase Auth Profile explicitly
-        if (name) {
-            await userCredential.user.updateProfile({
-                displayName: name
-            });
-        }
+        if (name) await userCredential.user.updateProfile({ displayName: name });
 
-        // Save user info to Firestore database
-        await db.collection("users").doc(userCredential.user.uid).set({ 
-            name: name, 
-            customerName: name, // Save under both keys just to be safe
-            email: email, 
-            createdAt: new Date().toISOString() 
+        await db.collection('users').doc(userCredential.user.uid).set({
+            name: name, customerName: name, email: email, createdAt: new Date().toISOString()
         });
-        
-        alert("Account created successfully!");
-    } catch (error) {
-        alert("Signup failed: " + error.message);
-    }
-}
 
-// Handle Customer Login via Account Modal
-window.handleLogin = async function() {
+        notify(window.currentLang === 'en' ? 'Account created successfully!' : 'অ্যাকাউন্ট সফলভাবে তৈরি হয়েছে!', 'success');
+    } catch (error) {
+        notify((window.currentLang === 'en' ? 'Signup failed: ' : 'সাইন আপ ব্যর্থ হয়েছে: ') + error.message, 'error');
+    } finally {
+        setBtnLoading(evt, false);
+    }
+};
+
+window.handleLogin = async function(evt) {
     const emailInput = document.getElementById('loginEmail');
     const passInput = document.getElementById('loginPassword');
+    const email = emailInput ? emailInput.value.trim() : '';
+    const password = passInput ? passInput.value.trim() : '';
 
-    const email = emailInput ? emailInput.value.trim() : "";
-    const password = passInput ? passInput.value.trim() : "";
+    if (!email || !password) { notify(window.currentLang === 'en' ? 'Please enter email and password.' : 'অনুগ্রহ করে ইমেইল ও পাসওয়ার্ড দিন।', 'error'); return; }
 
-    if (!email || !password) { alert("Please enter email and password."); return; }
-
+    setBtnLoading(evt, true);
     try {
         await auth.signInWithEmailAndPassword(email, password);
-        alert("Logged in successfully!");
+        notify(window.currentLang === 'en' ? 'Logged in successfully!' : 'সফলভাবে লগইন হয়েছে!', 'success');
     } catch (error) {
-        alert("Login failed: " + error.message);
+        notify((window.currentLang === 'en' ? 'Login failed: ' : 'লগইন ব্যর্থ হয়েছে: ') + error.message, 'error');
+    } finally {
+        setBtnLoading(evt, false);
     }
-}
+};
 
-// Handle Logout
-window.handleLogout = async function() {
+window.handleLogout = async function(evt) {
+    setBtnLoading(evt, true);
     try {
         await auth.signOut();
-        alert("Logged out successfully.");
+        notify(window.currentLang === 'en' ? 'Logged out successfully.' : 'সফলভাবে লগ আউট হয়েছে।', 'success');
     } catch (error) {
-        alert("Logout error: " + error.message);
+        notify((window.currentLang === 'en' ? 'Logout error: ' : 'লগ আউট এরর: ') + error.message, 'error');
+    } finally {
+        setBtnLoading(evt, false);
     }
-}
+};
 
-// Save Address Book to Firestore
-window.saveUserProfile = async function() {
-    if (!window.currentUser) {
-        alert("You must be logged in to save an address.");
-        return;
-    }
-    
-    // Grab the name directly from the new profile input box in the sidebar
+window.saveUserProfile = async function(evt) {
+    if (!window.currentUser) { notify(window.currentLang === 'en' ? 'You must be logged in to save an address.' : 'ঠিকানা সেভ করতে অবশ্যই লগইন থাকতে হবে।', 'error'); return; }
+
     const nameInput = document.getElementById('profileName');
     const phoneInput = document.getElementById('profilePhone');
     const addressInput = document.getElementById('profileAddress');
 
-    const nameToSave = nameInput ? nameInput.value.trim() : "";
-    const phone = phoneInput ? phoneInput.value.trim() : "";
-    const address = addressInput ? addressInput.value.trim() : "";
+    const nameToSave = nameInput ? nameInput.value.trim() : '';
+    const phone = phoneInput ? phoneInput.value.trim() : '';
+    const address = addressInput ? addressInput.value.trim() : '';
 
+    setBtnLoading(evt, true);
     try {
-        let updatePayload = {
-            phone: phone, 
-            address: address
-        };
-        
-        // Save the profile name to both database keys to prevent future bugs
-        if (nameToSave) {
-            updatePayload.name = nameToSave;
-            updatePayload.customerName = nameToSave;
-        }
+        let updatePayload = { phone, address };
+        if (nameToSave) { updatePayload.name = nameToSave; updatePayload.customerName = nameToSave; }
 
-        await db.collection("users").doc(window.currentUser.uid).set(updatePayload, { merge: true }); 
-        
-        alert("Profile saved successfully!");
+        await db.collection('users').doc(window.currentUser.uid).set(updatePayload, { merge: true });
+        notify(window.currentLang === 'en' ? 'Profile saved successfully!' : 'প্রোফাইল সফলভাবে সেভ হয়েছে!', 'success');
     } catch (error) {
-        alert("Error saving profile: " + error.message);
+        notify((window.currentLang === 'en' ? 'Error saving profile: ' : 'প্রোফাইল সেভ করতে সমস্যা: ') + error.message, 'error');
+    } finally {
+        setBtnLoading(evt, false);
     }
-}
-
-// Load saved user data and auto-fill checkout fields if empty
-async function loadUserData(uid) {
-    try {
-        const userDoc = await db.collection("users").doc(uid).get();
-        if (userDoc.exists) {
-            const data = userDoc.data();
-            
-            // Check every possible name variation
-            let savedName = data.customerName || data.name || data.fullName || (window.currentUser ? window.currentUser.displayName : "") || "";
-            
-            // 1. Fill Profile Tab Displays (Now includes the new profileName field)
-            if (savedName && document.getElementById('profileName')) document.getElementById('profileName').value = savedName;
-            if (data.phone && document.getElementById('profilePhone')) document.getElementById('profilePhone').value = data.phone;
-            if (data.address && document.getElementById('profileAddress')) document.getElementById('profileAddress').value = data.address;
-            
-            // 2. Auto-fill Cart Checkout inputs (For index.html cart sidebar)
-            if (savedName && document.getElementById('custName')) {
-                document.getElementById('custName').value = savedName;
-            }
-            if (data.phone && document.getElementById('custPhone')) {
-                document.getElementById('custPhone').value = data.phone || data.customerPhone || "";
-            }
-            if (data.address && document.getElementById('deliveryAddress')) {
-                document.getElementById('deliveryAddress').value = data.address || data.deliveryAddress || "";
-            }
-
-            // 3. UPDATED: Auto-fill standalone checkout page (For cart.html)
-            if (savedName && document.getElementById('checkoutName')) {
-                document.getElementById('checkoutName').value = savedName;
-            }
-            if (data.phone && document.getElementById('checkoutPhone')) {
-                document.getElementById('checkoutPhone').value = data.phone || data.customerPhone || "";
-            }
-            if (data.address && document.getElementById('checkoutAddress')) {
-                document.getElementById('checkoutAddress').value = data.address || data.deliveryAddress || "";
-            }
-        }
-    } catch (e) { console.error("Error loading user profile data:", e); }
-}
-
-// Load User Order History inside the Account Drawer
-async function loadUserOrders(uid) {
-    const container = document.getElementById('userOrderHistoryContainer');
-    if (!container) return;
-
-    try {
-        // Query the database for orders matching this user's ID
-        const querySnapshot = await db.collection("orders").where("userId", "==", uid).get();
-        
-        if (querySnapshot.empty) {
-            container.innerHTML = `<p style="color: var(--text-light); padding: 10px 0;">No order history found.</p>`;
-            return;
-        }
-
-        container.innerHTML = '';
-        querySnapshot.forEach((documentSnapshot) => {
-            const order = documentSnapshot.data();
-            const formattedDate = order.orderDate ? new Date(order.orderDate).toLocaleDateString() : "Recent";
-            
-            // Add order visual card to the drawer
-            container.innerHTML += `
-                <div style="border: 1px solid var(--border-color); padding: 10px; margin-bottom: 10px; border-radius: 4px;">
-                    <strong>Total: ৳${order.totalAmount}</strong> <span style="float: right; color: var(--primary-gold);">${order.status || 'New'}</span>
-                    <p style="color: var(--text-light); font-size: 11px; margin-top: 3px;">Date: ${formattedDate}</p>
-                </div>`;
-        });
-    } catch (e) {
-        console.error("Error loading order history:", e);
-        container.innerHTML = `<p style="color: red; font-size: 11px;">Could not load past orders.</p>`;
-    }
-}
+};
