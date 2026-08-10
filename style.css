@@ -486,6 +486,12 @@ select.input {
 
 .modal-add-btn { margin-top: 8px; }
 
+/* Keep action row visible when modal content scrolls */
+.modal-info .modal-action-row { position: sticky; bottom: 12px; z-index: 12; display: flex; gap: 12px; }
+.modal-info .modal-action-row .btn { flex: 1; }
+.modal-info .modal-buy-btn { /* ensure buy button follows sticky row */ }
+
+
 @media (max-width: 760px) {
   .modal-box { grid-template-columns: 1fr; max-height: 92vh; overflow-y: auto; }
   .modal-info { padding: 24px 20px; }
