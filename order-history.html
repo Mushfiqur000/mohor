@@ -4,10 +4,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Order History | Mohor</title>
+  <link rel="icon" type="image/jpeg" href="favicon.jpeg">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
   <style>
-    /* Ensures the page becomes visible immediately even if JS is delayed */
-    body { opacity: 1 !important; }
+    body { opacity: 1 !important; background-color: #0c0c0c; color: #fff; }
   </style>
 </head>
 <body>
@@ -22,13 +23,35 @@
   </header>
 
   <main class="container" style="padding:36px 5% 80px; max-width:900px;">
-    <h1 style="margin-bottom:8px;" data-i18n="accOrderHistory">Order History</h1>
+    <h1 style="margin-bottom:8px;" data-i18n="accOrderHistory">My Order History</h1>
     <p style="color:var(--ink-muted); margin-bottom:18px;">A consolidated view of your past orders. Sign in if you are not already.</p>
 
     <div id="userOrderHistoryContainer">
       <p class="order-history-loading" data-i18n="accLoadingOrders">Loading orders…</p>
     </div>
   </main>
+
+  <!-- Account Sidebar Modal for Header Link -->
+  <div class="cart-overlay" id="accountOverlay"></div>
+  <div class="cart-sidebar" id="accountSidebar" style="padding: 20px; overflow-y: auto;">
+      <div class="cart-header" style="padding: 0 0 20px 0; background: transparent; border-bottom: 1px solid var(--border-color);">
+          <h3 id="accountModalTitle" data-i18n="accTitle">Customer Account</h3>
+          <button type="button" class="close-cart" id="closeAccountBtn" style="border: none; background: none; font-size: 28px; cursor: pointer; color:#fff;">&times;</button>
+      </div>
+      <div id="authView" style="margin-top: 20px;">
+          <div id="loginFormContainer">
+              <h4 style="margin-bottom: 15px; font-size: 16px;" data-i18n="accLoginTitle">Login to Your Account</h4>
+              <input type="email" id="loginEmail" placeholder="Email Address" data-i18n-placeholder="accEmailPlaceholder" style="width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid #333; background:#181818; color:#fff; border-radius: 4px;">
+              <input type="password" id="loginPassword" placeholder="Password" data-i18n-placeholder="accPassPlaceholder" style="width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #333; background:#181818; color:#fff; border-radius: 4px;">
+              <button type="button" onclick="window.handleLogin()" style="width: 100%; background: var(--primary-gold); color: white; padding: 14px; border: none; font-weight: 600; cursor: pointer; border-radius: 4px;" data-i18n="accLoginBtn">LOG IN</button>
+          </div>
+      </div>
+      <div id="profileView" style="display: none; margin-top: 10px;">
+          <p style="font-size: 12px; color: #888;" data-i18n="accLoggedInAs">Logged in as:</p>
+          <strong id="userProfileEmail" style="font-size: 14px; display: block; margin-bottom: 15px; color: #fff;"></strong>
+          <button type="button" onclick="window.handleLogout()" style="background: transparent; color: #d9534f; border: 1px solid #d9534f; padding: 8px 15px; font-size: 11px; cursor: pointer; border-radius: 4px;">LOG OUT</button>
+      </div>
+  </div>
 
   <footer class="site-footer" style="margin-top: 60px;">
     <div class="container" style="text-align: center; padding: 20px 0;">
@@ -42,26 +65,23 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
   
   <script>
-    const firebaseConfig = {
-        apiKey: "AIzaSyALxypXDkF9QexbD_wE7-ADALIdj5vd-rY",
-        authDomain: "mohor-app.firebaseapp.com",
-        projectId: "mohor-app",
-        storageBucket: "mohor-app.firebasestorage.app",
-        messagingSenderId: "989000457004",
-        appId: "1:989000457004:web:5679b256e20d94e27daa89"
-    };
-    if (typeof firebase !== 'undefined' && !firebase.apps.length) {
-        firebase.initializeApp(firebaseConfig);
-    }
+    const firebaseConfig = { apiKey: "AIzaSyALxypXDkF9QexbD_wE7-ADALIdj5vd-rY", authDomain: "mohor-app.firebaseapp.com", projectId: "mohor-app" };
+    if (typeof firebase !== 'undefined' && !firebase.apps.length) firebase.initializeApp(firebaseConfig);
     window.db = firebase.firestore();
   </script>
 
-  <!-- Required JS Files including app.js and auth.js -->
-  <script src="app.js?v=20"></script>
-  <script src="cart.js?v=20"></script>
-  <script type="module" src="auth.js?v=20"></script>
+  <!-- Required JS Files -->
+  <script src="app.js?v=21"></script>
+  <script src="cart.js?v=21"></script>
+  <script type="module" src="auth.js?v=21"></script>
 
   <script>
+    // Clean .html from URL bar
+    if (window.location.pathname.endsWith('.html')) {
+      const cleanPath = window.location.pathname.replace(/\.html$/, '') + window.location.search;
+      window.history.replaceState(null, '', cleanPath);
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
       const container = document.getElementById('userOrderHistoryContainer');
       if (typeof firebase !== 'undefined' && firebase.auth) {
@@ -69,17 +89,12 @@
           if (user) {
             if (typeof window.loadUserOrders === 'function') {
               window.loadUserOrders(user.uid);
-            } else {
-              container.innerHTML = '<p style="color:var(--ink-muted);">Please check back in a moment as account scripts load.</p>';
             }
           } else {
             container.innerHTML = '<p style="color:var(--ink-muted);">Please sign in to view your order history. Open Account (top-right) to log in.</p>';
           }
         });
-      } else {
-        container.innerHTML = '<p style="color:var(--ink-muted);">Please sign in to view your order history. Open Account (top-right) to log in.</p>';
       }
-      
       setTimeout(() => { if (typeof updateUIText === 'function') updateUIText(); }, 50);
     });
   </script>
