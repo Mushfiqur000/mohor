@@ -87,6 +87,10 @@
         <button type="button" class="lightbox-nav lightbox-prev" id="prevModal" aria-label="Previous image">&#10094;</button>
         <img id="modalImg" alt="">
         <button type="button" class="lightbox-nav lightbox-next" id="nextModal" aria-label="Next image">&#10095;</button>
+        <div class="lightbox-actions" id="lightboxActions">
+            <button type="button" id="lightboxAddToCart" class="btn btn-brass" data-i18n="addToCart">Add to Cart</button>
+            <button type="button" id="lightboxBuyNow" class="btn btn-dark" data-i18n="buyNow">Buy Now</button>
+        </div>
     </div>
 
     <a href="https://wa.me/8801330113027" class="fab-whatsapp" target="_blank" rel="noopener" aria-label="Chat with us on WhatsApp">
@@ -322,6 +326,20 @@
                 if (touchendX < touchstartX - threshold) changeImage(1);
                 if (touchendX > touchstartX + threshold) changeImage(-1);
             });
+
+            // Lightbox action buttons: allow adding to cart or buying from the image modal
+            const lbAdd = document.getElementById('lightboxAddToCart');
+            const lbBuy = document.getElementById('lightboxBuyNow');
+            if (lbAdd) {
+                lbAdd.addEventListener('click', () => {
+                    if (doAddToCart()) modal.classList.remove('active');
+                });
+            }
+            if (lbBuy) {
+                lbBuy.addEventListener('click', () => {
+                    if (doAddToCart()) window.location.href = 'cart.html';
+                });
+            }
         });
     </script>
 </body>
