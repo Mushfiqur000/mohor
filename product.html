@@ -2,187 +2,101 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <!-- UPGRADE: Removed 'user-scalable=no' so users can pinch to zoom -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
-    <title>Product Details | Mohor</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Details | Mohor Clothings</title>
 
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" sizes="512x512" href="assets/favicon-512.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+    <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 
-    <style>
-        :root { 
-            --primary-gold: #C9A14A; --deep-black: #0c0c0c; --white: #ffffff; --border: #eaeaea; 
-            --ease-smooth: cubic-bezier(0.22, 1, 0.36, 1);
-            --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
-            --duration-fast: 0.2s;
-            --duration-base: 0.35s;
-        }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Montserrat', sans-serif; }
-        body { background-color: var(--white); color: var(--deep-black); padding-bottom: 90px; animation: pageFadeIn var(--duration-base) var(--ease-out); }
-        @keyframes pageFadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @media (prefers-reduced-motion: reduce) {
-            *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
-        }
-        
-        nav { display: flex; justify-content: space-between; align-items: center; padding: 15px 5%; border-bottom: 1px solid var(--border); }
-        .brand-logo { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; text-decoration: none; color: var(--deep-black); text-transform: uppercase; }
-        
-        /* UPGRADE: Added wrapper for nav controls & language button styling */
-        .nav-right { display: flex; align-items: center; }
-        .lang-btn { background: var(--deep-black); color: var(--white); border: none; padding: 5px 10px; font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 600; cursor: pointer; border-radius: 4px; letter-spacing: 1px; margin-right: 15px; }
-        .lang-btn:hover { background: var(--primary-gold); }
-
-        .product-container { max-width: 600px; margin: 0 auto; padding: 20px 5%; }
-        /* UPGRADE: Added cursor: zoom-in */
-        .main-image { width: 100%; height: 450px; object-fit: cover; background: #f9f9f9; border: 1px solid var(--border); border-radius: 8px; cursor: zoom-in; opacity: 0; transition: opacity var(--duration-base) var(--ease-out); }
-        .main-image.loaded { opacity: 1; }
-        .main-image-wrap { position: relative; }
-        .main-image-wrap.is-loading::before {
-            content: ''; position: absolute; inset: 0; border-radius: 8px;
-            background: linear-gradient(100deg, #f4f4f4 30%, #ececec 50%, #f4f4f4 70%);
-            background-size: 200% 100%; animation: shimmer 1.6s ease-in-out infinite;
-        }
-        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
-        
-        .thumbnail-row { display: flex; gap: 10px; margin-top: 10px; overflow-x: auto; padding-bottom: 5px; }
-        .thumbnail { width: 70px; height: 90px; object-fit: cover; cursor: pointer; border: 1px solid var(--border); border-radius: 4px; opacity: 0.6; transition: opacity var(--duration-fast) var(--ease-smooth), border-color var(--duration-fast) var(--ease-smooth), transform var(--duration-fast) var(--ease-smooth); }
-        .thumbnail:hover, .thumbnail.active { opacity: 1; border-color: var(--primary-gold); }
-        .thumbnail:hover { transform: translateY(-2px); }
-        
-        .info-section { margin-top: 20px; }
-        h1 { font-family: 'Playfair Display', serif; font-size: 24px; margin-bottom: 5px; }
-        .price { font-size: 20px; color: var(--primary-gold); font-weight: 600; margin-bottom: 20px; }
-        
-        .btn-group { display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
-        .option-btn { border: 1px solid var(--border); background: var(--white); padding: 10px 15px; cursor: pointer; border-radius: 4px; font-size: 13px; transition: background var(--duration-fast) var(--ease-smooth), border-color var(--duration-fast) var(--ease-smooth), transform var(--duration-fast) var(--ease-smooth), box-shadow var(--duration-fast) var(--ease-smooth); }
-        .option-btn:hover { border-color: var(--deep-black); transform: translateY(-1px); }
-        .option-btn:active { transform: translateY(0) scale(0.96); }
-        
-        /* ========================================= */
-        /* FIX: FORCED GOLD SELECTION FOR DARK MODE  */
-        /* ========================================= */
-        .option-btn.selected { 
-            background: var(--primary-gold) !important; 
-            color: var(--white) !important; 
-            border-color: var(--primary-gold) !important; 
-            box-shadow: 0 2px 6px rgba(201, 161, 74, 0.4) !important;
-        }
-        
-        .desc-box { margin-top: 25px; font-size: 13.5px; line-height: 1.6; color: #444; }
-        .desc-box h4 { font-weight: 600; margin-bottom: 8px; color: var(--deep-black); text-transform: uppercase; letter-spacing: 0.5px; }
-        
-        .measurements-box { margin-top: 10px; padding: 10px; background: #f9f9f9; border: 1px solid var(--border); border-radius: 4px; font-size: 12.5px; display: none; animation: fadeUp var(--duration-fast) var(--ease-out); }
-        @keyframes fadeUp { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
-        
-        .details-list { margin-top: 10px; padding-left: 20px; }
-        .details-list li { margin-bottom: 5px; }
-
-        .bottom-bar { position: fixed; bottom: 0; width: 100%; display: flex; padding: 10px; background: var(--white); border-top: 1px solid var(--border); z-index: 100; }
-        .bottom-bar button { flex: 1; padding: 15px; font-weight: 600; border: none; cursor: pointer; text-transform: uppercase; font-size: 14px; transition: transform var(--duration-fast) var(--ease-smooth), opacity var(--duration-fast) var(--ease-smooth); }
-        .bottom-bar button:active { transform: scale(0.97); opacity: 0.9; }
-        .btn-add { background: var(--primary-gold); color: var(--white); margin-right: 5px; border-radius: 4px; }
-        .btn-buy { background: var(--deep-black); color: var(--white); margin-left: 5px; border-radius: 4px; }
-
-        /* ========================================= */
-        /* UPGRADE: LIGHTBOX MODAL CSS               */
-        /* ========================================= */
-        .modal { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.95); overflow: auto; opacity: 0; transition: opacity var(--duration-base) var(--ease-smooth); }
-        .modal.active { opacity: 1; }
-        .modal-content { margin: auto; display: block; max-width: 100%; max-height: 90vh; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); object-fit: contain; }
-        .close-modal { position: absolute; top: 15px; right: 25px; color: #f1f1f1; font-size: 35px; font-weight: bold; cursor: pointer; z-index: 10000; padding: 10px; }
-        .prev-modal, .next-modal { cursor: pointer; position: absolute; top: 50%; width: auto; padding: 20px; margin-top: -30px; color: white; font-weight: bold; font-size: 24px; transition: 0.3s; user-select: none; z-index: 10000; background: rgba(0,0,0,0.3); border-radius: 4px; }
-        .prev-modal { left: 10px; }
-        .next-modal { right: 10px; }
-        .prev-modal:hover, .next-modal:hover { background-color: rgba(0,0,0,0.8); }
-
-        /* ========================================= */
-        /* UPGRADE: PREMIUM CART ICON STYLES         */
-        /* ========================================= */
-        .cart-nav-icon { position: relative; color: var(--deep-black); display: flex; align-items: center; text-decoration: none; margin-right: 10px; }
-        .cart-nav-icon svg { transition: transform 0.2s ease; }
-        .cart-nav-icon:hover svg { transform: scale(1.1); }
-        .cart-nav-icon .badge { position: absolute; top: -5px; right: -10px; background: var(--primary-gold); color: var(--white); font-size: 11px; font-weight: 700; height: 18px; width: 18px; display: flex; justify-content: center; align-items: center; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.15); display: none; }
-    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Work+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+Bengali:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="has-fixed-bottom-bar">
 
-    <nav>
-        <a href="index.html" style="text-decoration: none; color: black; font-weight: 600;" data-i18n="backBtn">&#8592; Back</a>
-        <a href="index.html" class="brand-logo">Mohor</a>
-        
-        <div class="nav-right">
-            <!-- UPGRADE: Re-Added Lang Toggle to Product Preview -->
-            <button type="button" id="langToggleBtn" class="lang-btn">EN / বাং</button>
-            <!-- UPGRADE: Beautiful Cart Logo replaced the old text -->
-            <a href="cart.html" class="cart-nav-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
-                    <line x1="3" y1="6" x2="21" y2="6"></line>
-                    <path d="M16 10a4 4 0 0 1-8 0"></path>
-                </svg>
-                <span id="cartBadgeIcon" class="badge">0</span>
+    <header class="product-nav">
+        <nav class="nav container">
+            <a href="index.html" class="back-btn">
+                <svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                <span class="hide-mobile" data-i18n="backBtn">Back</span>
             </a>
-        </div>
-    </nav>
+            <a href="index.html" class="brand-logo" aria-label="Mohor Clothings — Home">
+                <img src="assets/logo-ink.png" alt="Mohor Clothings" width="120" height="36">
+            </a>
+            <div class="nav-actions">
+                <button type="button" id="langToggleBtn" class="lang-btn" aria-label="Switch language">EN<span class="lang-sep">/</span>বাং</button>
+                <a href="cart.html" class="icon-btn" aria-label="Cart">
+                    <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                    <span class="cart-badge" id="cartBadgeIcon" style="display:none;">0</span>
+                </a>
+            </div>
+        </nav>
+    </header>
 
-    <div class="product-container">
-        <!-- Images -->
-        <div class="main-image-wrap is-loading" id="mainImageWrap">
-            <img id="mainImage" class="main-image" src="" alt="Loading...">
-        </div>
-        <div id="thumbnailContainer" class="thumbnail-row"></div>
-        
-        <!-- UPGRADE: FULL SCREEN IMAGE MODAL -->
-        <div id="imageModal" class="modal">
-            <span class="close-modal" id="closeModal">&times;</span>
-            <span class="prev-modal" id="prevModal">&#10094;</span>
-            <img class="modal-content" id="modalImg">
-            <span class="next-modal" id="nextModal">&#10095;</span>
+    <div class="product-detail">
+        <div class="pd-gallery">
+            <div class="pd-gallery-main" id="mainImageWrap">
+                <img id="mainImage" src="" alt="">
+            </div>
+            <div class="pd-thumbs" id="thumbnailContainer"></div>
         </div>
 
-        <div class="info-section">
-            <!-- Title & Price -->
-            <h1 id="prodTitle">Loading Product...</h1>
-            <div id="prodPrice" class="price"></div>
-            
-            <!-- Color Options -->
-            <div class="desc-box" id="colorSection" style="display: none;">
-                <h4 data-i18n="colorSelect">Select Color</h4>
-                <div id="colorOptions" class="btn-group"></div>
+        <div class="pd-info">
+            <span class="card-cat" id="prodCategory"></span>
+            <h1 id="prodTitle">Loading…</h1>
+            <div class="pd-price" id="prodPrice"></div>
+
+            <div class="opt-group" id="colorSection" style="display:none;">
+                <h5 data-i18n="colorSelect">Select Color</h5>
+                <div class="opt-row" id="colorOptions"></div>
+                <div class="opt-warn" id="colorWarning" data-i18n="colorWarning">Please select a color</div>
             </div>
 
-            <!-- Size Options -->
-            <div class="desc-box">
-                <h4 data-i18n="sizeSelect">Select Size</h4>
-                <div id="sizeOptions" class="btn-group"></div>
-                <!-- Dynamic Measurements Box -->
-                <div id="sizeMeasurements" class="measurements-box"></div>
+            <div class="opt-group">
+                <h5 data-i18n="sizeSelect">Select Size</h5>
+                <div class="opt-row" id="sizeOptions"></div>
+                <div class="opt-warn" id="sizeWarning" data-i18n="sizeWarning">Please select a size</div>
+                <div class="size-measure-box" id="sizeMeasurements"></div>
             </div>
 
-            <!-- Description -->
-            <div class="desc-box">
-                <h4 data-i18n="descTitle">Description</h4>
-                <p id="prodDesc"></p>
+            <button type="button" id="addToCartBtn" class="btn btn-brass btn-block modal-add-btn" data-i18n="addToCart">Add to Cart</button>
+            <button type="button" id="buyNowBtnInline" class="btn btn-dark btn-block buy-now-inline" style="margin-top:10px;" data-i18n="buyNow">Buy Now</button>
+
+            <div class="opt-group" style="margin-top:24px;">
+                <h5 data-i18n="descTitle">Description</h5>
+                <p class="modal-desc" id="prodDesc"></p>
             </div>
 
-            <!-- Details (Bullet Points) -->
-            <div class="desc-box" id="detailsSection" style="display: none;">
-                <h4 data-i18n="detailsTitle">Details</h4>
-                <ul id="prodDetails" class="details-list"></ul>
+            <div class="opt-group" id="detailsSection" style="display:none;">
+                <h5 data-i18n="detailsTitle">The Details</h5>
+                <ul class="details-list" id="prodDetails"></ul>
             </div>
         </div>
     </div>
 
-    <div class="bottom-bar">
-        <button class="btn-add" id="addToCartBtn" data-i18n="addToCart">Add to Cart</button>
-        <button class="btn-buy" id="buyNowBtn" data-i18n="buyNow">Buy Now</button>
+    <div class="pd-bottom-bar">
+        <button type="button" class="btn btn-outline" style="flex:1;" id="addToCartBtnMobile" data-i18n="addToCart">Add to Cart</button>
+        <button type="button" class="btn btn-dark" style="flex:1;" id="buyNowBtn" data-i18n="buyNow">Buy Now</button>
     </div>
 
-    <!-- Firebase SDKs (Required for cart.js and auth integrations) -->
+    <!-- Lightbox -->
+    <div class="lightbox" id="imageModal">
+        <button type="button" class="lightbox-close" id="closeModal" aria-label="Close">&times;</button>
+        <button type="button" class="lightbox-nav lightbox-prev" id="prevModal" aria-label="Previous image">&#10094;</button>
+        <img id="modalImg" alt="">
+        <button type="button" class="lightbox-nav lightbox-next" id="nextModal" aria-label="Next image">&#10095;</button>
+    </div>
+
+    <a href="https://wa.me/8801330113027" class="fab-whatsapp" target="_blank" rel="noopener" aria-label="Chat with us on WhatsApp">
+        <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+    </a>
+
+    <!-- Firebase CDN SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-
-    <!-- NEW: Firebase Configuration Block -->
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyALxypXDkF9QexbD_wE7-ADALIdj5vd-rY",
@@ -192,180 +106,128 @@
             messagingSenderId: "989000457004",
             appId: "1:989000457004:web:5679b256e20d94e27daa89"
         };
-        // Initialize Firebase
         if (typeof firebase !== 'undefined' && !firebase.apps.length) {
             firebase.initializeApp(firebaseConfig);
         }
-        // Initialize Firestore
         window.db = firebase.firestore();
     </script>
 
-    <!-- CACHE BUSTERS: Updated to v=17 to pull latest updates uniformly -->
-    <script src="products.js?v=17"></script>
-    <script src="app.js?v=17"></script>
-    <script src="cart.js?v=17"></script>
-    <script type="module" src="auth.js?v=17"></script>
+    <script src="products.js?v=18"></script>
+    <script src="app.js?v=18"></script>
+    <script src="cart.js?v=18"></script>
+    <script type="module" src="auth.js?v=18"></script>
 
     <script>
         let currentSelectedSize = null;
         let currentSelectedColor = null;
         let activeProduct = null;
-        
-        // UPGRADE: Removed hardcoded const currentLang = 'en'; 
-        // Now it dynamically uses window.currentLang from app.js memory!
+        let currentImageIndex = 0;
 
-        // Function to safely extract translated strings (handles strings or multi-lang objects)
         function getProductText(field) {
             if (!field) return "";
             if (typeof field === 'string') return field;
-            // UPGRADE: Changed to use window.currentLang
             return field[window.currentLang] || field['en'] || "";
         }
 
-        // UPGRADE: Function to update dynamic text whenever language changes
+        function setMainImage(src, animate) {
+            const mainImg = document.getElementById('mainImage');
+            mainImg.style.animation = 'none';
+            mainImg.src = src;
+            if (animate !== false) requestAnimationFrame(() => { mainImg.style.animation = ''; });
+        }
+
         function renderDynamicText() {
             if (!activeProduct) return;
 
             document.getElementById('prodTitle').innerText = getProductText(activeProduct.title);
             document.getElementById('prodDesc').innerHTML = getProductText(activeProduct.description);
+            document.getElementById('prodCategory').innerText = (activeProduct.category || '').replace('-', ' ');
 
             const detailsList = document.getElementById('prodDetails');
             const detailsSection = document.getElementById('detailsSection');
-            detailsList.innerHTML = ''; 
-            
+            detailsList.innerHTML = '';
             let detailsArray = [];
-            if (activeProduct.details) {
-                detailsArray = Array.isArray(activeProduct.details) ? activeProduct.details : (activeProduct.details[window.currentLang] || activeProduct.details['en'] || []);
-            }
+            if (activeProduct.details) detailsArray = Array.isArray(activeProduct.details) ? activeProduct.details : (activeProduct.details[window.currentLang] || activeProduct.details['en'] || []);
             if (detailsArray.length > 0) {
                 detailsSection.style.display = 'block';
-                detailsArray.forEach(detailText => {
-                    const li = document.createElement('li');
-                    li.innerText = detailText;
-                    detailsList.appendChild(li);
-                });
+                detailsArray.forEach(text => { const li = document.createElement('li'); li.innerText = text; detailsList.appendChild(li); });
             } else {
                 detailsSection.style.display = 'none';
             }
 
-            // Re-render size measurements if active
             if (currentSelectedSize && activeProduct.sizeMeasurements && activeProduct.sizeMeasurements[currentSelectedSize]) {
-                const measurementBox = document.getElementById('sizeMeasurements');
-                measurementBox.innerHTML = window.formatSizeMeasurement(activeProduct.sizeMeasurements[currentSelectedSize], window.currentLang);
+                const box = document.getElementById('sizeMeasurements');
+                const md = activeProduct.sizeMeasurements[currentSelectedSize];
+                box.innerHTML = (typeof md === 'string') ? md : (md[window.currentLang] || md['en'] || "");
             }
         }
 
-        // UPGRADE: Listen for the custom languageChanged event triggered by app.js
-        window.addEventListener('languageChanged', () => {
-            renderDynamicText();
-        });
+        window.addEventListener('languageChanged', renderDynamicText);
 
         document.addEventListener('DOMContentLoaded', async () => {
             const params = new URLSearchParams(window.location.search);
             const targetId = params.get('id');
 
-            // Fetch products from Firestore if available, otherwise fallback to local productsData
-            let allProducts = [];
-            if (typeof window.db !== 'undefined') {
-                try {
-                    const querySnapshot = await window.db.collection("products").get();
-                    let fetched = [];
-                    querySnapshot.forEach((doc) => {
-                        const data = doc.data();
-                        fetched.push({
-                            id: doc.id,
-                            title: data.title || "Dress",
-                            category: data.category || "three-piece",
-                            price: Number(data.price || 0),
-                            images: data.images || [],
-                            colors: data.colors || [],
-                            sizes: data.sizes || [],
-                            sizeMeasurements: data.sizeMeasurements || {},
-                            measurementsGuide: data.measurementsGuide || "",
-                            description: data.description || "",
-                            details: data.details || []
-                        });
-                    });
-                    if (fetched.length > 0) {
-                        window.firestoreProducts = fetched;
-                    }
-                } catch (err) {
-                    console.error("Error fetching products from Firestore in product.html:", err);
-                }
-            }
-
-            allProducts = (window.firestoreProducts && window.firestoreProducts.length > 0) 
-                ? window.firestoreProducts 
+            await window.loadStoreProducts();
+            const allProducts = (Array.isArray(window.firestoreProducts) && window.firestoreProducts.length > 0)
+                ? window.firestoreProducts
                 : (window.productsData || []);
 
             activeProduct = allProducts.find(p => String(p.id) === String(targetId));
 
             if (!activeProduct) {
-                document.getElementById('prodTitle').innerText = "Product Not Found";
+                document.getElementById('prodTitle').innerText = 'Product Not Found';
+                document.getElementById('mainImageWrap').innerHTML = '';
                 return;
             }
 
-            // 1 & 2. Populate Basic Info & Bullet Point Details
-            document.getElementById('prodPrice').innerText = "৳ " + activeProduct.price;
-            renderDynamicText(); // UPGRADE: Calls the new rendering function
+            document.getElementById('prodPrice').innerText = '৳ ' + activeProduct.price;
+            renderDynamicText();
 
-            // 3. Handle Images & Thumbnails
-            const mainImg = document.getElementById('mainImage');
-            const mainImgWrap = document.getElementById('mainImageWrap');
             const thumbContainer = document.getElementById('thumbnailContainer');
+            const images = (activeProduct.images && activeProduct.images.length > 0) ? activeProduct.images : ['assets/image-placeholder.svg'];
+            setMainImage(images[0], false);
 
-            function setMainProductImage(src) {
-                mainImg.classList.remove('loaded');
-                if (mainImgWrap) mainImgWrap.classList.add('is-loading');
-                mainImg.onload = () => {
-                    mainImg.classList.add('loaded');
-                    if (mainImgWrap) mainImgWrap.classList.remove('is-loading');
+            images.forEach((imgSrc, index) => {
+                const thumb = document.createElement('div');
+                thumb.className = 'thumbnail' + (index === 0 ? ' active' : '');
+                thumb.innerHTML = `<img src="${imgSrc}" alt="" onerror="this.onerror=null;this.src='assets/image-placeholder.svg';">`;
+                thumb.onclick = () => {
+                    currentImageIndex = index;
+                    setMainImage(imgSrc);
+                    thumbContainer.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
+                    thumb.classList.add('active');
                 };
-                mainImg.src = src;
-            }
-            
-            if (activeProduct.images && activeProduct.images.length > 0) {
-                setMainProductImage(activeProduct.images[0]); 
-                
-                activeProduct.images.forEach((imgSrc, index) => {
-                    const thumb = document.createElement('img');
-                    thumb.src = imgSrc;
-                    thumb.className = index === 0 ? 'thumbnail active' : 'thumbnail';
-                    
-                    thumb.onclick = () => {
-                        setMainProductImage(imgSrc);
-                        document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
-                        thumb.classList.add('active');
-                    };
-                    thumbContainer.appendChild(thumb);
-                });
-            }
+                thumbContainer.appendChild(thumb);
+            });
+            document.getElementById('mainImage').onerror = function() { this.onerror = null; this.src = 'assets/image-placeholder.svg'; };
 
-            // 4. Handle Sizes (UPGRADE: TOGGLE LOGIC TO UNSELECT)
+            // Sizes (toggle to unselect)
             const sizeContainer = document.getElementById('sizeOptions');
             const measurementBox = document.getElementById('sizeMeasurements');
-            
             if (activeProduct.sizes && activeProduct.sizes.length > 0) {
                 activeProduct.sizes.forEach(size => {
                     const btn = document.createElement('button');
-                    btn.className = 'option-btn size-btn';
+                    btn.type = 'button';
+                    btn.className = 'opt-btn size-btn';
                     btn.innerText = size;
-                    
                     btn.onclick = () => {
-                        // If it is already selected, unselect it
+                        const warn = document.getElementById('sizeWarning');
                         if (btn.classList.contains('selected')) {
                             btn.classList.remove('selected');
                             currentSelectedSize = null;
-                            measurementBox.style.display = 'none';
+                            measurementBox.classList.remove('show');
                         } else {
-                            // Otherwise, select it
                             document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('selected'));
                             btn.classList.add('selected');
                             currentSelectedSize = size;
-
+                            if (warn) warn.classList.remove('show');
                             if (activeProduct.sizeMeasurements && activeProduct.sizeMeasurements[size]) {
-                                measurementBox.style.display = 'block';
-                                measurementBox.innerHTML = window.formatSizeMeasurement(activeProduct.sizeMeasurements[size], window.currentLang);
+                                const md = activeProduct.sizeMeasurements[size];
+                                measurementBox.innerHTML = (typeof md === 'string') ? md : (md[window.currentLang] || md['en'] || "");
+                                measurementBox.classList.add('show');
+                            } else {
+                                measurementBox.classList.remove('show');
                             }
                         }
                     };
@@ -373,146 +235,93 @@
                 });
             }
 
-            // 5. Handle Colors (UPGRADE: TOGGLE LOGIC & NO AUTO-SELECT)
+            // Colors (toggle to unselect)
             const colorContainer = document.getElementById('colorOptions');
             const colorSection = document.getElementById('colorSection');
-            
             let colorArray = [];
-            if (activeProduct.colors) {
-                // UPGRADE: Uses window.currentLang
-                colorArray = Array.isArray(activeProduct.colors) ? activeProduct.colors : (activeProduct.colors[window.currentLang] || activeProduct.colors['en'] || []);
-            }
+            if (activeProduct.colors) colorArray = Array.isArray(activeProduct.colors) ? activeProduct.colors : (activeProduct.colors[window.currentLang] || activeProduct.colors['en'] || []);
 
             if (colorArray.length > 0) {
                 colorSection.style.display = 'block';
                 colorArray.forEach(color => {
                     const btn = document.createElement('button');
-                    btn.className = 'option-btn color-btn';
+                    btn.type = 'button';
+                    btn.className = 'opt-btn color-btn';
                     btn.innerText = color;
-                    
                     btn.onclick = () => {
-                        // If it is already selected, unselect it
+                        const warn = document.getElementById('colorWarning');
                         if (btn.classList.contains('selected')) {
                             btn.classList.remove('selected');
                             currentSelectedColor = null;
                         } else {
-                            // Otherwise, select it
                             document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('selected'));
                             btn.classList.add('selected');
                             currentSelectedColor = color;
+                            if (warn) warn.classList.remove('show');
                         }
                     };
                     colorContainer.appendChild(btn);
                 });
             }
 
-            // 6. Bind Add to Cart
-            document.getElementById('addToCartBtn').onclick = () => {
+            function validateSelection() {
+                let valid = true;
                 if (activeProduct.sizes && activeProduct.sizes.length > 0 && !currentSelectedSize) {
-                    alert("Please select a size first!");
-                    return;
+                    const warn = document.getElementById('sizeWarning'); if (warn) warn.classList.add('show');
+                    valid = false;
                 }
-                
-                let displayName = getProductText(activeProduct.title);
-                if (currentSelectedColor && currentSelectedColor !== "Default") {
-                    displayName += ` (${currentSelectedColor})`;
+                // Consistent with the desktop quick-view modal: a color must be
+                // chosen whenever the product actually offers color options.
+                if (colorArray.length > 0 && !currentSelectedColor) {
+                    const warn = document.getElementById('colorWarning'); if (warn) warn.classList.add('show');
+                    valid = false;
                 }
-                
+                return valid;
+            }
+
+            function doAddToCart() {
+                if (!validateSelection()) return false;
                 if (typeof window.addToCart === 'function') {
-                    window.addToCart(displayName, activeProduct.price, currentSelectedSize || "Standard", activeProduct.id);
-                } else {
-                    console.error("addToCart function not found. Check cart.js connection.");
+                    window.addToCart(activeProduct, currentSelectedSize || 'Standard', currentSelectedColor);
                 }
+                return true;
+            }
+
+            document.getElementById('addToCartBtn').onclick = doAddToCart;
+            document.getElementById('addToCartBtnMobile').onclick = doAddToCart;
+            document.getElementById('buyNowBtnInline').onclick = () => { if (doAddToCart()) window.location.href = 'cart.html'; };
+            document.getElementById('buyNowBtn').onclick = () => { if (doAddToCart()) window.location.href = 'cart.html'; };
+
+            // Lightbox
+            const modal = document.getElementById('imageModal');
+            const modalImg = document.getElementById('modalImg');
+
+            document.getElementById('mainImage').onclick = function() {
+                modal.classList.add('active');
+                modalImg.src = images[currentImageIndex];
             };
-
-            // 7. UPGRADE: Added functionality for the Buy Now button
-            document.getElementById('buyNowBtn').onclick = () => {
-                if (activeProduct.sizes && activeProduct.sizes.length > 0 && !currentSelectedSize) {
-                    alert("Please select a size first before buying!");
-                    return;
-                }
-                document.getElementById('addToCartBtn').click(); // Adds to cart
-                window.location.href = "cart.html"; // Redirects immediately
-            };
-
-            // ==========================================
-            // UPGRADE: LIGHTBOX, ZOOM & SWIPE LOGIC
-            // ==========================================
-            const modal = document.getElementById("imageModal");
-            const modalImg = document.getElementById("modalImg");
-            let currentImageIndex = 0;
-
-            // Open Modal
-            mainImg.onclick = function(){
-                if (!activeProduct || !activeProduct.images) return;
-                modal.style.display = "block";
-                document.body.style.overflow = 'hidden';
-                requestAnimationFrame(() => requestAnimationFrame(() => modal.classList.add('active')));
-                
-                // Find index of currently displayed image based on what mainImg is showing
-                const currentSrc = new URL(mainImg.src).pathname;
-                currentImageIndex = activeProduct.images.findIndex(img => currentSrc.includes(img));
-                if (currentImageIndex === -1) currentImageIndex = 0;
-                
-                modalImg.src = activeProduct.images[currentImageIndex];
-            }
-
-            function closeLightbox() {
-                modal.classList.remove('active');
-                document.body.style.overflow = '';
-                setTimeout(() => { modal.style.display = "none"; }, 250);
-            }
-
-            // Close Modal
-            document.getElementById("closeModal").onclick = closeLightbox;
-
-            // Click outside image to close
-            modal.onclick = function(e) {
-                if(e.target === modal) closeLightbox();
-            }
-
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape' && modal.style.display === 'block') closeLightbox();
-            });
-
-            // Next / Previous Buttons
-            document.getElementById("nextModal").onclick = function() { changeImage(1); }
-            document.getElementById("prevModal").onclick = function() { changeImage(-1); }
+            document.getElementById('closeModal').onclick = () => modal.classList.remove('active');
+            modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('active'); });
+            document.addEventListener('keydown', (e) => { if (e.key === 'Escape') modal.classList.remove('active'); });
 
             function changeImage(direction) {
-                currentImageIndex += direction;
-                if (currentImageIndex >= activeProduct.images.length) currentImageIndex = 0;
-                if (currentImageIndex < 0) currentImageIndex = activeProduct.images.length - 1;
-                modalImg.src = activeProduct.images[currentImageIndex];
+                currentImageIndex = (currentImageIndex + direction + images.length) % images.length;
+                modalImg.src = images[currentImageIndex];
+                setMainImage(images[currentImageIndex]);
+                thumbContainer.querySelectorAll('.thumbnail').forEach((t, i) => t.classList.toggle('active', i === currentImageIndex));
             }
+            document.getElementById('nextModal').onclick = () => changeImage(1);
+            document.getElementById('prevModal').onclick = () => changeImage(-1);
 
-            // Mobile Touch Swipe Support
-            let touchstartX = 0;
-            let touchendX = 0;
-
-            modal.addEventListener('touchstart', e => {
-                // Only register swipe if user is using 1 finger (not pinch-zooming)
-                if(e.touches.length === 1) {
-                    touchstartX = e.changedTouches[0].screenX;
-                }
-            });
-
+            let touchstartX = 0, touchendX = 0;
+            modal.addEventListener('touchstart', e => { if (e.touches.length === 1) touchstartX = e.changedTouches[0].screenX; });
             modal.addEventListener('touchend', e => {
-                if(e.changedTouches.length === 1) {
-                    touchendX = e.changedTouches[0].screenX;
-                    handleSwipe();
-                }
+                if (e.changedTouches.length !== 1) return;
+                touchendX = e.changedTouches[0].screenX;
+                const threshold = 50;
+                if (touchendX < touchstartX - threshold) changeImage(1);
+                if (touchendX > touchstartX + threshold) changeImage(-1);
             });
-
-            function handleSwipe() {
-                const swipeThreshold = 50; // Minimum distance to register as a swipe
-                if (touchendX < touchstartX - swipeThreshold) {
-                    changeImage(1); // Swipe Left -> Next Image
-                }
-                if (touchendX > touchstartX + swipeThreshold) {
-                    changeImage(-1); // Swipe Right -> Previous Image
-                }
-            }
         });
     </script>
 </body>
