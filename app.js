@@ -567,6 +567,30 @@ document.addEventListener('DOMContentLoaded', () => {
             closeProductModal();
         });
     }
+
+    // Buy Now from quick-view modal: add then navigate to cart
+    const modalBuyNowBtn = document.getElementById('modalBuyNowBtn');
+    if (modalBuyNowBtn) {
+        modalBuyNowBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            let valid = true;
+            if (!selectedSize && currentViewingProduct && currentViewingProduct.sizes && currentViewingProduct.sizes.length > 0) {
+                const warn = document.getElementById('sizeWarning'); if (warn) warn.classList.add('show');
+                valid = false;
+            }
+            if (!selectedColor) {
+                const warn = document.getElementById('colorWarning'); if (warn) warn.classList.add('show');
+                valid = false;
+            }
+            if (!valid) return;
+
+            if (typeof window.addToCart === "function") {
+                window.addToCart(currentViewingProduct, selectedSize || 'Standard', selectedColor);
+            }
+            closeProductModal();
+            window.location.href = 'cart.html';
+        });
+    }
 });
 
 // ==========================================================================
