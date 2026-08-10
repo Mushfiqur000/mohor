@@ -17,7 +17,7 @@ document.documentElement.lang = window.currentLang;
 
 window.uiTranslations = {
     en: {
-        navShop: "Shop", navAbout: "About Us", navPolicy: "Policy", navAccount: "Account", navCart: "Cart",
+        navShop: "Shop", navOrders: "Order History", navAbout: "About Us", navPolicy: "Policy", navAccount: "Account", navCart: "Cart",
         shopTitle: "Our Collection",
         shopSubtitle: "Handcrafted three-piece sets, kurtis and khadi wear — cut and stitched in small batches.",
         filterBtn: "Filters", closeFilters: "Close",
@@ -79,7 +79,7 @@ window.uiTranslations = {
         continueGuest: "Continue as Guest",
     },
     bn: {
-        navShop: "শপ", navAbout: "আমাদের সম্পর্কে", navPolicy: "পলিসি", navAccount: "অ্যাকাউন্ট", navCart: "কার্ট",
+        navShop: "শপ", navOrders: "অর্ডার হিস্ট্রি", navAbout: "আমাদের সম্পর্কে", navPolicy: "পলিসি", navAccount: "অ্যাকাউন্ট", navCart: "কার্ট",
         shopTitle: "আমাদের কালেকশন",
         shopSubtitle: "হাতে তৈরি থ্রি-পিস, কুর্তি ও খাদি — অল্প সংখ্যায় যত্নসহকারে তৈরি।",
         filterBtn: "ফিল্টার", closeFilters: "বন্ধ করুন",

@@ -317,7 +317,7 @@ select.input {
    ========================================================================== */
 .hero { position: relative; overflow: hidden; background: var(--ink); }
 .hero-media { position: relative; width: 100%; aspect-ratio: 21 / 9; min-height: 320px; max-height: 640px; overflow: hidden; }
-.hero-media img { width: 100%; height: 100%; object-fit: cover; object-position: center 42%; animation: kenBurns 22s ease-in-out infinite alternate; }
+.hero-media img { width: 100%; height: 100%; object-fit: cover; object-position: center center; animation: kenBurns 22s ease-in-out infinite alternate; }
 .hero-scrim { position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(23,17,15,0.05) 60%, var(--muslin) 100%); pointer-events: none; }
 .hero-scroll-cue {
   position: absolute; bottom: 22px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column;
@@ -327,8 +327,9 @@ select.input {
 .hero-scroll-cue span { font-family: var(--font-mono); font-size: 10px; letter-spacing: 2px; text-transform: uppercase; }
 
 @media (max-width: 640px) {
-  .hero-media { aspect-ratio: 4 / 5; max-height: 520px; }
-  .hero-media img { object-position: 62% center; }
+  /* Use landscape crop on phones so central/logo area remains visible */
+  .hero-media { aspect-ratio: 16 / 9; max-height: 460px; min-height: 220px; }
+  .hero-media img { object-position: center 26%; }
 }
 
 /* Interior page header (About / Policy / Login) */
