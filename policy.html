@@ -3,173 +3,238 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Mohor Clothings Delivery and Return Policy.">
+    <meta name="description" content="Mohor Clothings Delivery and Return Policy — delivery timelines, order confirmation, returns and exchanges.">
     <title>Policy | Mohor Clothings</title>
-    <!-- Favicon -->
-    <link rel="icon" type="image/jpeg" href="favicon.jpeg">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
-    
-    <style>
-        :root {
-            --primary-gold: #C9A14A;
-            --deep-black: #0c0c0c;
-            --soft-gray: #f9f9f9;
-            --border-color: #eaeaea;
-            --text-dark: #222;
-            --text-light: #666;
-            --white: #ffffff;
-            --transition: all 0.3s ease;
-            --ease-smooth: cubic-bezier(0.22, 1, 0.36, 1);
-            --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
-            --duration-fast: 0.2s;
-            --duration-base: 0.35s;
-        }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Montserrat', sans-serif; background-color: var(--white); color: var(--text-dark); line-height: 1.6; overflow-x: hidden; animation: pageFadeIn var(--duration-base) var(--ease-out); }
-        @keyframes pageFadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @media (prefers-reduced-motion: reduce) {
-            *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
-        }
-        h1, h2, h3, h4, .brand-logo { font-family: 'Playfair Display', serif; }
+    <meta property="og:title" content="Delivery & Return Policy | Mohor Clothings">
+    <meta property="og:image" content="https://mohor.me/assets/og-image.jpg">
+    <meta property="og:type" content="website">
 
-        /* --- Navigation --- */
-        nav { display: flex; justify-content: space-between; align-items: center; padding: 20px 5%; background: var(--white); position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid var(--border-color); }
-        .brand-logo { font-size: 28px; font-weight: 700; letter-spacing: 2px; text-decoration: none; color: var(--deep-black); text-transform: uppercase; }
-        .nav-right { display: flex; align-items: center; gap: 20px; }
-        .nav-links { display: flex; align-items: center; }
-        .nav-links a { text-decoration: none; color: var(--text-dark); margin-left: 30px; font-size: 13px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; transition: color var(--duration-fast) var(--ease-smooth); }
-        .nav-links a:hover { color: var(--primary-gold); }
-        .cart-toggle-btn { background: none; border: none; font-family: 'Montserrat', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px; text-transform: uppercase; letter-spacing: 1px; }
-        .cart-badge { background: var(--primary-gold); color: var(--white); border-radius: 50%; padding: 2px 8px; font-size: 12px; }
-        .menu-toggle { display: none; font-size: 24px; background: none; border: none; cursor: pointer; color: var(--deep-black); transition: transform var(--duration-fast) var(--ease-smooth); }
-        .menu-toggle.active { transform: rotate(90deg); }
-        .lang-btn { background: var(--deep-black); color: var(--white); border: none; padding: 5px 10px; font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 600; cursor: pointer; border-radius: 3px; letter-spacing: 1px; transition: background var(--duration-fast) var(--ease-smooth);}
-        .lang-btn:hover { background: var(--primary-gold); }
+    <link rel="icon" type="image/png" sizes="512x512" href="assets/favicon-512.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+    <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 
-        /* --- Policy Page Content --- */
-        .policy-container { max-width: 800px; margin: 50px auto; padding: 0 5%; min-height: 60vh; animation: sectionRise var(--duration-base) var(--ease-out) both; }
-        @keyframes sectionRise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .policy-container h2 { font-size: 28px; margin-bottom: 30px; text-align: center; color: var(--deep-black); }
-        .policy-container h3 { font-family: 'Montserrat', sans-serif; font-size: 16px; margin-top: 30px; margin-bottom: 10px; color: var(--primary-gold); text-transform: uppercase; letter-spacing: 1px; border-bottom: 2px solid var(--soft-gray); padding-bottom: 5px; }
-        .policy-container p { font-size: 15px; color: var(--text-light); line-height: 1.8; margin-bottom: 15px; }
-
-        /* --- Cart Sidebar --- */
-        .cart-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; opacity: 0; visibility: hidden; transition: opacity var(--duration-base) var(--ease-smooth), visibility var(--duration-base); }
-        .cart-overlay.active { opacity: 1; visibility: visible; }
-        .cart-sidebar { position: fixed; top: 0; right: -400px; width: 100%; max-width: 400px; height: 100vh; background: var(--white); z-index: 2001; transition: right var(--duration-base) var(--ease-smooth); display: flex; flex-direction: column; box-shadow: -5px 0 15px rgba(0,0,0,0.1); }
-        .cart-sidebar.active { right: 0; }
-        .cart-header { padding: 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
-        .close-cart { font-size: 28px; cursor: pointer; line-height: 1; font-family: 'Montserrat', sans-serif; transition: color var(--duration-fast) var(--ease-smooth); }
-        .close-cart:hover { color: #d9534f; }
-        .cart-items { flex-grow: 1; overflow-y: auto; padding: 20px; }
-        .cart-item { display: flex; justify-content: space-between; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid var(--soft-gray); font-size: 14px; }
-        .cart-item.reveal-item { animation: cartItemIn var(--duration-base) var(--ease-out) both; animation-delay: calc(var(--stagger, 0) * 60ms); }
-        @keyframes cartItemIn { from { opacity: 0; transform: translateX(14px); } to { opacity: 1; transform: translateX(0); } }
-        .cart-item-info span { font-size: 12px; color: var(--text-light); display: block; margin-top: 3px; }
-        .remove-item { color: #d9534f; cursor: pointer; font-size: 12px; border: none; background: none; margin-top: 5px; text-transform: uppercase; font-weight: 600; transition: color var(--duration-fast) var(--ease-smooth);}
-        .remove-item:hover { color: #a52a20; }
-        .qty-btn { border: 1px solid var(--border-color); background: var(--soft-gray); width: 22px; height: 22px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: bold; border-radius: 2px; transition: background var(--duration-fast) var(--ease-smooth), color var(--duration-fast) var(--ease-smooth), transform var(--duration-fast) var(--ease-smooth); }
-        .qty-btn:hover { background: var(--deep-black); color: var(--white); }
-        .qty-btn:active { transform: scale(0.9); }
-        .cart-footer { padding: 20px; border-top: 1px solid var(--border-color); background: var(--soft-gray); }
-        .cart-total { display: flex; justify-content: space-between; font-weight: 600; font-size: 18px; margin-bottom: 20px; font-family: 'Playfair Display', serif; }
-        .checkout-btn { background: #25d366; color: var(--white); border: none; padding: 15px; width: 100%; font-family: 'Montserrat', sans-serif; font-size: 14px; font-weight: 600; text-transform: uppercase; cursor: pointer; transition: background var(--duration-fast) var(--ease-smooth), transform var(--duration-fast) var(--ease-smooth); display: flex; justify-content: center; gap: 10px; }
-        .checkout-btn:hover { background: #128c7e; }
-        .checkout-btn:active { transform: scale(0.98); }
-        footer { background: var(--deep-black); color: var(--white); padding: 40px 5% 20px; text-align: center; }
-
-        @media (max-width: 900px) {
-            .nav-links { display: none; flex-direction: column; position: absolute; top: 100%; left: 0; width: 100%; background: var(--white); padding: 20px 0; box-shadow: 0 5px 10px rgba(0,0,0,0.05); }
-            .nav-links.active { display: flex; animation: slideDownFade var(--duration-base) var(--ease-out) both; }
-            .nav-links a { margin: 15px 0; }
-            .menu-toggle { display: block; }
-            @keyframes slideDownFade { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
-        }
-    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Work+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+Bengali:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <nav>
-        <a href="index.html" class="brand-logo">Mohor</a>
-        <div class="nav-right">
-            <button id="langToggleBtn" class="lang-btn">EN / বাং</button>
-            <button class="cart-toggle-btn" id="openCartBtn"><span data-i18n="navCart">Cart</span> <span class="cart-badge" id="cartBadge">0</span></button>
-            <button class="menu-toggle" id="menuToggle">&#8942;</button>
-        </div>
-        <div class="nav-links" id="navLinks">
-            <a href="index.html" data-i18n="navShop">Shop</a>
-            <a href="about.html" data-i18n="navAbout">About Us</a>
-            <a href="policy.html" data-i18n="navPolicy" style="color: var(--primary-gold);">Policy</a>
-            <a href="https://www.facebook.com/share/1Be3jj7iqb/?mibextid=wwXIfr" target="_blank">Facebook</a>
-            <a href="https://www.instagram.com/mohorclothings" target="_blank">Instagram</a>
-        </div>
-    </nav>
+    <header class="site-header" id="siteHeader">
+        <nav class="nav container">
+            <a href="index.html" class="brand-logo" aria-label="Mohor Clothings — Home">
+                <img src="assets/logo-ink.png" alt="Mohor Clothings" width="150" height="45">
+            </a>
+            <div class="nav-links" id="navLinks">
+                <a href="index.html" data-i18n="navShop">Shop</a>
+                <a href="about.html" data-i18n="navAbout">About Us</a>
+                <a href="policy.html" class="active" data-i18n="navPolicy">Policy</a>
+                <span class="nav-divider" aria-hidden="true"></span>
+                <a href="https://www.facebook.com/share/1Be3jj7iqb/?mibextid=wwXIfr" target="_blank" rel="noopener" class="nav-social" aria-label="Mohor on Facebook">
+                    <svg viewBox="0 0 24 24"><path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"/></svg>
+                </a>
+                <a href="https://www.instagram.com/mohorclothings" target="_blank" rel="noopener" class="nav-social" aria-label="Mohor on Instagram">
+                    <svg viewBox="0 0 24 24"><path d="M12 2c2.717 0 3.056.01 4.122.06 1.065.05 1.79.217 2.428.465.66.254 1.216.598 1.772 1.153a4.908 4.908 0 0 1 1.153 1.772c.247.637.415 1.363.465 2.428.047 1.066.06 1.405.06 4.122 0 2.717-.01 3.056-.06 4.122-.05 1.065-.218 1.79-.465 2.428a4.883 4.883 0 0 1-1.153 1.772 4.915 4.915 0 0 1-1.772 1.153c-.637.247-1.363.415-2.428.465-1.066.047-1.405.06-4.122.06-2.717 0-3.056-.01-4.122-.06-1.065-.05-1.79-.218-2.428-.465a4.89 4.89 0 0 1-1.772-1.153 4.904 4.904 0 0 1-1.153-1.772c-.248-.637-.415-1.363-.465-2.428C2.013 15.056 2 14.717 2 12c0-2.717.01-3.056.06-4.122.05-1.066.217-1.79.465-2.428a4.88 4.88 0 0 1 1.153-1.772A4.897 4.897 0 0 1 5.45 2.525c.638-.248 1.362-.415 2.428-.465C8.944 2.013 9.283 2 12 2zm0 1.802c-2.67 0-2.987.01-4.04.059-.976.045-1.505.207-1.858.344-.466.181-.8.398-1.15.748-.35.35-.566.683-.748 1.15-.137.352-.3.881-.344 1.857-.048 1.053-.058 1.37-.058 4.04 0 2.67.01 2.987.058 4.04.045.976.207 1.505.344 1.858.182.466.399.8.748 1.15.35.35.684.566 1.15.748.353.137.882.3 1.858.344 1.053.048 1.37.058 4.04.058 2.67 0 2.987-.01 4.04-.058.976-.045 1.505-.207 1.858-.344.466-.182.8-.398 1.15-.748.35-.35.566-.684.748-1.15.137-.353.3-.882.344-1.858.048-1.053.058-1.37.058-4.04 0-2.67-.01-2.987-.058-4.04-.045-.976-.207-1.505-.344-1.857a3.09 3.09 0 0 0-.748-1.15 3.098 3.098 0 0 0-1.15-.748c-.353-.137-.882-.3-1.858-.344-1.053-.048-1.37-.059-4.04-.059zm0 4.595a5.603 5.603 0 1 1 0 11.206 5.603 5.603 0 0 1 0-11.206zM12 16a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm5.838-9.406a1.31 1.31 0 1 1-2.62 0 1.31 1.31 0 0 1 2.62 0z"/></svg>
+                </a>
+            </div>
+            <div class="nav-actions">
+                <button type="button" id="langToggleBtn" class="lang-btn" aria-label="Switch language">EN<span class="lang-sep">/</span>বাং</button>
+                <button type="button" id="openAccountBtn" class="icon-btn" aria-label="Account">
+                    <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>
+                    <span class="icon-btn-label" data-i18n="navAccount">Account</span>
+                </button>
+                <button type="button" id="openCartBtn" class="icon-btn" aria-label="Cart">
+                    <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                    <span class="cart-badge" id="cartBadge" data-count="0">0</span>
+                </button>
+                <button type="button" class="menu-toggle" id="menuToggle" aria-label="Menu" aria-expanded="false" aria-controls="navLinks">
+                    <span></span><span></span><span></span>
+                </button>
+            </div>
+        </nav>
+    </header>
 
-    <section class="policy-container">
-        <h2 data-i18n="policyPageTitle">Delivery & Return Policy</h2>
-        
-        <h3 data-i18n="policy1Title">1. Delivery Information</h3>
-        <p data-i18n="policy1Text">We deliver nationwide across Bangladesh. Delivery charge inside Sylhet is ৳80 (1–3 business days) and outside Sylhet is ৳150 (3–5 business days). Please note that the delivery charge must be paid in advance for order confirmation.</p>
-
-        <h3 data-i18n="policy2Title">2. Order Confirmation</h3>
-        <p data-i18n="policy2Text">Once you place an order via WhatsApp or Website, our team will verify product availability and send you a confirmation message along with the final bill (including delivery charges) before processing.</p>
-
-        <h3 data-i18n="policy3Title">3. Return & Exchange Policy</h3>
-        <p data-i18n="policy3Text">We take pride in the quality of our handcrafted clothing. However, if you receive a defective or incorrect item, please notify us within 24 hours of receiving the delivery. The item must be unused, unwashed, and in its original packaging with tags intact. Please record an unboxing video to claim any damages or defects.</p>
-
-        <h3 data-i18n="policy4Title">4. Color Disclaimer</h3>
-        <p data-i18n="policy4Text">While we strive to ensure our images accurately represent the product, actual colors may slightly vary due to lighting during photography or your device's display settings. Exchanges will not be accommodated purely for slight color variations.</p>
+    <section class="page-header">
+        <span class="eyebrow" data-i18n="policyEyebrow">Please read before ordering</span>
+        <h1 data-i18n="policyPageTitle">Delivery & Return Policy</h1>
+        <svg class="stitch-rule" viewBox="0 0 72 9" aria-hidden="true"><line x1="0" y1="4" x2="72" y2="4"/></svg>
     </section>
+
+    <main>
+        <section class="policy-section container">
+            <div class="policy-grid reveal-stagger">
+                <div class="policy-card">
+                    <div class="p-icon"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M1 3h13v13H1z"/><path d="M14 8h4l4 4v4h-8V8z"/><circle cx="6" cy="18" r="2"/><circle cx="18" cy="18" r="2"/></svg></div>
+                    <div>
+                        <h3 data-i18n="policy1Title">Delivery Information</h3>
+                        <p data-i18n="policy1Text">We deliver nationwide across Bangladesh. For orders within Sylhet, the standard delivery time is 1–3 business days. For orders outside Sylhet, delivery typically takes 3–5 business days. Delivery charges are calculated by zone and shown at checkout.</p>
+                    </div>
+                </div>
+                <div class="policy-card">
+                    <div class="p-icon"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 2h6v4H9z"/><path d="M9 12l2 2 4-4"/></svg></div>
+                    <div>
+                        <h3 data-i18n="policy2Title">Order Confirmation</h3>
+                        <p data-i18n="policy2Text">Once you place an order via WhatsApp or the website, our team verifies product availability and sends you a confirmation message along with the final bill, including delivery charges, before processing.</p>
+                    </div>
+                </div>
+                <div class="policy-card">
+                    <div class="p-icon"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/><path d="M3 21v-5h5"/></svg></div>
+                    <div>
+                        <h3 data-i18n="policy3Title">Return & Exchange Policy</h3>
+                        <p data-i18n="policy3Text">We take pride in the quality of our handcrafted clothing. However, if you receive a defective or incorrect item, please notify us within 24 hours of receiving the delivery. The item must be unused, unwashed, and in its original packaging with tags intact. Please record an unboxing video to claim any damages or defects.</p>
+                    </div>
+                </div>
+                <div class="policy-card">
+                    <div class="p-icon"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor" stroke="none"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor" stroke="none"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor" stroke="none"/><path d="M12 21c-4.97 0-9-3.582-9-8 0-4.418 4.03-8 9-8s9 2.686 9 6c0 2.21-1.79 3-4 3h-1.5a1.5 1.5 0 0 0 0 3H16c0 2.21-1.79 4-4 4z"/></svg></div>
+                    <div>
+                        <h3 data-i18n="policy4Title">Color Disclaimer</h3>
+                        <p data-i18n="policy4Text">While we strive to ensure our images accurately represent the product, actual colors may slightly vary due to lighting during photography or your device's display settings. Exchanges will not be accommodated purely for slight color variations.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
 
     <!-- Cart Sidebar -->
     <div class="cart-overlay" id="cartOverlay"></div>
     <div class="cart-sidebar" id="cartSidebar">
-        <div class="cart-header">
+        <div class="side-header">
             <h3 data-i18n="cartTitle">Your Cart</h3>
-            <span class="close-cart" id="closeCartBtn">&times;</span>
+            <button type="button" class="side-close" id="closeCartBtn" aria-label="Close cart">&times;</button>
         </div>
-        <div class="cart-items" id="cartItemsContainer">
-            <p style="text-align: center; color: #666; margin-top: 20px;" data-i18n="cartEmpty">Your cart is empty.</p>
-        </div>
-        <div class="cart-footer">
-            <div class="checkout-form" style="margin-bottom: 15px; text-align: left;">
-                <label for="deliveryAddress" style="font-size: 12px; font-weight: 600; display: block; margin-bottom: 5px; color: var(--text-dark);" data-i18n="deliveryAddressLabel">Delivery Address *</label>
-                <textarea id="deliveryAddress" rows="2" style="width: 100%; padding: 8px; border: 1px solid var(--border-color); font-family: 'Montserrat', sans-serif; font-size: 12px; outline: none; resize: none; margin-bottom: 8px;" placeholder="House#, Road#, Area, City..."></textarea>
-                
-                <div style="font-size: 11px; color: var(--text-light); line-height: 1.4; display: flex; align-items: flex-start; gap: 5px;">
-                    <input type="checkbox" id="policyAgree" style="accent-color: var(--primary-gold); margin-top: 2px;">
-                    <label for="policyAgree">
-                        <span data-i18n="policyAgreeText">I agree to the</span> 
-                        <a href="policy.html" style="color: var(--primary-gold); text-decoration: underline;" data-i18n="policyLink">Delivery & Return Policy</a>.
-                    </label>
-                </div>
+        <div class="cart-items" id="cartItemsContainer"></div>
+        <div class="side-footer">
+            <div class="field">
+                <label for="custName" data-i18n="checkoutName">Full Name *</label>
+                <input type="text" id="custName" class="input" data-i18n-placeholder="checkoutName" placeholder="Full Name">
             </div>
+            <div class="field">
+                <label for="custPhone" data-i18n="checkoutPhone">Mobile Number *</label>
+                <input type="tel" id="custPhone" class="input" data-i18n-placeholder="checkoutPhone" placeholder="01XXXXXXXXX">
+            </div>
+            <div class="field">
+                <label for="deliveryAddress" data-i18n="deliveryAddressLabel">Delivery Address *</label>
+                <textarea id="deliveryAddress" class="input" rows="2" placeholder="House#, Road#, Area, City..."></textarea>
+            </div>
+            <div class="field">
+                <label for="deliveryZone" data-i18n="selectDeliveryZone">Select Delivery Zone *</label>
+                <select id="deliveryZone" class="input">
+                    <option value="" disabled selected data-i18n="selectDeliveryZone">Select Delivery Zone</option>
+                    <option value="inside" data-i18n="zoneInside">Inside Sylhet (৳80)</option>
+                    <option value="outside" data-i18n="zoneOutside">Outside Sylhet (৳150)</option>
+                </select>
+            </div>
+            <p id="dynamicPolicyDisplay" style="display:none; font-size:.76rem; color:var(--ink-muted); margin:-6px 0 12px; line-height:1.6;"></p>
 
-            <div class="cart-total">
-                <span data-i18n="cartTotal">Total:</span>
-                <span>৳<span id="cartTotalValue">0</span></span>
+            <label class="checkbox-row" style="margin-bottom:16px;">
+                <input type="checkbox" id="policyAgree">
+                <span><span data-i18n="policyAgreeText">I agree to the</span> <a href="policy.html" data-i18n="policyLink">Delivery &amp; Return Policy</a>.</span>
+            </label>
+
+            <div class="cart-total-row">
+                <span data-i18n="cartTotal">Total</span>
+                <span class="amount">৳<span id="cartTotalValue">0</span></span>
             </div>
-            <button class="checkout-btn" onclick="checkoutToWhatsApp()">
-                <span data-i18n="orderWhatsapp">Order via WhatsApp</span>
+            <button type="button" id="adminOrderBtn" class="btn btn-dark btn-block" onclick="window.checkoutToAdmin()" style="margin-bottom:8px;">
+                <span class="spinner"></span><span class="btn-label" data-i18n="btnConfirmOrder">Confirm Order</span>
+            </button>
+            <div class="checkout-or" data-i18n="orWhatsapp">or</div>
+            <button type="button" class="btn btn-whatsapp btn-block" onclick="window.checkoutToWhatsApp()">
+                <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+                <span data-i18n="btnWhatsApp">Order via WhatsApp</span>
             </button>
         </div>
     </div>
 
-    <footer>
-        <p style="font-size: 12px; color: #777;" data-i18n="footerText">&copy; 2026 Mohor Clothings Bangladesh. All Rights Reserved.</p>
-    </footer>
+    <!-- Account Sidebar -->
+    <div class="account-overlay" id="accountOverlay"></div>
+    <div class="account-sidebar" id="accountSidebar">
+        <div class="side-header">
+            <h3 data-i18n="accTitle">Customer Account</h3>
+            <button type="button" class="side-close" id="closeAccountBtn" aria-label="Close account panel">&times;</button>
+        </div>
+        <div class="account-body">
+            <div id="authView">
+                <div id="loginFormContainer">
+                    <h4 style="font-size:1.05rem; margin-bottom:16px; text-align:center;" data-i18n="accLoginTitle">Login to Your Account</h4>
+                    <div class="field"><input type="email" id="loginEmail" class="input" data-i18n-placeholder="accEmailPlaceholder" placeholder="Email Address"></div>
+                    <div class="field"><input type="password" id="loginPassword" class="input" data-i18n-placeholder="accPassPlaceholder" placeholder="Password"></div>
+                    <button type="button" class="btn btn-dark btn-block" onclick="window.handleLogin(event)"><span class="spinner"></span><span class="btn-label" data-i18n="accLoginBtn">Log In</span></button>
+                    <p class="auth-tabs-msg"><span data-i18n="accNoAccount">Don't have an account?</span> <a href="#" class="auth-switch-link" onclick="window.toggleAuthMode();return false;" data-i18n="accSignUpLink">Sign up</a></p>
+                </div>
+                <div id="signupFormContainer" style="display:none;">
+                    <h4 style="font-size:1.05rem; margin-bottom:16px; text-align:center;" data-i18n="accSignupTitle">Create an Account</h4>
+                    <div class="field"><input type="text" id="signupName" class="input" data-i18n-placeholder="accNamePlaceholder" placeholder="Full Name"></div>
+                    <div class="field"><input type="email" id="signupEmail" class="input" data-i18n-placeholder="accEmailPlaceholder" placeholder="Email Address"></div>
+                    <div class="field"><input type="password" id="signupPassword" class="input" data-i18n-placeholder="accPassMinPlaceholder" placeholder="Password (min 6 characters)"></div>
+                    <button type="button" class="btn btn-dark btn-block" onclick="window.handleSignup(event)"><span class="spinner"></span><span class="btn-label" data-i18n="accSignupBtn">Sign Up</span></button>
+                    <p class="auth-tabs-msg"><span data-i18n="accHasAccount">Already have an account?</span> <a href="#" class="auth-switch-link" onclick="window.toggleAuthMode();return false;" data-i18n="accLoginLink">Log in</a></p>
+                </div>
+            </div>
 
-    <!-- Hidden placeholders to prevent JS errors -->
-    <div id="productGrid" style="display:none;"></div>
-    <select id="sortSelect" style="display:none;"></select>
+            <div id="profileView" style="display:none;">
+                <div class="profile-avatar" id="profileAvatarInitial">M</div>
+                <p class="profile-email"><span data-i18n="accLoggedInAs">Logged in as</span><br><strong id="userProfileEmail"></strong></p>
+
+                <div class="profile-section-title" data-i18n="accSavedProfile">Saved Profile</div>
+                <div class="field"><input type="text" id="profileName" class="input" data-i18n-placeholder="accProfileNamePlaceholder" placeholder="Your Name"></div>
+                <div class="field"><input type="tel" id="profilePhone" class="input" data-i18n-placeholder="accPhonePlaceholder" placeholder="Default Phone"></div>
+                <div class="field"><textarea id="profileAddress" class="input" rows="2" data-i18n-placeholder="accAddressPlaceholder" placeholder="Default Delivery Address"></textarea></div>
+                <button type="button" class="btn btn-outline btn-block" onclick="window.saveUserProfile(event)"><span class="spinner"></span><span class="btn-label" data-i18n="accSaveProfileBtn">Save Profile</span></button>
+
+                <div class="profile-section-title" data-i18n="accOrderHistory">My Order History</div>
+                <div id="userOrderHistoryContainer"><p class="order-history-loading" data-i18n="accLoadingOrders">Loading orders…</p></div>
+
+                <button type="button" class="btn btn-ghost btn-block" style="margin-top:22px;" onclick="window.handleLogout(event)"><span class="spinner"></span><span class="btn-label" data-i18n="accLogoutBtn">Log Out</span></button>
+            </div>
+        </div>
+    </div>
+
+    <a href="https://wa.me/8801330113027" class="fab-whatsapp" target="_blank" rel="noopener" aria-label="Chat with us on WhatsApp">
+        <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+    </a>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <img src="assets/logo-white.png" alt="Mohor Clothings" width="130" height="39">
+                    <p data-i18n="footerTagline">Handcrafted luxury fashion, stitched with tradition — from Sylhet to all of Bangladesh.</p>
+                    <div class="footer-socials">
+                        <a href="https://www.facebook.com/share/1Be3jj7iqb/?mibextid=wwXIfr" target="_blank" rel="noopener" aria-label="Facebook"><svg viewBox="0 0 24 24"><path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"/></svg></a>
+                        <a href="https://www.instagram.com/mohorclothings" target="_blank" rel="noopener" aria-label="Instagram"><svg viewBox="0 0 24 24"><path d="M12 2c2.717 0 3.056.01 4.122.06 1.065.05 1.79.217 2.428.465.66.254 1.216.598 1.772 1.153a4.908 4.908 0 0 1 1.153 1.772c.247.637.415 1.363.465 2.428.047 1.066.06 1.405.06 4.122 0 2.717-.01 3.056-.06 4.122-.05 1.065-.218 1.79-.465 2.428a4.883 4.883 0 0 1-1.153 1.772 4.915 4.915 0 0 1-1.772 1.153c-.637.247-1.363.415-2.428.465-1.066.047-1.405.06-4.122.06-2.717 0-3.056-.01-4.122-.06-1.065-.05-1.79-.218-2.428-.465a4.89 4.89 0 0 1-1.772-1.153 4.904 4.904 0 0 1-1.153-1.772c-.248-.637-.415-1.363-.465-2.428C2.013 15.056 2 14.717 2 12c0-2.717.01-3.056.06-4.122.05-1.066.217-1.79.465-2.428a4.88 4.88 0 0 1 1.153-1.772A4.897 4.897 0 0 1 5.45 2.525c.638-.248 1.362-.415 2.428-.465C8.944 2.013 9.283 2 12 2zm0 1.802c-2.67 0-2.987.01-4.04.059-.976.045-1.505.207-1.858.344-.466.181-.8.398-1.15.748-.35.35-.566.683-.748 1.15-.137.352-.3.881-.344 1.857-.048 1.053-.058 1.37-.058 4.04 0 2.67.01 2.987.058 4.04.045.976.207 1.505.344 1.858.182.466.399.8.748 1.15.35.35.684.566 1.15.748.353.137.882.3 1.858.344 1.053.048 1.37.058 4.04.058 2.67 0 2.987-.01 4.04-.058.976-.045 1.505-.207 1.858-.344.466-.182.8-.398 1.15-.748.35-.35.566-.684.748-1.15.137-.353.3-.882.344-1.858.048-1.053.058-1.37.058-4.04 0-2.67-.01-2.987-.058-4.04-.045-.976-.207-1.505-.344-1.857a3.09 3.09 0 0 0-.748-1.15 3.098 3.098 0 0 0-1.15-.748c-.353-.137-.882-.3-1.858-.344-1.053-.048-1.37-.059-4.04-.059zm0 4.595a5.603 5.603 0 1 1 0 11.206 5.603 5.603 0 0 1 0-11.206zM12 16a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm5.838-9.406a1.31 1.31 0 1 1-2.62 0 1.31 1.31 0 0 1 2.62 0z"/></svg></a>
+                    </div>
+                </div>
+                <div class="footer-col">
+                    <h5 data-i18n="footerShopHeading">Shop</h5>
+                    <a href="index.html" data-i18n="navShop">Shop</a>
+                    <a href="about.html" data-i18n="navAbout">About Us</a>
+                    <a href="policy.html" data-i18n="navPolicy">Policy</a>
+                </div>
+                <div class="footer-col">
+                    <h5 data-i18n="footerHelpHeading">Help</h5>
+                    <a href="policy.html">Delivery &amp; Returns</a>
+                    <a href="cart.html" data-i18n="navCart">Cart</a>
+                    <a href="login.html" data-i18n="navAccount">Account</a>
+                </div>
+                <div class="footer-col">
+                    <h5 data-i18n="footerContactHeading">Contact</h5>
+                    <a href="https://wa.me/8801330113027" target="_blank" rel="noopener">WhatsApp: +880 1330-113027</a>
+                    <p data-i18n="footerDelivery">Nationwide delivery across Bangladesh</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <span data-i18n="footerText">&copy; 2026 Mohor Clothings Bangladesh. All Rights Reserved.</span>
+                <span class="made-with" data-i18n="footerMadeWith">Handcrafted in Sylhet</span>
+            </div>
+        </div>
+    </footer>
 
     <!-- Firebase CDN SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-
-    <!-- Firebase Configuration Block -->
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyALxypXDkF9QexbD_wE7-ADALIdj5vd-rY",
@@ -185,10 +250,16 @@
         window.db = firebase.firestore();
     </script>
 
-    <!-- Logic Files with Cache Busters (Updated to v=19) -->
-    <script src="products.js?v=19"></script>
-    <script src="app.js?v=19"></script>
-    <script src="cart.js?v=19"></script>
-    <script type="module" src="auth.js?v=19"></script>
+    <script src="products.js?v=18"></script>
+    <script src="app.js?v=18"></script>
+    <script src="cart.js?v=18"></script>
+    <script type="module" src="auth.js?v=18"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            window.loadStoreProducts();
+            setTimeout(() => { if (typeof updateUIText === 'function') updateUIText(); }, 60);
+        });
+    </script>
 </body>
 </html>
