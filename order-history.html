@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Order History | Mohor</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="site-header">
+    <nav class="nav container">
+      <a href="index.html" class="brand-logo"><img src="assets/logo-ink.png" alt="Mohor" width="150"></a>
+      <div class="nav-actions">
+        <a href="index.html" class="btn btn-ghost">Shop</a>
+        <button type="button" id="openAccountBtn" class="icon-btn">Account</button>
+      </div>
+    </nav>
+  </header>
+
+  <main class="container" style="padding:36px 5% 80px; max-width:900px;">
+    <h1 style="margin-bottom:8px;">Order History</h1>
+    <p style="color:var(--ink-muted); margin-bottom:18px;">A consolidated view of your past orders. Sign in if you are not already.</p>
+
+    <div id="userOrderHistoryContainer">
+      <p class="order-history-loading">Loading orders…</p>
+    </div>
+  </main>
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script>
+    // reuse firebase config from product.html (kept simple)
+    const firebaseConfig = { apiKey: "AIzaSyALxypXDkF9QexbD_wE7-ADALIdj5vd-rY", authDomain: "mohor-app.firebaseapp.com", projectId: "mohor-app" };
+    if (typeof firebase !== 'undefined' && !firebase.apps.length) firebase.initializeApp(firebaseConfig);
+    window.db = firebase.firestore();
+  </script>
+  <script src="auth.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      if (window.currentUser) {
+        window.loadUserOrders(window.currentUser.uid);
+      } else {
+        const container = document.getElementById('userOrderHistoryContainer');
+        container.innerHTML = '<p style="color:var(--ink-muted);">Please sign in to view your order history. Open Account (top-right) to log in.</p>';
+      }
+    });
+  </script>
+</body>
+</html>
