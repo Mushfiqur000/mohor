@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Order Details | Mohor</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="site-header">
+    <nav class="nav container">
+      <a href="index.html" class="brand-logo"><img src="assets/logo-ink.png" alt="Mohor" width="150"></a>
+      <div class="nav-actions">
+        <a href="order-history.html" class="btn btn-ghost">Back</a>
+        <button type="button" id="openAccountBtn" class="icon-btn">Account</button>
+      </div>
+    </nav>
+  </header>
+
+  <main class="container" style="padding:36px 5% 80px; max-width:900px;">
+    <h1>Order Details</h1>
+    <div id="orderDetailContainer" style="margin-top:18px;"></div>
+  </main>
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script>
+    const firebaseConfig = { apiKey: "AIzaSyALxypXDkF9QexbD_wE7-ADALIdj5vd-rY", authDomain: "mohor-app.firebaseapp.com", projectId: "mohor-app" };
+    if (typeof firebase !== 'undefined' && !firebase.apps.length) firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+  </script>
+  <script>
+    function esc(s){ return String(s||'').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch])); }
+    document.addEventListener('DOMContentLoaded', async () => {
+      const params = new URLSearchParams(window.location.search);
+      const id = params.get('id');
+      const out = document.getElementById('orderDetailContainer');
+      if (!id) { out.innerHTML = '<p>No order selected.</p>'; return; }
+      out.innerHTML = '<p class="order-history-loading">Loading order…</p>';
+      try {
+        const doc = await db.collection('orders').doc(id).get();
+        if (!doc.exists) { out.innerHTML = '<p>Order not found.</p>'; return; }
+        const o = doc.data();
+        const date = o.orderDate ? new Date(o.orderDate).toLocaleString() : '—';
+        const status = o.status || '—';
+        const total = o.totalAmount || 0;
+        const items = o.items || [];
+        out.innerHTML = `
+          <div class="checkout-card">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;"><div><strong>Order ID</strong><div style="font-family:var(--font-mono);">${esc(id)}</div></div><div><strong>${esc(status)}</strong></div></div>
+            <div style="margin-bottom:10px; color:var(--ink-muted);">Placed: ${esc(date)}</div>
+            <div style="margin-bottom:16px;">
+              ${items.map(it => `<div style=\"display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid var(--border);\"><div><strong>${esc(it.name || it.title || 'Item')}</strong><div style=\"color:var(--ink-muted);font-size:0.9rem;\">${esc(it.variant || '')}</div></div><div style=\"text-align:right;\">${esc(it.qty||it.quantity||1)} × ৳${esc(it.price||it.unitPrice||0)}<div style=\"margin-top:6px;font-weight:700;\">৳${esc((it.qty||it.quantity||1) * (it.price||it.unitPrice||0))}</div></div></div>`).join('')}
+            </div>
+            <div style="display:flex; justify-content:space-between; font-weight:700; font-size:1.1rem;"> <div>Total</div><div>৳${esc(total)}</div></div>
+          </div>
+        `;
+      } catch (e) {
+        out.innerHTML = '<p>Could not load order.</p>';
+        console.error(e);
+      }
+    });
+  </script>
+</body>
+</html>

@@ -107,7 +107,7 @@ async function loadUserOrders(uid) {
             const order = doc.data();
             const formattedDate = order.orderDate ? new Date(order.orderDate).toLocaleDateString() : 'Recent';
             const status = order.status ? String(order.status) : 'New';
-            rows.push({ total: Number(order.totalAmount) || 0, status, date: formattedDate, raw: order.orderDate || '' });
+            rows.push({ id: doc.id, total: Number(order.totalAmount) || 0, status, date: formattedDate, items: order.items || [], raw: order.orderDate || '' });
         });
         rows.sort((a, b) => (a.raw < b.raw ? 1 : -1));
 
@@ -116,6 +116,13 @@ async function loadUserOrders(uid) {
             <div class="order-history-item">
                 <div class="oh-top"><span class="oh-total">৳${r.total}</span><span class="oh-status">${esc(r.status)}</span></div>
                 <div class="oh-date">${esc(r.date)}</div>
+                <div style="margin-top:8px; display:flex; gap:8px;">
+                    <a class="btn btn-outline" href="order.html?id=${r.id}">View</a>
+                    <button type="button" class="btn btn-ghost" onclick="(function(btn){ const items=btn.closest('.order-history-item').querySelector('.order-items'); if(items) items.style.display = (items.style.display === 'none' || !items.style.display) ? 'block' : 'none'; })(this)">Toggle items</button>
+                </div>
+                <div class="order-items" style="display:none; margin-top:10px;">
+                    ${r.items.map(it => `<div style=\"padding:8px 10px; border:1px solid var(--border); margin-bottom:6px; border-radius:6px;\"><strong>${esc(it.name || it.title || 'Item')}</strong> — qty: ${esc(it.qty || it.quantity || 1)} — ৳${esc(it.price || it.unitPrice || 0)}</div>`).join('')}
+                </div>
             </div>`).join('');
     } catch (e) {
         console.error('Error loading order history:', e);

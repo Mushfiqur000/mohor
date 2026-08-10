@@ -192,6 +192,36 @@ document.addEventListener('DOMContentLoaded', () => {
             window.dispatchEvent(new Event('languageChanged'));
         });
     }
+
+    // Theme toggle: manual switch between light/dark. Stores pref in localStorage.
+    const themeToggleBtn = document.getElementById('themeToggleBtn');
+    function applyTheme(theme) {
+        if (!theme || theme === 'system') {
+            document.documentElement.removeAttribute('data-theme');
+            localStorage.removeItem('mohor_theme');
+            if (themeToggleBtn) themeToggleBtn.innerText = '🌗';
+            return;
+        }
+        document.documentElement.setAttribute('data-theme', theme);
+        localStorage.setItem('mohor_theme', theme);
+        if (themeToggleBtn) themeToggleBtn.innerText = (theme === 'dark') ? '🌙' : '☀️';
+    }
+
+    // Initialize theme from storage or system
+    const savedTheme = localStorage.getItem('mohor_theme') || 'system';
+    applyTheme(savedTheme);
+
+    if (themeToggleBtn) {
+        themeToggleBtn.addEventListener('click', () => {
+            const cur = localStorage.getItem('mohor_theme') || 'system';
+            // cycle: system -> dark -> light -> system
+            let next = 'dark';
+            if (cur === 'system') next = 'dark';
+            else if (cur === 'dark') next = 'light';
+            else if (cur === 'light') next = 'system';
+            applyTheme(next);
+        });
+    }
 });
 
 // ==========================================================================
