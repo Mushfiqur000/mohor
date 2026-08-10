@@ -3,34 +3,94 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Mohor</title>
-    <!-- Link your existing CSS file here -->
-    <link rel="stylesheet" href="style.css"> 
+    <meta name="description" content="Log in to your Mohor Clothings account for faster checkout.">
+    <title>Login | Mohor Clothings</title>
+
+    <link rel="icon" type="image/png" sizes="512x512" href="assets/favicon-512.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+    <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Work+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+Bengali:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <div class="login-container" style="text-align: center; margin-top: 50px;">
-        <h2>Welcome to Mohor</h2>
-        <p>Log in to save your details for faster checkout.</p>
-        
-        <form id="customer-login-form" style="max-width: 300px; margin: 0 auto;">
-            <input type="email" id="customer-email" placeholder="Email Address" required style="display: block; width: 100%; margin-bottom: 10px; padding: 8px;">
-            <input type="password" id="customer-password" placeholder="Password" required style="display: block; width: 100%; margin-bottom: 10px; padding: 8px;">
-            
-            <button type="submit" style="width: 100%; padding: 10px; background-color: #333; color: white;">Log In</button>
-        </form>
+    <header class="site-header" id="siteHeader">
+        <nav class="nav container">
+            <a href="index.html" class="brand-logo" aria-label="Mohor Clothings — Home">
+                <img src="assets/logo-ink.png" alt="Mohor Clothings" width="150" height="45">
+            </a>
+            <div class="nav-links" id="navLinks">
+                <a href="index.html" data-i18n="navShop">Shop</a>
+                <a href="about.html" data-i18n="navAbout">About Us</a>
+                <a href="policy.html" data-i18n="navPolicy">Policy</a>
+            </div>
+            <div class="nav-actions">
+                <button type="button" id="langToggleBtn" class="lang-btn" aria-label="Switch language">EN<span class="lang-sep">/</span>বাং</button>
+                <a href="index.html" class="icon-btn" aria-label="Cart">
+                    <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                    <span class="cart-badge" id="cartBadgeIcon" style="display:none;">0</span>
+                </a>
+                <button type="button" class="menu-toggle" id="menuToggle" aria-label="Menu" aria-expanded="false" aria-controls="navLinks">
+                    <span></span><span></span><span></span>
+                </button>
+            </div>
+        </nav>
+    </header>
 
-        <p style="margin-top: 20px;">
-            Don't have an account? <a href="#">Sign up</a><br><br>
-            <a href="index.html">← Continue as Guest</a>
-        </p>
-    </div>
+    <main class="auth-page">
+        <div class="auth-card reveal">
+            <img src="assets/logo-ink.png" alt="Mohor Clothings" class="auth-logo">
 
-    <!-- ADDED: Firebase CDN SDKs so auth.js actually works on this page -->
+            <div id="authView">
+                <div id="loginFormContainer">
+                    <h2 data-i18n="loginPageTitle">Welcome to Mohor</h2>
+                    <p data-i18n="loginPageSub">Log in to save your details for faster checkout.</p>
+                    <div class="field"><input type="email" id="loginEmail" class="input" data-i18n-placeholder="accEmailPlaceholder" placeholder="Email Address"></div>
+                    <div class="field"><input type="password" id="loginPassword" class="input" data-i18n-placeholder="accPassPlaceholder" placeholder="Password"></div>
+                    <button type="button" class="btn btn-dark btn-block" onclick="window.handleLogin(event)"><span class="spinner"></span><span class="btn-label" data-i18n="accLoginBtn">Log In</span></button>
+                    <p class="auth-tabs-msg"><span data-i18n="accNoAccount">Don't have an account?</span> <a href="#" class="auth-switch-link" onclick="window.toggleAuthMode();return false;" data-i18n="accSignUpLink">Sign up</a></p>
+                </div>
+                <div id="signupFormContainer" style="display:none;">
+                    <h2 data-i18n="accSignupTitle">Create an Account</h2>
+                    <p data-i18n="loginPageSub">Log in to save your details for faster checkout.</p>
+                    <div class="field"><input type="text" id="signupName" class="input" data-i18n-placeholder="accNamePlaceholder" placeholder="Full Name"></div>
+                    <div class="field"><input type="email" id="signupEmail" class="input" data-i18n-placeholder="accEmailPlaceholder" placeholder="Email Address"></div>
+                    <div class="field"><input type="password" id="signupPassword" class="input" data-i18n-placeholder="accPassMinPlaceholder" placeholder="Password (min 6 characters)"></div>
+                    <button type="button" class="btn btn-dark btn-block" onclick="window.handleSignup(event)"><span class="spinner"></span><span class="btn-label" data-i18n="accSignupBtn">Sign Up</span></button>
+                    <p class="auth-tabs-msg"><span data-i18n="accHasAccount">Already have an account?</span> <a href="#" class="auth-switch-link" onclick="window.toggleAuthMode();return false;" data-i18n="accLoginLink">Log in</a></p>
+                </div>
+                <a href="index.html" class="auth-guest-link">&larr; <span data-i18n="continueGuest">Continue as Guest</span></a>
+            </div>
+
+            <div id="profileView" style="display:none;">
+                <div class="profile-avatar" id="profileAvatarInitial">M</div>
+                <p class="profile-email"><span data-i18n="accLoggedInAs">Logged in as</span><br><strong id="userProfileEmail"></strong></p>
+                <a href="index.html" class="btn btn-dark btn-block" style="margin-top:18px;" data-i18n="continueShopping">Continue Shopping</a>
+                <button type="button" class="btn btn-ghost btn-block" style="margin-top:10px;" onclick="window.handleLogout(event)"><span class="spinner"></span><span class="btn-label" data-i18n="accLogoutBtn">Log Out</span></button>
+            </div>
+        </div>
+    </main>
+
+    <a href="https://wa.me/8801330113027" class="fab-whatsapp" target="_blank" rel="noopener" aria-label="Chat with us on WhatsApp">
+        <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+    </a>
+
+    <footer class="site-footer" style="margin-top:0;">
+        <div class="container">
+            <div class="footer-bottom" style="border-top:none; padding-top:0;">
+                <span data-i18n="footerText">&copy; 2026 Mohor Clothings Bangladesh. All Rights Reserved.</span>
+                <span class="made-with" data-i18n="footerMadeWith">Handcrafted in Sylhet</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Firebase CDN SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyALxypXDkF9QexbD_wE7-ADALIdj5vd-rY",
@@ -40,11 +100,21 @@
             messagingSenderId: "989000457004",
             appId: "1:989000457004:web:5679b256e20d94e27daa89"
         };
-        firebase.initializeApp(firebaseConfig);
+        if (typeof firebase !== 'undefined' && !firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
         window.db = firebase.firestore();
     </script>
 
-    <!-- Added type="module" and Cache Buster -->
-    <script type="module" src="auth.js?v=15"></script> 
+    <script src="products.js?v=18"></script>
+    <script src="app.js?v=18"></script>
+    <script src="cart.js?v=18"></script>
+    <script type="module" src="auth.js?v=18"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => { if (typeof updateUIText === 'function') updateUIText(); }, 60);
+        });
+    </script>
 </body>
 </html>
