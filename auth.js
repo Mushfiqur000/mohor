@@ -88,16 +88,46 @@ async function loadUserOrders(uid) {
     if (!container) return;
     container.innerHTML = `<p class="order-history-loading">${tr('accLoadingOrders')}</p>`;
 
+    // Resolve current user info if available
+    const current = window.currentUser || (firebase && firebase.auth && firebase.auth().currentUser) || null;
+    const email = current && current.email ? current.email : null;
+
     try {
-        let querySnapshot;
-        try {
-            querySnapshot = await db.collection('orders').where('userId', '==', uid).orderBy('orderDate', 'desc').get();
-        } catch (indexErr) {
-            // Falls back gracefully if a composite index isn't provisioned yet.
-            querySnapshot = await db.collection('orders').where('userId', '==', uid).get();
+        let querySnapshot = null;
+
+        // 1) Prefer querying by userId (if clients saved it)
+        if (uid) {
+            try {
+                querySnapshot = await db.collection('orders').where('userId', '==', uid).orderBy('orderDate', 'desc').get();
+            } catch (indexErr) {
+                // fallback without index
+                querySnapshot = await db.collection('orders').where('userId', '==', uid).get();
+            }
         }
 
-        if (querySnapshot.empty) {
+        // 2) If no results, try matching by user email (many orders are created by guests with email)
+        if ((!querySnapshot || querySnapshot.empty) && email) {
+            try {
+                querySnapshot = await db.collection('orders').where('userEmail', '==', email).orderBy('orderDate', 'desc').get();
+            } catch (indexErr) {
+                querySnapshot = await db.collection('orders').where('userEmail', '==', email).get();
+            }
+        }
+
+        // 3) If still empty, try phone stored on profile (best-effort)
+        if ((!querySnapshot || querySnapshot.empty) && current) {
+            const userDoc = await db.collection('users').doc(current.uid).get();
+            const phone = userDoc.exists ? (userDoc.data().phone || userDoc.data().customerPhone || null) : null;
+            if (phone) {
+                try {
+                    querySnapshot = await db.collection('orders').where('customerPhone', '==', phone).orderBy('orderDate', 'desc').get();
+                } catch (indexErr) {
+                    querySnapshot = await db.collection('orders').where('customerPhone', '==', phone).get();
+                }
+            }
+        }
+
+        if (!querySnapshot || querySnapshot.empty) {
             container.innerHTML = `<p class="order-history-empty">${tr('accNoOrders')}</p>`;
             return;
         }
@@ -105,22 +135,41 @@ async function loadUserOrders(uid) {
         const rows = [];
         querySnapshot.forEach((doc) => {
             const order = doc.data();
-            const formattedDate = order.orderDate ? new Date(order.orderDate).toLocaleDateString() : 'Recent';
+            // Handle Firestore Timestamp or ISO string
+            let orderDate = order.orderDate || order.createdAt || null;
+            let actualDate = null;
+            if (orderDate && typeof orderDate.toDate === 'function') actualDate = orderDate.toDate();
+            else if (orderDate) actualDate = new Date(orderDate);
+            else actualDate = new Date();
+
+            const formattedDate = actualDate.toLocaleDateString();
+            const formattedTime = actualDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
             const status = order.status ? String(order.status) : 'New';
-            rows.push({ id: doc.id, total: Number(order.totalAmount) || 0, status, date: formattedDate, items: order.items || [], raw: order.orderDate || '' });
+            rows.push({ id: doc.id, total: Number(order.totalAmount) || 0, status, date: formattedDate, time: formattedTime, items: order.items || [], raw: actualDate.getTime() });
         });
         rows.sort((a, b) => (a.raw < b.raw ? 1 : -1));
 
         const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
         container.innerHTML = rows.map(r => `
             <div class="order-history-item">
-                <div class="oh-top"><span class="oh-total">৳${r.total}</span><span class="oh-status">${esc(r.status)}</span></div>
-                <div class="oh-date">${esc(r.date)}</div>
-                <div style="margin-top:8px; display:flex; gap:8px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; gap:12px;">
+                    <div>
+                        <div style="font-weight:700;">Order ID: <a href="admin.html?order=${r.id}" target="_blank">${esc(r.id)}</a></div>
+                        <div style="color:var(--ink-muted); font-size:0.9rem; margin-top:6px;">${esc(r.date)} • ${esc(r.time)}</div>
+                    </div>
+                    <div style="text-align:right">
+                        <div class="oh-total">৳${r.total}</div>
+                        <div class="oh-status" style="margin-top:6px;">${esc(r.status)}</div>
+                    </div>
+                </div>
+
+                <div style="margin-top:12px; display:flex; gap:8px;">
                     <a class="btn btn-outline" href="order.html?id=${r.id}">View</a>
                     <button type="button" class="btn btn-ghost" onclick="(function(btn){ const items=btn.closest('.order-history-item').querySelector('.order-items'); if(items) items.style.display = (items.style.display === 'none' || !items.style.display) ? 'block' : 'none'; })(this)">Toggle items</button>
                 </div>
+
                 <div class="order-items" style="display:none; margin-top:10px;">
+                    ${rows.length ? '' : ''}
                     ${r.items.map(it => `<div style=\"padding:8px 10px; border:1px solid var(--border); margin-bottom:6px; border-radius:6px;\"><strong>${esc(it.name || it.title || 'Item')}</strong> — qty: ${esc(it.qty || it.quantity || 1)} — ৳${esc(it.price || it.unitPrice || 0)}</div>`).join('')}
                 </div>
             </div>`).join('');
