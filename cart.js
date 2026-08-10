@@ -335,8 +335,13 @@ window.checkoutToAdmin = async function() {
         const verifiedSubtotal = verifiedItems.reduce((sum, item) => sum + (item.price * item.qty), 0);
         const verifiedTotal = verifiedSubtotal + orderData.deliveryFee;
 
+        // Use null for guest orders (avoids writing the literal string 'guest')
+        const resolvedUserId = (activeUid && activeUid !== 'guest') ? activeUid : null;
+        const resolvedUserEmail = (typeof firebase !== 'undefined' && firebase.auth().currentUser && firebase.auth().currentUser.email) ? firebase.auth().currentUser.email : (window.currentUser && window.currentUser.email) ? window.currentUser.email : null;
+
         const newOrder = {
-            userId: activeUid,
+            userId: resolvedUserId,
+            userEmail: resolvedUserEmail,
             customerName: orderData.name,
             customerPhone: orderData.phone,
             deliveryAddress: orderData.address,
@@ -345,7 +350,8 @@ window.checkoutToAdmin = async function() {
             subtotal: verifiedSubtotal,
             totalAmount: verifiedTotal,
             items: verifiedItems,
-            orderDate: new Date().toISOString(),
+            // Use serverTimestamp so ordering and timezone are canonical
+            orderDate: firebase && firebase.firestore ? firebase.firestore.FieldValue.serverTimestamp() : new Date().toISOString(),
             status: 'New'
         };
 
