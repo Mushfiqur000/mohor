@@ -2,155 +2,90 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Checkout | Mohor Clothings</title>
 
-    <link rel="icon" type="image/jpeg" href="favicon.jpeg">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" sizes="512x512" href="assets/favicon-512.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+    <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 
-    <style>
-        :root {
-            --primary-gold: #C9A14A;
-            --deep-black: #0c0c0c;
-            --soft-gray: #f9f9f9;
-            --border-color: #eaeaea;
-            --text-dark: #222;
-            --white: #ffffff;
-            --radius: 8px;
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Montserrat', sans-serif; background-color: var(--soft-gray); color: var(--text-dark); line-height: 1.6; padding-bottom: 50px; }
-        
-        /* Header */
-        nav { display: flex; justify-content: space-between; align-items: center; padding: 15px 5%; background: var(--white); position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid var(--border-color); }
-        .back-btn { text-decoration: none; color: var(--deep-black); font-size: 20px; font-weight: 600; display: flex; align-items: center; gap: 5px; }
-        
-        /* UPDATED: Added alignment for the new logo and title */
-        .title-wrapper { display: flex; align-items: center; gap: 8px; color: var(--deep-black); }
-        .page-title { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700; color: var(--deep-black); }
-        
-        .lang-btn { background: var(--deep-black); color: var(--white); border: none; padding: 5px 10px; font-size: 11px; font-weight: 600; cursor: pointer; border-radius: 4px; }
-
-        /* Main Container */
-        .checkout-container { max-width: 600px; margin: 20px auto; padding: 0 5%; }
-
-        /* Cart Items */
-        .cart-section, .form-section { background: var(--white); padding: 20px; border-radius: var(--radius); margin-bottom: 20px; border: 1px solid var(--border-color); }
-        .section-header { font-size: 14px; text-transform: uppercase; font-weight: 600; margin-bottom: 15px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
-        
-        #cartItems { min-height: 50px; }
-        .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px dashed var(--border-color); }
-        .cart-item-info { flex: 1; }
-        .cart-item-title { font-size: 13px; font-weight: 600; }
-        .cart-item-meta { font-size: 11px; color: #666; margin-top: 3px; }
-        .cart-item-price { font-weight: 600; color: var(--primary-gold); font-size: 14px; }
-        .remove-btn { background: none; border: none; color: #d9534f; font-size: 11px; cursor: pointer; margin-top: 5px; text-transform: uppercase; }
-
-        /* Totals */
-        .totals-row { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 8px; }
-        .totals-row.grand-total { font-size: 16px; font-weight: 600; color: var(--primary-gold); border-top: 1px solid var(--border-color); padding-top: 10px; margin-top: 10px; }
-
-        /* Form Inputs */
-        .input-group { margin-bottom: 15px; }
-        .input-group label { display: block; font-size: 12px; font-weight: 600; margin-bottom: 5px; color: #444; }
-        .input-group input, .input-group select, .input-group textarea { width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 4px; font-family: 'Montserrat', sans-serif; font-size: 14px; background: var(--soft-gray); }
-        /* Fix iOS Zooming */
-        .input-group input:focus, .input-group select:focus, .input-group textarea:focus { outline: none; border-color: var(--primary-gold); font-size: 16px; } 
-
-        /* Buttons */
-        .btn-primary { width: 100%; background: var(--deep-black); color: var(--white); border: none; padding: 15px; font-family: 'Montserrat', sans-serif; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; border-radius: 4px; cursor: pointer; margin-bottom: 10px; }
-        .btn-whatsapp { width: 100%; background: #25D366; color: var(--white); border: none; padding: 15px; font-family: 'Montserrat', sans-serif; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; border-radius: 4px; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; }
-        
-        .empty-cart-msg { text-align: center; font-size: 14px; color: #666; padding: 20px 0; }
-    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Work+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+Bengali:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <nav>
-        <a href="index.html" class="back-btn">&#8592;</a>
-        
-        <!-- UPDATED: Beautiful Cart Logo added to the Header -->
-        <div class="title-wrapper">
-            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
-                <line x1="3" y1="6" x2="21" y2="6"></line>
-                <path d="M16 10a4 4 0 0 1-8 0"></path>
-            </svg>
-            <div class="page-title" data-i18n="cartTitle">Checkout</div>
-        </div>
-
-        <button type="button" id="langToggleBtn" class="lang-btn">EN / বাং</button>
-    </nav>
+    <header class="checkout-nav">
+        <nav class="nav container">
+            <a href="index.html" class="back-btn">
+                <svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                <span data-i18n="backBtn">Back</span>
+            </a>
+            <div class="title-wrapper">
+                <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                <span data-i18n="cartTitle">Checkout</span>
+            </div>
+            <button type="button" id="langToggleBtn" class="lang-btn" aria-label="Switch language">EN<span class="lang-sep">/</span>বাং</button>
+        </nav>
+    </header>
 
     <div class="checkout-container">
-        <!-- Order Summary -->
-        <div class="cart-section">
-            <div class="section-header" data-i18n="cartTitle">Your Items</div>
-            <div id="cartItems">
-                <!-- Items will be injected here by cart.js -->
-            </div>
-            
-            <div style="margin-top: 20px;">
-                <div class="totals-row">
-                    <span data-i18n="cartSubtotal">Subtotal:</span>
-                    <span id="cartSubtotal">৳0</span>
-                </div>
-                <div class="totals-row">
-                    <span data-i18n="cartDelivery">Delivery Charge:</span>
-                    <span id="cartDelivery">৳0</span>
-                </div>
-                <div class="totals-row grand-total">
-                    <span data-i18n="cartTotal">Final Total:</span>
-                    <span id="cartTotal">৳0</span>
-                </div>
+        <div class="checkout-card">
+            <h3 class="section-title" data-i18n="cartTitle">Your Items</h3>
+            <div id="cartItems"></div>
+
+            <div style="margin-top:18px;">
+                <div class="totals-row"><span data-i18n="cartSubtotal">Subtotal</span><span id="cartSubtotal">৳0</span></div>
+                <div class="totals-row"><span data-i18n="cartDelivery">Delivery</span><span id="cartDelivery">৳0</span></div>
+                <div class="totals-row grand"><span data-i18n="cartTotal">Final Total</span><span class="amount" id="cartTotal">৳0</span></div>
             </div>
         </div>
 
-        <!-- Checkout Form -->
-        <div class="form-section">
-            <div class="section-header">Delivery Details</div>
-            
-            <form id="checkoutForm">
-                <div class="input-group">
-                    <label data-i18n="checkoutName">Full Name *</label>
-                    <input type="text" id="checkoutName" required data-i18n-placeholder="checkoutName" placeholder="Full Name">
-                </div>
-                
-                <div class="input-group">
-                    <label data-i18n="checkoutPhone">Mobile Number *</label>
-                    <input type="tel" id="checkoutPhone" required data-i18n-placeholder="checkoutPhone" placeholder="01XXXXXXXXX">
-                </div>
-                
-                <div class="input-group">
-                    <label data-i18n="selectDeliveryZone">Delivery Zone *</label>
-                    <select id="deliveryZone" required onchange="updateDeliveryPolicyAndTotal()">
-                        <option value="" disabled selected data-i18n="selectDeliveryZone">Select Delivery Zone</option>
-                        <option value="inside" data-i18n="zoneInside">Inside Sylhet (৳80)</option>
-                        <option value="outside" data-i18n="zoneOutside">Outside Sylhet (৳150)</option>
-                    </select>
-                </div>
+        <div class="checkout-card">
+            <h3 class="section-title">Delivery Details</h3>
+            <div class="field">
+                <label for="checkoutName" data-i18n="checkoutName">Full Name *</label>
+                <input type="text" id="checkoutName" class="input" required data-i18n-placeholder="checkoutName" placeholder="Full Name">
+            </div>
+            <div class="field">
+                <label for="checkoutPhone" data-i18n="checkoutPhone">Mobile Number *</label>
+                <input type="tel" id="checkoutPhone" class="input" required data-i18n-placeholder="checkoutPhone" placeholder="01XXXXXXXXX">
+            </div>
+            <div class="field">
+                <label for="deliveryZone" data-i18n="selectDeliveryZone">Delivery Zone *</label>
+                <select id="deliveryZone" class="input" required>
+                    <option value="" disabled selected data-i18n="selectDeliveryZone">Select Delivery Zone</option>
+                    <option value="inside" data-i18n="zoneInside">Inside Sylhet (৳80)</option>
+                    <option value="outside" data-i18n="zoneOutside">Outside Sylhet (৳150)</option>
+                </select>
+            </div>
+            <p id="dynamicPolicyDisplay" style="display:none; font-size:.76rem; color:var(--ink-muted); margin:-6px 0 14px; line-height:1.6;"></p>
+            <div class="field">
+                <label for="checkoutAddress" data-i18n="checkoutAddress">Complete Address *</label>
+                <textarea id="checkoutAddress" class="input" rows="3" required data-i18n-placeholder="checkoutAddress" placeholder="House, Road, Area..."></textarea>
+            </div>
 
-                <div class="input-group">
-                    <label data-i18n="checkoutAddress">Complete Address *</label>
-                    <textarea id="checkoutAddress" rows="3" required data-i18n-placeholder="checkoutAddress" placeholder="House, Road, Area..."></textarea>
-                </div>
+            <label class="checkbox-row" style="margin-bottom:18px;">
+                <input type="checkbox" id="policyAgree">
+                <span><span data-i18n="policyAgreeText">I agree to the</span> <a href="policy.html" data-i18n="policyLink">Delivery &amp; Return Policy</a>.</span>
+            </label>
 
-                <button type="button" class="btn-primary" id="btnConfirmOrder" data-i18n="btnConfirmOrder">Confirm Order (Website)</button>
-                <button type="button" class="btn-whatsapp" id="btnWhatsAppOrder">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
-                    <span data-i18n="btnWhatsApp">Order by WhatsApp</span>
-                </button>
-            </form>
+            <button type="button" class="btn btn-dark btn-block" id="btnConfirmOrder" style="margin-bottom:8px;">
+                <span class="spinner"></span><span class="btn-label" data-i18n="btnConfirmOrder">Confirm Order</span>
+            </button>
+            <div class="checkout-or" data-i18n="orWhatsapp">or</div>
+            <button type="button" class="btn btn-whatsapp btn-block" id="btnWhatsAppOrder">
+                <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+                <span data-i18n="btnWhatsApp">Order via WhatsApp</span>
+            </button>
         </div>
     </div>
 
-    <!-- Firebase SDKs (Required for order submission) -->
+    <!-- Firebase CDN SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-
-    <!-- NEW: Firebase Configuration Block to Fix Error -->
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyALxypXDkF9QexbD_wE7-ADALIdj5vd-rY",
@@ -160,55 +95,26 @@
             messagingSenderId: "989000457004",
             appId: "1:989000457004:web:5679b256e20d94e27daa89"
         };
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        // Initialize Firestore
+        if (typeof firebase !== 'undefined' && !firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
         window.db = firebase.firestore();
     </script>
 
-    <!-- Essential Scripts -->
-    <script src="products.js?v=16"></script>
-    <script src="app.js?v=16"></script>
-    <script src="cart.js?v=16"></script>
+    <script src="products.js?v=18"></script>
+    <script src="app.js?v=18"></script>
+    <script src="cart.js?v=18"></script>
+    <script type="module" src="auth.js?v=18"></script>
 
     <script>
-        // Ensure UI updates immediately when page loads
+        // Note: cart.js resolves its items container as
+        // getElementById('cartItemsContainer') || getElementById('cartItems'),
+        // so on this page it renders the same full cart-item rows (with the
+        // qty stepper and remove button) straight into #cartItems — letting
+        // people adjust their order right here on the checkout page too.
         document.addEventListener('DOMContentLoaded', () => {
-            if (typeof updateCartUI === 'function') {
-                updateCartUI();
-            }
-        });
-    </script>
-
-    <!-- UPDATED: FIREBASE AUTO-FILL SCRIPT -->
-    <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            // A slight delay ensures app.js has finished initializing Firebase
-            setTimeout(() => {
-                if (typeof firebase !== 'undefined' && firebase.auth) {
-                    firebase.auth().onAuthStateChanged((user) => {
-                        if (user) {
-                            // User is logged in! Fetch their profile from the 'users' collection
-                            firebase.firestore().collection("users").doc(user.uid).get()
-                            .then((doc) => {
-                                if (doc.exists) {
-                                    const userData = doc.data();
-                                    
-                                    // Target your exact input fields
-                                    const nameEl = document.getElementById('checkoutName');
-                                    const phoneEl = document.getElementById('checkoutPhone');
-                                    const addressEl = document.getElementById('checkoutAddress');
-                                    
-                                    // Inject the data automatically
-                                    if(nameEl && userData.name) nameEl.value = userData.name;
-                                    if(phoneEl && userData.phone) phoneEl.value = userData.phone;
-                                    if(addressEl && userData.address) addressEl.value = userData.address;
-                                }
-                            }).catch(error => console.error("Error fetching user data for auto-fill:", error));
-                        }
-                    });
-                }
-            }, 1000); 
+            window.loadStoreProducts();
+            setTimeout(() => { if (typeof updateUIText === 'function') updateUIText(); }, 60);
         });
     </script>
 </body>
