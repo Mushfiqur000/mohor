@@ -708,6 +708,10 @@ select.input {
 .lightbox-prev { left: 18px; }
 .lightbox-next { right: 18px; }
 
+/* Lightbox actions (buy/add) */
+.lightbox-actions { position: absolute; bottom: 28px; left: 50%; transform: translateX(-50%); display: flex; gap: 12px; z-index: 5010; }
+.lightbox-actions .btn { padding: 10px 18px; font-size: 0.84rem; }
+
 /* ==========================================================================
    Misc / responsive helpers
    ========================================================================== */
@@ -717,3 +721,24 @@ select.input {
 }
 
 .mono { font-family: var(--font-mono); }
+
+/* Dark mode: default to system preference */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --muslin: #0b0b0c;
+    --parchment: #080808;
+    --surface: #0b0b0c;
+    --ink: #f3efe9;
+    --ink-muted: #cfc9c5;
+    --ink-faint: #9f9a96;
+    --border: #1d1d1d;
+    --border-strong: #2b2b2b;
+    --maroon: #ffb3b3;
+    --brass: #d9b56a;
+  }
+  body { background-color: var(--muslin); color: var(--ink); }
+  .site-header { background: rgba(8,8,8,0.85); backdrop-filter: none; }
+  .modal-overlay { background: rgba(0,0,0,0.78); }
+  .modal-box, .cart-sidebar, .account-sidebar, .auth-card, .checkout-card { background: var(--surface); border-color: var(--border); }
+}
+
