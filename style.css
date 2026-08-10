@@ -327,9 +327,9 @@ select.input {
 .hero-scroll-cue span { font-family: var(--font-mono); font-size: 10px; letter-spacing: 2px; text-transform: uppercase; }
 
 @media (max-width: 640px) {
-  /* Use landscape crop on phones so central/logo area remains visible */
-  .hero-media { aspect-ratio: 16 / 9; max-height: 460px; min-height: 220px; }
-  .hero-media img { object-position: center 26%; }
+  /* Use a taller portrait crop on phones so central/logo area remains visible without cropping edges */
+  .hero-media { aspect-ratio: 9 / 16; max-height: 560px; min-height: 380px; }
+  .hero-media img { object-position: center center; }
 }
 
 /* Interior page header (About / Policy / Login) */
