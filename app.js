@@ -319,6 +319,11 @@ function renderProducts(productsToRender) {
     const productGrid = document.getElementById('productGrid');
     if (!productGrid) return;
 
+    // Apply view classes from saved preferences
+    const viewMode = localStorage.getItem('mohor_view_mode') || 'grid';
+    const viewSize = localStorage.getItem('mohor_view_size') || 'medium';
+    productGrid.classList.toggle('view-list', viewMode === 'list');
+
     productGrid.innerHTML = '';
     if (!productsToRender || productsToRender.length === 0) {
         productGrid.innerHTML = `<p class="no-products">${t('noProducts')}</p>`;
@@ -328,7 +333,7 @@ function renderProducts(productsToRender) {
     productGrid.classList.add('reveal-stagger');
     productsToRender.forEach(product => {
         const card = document.createElement('div');
-        card.className = 'product-card';
+        card.className = `product-card ${viewSize}`;
         card.onclick = () => {
             if (window.innerWidth <= 900) {
                 window.location.href = `product.html?id=${String(product.id)}`;
@@ -340,22 +345,75 @@ function renderProducts(productsToRender) {
         const displayTitle = getText(product.title);
         const displayCategory = (product.category || "").replace('-', ' ');
 
-        card.innerHTML = `
-            <div class="card-media">
-                <span class="card-cat">${displayCategory}</span>
-                <img src="${productCoverImage(product)}" alt="${displayTitle}" loading="lazy" onerror="this.onerror=null;this.src='assets/image-placeholder.svg';">
-            </div>
-            <div class="card-body">
-                <div class="card-title">${displayTitle}</div>
-                <div class="card-price">৳ ${product.price}</div>
-                <button type="button" class="card-cta">${t('selectOptions')}</button>
-            </div>
-        `;
+        // If list view, render a row layout
+        if (viewMode === 'list') {
+            card.innerHTML = `
+                <div class="card-media">
+                    <img src="${productCoverImage(product)}" alt="${displayTitle}" loading="lazy" onerror="this.onerror=null;this.src='assets/image-placeholder.svg';">
+                </div>
+                <div class="card-body">
+                    <div class="card-title">${displayTitle}</div>
+                    <div class="card-price">৳ ${product.price}</div>
+                    <div class="card-desc">${(getText(product.description) || '').slice(0,140)}</div>
+                    <div style="margin-top:10px;"><button type="button" class="btn btn-outline" onclick="(function(p){ openProductModal(p); })(JSON.parse('${escapeHtml(JSON.stringify(product))}'))">Quick View</button></div>
+                </div>
+            `;
+        } else {
+            card.innerHTML = `
+                <div class="card-media">
+                    <span class="card-cat">${displayCategory}</span>
+                    <img src="${productCoverImage(product)}" alt="${displayTitle}" loading="lazy" onerror="this.onerror=null;this.src='assets/image-placeholder.svg';">
+                    <div class="card-quick">Quick View</div>
+                </div>
+                <div class="card-body">
+                    <div class="card-title">${displayTitle}</div>
+                    <div class="card-price">৳ ${product.price}</div>
+                    <button type="button" class="card-cta">${t('selectOptions')}</button>
+                </div>
+            `;
+        }
         productGrid.appendChild(card);
     });
     requestAnimationFrame(() => productGrid.classList.add('in-view'));
 }
 window.renderProducts = renderProducts;
+
+// Helpers for view controls
+function initViewControls() {
+    const btnGrid = document.getElementById('btnViewGrid');
+    const btnList = document.getElementById('btnViewList');
+    const sizeSelect = document.getElementById('viewSizeSelect');
+    const productGrid = document.getElementById('productGrid');
+
+    const apply = () => {
+        const mode = localStorage.getItem('mohor_view_mode') || 'grid';
+        const size = localStorage.getItem('mohor_view_size') || 'medium';
+        if (productGrid) productGrid.classList.toggle('view-list', mode === 'list');
+        // re-render current products to apply layout
+        if (window._lastRenderedProducts) renderProducts(window._lastRenderedProducts);
+        if (sizeSelect) sizeSelect.value = size;
+    };
+
+    if (btnGrid) btnGrid.addEventListener('click', () => { localStorage.setItem('mohor_view_mode','grid'); apply(); });
+    if (btnList) btnList.addEventListener('click', () => { localStorage.setItem('mohor_view_mode','list'); apply(); });
+    if (sizeSelect) sizeSelect.addEventListener('change', (e) => { localStorage.setItem('mohor_view_size', e.target.value); apply(); });
+
+    apply();
+}
+
+// Ensure updateProducts stores last rendered for re-render
+const origUpdateProducts = updateProducts;
+window.updateProducts = function() {
+    origUpdateProducts();
+    const grid = document.getElementById('productGrid');
+    // capture last rendered source for view re-renders
+    window._lastRenderedProducts = (Array.isArray(window.firestoreProducts) && window.firestoreProducts.length>0) ? window.firestoreProducts : (window.productsData || []);
+};
+
+document.addEventListener('DOMContentLoaded', () => { initViewControls(); });
+
+// Escape helper used in renderProducts inline JSON
+function escapeHtml(json) { return String(json).replace(/\\/g,'\\\\').replace(/'/g, "\\'").replace(/\"/g,'\\\"'); }
 
 function updateProducts() {
     let sourceData = (Array.isArray(window.firestoreProducts) && window.firestoreProducts.length > 0)

@@ -102,6 +102,18 @@
                         <option value="low-high" data-i18n="sortLowHigh">Price: Low to High</option>
                         <option value="high-low" data-i18n="sortHighLow">Price: High to Low</option>
                     </select>
+
+                    <!-- View controls: grid/list + size -->
+                    <div class="view-controls" style="display:inline-flex; gap:8px; margin-left:8px; align-items:center;">
+                        <button type="button" id="btnViewGrid" class="btn btn-ghost" title="Grid view">▦</button>
+                        <button type="button" id="btnViewList" class="btn btn-ghost" title="List view">☰</button>
+                        <select id="viewSizeSelect" class="input" style="width:120px;">
+                            <option value="medium">Size: Medium</option>
+                            <option value="small">Size: Small</option>
+                            <option value="large">Size: Large</option>
+                        </select>
+                    </div>
+
                 </div>
                 <button type="button" id="mobileFilterBtn" class="btn btn-outline btn-sm mobile-filter-btn">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M7 12h10M10 18h4"/></svg>

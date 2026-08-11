@@ -746,11 +746,52 @@ select.input {
     --maroon: #ffb3b3;
     --brass: #d9b56a;
   }
+  /* Enforce improved contrast on headings and body text in dark mode */
   body { background-color: var(--muslin); color: var(--ink); }
+  h1,h2,h3,h4,h5 { color: var(--surface); }
+  .card-title, .card-price, .card-cat, .btn-outline, .btn-ghost { color: var(--ink); }
+  .section-head p, .modal-desc, .pd-info .pd-desc { color: var(--ink-muted); }
   .site-header { background: rgba(8,8,8,0.85); backdrop-filter: none; }
   .modal-overlay { background: rgba(0,0,0,0.78); }
   .modal-box, .cart-sidebar, .account-sidebar, .auth-card, .checkout-card { background: var(--surface); border-color: var(--border); }
 }
+
+/* Theme-aware helpers to ensure text toggles brightness with theme */
+:root[data-theme='dark'] {
+  --ink: #f7f4f1;
+  --ink-muted: #d2cdc8;
+  --ink-faint: #a8a39f;
+}
+:root[data-theme='light'] {
+  --ink: #221B18;
+  --ink-muted: #7C716C;
+  --ink-faint: #A79E98;
+}
+
+/* Product grid / list view sizing */
+.product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 22px; }
+.product-grid.view-list { display: block; }
+.product-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+.product-card.small .card-media img { height: 140px; object-fit: cover; }
+.product-card.medium .card-media img { height: 220px; }
+.product-card.large .card-media img { height: 320px; }
+.product-grid.view-list .product-card { display: flex; gap: 18px; padding: 14px; align-items: center; }
+.product-grid.view-list .card-media { flex: 0 0 200px; }
+.product-grid.view-list .card-body { flex: 1; }
+
+/* Quick view overlay on cards */
+.card-media { position: relative; }
+.card-quick { position: absolute; left: 0; right: 0; bottom: 8px; text-align: center; background: rgba(0,0,0,0.45); color: #fff; padding: 8px 6px; opacity: 0; transform: translateY(6px); transition: opacity .18s ease, transform .18s ease; }
+.product-card:hover .card-quick { opacity: 1; transform: translateY(0); }
+
+/* Review styles */
+.product-reviews { margin-top: 16px; border-top: 1px dashed var(--border); padding-top: 12px; }
+.review-item { padding:10px 0; border-bottom: 1px solid var(--border); }
+.review-item .review-meta { font-size:0.82rem; color:var(--ink-muted); }
+.review-form textarea { width:100%; min-height:80px; padding:8px; border:1px solid var(--border-strong); background:var(--surface); color:var(--ink); }
+
+/* small helper for view controls */
+.view-controls .input { font-size:0.86rem; }
 
 /* Manual theme override via data-theme attribute on <html> */
 :root[data-theme='dark'] {
