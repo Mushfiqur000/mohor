@@ -88,3 +88,4 @@ The storefront supports English and Bengali via a client-side toggle
 `window.uiTranslations` in `app.js`; product content (title, description,
 etc.) can be a `{ en, bn }` object in Firestore/`products.js` or a plain
 string.
+<!-- pages: rebuild trigger -->

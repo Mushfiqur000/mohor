@@ -327,8 +327,9 @@ select.input {
 .hero-scroll-cue span { font-family: var(--font-mono); font-size: 10px; letter-spacing: 2px; text-transform: uppercase; }
 
 @media (max-width: 640px) {
-  /* Use a taller portrait crop on phones so central/logo area remains visible without cropping edges */
-  .hero-media { aspect-ratio: 9 / 16; max-height: 560px; min-height: 380px; }
+  /* Balanced mobile crop: keep the image centered and use a moderately short aspect
+     so the logo/headline stays visible without over-cropping. Tuned after testing. */
+  .hero-media { aspect-ratio: 3 / 2; max-height: 520px; min-height: 320px; }
   .hero-media img { object-position: center center; }
 }
 
