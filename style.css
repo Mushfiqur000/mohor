@@ -327,8 +327,11 @@ select.input {
 .hero-scroll-cue span { font-family: var(--font-mono); font-size: 10px; letter-spacing: 2px; text-transform: uppercase; }
 
 @media (max-width: 640px) {
-  .hero-media { aspect-ratio: 4 / 5; max-height: 520px; }
-  .hero-media img { object-position: 62% center; }
+  /* Use a wider/shorter aspect ratio on phones so the banner headline remains visible
+     and the important center area of the photo is preserved. Reduce max-height to avoid
+     over-cropping and force the image to center for consistent framing. */
+  .hero-media { aspect-ratio: 3 / 2; max-height: 420px; min-height: 260px; }
+  .hero-media img { object-position: center center; }
 }
 
 /* Interior page header (About / Policy / Login) */
