@@ -36,6 +36,7 @@
 
             <div class="nav-links" id="navLinks">
                 <a href="index.html" class="active" data-i18n="navShop">Shop</a>
+                <a href="order-history.html" data-i18n="navOrders">Order History</a>
                 <a href="about.html" data-i18n="navAbout">About Us</a>
                 <a href="policy.html" data-i18n="navPolicy">Policy</a>
                 <span class="nav-divider" aria-hidden="true"></span>
@@ -49,6 +50,7 @@
 
             <div class="nav-actions">
                 <button type="button" id="langToggleBtn" class="lang-btn" aria-label="Switch language">EN<span class="lang-sep">/</span>বাং</button>
+                <button type="button" id="themeToggleBtn" class="icon-btn" aria-label="Toggle theme">🌗</button>
                 <button type="button" id="openAccountBtn" class="icon-btn" aria-label="Account">
                     <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>
                     <span class="icon-btn-label" data-i18n="navAccount">Account</span>
@@ -170,7 +172,10 @@
                     <ul class="details-list" id="modalDetails"></ul>
                 </div>
 
-                <button type="button" id="modalAddToCartBtn" class="btn btn-dark btn-block modal-add-btn" data-i18n="addToCart">Add to Cart</button>
+                <div class="modal-action-row" style="display:flex; gap:12px; margin-top:12px;">
+                    <button type="button" id="modalAddToCartBtn" class="btn btn-dark btn-block modal-add-btn" data-i18n="addToCart">Add to Cart</button>
+                    <button type="button" id="modalBuyNowBtn" class="btn btn-brass btn-block modal-buy-btn" data-i18n="buyNow">Buy Now</button>
+                </div>
             </div>
         </div>
     </div>
@@ -264,8 +269,9 @@
 
                 <div class="profile-section-title" data-i18n="accOrderHistory">My Order History</div>
                 <div id="userOrderHistoryContainer"><p class="order-history-loading" data-i18n="accLoadingOrders">Loading orders…</p></div>
+                <a href="order-history.html" class="btn btn-outline btn-block" style="margin-top:12px; text-align:center;">View full order history</a>
 
-                <button type="button" class="btn btn-ghost btn-block" style="margin-top:22px;" onclick="window.handleLogout(event)"><span class="spinner"></span><span class="btn-label" data-i18n="accLogoutBtn">Log Out</span></button>
+                <button type="button" class="btn btn-ghost btn-block" style="margin-top:12px;" onclick="window.handleLogout(event)"><span class="spinner"></span><span class="btn-label" data-i18n="accLogoutBtn">Log Out</span></button>
             </div>
         </div>
     </div>

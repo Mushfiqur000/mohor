@@ -17,7 +17,7 @@ document.documentElement.lang = window.currentLang;
 
 window.uiTranslations = {
     en: {
-        navShop: "Shop", navAbout: "About Us", navPolicy: "Policy", navAccount: "Account", navCart: "Cart",
+        navShop: "Shop", navOrders: "Order History", navAbout: "About Us", navPolicy: "Policy", navAccount: "Account", navCart: "Cart",
         shopTitle: "Our Collection",
         shopSubtitle: "Handcrafted three-piece sets, kurtis and khadi wear — cut and stitched in small batches.",
         filterBtn: "Filters", closeFilters: "Close",
@@ -79,7 +79,7 @@ window.uiTranslations = {
         continueGuest: "Continue as Guest",
     },
     bn: {
-        navShop: "শপ", navAbout: "আমাদের সম্পর্কে", navPolicy: "পলিসি", navAccount: "অ্যাকাউন্ট", navCart: "কার্ট",
+        navShop: "শপ", navOrders: "অর্ডার হিস্ট্রি", navAbout: "আমাদের সম্পর্কে", navPolicy: "পলিসি", navAccount: "অ্যাকাউন্ট", navCart: "কার্ট",
         shopTitle: "আমাদের কালেকশন",
         shopSubtitle: "হাতে তৈরি থ্রি-পিস, কুর্তি ও খাদি — অল্প সংখ্যায় যত্নসহকারে তৈরি।",
         filterBtn: "ফিল্টার", closeFilters: "বন্ধ করুন",
@@ -190,6 +190,36 @@ document.addEventListener('DOMContentLoaded', () => {
             document.documentElement.lang = window.currentLang;
             updateUIText();
             window.dispatchEvent(new Event('languageChanged'));
+        });
+    }
+
+    // Theme toggle: manual switch between light/dark. Stores pref in localStorage.
+    const themeToggleBtn = document.getElementById('themeToggleBtn');
+    function applyTheme(theme) {
+        if (!theme || theme === 'system') {
+            document.documentElement.removeAttribute('data-theme');
+            localStorage.removeItem('mohor_theme');
+            if (themeToggleBtn) themeToggleBtn.innerText = '🌗';
+            return;
+        }
+        document.documentElement.setAttribute('data-theme', theme);
+        localStorage.setItem('mohor_theme', theme);
+        if (themeToggleBtn) themeToggleBtn.innerText = (theme === 'dark') ? '🌙' : '☀️';
+    }
+
+    // Initialize theme from storage or system
+    const savedTheme = localStorage.getItem('mohor_theme') || 'system';
+    applyTheme(savedTheme);
+
+    if (themeToggleBtn) {
+        themeToggleBtn.addEventListener('click', () => {
+            const cur = localStorage.getItem('mohor_theme') || 'system';
+            // cycle: system -> dark -> light -> system
+            let next = 'dark';
+            if (cur === 'system') next = 'dark';
+            else if (cur === 'dark') next = 'light';
+            else if (cur === 'light') next = 'system';
+            applyTheme(next);
         });
     }
 });
@@ -565,6 +595,30 @@ document.addEventListener('DOMContentLoaded', () => {
                 window.addToCart(currentViewingProduct, selectedSize || 'Standard', selectedColor);
             }
             closeProductModal();
+        });
+    }
+
+    // Buy Now from quick-view modal: add then navigate to cart
+    const modalBuyNowBtn = document.getElementById('modalBuyNowBtn');
+    if (modalBuyNowBtn) {
+        modalBuyNowBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            let valid = true;
+            if (!selectedSize && currentViewingProduct && currentViewingProduct.sizes && currentViewingProduct.sizes.length > 0) {
+                const warn = document.getElementById('sizeWarning'); if (warn) warn.classList.add('show');
+                valid = false;
+            }
+            if (!selectedColor) {
+                const warn = document.getElementById('colorWarning'); if (warn) warn.classList.add('show');
+                valid = false;
+            }
+            if (!valid) return;
+
+            if (typeof window.addToCart === "function") {
+                window.addToCart(currentViewingProduct, selectedSize || 'Standard', selectedColor);
+            }
+            closeProductModal();
+            window.location.href = 'cart.html';
         });
     }
 });

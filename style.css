@@ -317,7 +317,7 @@ select.input {
    ========================================================================== */
 .hero { position: relative; overflow: hidden; background: var(--ink); }
 .hero-media { position: relative; width: 100%; aspect-ratio: 21 / 9; min-height: 320px; max-height: 640px; overflow: hidden; }
-.hero-media img { width: 100%; height: 100%; object-fit: cover; object-position: center 42%; animation: kenBurns 22s ease-in-out infinite alternate; }
+.hero-media img { width: 100%; height: 100%; object-fit: cover; object-position: center center; animation: kenBurns 22s ease-in-out infinite alternate; }
 .hero-scrim { position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(23,17,15,0.05) 60%, var(--muslin) 100%); pointer-events: none; }
 .hero-scroll-cue {
   position: absolute; bottom: 22px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column;
@@ -327,10 +327,9 @@ select.input {
 .hero-scroll-cue span { font-family: var(--font-mono); font-size: 10px; letter-spacing: 2px; text-transform: uppercase; }
 
 @media (max-width: 640px) {
-  /* Use a wider/shorter aspect ratio on phones so the banner headline remains visible
-     and the important center area of the photo is preserved. Reduce max-height to avoid
-     over-cropping and force the image to center for consistent framing. */
-  .hero-media { aspect-ratio: 3 / 2; max-height: 420px; min-height: 260px; }
+  /* Balanced mobile crop: keep the image centered and use a moderately short aspect
+     so the logo/headline stays visible without over-cropping. Tuned after testing. */
+  .hero-media { aspect-ratio: 3 / 2; max-height: 520px; min-height: 320px; }
   .hero-media img { object-position: center center; }
 }
 
@@ -460,7 +459,9 @@ select.input {
 .modal-thumbs .thumbnail img { width: 100%; height: 100%; object-fit: cover; }
 .modal-thumbs .thumbnail.active, .modal-thumbs .thumbnail:hover { opacity: 1; border-color: var(--brass); }
 
-.modal-info { padding: 34px 34px 28px; overflow-y: auto; }
+.modal-info { padding: 34px 34px 28px; overflow-y: auto; /* ensure modal content scrolls internally */ max-height: calc(88vh - 48px); }
+/* Keep the primary action visible while scrolling */
+.modal-info .modal-add-btn { position: sticky; bottom: 12px; z-index: 10; }
 .modal-info .card-cat { font-family: var(--font-mono); font-size: 10px; letter-spacing: 1.8px; text-transform: uppercase; color: var(--maroon); }
 .modal-info h2 { font-size: 1.5rem; margin: 8px 0 10px; }
 .modal-info .modal-price { font-family: var(--font-mono); color: var(--brass-deep); font-weight: 600; font-size: 1.2rem; margin-bottom: 16px; }
@@ -486,6 +487,12 @@ select.input {
 .details-list li::before { content: ''; position: absolute; left: 0; top: 15px; width: 6px; height: 1.4px; background: var(--brass); }
 
 .modal-add-btn { margin-top: 8px; }
+
+/* Keep action row visible when modal content scrolls */
+.modal-info .modal-action-row { position: sticky; bottom: 12px; z-index: 12; display: flex; gap: 12px; }
+.modal-info .modal-action-row .btn { flex: 1; }
+.modal-info .modal-buy-btn { /* ensure buy button follows sticky row */ }
+
 
 @media (max-width: 760px) {
   .modal-box { grid-template-columns: 1fr; max-height: 92vh; overflow-y: auto; }
@@ -744,4 +751,26 @@ select.input {
   .modal-overlay { background: rgba(0,0,0,0.78); }
   .modal-box, .cart-sidebar, .account-sidebar, .auth-card, .checkout-card { background: var(--surface); border-color: var(--border); }
 }
+
+/* Manual theme override via data-theme attribute on <html> */
+:root[data-theme='dark'] {
+  --muslin: #0b0b0c;
+  --parchment: #080808;
+  --surface: #0b0b0c;
+  --ink: #f3efe9;
+  --ink-muted: #cfc9c5;
+  --ink-faint: #9f9a96;
+  --border: #1d1d1d;
+  --border-strong: #2b2b2b;
+  --maroon: #ffb3b3;
+  --brass: #d9b56a;
+}
+
+:root[data-theme='light'] {
+  /* fallback to default light palette (no change needed) */
+}
+
+/* Theme toggle button style */
+#themeToggleBtn { background: none; border: none; font-size: 16px; padding: 8px 10px; border-radius: 8px; }
+#themeToggleBtn:hover { background: var(--brass-soft); }
 

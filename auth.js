@@ -36,7 +36,15 @@ window.openAccountSidebar = function() {
     if (accountOverlay) accountOverlay.classList.add('active');
 };
 
-if (openAccountBtn) openAccountBtn.addEventListener('click', () => window.openAccountSidebar());
+// Global click delegation so any #openAccountBtn on any page triggers the sidebar
+document.addEventListener('click', (e) => {
+    const btn = e.target.closest('#openAccountBtn, .open-account-btn');
+    if (btn) {
+        e.preventDefault();
+        window.openAccountSidebar();
+    }
+});
+
 if (closeAccountBtn) closeAccountBtn.addEventListener('click', window.closeAccountSidebar);
 if (accountOverlay) accountOverlay.addEventListener('click', window.closeAccountSidebar);
 
@@ -86,40 +94,117 @@ async function loadUserData(uid) {
 async function loadUserOrders(uid) {
     const container = document.getElementById('userOrderHistoryContainer');
     if (!container) return;
-    container.innerHTML = `<p class="order-history-loading">${tr('accLoadingOrders')}</p>`;
+    container.innerHTML = `<p class="order-history-loading">${tr('accLoadingOrders') || 'Loading orders…'}</p>`;
+
+    // Resolve current user info if available
+    const current = window.currentUser || (firebase && firebase.auth && firebase.auth().currentUser) || null;
+    const email = current && current.email ? current.email : null;
 
     try {
-        let querySnapshot;
-        try {
-            querySnapshot = await db.collection('orders').where('userId', '==', uid).orderBy('orderDate', 'desc').get();
-        } catch (indexErr) {
-            // Falls back gracefully if a composite index isn't provisioned yet.
-            querySnapshot = await db.collection('orders').where('userId', '==', uid).get();
+        let querySnapshot = null;
+
+        // 1) Prefer querying by userId (if clients saved it)
+        if (uid) {
+            try {
+                querySnapshot = await db.collection('orders').where('userId', '==', uid).orderBy('orderDate', 'desc').get();
+            } catch (indexErr) {
+                // fallback without index
+                querySnapshot = await db.collection('orders').where('userId', '==', uid).get();
+            }
         }
 
-        if (querySnapshot.empty) {
-            container.innerHTML = `<p class="order-history-empty">${tr('accNoOrders')}</p>`;
+        // 2) If no results, try matching by user email (many orders are created by guests with email)
+        if ((!querySnapshot || querySnapshot.empty) && email) {
+            try {
+                querySnapshot = await db.collection('orders').where('userEmail', '==', email).orderBy('orderDate', 'desc').get();
+            } catch (indexErr) {
+                querySnapshot = await db.collection('orders').where('userEmail', '==', email).get();
+            }
+        }
+
+        // 3) If still empty, try phone stored on profile (best-effort)
+        if ((!querySnapshot || querySnapshot.empty) && current) {
+            const userDoc = await db.collection('users').doc(current.uid).get();
+            const phone = userDoc.exists ? (userDoc.data().phone || userDoc.data().customerPhone || null) : null;
+            if (phone) {
+                try {
+                    querySnapshot = await db.collection('orders').where('customerPhone', '==', phone).orderBy('orderDate', 'desc').get();
+                } catch (indexErr) {
+                    querySnapshot = await db.collection('orders').where('customerPhone', '==', phone).get();
+                }
+            }
+        }
+
+        if (!querySnapshot || querySnapshot.empty) {
+            container.innerHTML = `<p class="order-history-empty" style="color:var(--ink-muted, #888); font-size:0.9rem;">${tr('accNoOrders') || 'No past orders found.'}</p>`;
             return;
         }
 
         const rows = [];
         querySnapshot.forEach((doc) => {
             const order = doc.data();
-            const formattedDate = order.orderDate ? new Date(order.orderDate).toLocaleDateString() : 'Recent';
-            const status = order.status ? String(order.status) : 'New';
-            rows.push({ total: Number(order.totalAmount) || 0, status, date: formattedDate, raw: order.orderDate || '' });
+            // Handle Firestore Timestamp or ISO string
+            let orderDate = order.orderDate || order.createdAt || null;
+            let actualDate = null;
+            if (orderDate && typeof orderDate.toDate === 'function') actualDate = orderDate.toDate();
+            else if (orderDate) actualDate = new Date(orderDate);
+            else actualDate = new Date();
+
+            const formattedDate = actualDate.toLocaleDateString();
+            const formattedTime = actualDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            const status = order.status ? String(order.status) : 'Pending';
+            
+            const custName = order.customerName || order.custName || order.name || '';
+            const custPhone = order.customerPhone || order.custPhone || order.phone || '';
+            const address = order.deliveryAddress || order.address || '';
+
+            rows.push({
+                id: doc.id,
+                total: Number(order.totalAmount) || 0,
+                status,
+                date: formattedDate,
+                time: formattedTime,
+                items: order.items || [],
+                raw: actualDate.getTime(),
+                customerName: custName,
+                customerPhone: custPhone,
+                deliveryAddress: address
+            });
         });
         rows.sort((a, b) => (a.raw < b.raw ? 1 : -1));
 
         const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
-        container.innerHTML = rows.map(r => `
-            <div class="order-history-item">
-                <div class="oh-top"><span class="oh-total">৳${r.total}</span><span class="oh-status">${esc(r.status)}</span></div>
-                <div class="oh-date">${esc(r.date)}</div>
-            </div>`).join('');
+        
+        container.innerHTML = rows.map(r => {
+            const statusClass = 'status-' + r.status.toLowerCase().replace(/\s+/g, '');
+            return `
+            <div class="order-history-item" style="background:#141414; border:1px solid #282828; border-radius:8px; padding:18px; margin-bottom:16px;">
+                <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px; flex-wrap:wrap;">
+                    <div>
+                        <div style="font-weight:700; font-size:0.95rem;">Order ID: <a href="order.html?id=${esc(r.id)}" style="color:#C9A14A; text-decoration:underline;">${esc(r.id)}</a></div>
+                        <div style="color:var(--ink-muted, #888); font-size:0.85rem; margin-top:4px;">${esc(r.date)} • ${esc(r.time)}</div>
+                        ${r.customerName ? `<div style="font-size:0.85rem; color:#aaa; margin-top:4px;"><strong>Customer:</strong> ${esc(r.customerName)}</div>` : ''}
+                        ${r.deliveryAddress ? `<div style="font-size:0.85rem; color:#888; margin-top:2px;"><strong>Address:</strong> ${esc(r.deliveryAddress)}</div>` : ''}
+                    </div>
+                    <div style="text-align:right">
+                        <div class="oh-total" style="font-weight:700; font-size:1.1rem; color:#C9A14A;">৳${r.total}</div>
+                        <div class="oh-status status-pill ${statusClass}" style="margin-top:6px; display:inline-block; padding:3px 10px; border-radius:12px; font-size:11px; font-weight:700; text-transform:uppercase;">${esc(r.status)}</div>
+                    </div>
+                </div>
+
+                <div style="margin-top:14px; display:flex; gap:8px; flex-wrap:wrap;">
+                    <a class="btn btn-outline btn-sm" href="order.html?id=${esc(r.id)}" style="text-decoration:none; padding:6px 14px; font-size:12px;">View Details</a>
+                    <button type="button" class="btn btn-ghost btn-sm" style="padding:6px 14px; font-size:12px;" onclick="(function(btn){ const items=btn.closest('.order-history-item').querySelector('.order-items'); if(items) items.style.display = (items.style.display === 'none' || !items.style.display) ? 'block' : 'none'; })(this)">Toggle items</button>
+                </div>
+
+                <div class="order-items" style="display:none; margin-top:12px; border-top:1px solid #282828; padding-top:10px;">
+                    ${r.items.map(it => `<div style="padding:8px 10px; border:1px solid #282828; margin-bottom:6px; border-radius:6px; font-size:0.85rem; display:flex; justify-content:space-between; align-items:center; background:#181818;"><div><strong>${esc(it.name || it.title || 'Item')}</strong> ${it.size || it.variant ? `<span style="color:#888;">(${esc(it.size || it.variant)})</span>` : ''}</div><div>qty: ${esc(it.qty || it.quantity || 1)} — ৳${esc((it.qty || it.quantity || 1) * (it.price || it.unitPrice || 0))}</div></div>`).join('')}
+                </div>
+            </div>`;
+        }).join('');
     } catch (e) {
         console.error('Error loading order history:', e);
-        container.innerHTML = `<p class="order-history-empty">Could not load past orders.</p>`;
+        container.innerHTML = `<p class="order-history-empty" style="color:#e06650; font-size:0.9rem;">Could not load past orders.</p>`;
     }
 }
 window.loadUserOrders = loadUserOrders;

@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Order Details | Mohor</title>
+  <link rel="icon" type="image/jpeg" href="favicon.jpeg">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body { opacity: 1 !important; background-color: #0c0c0c; color: #fff; }
+    .order-card-detail {
+      background: #141414;
+      border: 1px solid #282828;
+      border-radius: 8px;
+      padding: 24px;
+      margin-top: 20px;
+    }
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid #222;
+      font-size: 14px;
+    }
+    .detail-row:last-child { border-bottom: none; }
+    .status-pill {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .status-new, .status-pending { background: rgba(201,161,74,0.2); color: #C9A14A; border: 1px solid #C9A14A; }
+    .status-confirmed { background: rgba(62,107,138,0.2); color: #6ba4d9; border: 1px solid #6ba4d9; }
+    .status-shipped { background: rgba(110,76,126,0.2); color: #b886e3; border: 1px solid #b886e3; }
+    .status-completed { background: rgba(60,122,86,0.2); color: #52c480; border: 1px solid #52c480; }
+    .status-cancelled { background: rgba(166,64,44,0.2); color: #e06650; border: 1px solid #e06650; }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <nav class="nav container">
+      <a href="index.html" class="brand-logo"><img src="assets/logo-ink.png" alt="Mohor" width="150"></a>
+      <div class="nav-actions">
+        <a href="order-history.html" class="btn btn-ghost" data-i18n="backBtn">&#8592; Back to History</a>
+        <button type="button" id="openAccountBtn" class="icon-btn" data-i18n="navAccount">Account</button>
+      </div>
+    </nav>
+  </header>
+
+  <main class="container" style="padding:36px 5% 80px; max-width:850px;">
+    <h1>Order Details</h1>
+    <div id="orderDetailContainer">
+      <p class="order-history-loading">Loading order details…</p>
+    </div>
+  </main>
+
+  <!-- Account Sidebar Modal for Header Link -->
+  <div class="cart-overlay" id="accountOverlay"></div>
+  <div class="cart-sidebar" id="accountSidebar" style="padding: 20px; overflow-y: auto;">
+      <div class="cart-header" style="padding: 0 0 20px 0; background: transparent; border-bottom: 1px solid var(--border-color);">
+          <h3 id="accountModalTitle" data-i18n="accTitle">Customer Account</h3>
+          <button type="button" class="close-cart" id="closeAccountBtn" style="border: none; background: none; font-size: 28px; cursor: pointer; color:#fff;">&times;</button>
+      </div>
+      <div id="authView" style="margin-top: 20px;">
+          <div id="loginFormContainer">
+              <h4 style="margin-bottom: 15px; font-size: 16px;" data-i18n="accLoginTitle">Login to Your Account</h4>
+              <input type="email" id="loginEmail" placeholder="Email Address" data-i18n-placeholder="accEmailPlaceholder" style="width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid #333; background:#181818; color:#fff; border-radius: 4px;">
+              <input type="password" id="loginPassword" placeholder="Password" data-i18n-placeholder="accPassPlaceholder" style="width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #333; background:#181818; color:#fff; border-radius: 4px;">
+              <button type="button" onclick="window.handleLogin()" style="width: 100%; background: var(--primary-gold); color: white; padding: 14px; border: none; font-weight: 600; cursor: pointer; border-radius: 4px;" data-i18n="accLoginBtn">LOG IN</button>
+          </div>
+      </div>
+      <div id="profileView" style="display: none; margin-top: 10px;">
+          <p style="font-size: 12px; color: #888;" data-i18n="accLoggedInAs">Logged in as:</p>
+          <strong id="userProfileEmail" style="font-size: 14px; display: block; margin-bottom: 15px; color: #fff;"></strong>
+          <button type="button" onclick="window.handleLogout()" style="background: transparent; color: #d9534f; border: 1px solid #d9534f; padding: 8px 15px; font-size: 11px; cursor: pointer; border-radius: 4px;">LOG OUT</button>
+      </div>
+  </div>
+
+  <footer class="site-footer" style="margin-top: 60px;">
+    <div class="container" style="text-align: center; padding: 20px 0;">
+      <p style="font-size: 12px; color: rgba(250,243,236,0.6);" data-i18n="footerText">&copy; 2026 Mohor Clothings Bangladesh. All Rights Reserved.</p>
+    </div>
+  </footer>
+
+  <!-- Firebase CDN SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script>
+    const firebaseConfig = { apiKey: "AIzaSyALxypXDkF9QexbD_wE7-ADALIdj5vd-rY", authDomain: "mohor-app.firebaseapp.com", projectId: "mohor-app" };
+    if (typeof firebase !== 'undefined' && !firebase.apps.length) firebase.initializeApp(firebaseConfig);
+    window.db = firebase.firestore();
+  </script>
+  
+  <script src="app.js?v=21"></script>
+  <script src="cart.js?v=21"></script>
+  <script type="module" src="auth.js?v=21"></script>
+
+  <script>
+    // Clean .html from URL bar
+    if (window.location.pathname.endsWith('.html')) {
+      const cleanPath = window.location.pathname.replace(/\.html$/, '') + window.location.search;
+      window.history.replaceState(null, '', cleanPath);
+    }
+
+    function esc(s){ return String(s||'').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch])); }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      const params = new URLSearchParams(window.location.search);
+      const id = params.get('id');
+      const out = document.getElementById('orderDetailContainer');
+      if (!id) { out.innerHTML = '<p style="color:#aaa; margin-top:20px;">No order selected.</p>'; return; }
+
+      try {
+        const doc = await db.collection('orders').doc(id).get();
+        if (!doc.exists) { out.innerHTML = '<p style="color:#aaa; margin-top:20px;">Order not found.</p>'; return; }
+        
+        const o = doc.data();
+        const date = o.orderDate ? (o.orderDate.toDate ? o.orderDate.toDate().toLocaleString() : new Date(o.orderDate).toLocaleString()) : '—';
+        const status = o.status || 'Pending';
+        const statusClass = 'status-' + status.toLowerCase().replace(/\s+/g, '');
+
+        const custName = o.customerName || o.custName || o.name || 'N/A';
+        const custPhone = o.customerPhone || o.custPhone || o.phone || 'N/A';
+        const address = o.deliveryAddress || o.address || 'N/A';
+        const deliveryCharge = o.deliveryCharge || (o.deliveryZone === 'inside' ? 80 : (o.deliveryZone === 'outside' ? 150 : 0));
+        const subtotal = o.subtotal || (o.totalAmount ? o.totalAmount - deliveryCharge : 0);
+        const total = o.totalAmount || 0;
+        const items = o.items || [];
+
+        out.innerHTML = `
+          <div class="order-card-detail">
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #282828; padding-bottom:16px; margin-bottom:16px;">
+              <div>
+                <span style="font-size:12px; color:#888; text-transform:uppercase;">Order ID</span>
+                <div style="font-family:var(--font-mono); font-size:16px; font-weight:700; color:#C9A14A;">${esc(id)}</div>
+              </div>
+              <div>
+                <span class="status-pill ${statusClass}">${esc(status)}</span>
+              </div>
+            </div>
+
+            <!-- Customer Information Section -->
+            <div style="background:#1a1a1a; padding:16px; border-radius:6px; margin-bottom:20px; border:1px solid #2a2a2a;">
+              <h4 style="color:#C9A14A; font-size:13px; text-transform:uppercase; letter-spacing:1px; margin-bottom:10px;">Delivery Details</h4>
+              <div class="detail-row"><span>Customer Name:</span> <strong>${esc(custName)}</strong></div>
+              <div class="detail-row"><span>Mobile Number:</span> <strong>${esc(custPhone)}</strong></div>
+              <div class="detail-row"><span>Delivery Address:</span> <strong style="text-align:right; max-width:60%;">${esc(address)}</strong></div>
+              <div class="detail-row"><span>Order Date:</span> <span>${esc(date)}</span></div>
+            </div>
+
+            <!-- Items Purchased -->
+            <h4 style="color:#C9A14A; font-size:13px; text-transform:uppercase; letter-spacing:1px; margin-bottom:12px;">Order Items</h4>
+            <div style="margin-bottom:20px;">
+              ${items.map(it => `
+                <div style="display:flex; justify-content:space-between; align-items:center; padding:12px; background:#181818; border-radius:6px; margin-bottom:8px; border:1px solid #252525;">
+                  <div>
+                    <strong style="font-size:14px; display:block;">${esc(it.name || it.title || 'Item')}</strong>
+                    <span style="color:#888; font-size:12px;">Size / Variant: ${esc(it.size || it.variant || 'Default')}</span>
+                  </div>
+                  <div style="text-align:right;">
+                    <span style="font-size:12px; color:#aaa;">${esc(it.qty || it.quantity || 1)} × ৳${esc(it.price || it.unitPrice || 0)}</span>
+                    <strong style="display:block; color:#C9A14A; margin-top:2px;">৳${esc((it.qty || it.quantity || 1) * (it.price || it.unitPrice || 0))}</strong>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+
+            <!-- Financial Summary -->
+            <div style="background:#181818; padding:16px; border-radius:6px; border:1px solid #252525;">
+              <div class="detail-row"><span>Items Subtotal:</span> <span>৳${esc(subtotal)}</span></div>
+              <div class="detail-row"><span>Delivery Fee:</span> <span>৳${esc(deliveryCharge)}</span></div>
+              <div class="detail-row" style="font-size:18px; font-weight:700; color:#C9A14A; margin-top:6px; padding-top:10px; border-top:1px solid #333;">
+                <span>Grand Total:</span>
+                <span>৳${esc(total)}</span>
+              </div>
+            </div>
+          </div>
+        `;
+      } catch (e) {
+        out.innerHTML = '<p style="color:#e06650; margin-top:20px;">Could not load order details.</p>';
+        console.error(e);
+      }
+
+      setTimeout(() => { if (typeof updateUIText === 'function') updateUIText(); }, 50);
+    });
+  </script>
+</body>
+</html>
