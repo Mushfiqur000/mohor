@@ -31,7 +31,9 @@
     <header class="site-header" id="siteHeader">
         <nav class="nav container">
             <a href="index.html" class="brand-logo" aria-label="Mohor Clothings — Home">
-                <img src="assets/logo-ink.png" alt="Mohor Clothings" width="150" height="45">
+                <!-- Provide both logo variants and show/hide via CSS depending on theme -->
+                <img src="assets/logo-ink.png" alt="Mohor Clothings" class="logo-dark" width="150" height="45">
+                <img src="assets/logo-white.png" alt="Mohor Clothings" class="logo-light" width="150" height="45">
             </a>
 
             <div class="nav-links" id="navLinks">
@@ -107,11 +109,6 @@
                     <div class="view-controls" style="display:inline-flex; gap:8px; margin-left:8px; align-items:center;">
                         <button type="button" id="btnViewGrid" class="btn btn-ghost" title="Grid view">▦</button>
                         <button type="button" id="btnViewList" class="btn btn-ghost" title="List view">☰</button>
-                        <select id="viewSizeSelect" class="input" style="width:120px;">
-                            <option value="medium">Size: Medium</option>
-                            <option value="small">Size: Small</option>
-                            <option value="large">Size: Large</option>
-                        </select>
                     </div>
 
                 </div>

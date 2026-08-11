@@ -321,7 +321,6 @@ function renderProducts(productsToRender) {
 
     // Apply view classes from saved preferences
     const viewMode = localStorage.getItem('mohor_view_mode') || 'grid';
-    const viewSize = localStorage.getItem('mohor_view_size') || 'medium';
     productGrid.classList.toggle('view-list', viewMode === 'list');
 
     productGrid.innerHTML = '';
@@ -333,7 +332,7 @@ function renderProducts(productsToRender) {
     productGrid.classList.add('reveal-stagger');
     productsToRender.forEach(product => {
         const card = document.createElement('div');
-        card.className = `product-card ${viewSize}`;
+        card.className = 'product-card';
         card.onclick = () => {
             if (window.innerWidth <= 900) {
                 window.location.href = `product.html?id=${String(product.id)}`;
@@ -382,21 +381,17 @@ window.renderProducts = renderProducts;
 function initViewControls() {
     const btnGrid = document.getElementById('btnViewGrid');
     const btnList = document.getElementById('btnViewList');
-    const sizeSelect = document.getElementById('viewSizeSelect');
     const productGrid = document.getElementById('productGrid');
 
     const apply = () => {
         const mode = localStorage.getItem('mohor_view_mode') || 'grid';
-        const size = localStorage.getItem('mohor_view_size') || 'medium';
         if (productGrid) productGrid.classList.toggle('view-list', mode === 'list');
         // re-render current products to apply layout
         if (window._lastRenderedProducts) renderProducts(window._lastRenderedProducts);
-        if (sizeSelect) sizeSelect.value = size;
     };
 
     if (btnGrid) btnGrid.addEventListener('click', () => { localStorage.setItem('mohor_view_mode','grid'); apply(); });
     if (btnList) btnList.addEventListener('click', () => { localStorage.setItem('mohor_view_mode','list'); apply(); });
-    if (sizeSelect) sizeSelect.addEventListener('change', (e) => { localStorage.setItem('mohor_view_size', e.target.value); apply(); });
 
     apply();
 }
