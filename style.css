@@ -265,6 +265,23 @@ select.input {
 
 .nav-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
 
+/* Logo variants: show dark ink logo in light theme, white logo in dark theme */
+.brand-logo .logo-light { display: none; }
+.brand-logo .logo-dark { display: block; }
+
+/* Respect explicit data-theme dark override and OS preference */
+@media (prefers-color-scheme: dark) {
+  .brand-logo .logo-dark { display: none; }
+  .brand-logo .logo-light { display: block; }
+}
+:root[data-theme='dark'] .brand-logo .logo-dark { display: none; }
+:root[data-theme='dark'] .brand-logo .logo-light { display: block; }
+
+/* Ensure nav link contrast in dark mode */
+:root[data-theme='dark'] .nav-links a { color: var(--surface); }
+:root[data-theme='dark'] .nav-links a.active { color: var(--brass-deep); }
+
+
 .lang-btn {
   background: var(--ink); color: var(--surface); border: none; padding: 8px 13px; font-family: var(--font-mono);
   font-size: 11px; font-weight: 500; letter-spacing: 0.5px; border-radius: var(--radius-full); transition: background var(--dur) var(--ease), transform var(--dur-fast) var(--ease);
