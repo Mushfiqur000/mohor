@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500">
+  <rect width="400" height="500" fill="#F5F1EC"/>
+  <rect x="0.5" y="0.5" width="399" height="499" fill="none" stroke="#E7DFD5" stroke-width="1"/>
+  <g transform="translate(200,235)" fill="none" stroke="#C9A14A" stroke-width="1.4" opacity="0.85">
+    <rect x="-38" y="-30" width="76" height="60" rx="3"/>
+    <circle cx="-19" cy="-12" r="7"/>
+    <path d="M-38 18 L-12 -4 L8 14 L20 2 L38 18"/>
+  </g>
+  <text x="200" y="288" text-anchor="middle" font-family="Georgia, serif" font-size="15" letter-spacing="3" fill="#8A7F76">MOHOR</text>
+</svg>
