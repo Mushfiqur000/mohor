@@ -350,10 +350,13 @@ window.checkoutToAdmin = async function() {
         // recompute each line item from the canonical catalog. Client-side
         // mitigation only; the real guard belongs in Firestore rules / a Cloud Function.
         const verifiedItems = window.cart.map(item => ({
-            name: item.name, size: item.size, qty: item.qty, price: getCanonicalPrice(item)
+            name: String(item.name || item.baseTitle || 'Item'),
+            size: String(item.size || 'Standard'),
+            qty: Number(item.qty) || 1,
+            price: Number(getCanonicalPrice(item)) || 0
         }));
-        const verifiedSubtotal = verifiedItems.reduce((sum, item) => sum + (item.price * item.qty), 0);
-        const verifiedTotal = verifiedSubtotal + orderData.deliveryFee;
+        const verifiedSubtotal = Number(verifiedItems.reduce((sum, item) => sum + (item.price * item.qty), 0)) || 0;
+        const verifiedTotal = Number(verifiedSubtotal + (orderData.deliveryFee || 0)) || 0;
 
         // Use null for guest orders (avoids writing the literal string 'guest')
         const resolvedUserId = (activeUid && activeUid !== 'guest') ? activeUid : null;
@@ -366,7 +369,7 @@ window.checkoutToAdmin = async function() {
             customerPhone: orderData.phone,
             deliveryAddress: orderData.address,
             deliveryZone: orderData.zoneText,
-            deliveryFee: orderData.deliveryFee,
+            deliveryFee: Number(orderData.deliveryFee) || 0,
             subtotal: verifiedSubtotal,
             totalAmount: verifiedTotal,
             items: verifiedItems,
