@@ -497,7 +497,8 @@ select.input {
 /* Keep the primary action visible while scrolling */
 .modal-info .modal-add-btn { position: sticky; bottom: 12px; z-index: 10; }
 .modal-info .card-cat { font-family: var(--font-mono); font-size: 10px; letter-spacing: 1.8px; text-transform: uppercase; color: var(--maroon); }
-.modal-info h2 { font-size: 1.5rem; margin: 8px 0 10px; }
+.modal-info h2 { font-size: 1.5rem; margin: 8px 0 10px; color: var(--ink); }
+#modalTitle, .modal-title, .product-details h2 { color: var(--ink) !important; }
 .modal-info .modal-price { font-family: var(--font-mono); color: var(--brass-deep); font-weight: 600; font-size: 1.2rem; margin-bottom: 16px; }
 .modal-info .modal-desc { color: var(--ink-muted); font-size: 0.88rem; line-height: 1.75; margin-bottom: 18px; }
 
@@ -730,7 +731,7 @@ select.input {
 .pd-thumbs .thumbnail.active, .pd-thumbs .thumbnail:hover { opacity: 1; border-color: var(--brass); }
 
 .pd-info .card-cat { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 1.8px; text-transform: uppercase; color: var(--maroon); }
-.pd-info h1 { font-size: 1.7rem; margin: 10px 0 12px; }
+.pd-info h1 { font-size: 1.7rem; margin: 10px 0 12px; color: var(--ink); }
 .pd-info .pd-price { font-family: var(--font-mono); color: var(--brass-deep); font-weight: 600; font-size: 1.35rem; margin-bottom: 20px; }
 .pd-info .pd-desc { color: var(--ink-muted); font-size: 0.92rem; line-height: 1.8; margin-bottom: 22px; }
 
@@ -782,7 +783,7 @@ select.input {
   }
   /* Enforce improved contrast on headings and body text in dark mode */
   body { background-color: var(--muslin); color: var(--ink); }
-  h1,h2,h3,h4,h5 { color: var(--surface); }
+  h1,h2,h3,h4,h5 { color: var(--ink); }
   .card-title, .card-price, .card-cat, .btn-outline, .btn-ghost { color: var(--ink); }
   .section-head p, .modal-desc, .pd-info .pd-desc { color: var(--ink-muted); }
   .site-header { background: rgba(8,8,8,0.85); backdrop-filter: none; }
@@ -792,14 +793,29 @@ select.input {
 
 /* Theme-aware helpers to ensure text toggles brightness with theme */
 :root[data-theme='dark'] {
-  --ink: #f7f4f1;
-  --ink-muted: #d2cdc8;
-  --ink-faint: #a8a39f;
+  --muslin: #0b0b0c;
+  --parchment: #080808;
+  --surface: #0b0b0c;
+  --ink: #f3efe9;
+  --ink-muted: #cfc9c5;
+  --ink-faint: #9f9a96;
+  --border: #1d1d1d;
+  --border-strong: #2b2b2b;
+  --maroon: #ffb3b3;
+  --brass: #d9b56a;
 }
+
 :root[data-theme='light'] {
+  --muslin: #F5F1EC;
+  --parchment: #FBF8F3;
+  --surface: #FFFFFF;
   --ink: #221B18;
   --ink-muted: #7C716C;
   --ink-faint: #A79E98;
+  --border: #E7DFD5;
+  --border-strong: #D8CCBC;
+  --maroon: #8B0000;
+  --brass: #C9A14A;
 }
 
 /* Product grid / list view sizing */
@@ -827,25 +843,13 @@ select.input {
 /* small helper for view controls */
 .view-controls .input { font-size:0.86rem; }
 
-/* Manual theme override via data-theme attribute on <html> */
-:root[data-theme='dark'] {
-  --muslin: #0b0b0c;
-  --parchment: #080808;
-  --surface: #0b0b0c;
-  --ink: #f3efe9;
-  --ink-muted: #cfc9c5;
-  --ink-faint: #9f9a96;
-  --border: #1d1d1d;
-  --border-strong: #2b2b2b;
-  --maroon: #ffb3b3;
-  --brass: #d9b56a;
-}
-
-:root[data-theme='light'] {
-  /* fallback to default light palette (no change needed) */
-}
-
 /* Theme toggle button style */
 #themeToggleBtn { background: none; border: none; font-size: 16px; padding: 8px 10px; border-radius: 8px; }
 #themeToggleBtn:hover { background: var(--brass-soft); }
 
+/* Fix product title & modal header color contrast across themes */
+#modalTitle,
+.modal-title,
+.product-details h2 {
+  color: var(--ink) !important;
+}
