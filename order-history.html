@@ -36,6 +36,13 @@
           <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>
           <span class="icon-btn-label" data-i18n="navAccount">Account</span>
         </button>
+        <button type="button" id="openCartBtn" class="icon-btn" aria-label="Cart">
+          <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          <span class="cart-badge" id="cartBadge" data-count="0">0</span>
+        </button>
+        <button type="button" class="menu-toggle" id="menuToggle" aria-label="Menu" aria-expanded="false" aria-controls="navLinks">
+          <span></span><span></span><span></span>
+        </button>
       </div>
     </nav>
   </header>
@@ -53,6 +60,25 @@
       <p class="order-history-loading" data-i18n="accLoadingOrders">Loading orders…</p>
     </div>
   </main>
+
+  <!-- Cart Sidebar -->
+  <div class="cart-overlay" id="cartOverlay"></div>
+  <div class="cart-sidebar" id="cartSidebar">
+    <div class="side-header">
+      <h3 data-i18n="cartTitle">Your Cart</h3>
+      <button type="button" class="side-close" id="closeCartBtn" aria-label="Close cart">&times;</button>
+    </div>
+    <div class="cart-items" id="cartItemsContainer"></div>
+    <div class="side-footer">
+      <div class="cart-total-row">
+        <span data-i18n="cartTotal">Total</span>
+        <span class="amount">৳<span id="cartTotalValue">0</span></span>
+      </div>
+      <button type="button" id="adminOrderBtn" class="btn btn-dark btn-block" onclick="window.checkoutToAdmin()" style="margin-bottom:8px;">
+        <span class="spinner"></span><span class="btn-label" data-i18n="btnConfirmOrder">Confirm Order</span>
+      </button>
+    </div>
+  </div>
 
   <!-- Account Sidebar Modal -->
   <div class="account-overlay" id="accountOverlay"></div>
