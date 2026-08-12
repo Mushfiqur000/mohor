@@ -3,59 +3,119 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Order History | Mohor</title>
-  <link rel="icon" type="image/jpeg" href="favicon.jpeg">
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
-  <style>
-    body { opacity: 1 !important; background-color: #0c0c0c; color: #fff; }
-  </style>
+  <title>Order History | Mohor Clothings</title>
+
+  <link rel="icon" type="image/png" sizes="512x512" href="assets/favicon-512.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="assets/favicon-192.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Work+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+Bengali:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css?v=21">
 </head>
 <body>
-  <header class="site-header">
+
+  <header class="site-header" id="siteHeader">
     <nav class="nav container">
-      <a href="index.html" class="brand-logo"><img src="assets/logo-ink.png" alt="Mohor" width="150"></a>
+      <a href="index.html" class="brand-logo" aria-label="Mohor Clothings — Home">
+        <img src="assets/logo-ink.png" alt="Mohor Clothings" class="logo-dark" width="150" height="45">
+        <img src="assets/logo-white.png" alt="Mohor Clothings" class="logo-light" width="150" height="45">
+      </a>
+      <div class="nav-links" id="navLinks">
+        <a href="index.html" data-i18n="navShop">Shop</a>
+        <a href="order-history.html" class="active" data-i18n="navOrders">Order History</a>
+        <a href="about.html" data-i18n="navAbout">About Us</a>
+        <a href="policy.html" data-i18n="navPolicy">Policy</a>
+      </div>
       <div class="nav-actions">
-        <a href="index.html" class="btn btn-ghost" data-i18n="navShop">Shop</a>
-        <button type="button" id="openAccountBtn" class="icon-btn" data-i18n="navAccount">Account</button>
+        <button type="button" id="langToggleBtn" class="lang-btn" aria-label="Switch language">EN<span class="lang-sep">/</span>বাং</button>
+        <button type="button" id="themeToggleBtn" class="icon-btn" aria-label="Toggle theme">🌗</button>
+        <button type="button" id="openAccountBtn" class="icon-btn" aria-label="Account">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>
+          <span class="icon-btn-label" data-i18n="navAccount">Account</span>
+        </button>
       </div>
     </nav>
   </header>
 
-  <main class="container" style="padding:36px 5% 80px; max-width:900px;">
-    <h1 style="margin-bottom:8px;" data-i18n="accOrderHistory">My Order History</h1>
-    <p style="color:var(--ink-muted); margin-bottom:18px;">A consolidated view of your past orders. Sign in if you are not already.</p>
+  <!-- Page Banner Styled Exactly Like Delivery & Return Policy -->
+  <section class="page-header">
+    <span class="eyebrow" data-i18n="aboutEyebrow">Your Account</span>
+    <h1 data-i18n="accOrderHistory">My Order History</h1>
+    <p>A consolidated view of your past orders. Sign in if you are not already.</p>
+    <svg class="stitch-rule" viewBox="0 0 72 9" aria-hidden="true"><line x1="0" y1="4" x2="72" y2="4"/></svg>
+  </section>
 
+  <main class="container" style="padding:48px 5% 80px; max-width:900px;">
     <div id="userOrderHistoryContainer">
       <p class="order-history-loading" data-i18n="accLoadingOrders">Loading orders…</p>
     </div>
   </main>
 
-  <!-- Account Sidebar Modal for Header Link -->
-  <div class="cart-overlay" id="accountOverlay"></div>
-  <div class="cart-sidebar" id="accountSidebar" style="padding: 20px; overflow-y: auto;">
-      <div class="cart-header" style="padding: 0 0 20px 0; background: transparent; border-bottom: 1px solid var(--border-color);">
-          <h3 id="accountModalTitle" data-i18n="accTitle">Customer Account</h3>
-          <button type="button" class="close-cart" id="closeAccountBtn" style="border: none; background: none; font-size: 28px; cursor: pointer; color:#fff;">&times;</button>
+  <!-- Account Sidebar Modal -->
+  <div class="account-overlay" id="accountOverlay"></div>
+  <div class="account-sidebar" id="accountSidebar">
+    <div class="side-header">
+      <h3 id="accountModalTitle" data-i18n="accTitle">Customer Account</h3>
+      <button type="button" class="side-close" id="closeAccountBtn" aria-label="Close account panel">&times;</button>
+    </div>
+    <div class="account-body">
+      <div id="authView">
+        <div id="loginFormContainer">
+          <h4 style="font-size:1.05rem; margin-bottom:16px; text-align:center;" data-i18n="accLoginTitle">Login to Your Account</h4>
+          <div class="field"><input type="email" id="loginEmail" class="input" data-i18n-placeholder="accEmailPlaceholder" placeholder="Email Address"></div>
+          <div class="field"><input type="password" id="loginPassword" class="input" data-i18n-placeholder="accPassPlaceholder" placeholder="Password"></div>
+          <button type="button" class="btn btn-dark btn-block" onclick="window.handleLogin(event)"><span class="spinner"></span><span class="btn-label" data-i18n="accLoginBtn">Log In</span></button>
+          <p class="auth-tabs-msg"><span data-i18n="accNoAccount">Don't have an account?</span> <a href="#" class="auth-switch-link" onclick="window.toggleAuthMode();return false;" data-i18n="accSignUpLink">Sign up</a></p>
+        </div>
+        <div id="signupFormContainer" style="display:none;">
+          <h4 style="font-size:1.05rem; margin-bottom:16px; text-align:center;" data-i18n="accSignupTitle">Create an Account</h4>
+          <div class="field"><input type="text" id="signupName" class="input" data-i18n-placeholder="accNamePlaceholder" placeholder="Full Name"></div>
+          <div class="field"><input type="email" id="signupEmail" class="input" data-i18n-placeholder="accEmailPlaceholder" placeholder="Email Address"></div>
+          <div class="field"><input type="password" id="signupPassword" class="input" data-i18n-placeholder="accPassMinPlaceholder" placeholder="Password (min 6 characters)"></div>
+          <button type="button" class="btn btn-dark btn-block" onclick="window.handleSignup(event)"><span class="spinner"></span><span class="btn-label" data-i18n="accSignupBtn">Sign Up</span></button>
+          <p class="auth-tabs-msg"><span data-i18n="accHasAccount">Already have an account?</span> <a href="#" class="auth-switch-link" onclick="window.toggleAuthMode();return false;" data-i18n="accLoginLink">Log in</a></p>
+        </div>
       </div>
-      <div id="authView" style="margin-top: 20px;">
-          <div id="loginFormContainer">
-              <h4 style="margin-bottom: 15px; font-size: 16px;" data-i18n="accLoginTitle">Login to Your Account</h4>
-              <input type="email" id="loginEmail" placeholder="Email Address" data-i18n-placeholder="accEmailPlaceholder" style="width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid #333; background:#181818; color:#fff; border-radius: 4px;">
-              <input type="password" id="loginPassword" placeholder="Password" data-i18n-placeholder="accPassPlaceholder" style="width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #333; background:#181818; color:#fff; border-radius: 4px;">
-              <button type="button" onclick="window.handleLogin()" style="width: 100%; background: var(--primary-gold); color: white; padding: 14px; border: none; font-weight: 600; cursor: pointer; border-radius: 4px;" data-i18n="accLoginBtn">LOG IN</button>
-          </div>
+
+      <div id="profileView" style="display:none;">
+        <div class="profile-avatar" id="profileAvatarInitial">M</div>
+        <p class="profile-email"><span data-i18n="accLoggedInAs">Logged in as</span><br><strong id="userProfileEmail"></strong></p>
+        <button type="button" class="btn btn-ghost btn-block" style="margin-top:12px;" onclick="window.handleLogout(event)"><span class="spinner"></span><span class="btn-label" data-i18n="accLogoutBtn">Log Out</span></button>
       </div>
-      <div id="profileView" style="display: none; margin-top: 10px;">
-          <p style="font-size: 12px; color: #888;" data-i18n="accLoggedInAs">Logged in as:</p>
-          <strong id="userProfileEmail" style="font-size: 14px; display: block; margin-bottom: 15px; color: #fff;"></strong>
-          <button type="button" onclick="window.handleLogout()" style="background: transparent; color: #d9534f; border: 1px solid #d9534f; padding: 8px 15px; font-size: 11px; cursor: pointer; border-radius: 4px;">LOG OUT</button>
-      </div>
+    </div>
   </div>
 
-  <footer class="site-footer" style="margin-top: 60px;">
-    <div class="container" style="text-align: center; padding: 20px 0;">
-      <p style="font-size: 12px; color: rgba(250,243,236,0.6);" data-i18n="footerText">&copy; 2026 Mohor Clothings Bangladesh. All Rights Reserved.</p>
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <img src="assets/logo-white.png" alt="Mohor Clothings" width="130" height="39">
+          <p data-i18n="footerTagline">Handcrafted luxury fashion, stitched with tradition — from Sylhet to all of Bangladesh.</p>
+        </div>
+        <div class="footer-col">
+          <h5 data-i18n="footerShopHeading">Shop</h5>
+          <a href="index.html" data-i18n="navShop">Shop</a>
+          <a href="about.html" data-i18n="navAbout">About Us</a>
+          <a href="policy.html" data-i18n="navPolicy">Policy</a>
+        </div>
+        <div class="footer-col">
+          <h5 data-i18n="footerHelpHeading">Help</h5>
+          <a href="policy.html">Delivery &amp; Returns</a>
+          <a href="cart.html" data-i18n="navCart">Cart</a>
+        </div>
+        <div class="footer-col">
+          <h5 data-i18n="footerContactHeading">Contact</h5>
+          <a href="https://wa.me/8801330113027" target="_blank" rel="noopener">WhatsApp: +880 1330-113027</a>
+          <p data-i18n="footerDelivery">Nationwide delivery across Bangladesh</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span data-i18n="footerText">&copy; 2026 Mohor Clothings Bangladesh. All Rights Reserved.</span>
+        <span class="made-with" data-i18n="footerMadeWith">Handcrafted in Sylhet</span>
+      </div>
     </div>
   </footer>
 
@@ -76,7 +136,6 @@
   <script type="module" src="auth.js?v=21"></script>
 
   <script>
-    // Clean .html from URL bar
     if (window.location.pathname.endsWith('.html')) {
       const cleanPath = window.location.pathname.replace(/\.html$/, '') + window.location.search;
       window.history.replaceState(null, '', cleanPath);
@@ -91,7 +150,7 @@
               window.loadUserOrders(user.uid);
             }
           } else {
-            container.innerHTML = '<p style="color:var(--ink-muted);">Please sign in to view your order history. Open Account (top-right) to log in.</p>';
+            container.innerHTML = '<p class="order-history-empty">Please sign in to view your order history. Open Account (top-right) to log in.</p>';
           }
         });
       }
