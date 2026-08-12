@@ -372,7 +372,7 @@ window.checkoutToAdmin = async function() {
             items: verifiedItems,
             // Use serverTimestamp so ordering and timezone are canonical
             orderDate: firebase && firebase.firestore ? firebase.firestore.FieldValue.serverTimestamp() : new Date().toISOString(),
-            status: 'New'
+            status: 'pending'
         };
 
         await window.db.collection('orders').add(newOrder);
