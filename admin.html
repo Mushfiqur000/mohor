@@ -499,7 +499,6 @@ tbody tr:hover { background: rgba(245,241,236,0.6); }
             <form id="add-product-form">
               <div class="form-grid">
                 
-                <!-- UPGRADE: Added English & Bengali dual fields -->
                 <div class="form-group">
                   <label>Product Title</label>
                   <input type="text" id="prod-title-en" placeholder="English (e.g. Peach Vila 3-Piece)" required style="margin-bottom:8px;">
@@ -527,7 +526,6 @@ tbody tr:hover { background: rgba(245,241,236,0.6); }
                   <input type="number" id="prod-qty" min="0" placeholder="e.g. 15" required>
                 </div>
 
-                <!-- UPGRADE: Added English & Bengali dual fields -->
                 <div class="form-group">
                   <label>Colors (comma separated)</label>
                   <input type="text" id="prod-colors-en" placeholder="English: Peach Pink, Navy Blue" required style="margin-bottom:8px;">
@@ -541,21 +539,18 @@ tbody tr:hover { background: rgba(245,241,236,0.6); }
                   <div class="form-hint">One block per size. List each measurement on its own line.</div>
                 </div>
 
-                <!-- UPGRADE: Added English & Bengali dual fields -->
                 <div class="form-group full-width">
                   <label>Size Guide (pop-up shown on the storefront)</label>
                   <textarea id="prod-measurements-en" rows="3" placeholder="English Size Guide..." style="margin-bottom:8px;"></textarea>
                   <textarea id="prod-measurements-bn" rows="3" placeholder="Bengali Size Guide..."></textarea>
                 </div>
 
-                <!-- UPGRADE: Added English & Bengali dual fields -->
                 <div class="form-group full-width">
                   <label>Main Description</label>
                   <textarea id="prod-desc-en" rows="3" placeholder="English Description..." style="margin-bottom:8px;"></textarea>
                   <textarea id="prod-desc-bn" rows="3" placeholder="Bengali Description..."></textarea>
                 </div>
 
-                <!-- UPGRADE: Added English & Bengali dual fields -->
                 <div class="form-group full-width">
                   <label>Product Details (one point per line)</label>
                   <textarea id="prod-details-en" rows="4" placeholder="English Details (e.g. Fabric: Cotton)..." style="margin-bottom:8px;"></textarea>
@@ -624,7 +619,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/fireba
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { getFirestore, collection, onSnapshot, doc, updateDoc, addDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-/* ---------- FIREBASE CONFIG (unchanged — same live MOHOR project) ---------- */
+/* ---------- FIREBASE CONFIG ---------- */
 const firebaseConfig = {
   apiKey: "AIzaSyALxypXDkF9QexbD_wE7-ADALIdj5vd-rY",
   authDomain: "mohor-app.firebaseapp.com",
@@ -656,7 +651,16 @@ const PRODUCTS_PER_PAGE = 10;
 
 let lowStockThreshold = 5;
 
-/* ---------- UPGRADE: Safe translation extraction helpers ---------- */
+/* ---------- SAFE DATE PARSER (Handles Firestore Timestamps, Strings, and Date objects) ---------- */
+function parseDate(dateVal) {
+  if (!dateVal) return new Date(0);
+  if (typeof dateVal.toDate === 'function') return dateVal.toDate();
+  if (typeof dateVal === 'object' && 'seconds' in dateVal) return new Date(dateVal.seconds * 1000);
+  const d = new Date(dateVal);
+  return isNaN(d.getTime()) ? new Date(0) : d;
+}
+
+/* ---------- TRANSLATION HELPERS ---------- */
 function getSafeStr(field, lang) {
   if (!field) return '';
   if (typeof field === 'string') return lang === 'en' ? field : '';
@@ -677,10 +681,10 @@ function csvEscape(val) {
   if (/[",\n]/.test(s)) return '"' + s.replace(/"/g, '""') + '"';
   return s;
 }
-function timeAgo(dateStr) {
-  if (!dateStr) return '';
-  const then = new Date(dateStr).getTime();
-  if (isNaN(then)) return '';
+function timeAgo(dateVal) {
+  if (!dateVal) return '';
+  const then = parseDate(dateVal).getTime();
+  if (!then) return '';
   const diffMs = Date.now() - then;
   const mins = Math.floor(diffMs / 60000);
   if (mins < 1) return 'Just now';
@@ -689,11 +693,12 @@ function timeAgo(dateStr) {
   if (hrs < 24) return hrs + 'h ago';
   const days = Math.floor(hrs / 24);
   if (days < 30) return days + 'd ago';
-  return new Date(dateStr).toLocaleDateString();
+  return parseDate(dateVal).toLocaleDateString();
 }
 function statusClass(status) {
-  const known = ['pending', 'confirmed', 'shipped', 'completed', 'cancelled'];
+  const known = ['pending', 'confirmed', 'shipped', 'completed', 'cancelled', 'placed', 'new'];
   const s = (status || 'pending').toLowerCase();
+  if (s === 'placed' || s === 'new') return 'status-pending';
   return 'status-' + (known.includes(s) ? s : 'pending');
 }
 function money(n) { return '৳' + Number(n || 0).toLocaleString(); }
@@ -831,7 +836,8 @@ function fetchOrders() {
   onSnapshot(collection(db, "orders"), (snapshot) => {
     allOrders = [];
     snapshot.forEach(d => allOrders.push({ id: d.id, ...d.data() }));
-    allOrders.sort((a, b) => new Date(b.orderDate || 0) - new Date(a.orderDate || 0));
+    // FIXED: Uses parseDate for accurate Timestamp sorting
+    allOrders.sort((a, b) => parseDate(b.orderDate).getTime() - parseDate(a.orderDate).getTime());
     renderOverview();
     renderOrdersTable();
   }, (error) => {
@@ -861,7 +867,9 @@ async function updateOrderStatus(orderId, newStatus, buttonEl, selectEl) {
 function getFilteredSortedOrders() {
   const q = orderSearch.trim().toLowerCase();
   let out = allOrders.filter(o => {
-    const matchesStatus = orderStatusFilter === 'All' || (o.status || 'Pending') === orderStatusFilter;
+    const sLower = (o.status || 'pending').toLowerCase();
+    const filterLower = orderStatusFilter.toLowerCase();
+    const matchesStatus = orderStatusFilter === 'All' || sLower === filterLower || (filterLower === 'pending' && (sLower === 'placed' || sLower === 'new'));
     const matchesSearch = !q ||
       (o.customerName || '').toLowerCase().includes(q) ||
       (o.customerPhone || '').toLowerCase().includes(q) ||
@@ -869,9 +877,9 @@ function getFilteredSortedOrders() {
     return matchesStatus && matchesSearch;
   });
   out = out.slice().sort((a, b) => {
-    if (orderSort === 'oldest') return new Date(a.orderDate || 0) - new Date(b.orderDate || 0);
+    if (orderSort === 'oldest') return parseDate(a.orderDate).getTime() - parseDate(b.orderDate).getTime();
     if (orderSort === 'highest') return (b.totalAmount || 0) - (a.totalAmount || 0);
-    return new Date(b.orderDate || 0) - new Date(a.orderDate || 0);
+    return parseDate(b.orderDate).getTime() - parseDate(a.orderDate).getTime();
   });
   return out;
 }
@@ -912,9 +920,9 @@ function renderOrdersTable() {
         ).join('<br>');
       }
       const currentStatus = order.status || 'Pending';
-      const orderDateStr = order.orderDate ? new Date(order.orderDate).toLocaleDateString() : 'N/A';
+      const orderDateStr = order.orderDate ? parseDate(order.orderDate).toLocaleDateString() : 'N/A';
       const statuses = ['Pending', 'Confirmed', 'Shipped', 'Completed', 'Cancelled'];
-      const options = statuses.map(s => `<option value="${s}" ${currentStatus === s ? 'selected' : ''}>${s}</option>`).join('');
+      const options = statuses.map(s => `<option value="${s}" ${currentStatus.toLowerCase() === s.toLowerCase() ? 'selected' : ''}>${s}</option>`).join('');
       return `
         <tr>
           <td class="mono" style="font-size:11px;color:#999;">${escapeHtml(order.id)}</td>
@@ -959,7 +967,7 @@ document.getElementById('export-csv-btn').addEventListener('click', () => {
   const lines = [headers.map(csvEscape).join(',')];
   rows.forEach(o => {
     const items = (o.items || []).map(i => `${i.name || ''} (${i.size || ''}) x${i.qty || 1}`).join('; ');
-    lines.push([o.id, o.customerName || '', o.customerPhone || '', o.deliveryAddress || '', items, o.totalAmount || 0, o.orderDate ? new Date(o.orderDate).toLocaleDateString() : '', o.status || 'Pending'].map(csvEscape).join(','));
+    lines.push([o.id, o.customerName || '', o.customerPhone || '', o.deliveryAddress || '', items, o.totalAmount || 0, o.orderDate ? parseDate(o.orderDate).toLocaleDateString() : '', o.status || 'Pending'].map(csvEscape).join(','));
   });
   const blob = new Blob([lines.join('\n')], { type: 'text/csv;charset=utf-8;' });
   const url = URL.createObjectURL(blob);
@@ -974,8 +982,10 @@ document.getElementById('export-csv-btn').addEventListener('click', () => {
 function renderOverview() {
   let totalSales = 0, pendingActions = 0;
   allOrders.forEach(o => {
-    if (o.status !== 'Cancelled') totalSales += Number(o.totalAmount || 0);
-    if (!o.status || o.status === 'Pending') pendingActions++;
+    const sLower = (o.status || '').toLowerCase();
+    if (sLower !== 'cancelled') totalSales += Number(o.totalAmount || 0);
+    // FIXED: Case-insensitive check for pending status
+    if (!o.status || sLower === 'pending' || sLower === 'placed' || sLower === 'new') pendingActions++;
   });
   document.getElementById('stat-sales').innerText = money(totalSales);
   document.getElementById('stat-orders').innerText = allOrders.length;
@@ -1008,8 +1018,9 @@ function renderChart() {
     days.push({ date: d, key: d.toDateString(), total: 0 });
   }
   allOrders.forEach(o => {
-    if (o.status === 'Cancelled' || !o.orderDate) return;
-    const key = new Date(o.orderDate).toDateString();
+    const sLower = (o.status || '').toLowerCase();
+    if (sLower === 'cancelled' || !o.orderDate) return;
+    const key = parseDate(o.orderDate).toDateString();
     const day = days.find(d => d.key === key);
     if (day) day.total += Number(o.totalAmount || 0);
   });
@@ -1064,7 +1075,7 @@ function fetchProducts() {
   onSnapshot(collection(db, "products"), (snapshot) => {
     allProducts = [];
     snapshot.forEach(d => allProducts.push({ id: d.id, ...d.data() }));
-    allProducts.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+    allProducts.sort((a, b) => parseDate(b.createdAt).getTime() - parseDate(a.createdAt).getTime());
     renderOverview();
     renderProductsTable();
     renderInventoryTable();
@@ -1168,7 +1179,6 @@ document.getElementById('low-stock-threshold').addEventListener('input', (e) => 
 /* ---------- ADD / EDIT PRODUCT FORM ---------- */
 const sizeBlocksContainer = document.getElementById('size-blocks-container');
 
-// UPGRADE: Size blocks now load both EN and BN text areas
 function createSizeBlockHTML(label = '', measurementsTextEn = '', measurementsTextBn = '') {
   return `
     <div class="size-block">
@@ -1199,7 +1209,6 @@ sizeBlocksContainer.addEventListener('click', (e) => {
   }
 });
 
-// UPGRADE: This now saves your sizes nicely formatted as an EN/BN object for Firebase
 function collectSizesFromForm() {
   const sizesArray = [];
   const sizeMeasurementsMap = {};
@@ -1240,7 +1249,6 @@ function loadProductIntoForm(id) {
   if (!prod) return;
   editingProductId = id;
   
-  // UPGRADE: Loads data perfectly into English and Bengali inputs safely
   document.getElementById('prod-title-en').value = getSafeStr(prod.title, 'en');
   document.getElementById('prod-title-bn').value = getSafeStr(prod.title, 'bn');
   document.getElementById('prod-category').value = prod.category || 'three-piece';
@@ -1312,7 +1320,6 @@ addProductForm.addEventListener('submit', async (e) => {
   uploadStatus.className = '';
 
   try {
-    // UPGRADE: Now collects BOTH languages and compiles them into a clean JSON object for Firebase
     const title = {
       en: document.getElementById('prod-title-en').value.trim(),
       bn: document.getElementById('prod-title-bn').value.trim() || document.getElementById('prod-title-en').value.trim()
