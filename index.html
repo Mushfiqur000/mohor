@@ -47,14 +47,14 @@ src="https://www.facebook.com/tr?id=920711640501746&ev=PageView&noscript=1"
 
     <header class="site-header" id="siteHeader">
         <nav class="nav container">
-            <a href="index.html" class="brand-logo" aria-label="Mohor Clothings — Home">
+            <a href="./" class="brand-logo" aria-label="Mohor Clothings — Home">
                 <!-- Provide both logo variants and show/hide via CSS depending on theme -->
                 <img src="assets/logo-ink.png" alt="Mohor Clothings" class="logo-dark" width="150" height="45">
                 <img src="assets/logo-white.png" alt="Mohor Clothings" class="logo-light" width="150" height="45">
             </a>
 
             <div class="nav-links" id="navLinks">
-                <a href="index.html" class="active" data-i18n="navShop">Shop</a>
+                <a href="./" class="active" data-i18n="navShop">Shop</a>
                 <a href="order-history.html" data-i18n="navOrders">Order History</a>
                 <a href="about.html" data-i18n="navAbout">About Us</a>
                 <a href="policy.html" data-i18n="navPolicy">Policy</a>
@@ -273,6 +273,9 @@ src="https://www.facebook.com/tr?id=920711640501746&ev=PageView&noscript=1"
                         <input type="password" id="loginPassword" class="input" data-i18n-placeholder="accPassPlaceholder" placeholder="Password">
                         <button type="button" class="toggle-password-btn" onclick="window.togglePasswordVisibility('loginPassword', this)" aria-label="Toggle password visibility">👁️</button>
                     </div>
+                    <div style="text-align: right; margin-top: -6px; margin-bottom: 14px;">
+                        <a href="#" class="auth-switch-link" style="font-size: 0.78rem;" onclick="window.handleForgotPassword(event); return false;">Forgot Password?</a>
+                    </div>
                     <button type="button" class="btn btn-dark btn-block" onclick="window.handleLogin(event)"><span class="spinner"></span><span class="btn-label" data-i18n="accLoginBtn">Log In</span></button>
                     <p class="auth-tabs-msg"><span data-i18n="accNoAccount">Don't have an account?</span> <a href="#" class="auth-switch-link" onclick="window.toggleAuthMode();return false;" data-i18n="accSignUpLink">Sign up</a></p>
                 </div>
@@ -325,7 +328,7 @@ src="https://www.facebook.com/tr?id=920711640501746&ev=PageView&noscript=1"
                 </div>
                 <div class="footer-col">
                     <h5 data-i18n="footerShopHeading">Shop</h5>
-                    <a href="index.html" data-i18n="navShop">Shop</a>
+                    <a href="./" data-i18n="navShop">Shop</a>
                     <a href="about.html" data-i18n="navAbout">About Us</a>
                     <a href="policy.html" data-i18n="navPolicy">Policy</a>
                 </div>
