@@ -269,7 +269,10 @@ src="https://www.facebook.com/tr?id=920711640501746&ev=PageView&noscript=1"
                 <div id="loginFormContainer">
                     <h4 style="font-size:1.05rem; margin-bottom:16px; text-align:center;" data-i18n="accLoginTitle">Login to Your Account</h4>
                     <div class="field"><input type="email" id="loginEmail" class="input" data-i18n-placeholder="accEmailPlaceholder" placeholder="Email Address"></div>
-                    <div class="field"><input type="password" id="loginPassword" class="input" data-i18n-placeholder="accPassPlaceholder" placeholder="Password"></div>
+                    <div class="field password-field-group">
+                        <input type="password" id="loginPassword" class="input" data-i18n-placeholder="accPassPlaceholder" placeholder="Password">
+                        <button type="button" class="toggle-password-btn" onclick="window.togglePasswordVisibility('loginPassword', this)" aria-label="Toggle password visibility">👁️</button>
+                    </div>
                     <button type="button" class="btn btn-dark btn-block" onclick="window.handleLogin(event)"><span class="spinner"></span><span class="btn-label" data-i18n="accLoginBtn">Log In</span></button>
                     <p class="auth-tabs-msg"><span data-i18n="accNoAccount">Don't have an account?</span> <a href="#" class="auth-switch-link" onclick="window.toggleAuthMode();return false;" data-i18n="accSignUpLink">Sign up</a></p>
                 </div>
@@ -277,7 +280,10 @@ src="https://www.facebook.com/tr?id=920711640501746&ev=PageView&noscript=1"
                     <h4 style="font-size:1.05rem; margin-bottom:16px; text-align:center;" data-i18n="accSignupTitle">Create an Account</h4>
                     <div class="field"><input type="text" id="signupName" class="input" data-i18n-placeholder="accNamePlaceholder" placeholder="Full Name"></div>
                     <div class="field"><input type="email" id="signupEmail" class="input" data-i18n-placeholder="accEmailPlaceholder" placeholder="Email Address"></div>
-                    <div class="field"><input type="password" id="signupPassword" class="input" data-i18n-placeholder="accPassMinPlaceholder" placeholder="Password (min 6 characters)"></div>
+                    <div class="field password-field-group">
+                        <input type="password" id="signupPassword" class="input" data-i18n-placeholder="accPassMinPlaceholder" placeholder="Password (min 6 characters)">
+                        <button type="button" class="toggle-password-btn" onclick="window.togglePasswordVisibility('signupPassword', this)" aria-label="Toggle password visibility">👁️</button>
+                    </div>
                     <button type="button" class="btn btn-dark btn-block" onclick="window.handleSignup(event)"><span class="spinner"></span><span class="btn-label" data-i18n="accSignupBtn">Sign Up</span></button>
                     <p class="auth-tabs-msg"><span data-i18n="accHasAccount">Already have an account?</span> <a href="#" class="auth-switch-link" onclick="window.toggleAuthMode();return false;" data-i18n="accLoginLink">Log in</a></p>
                 </div>
