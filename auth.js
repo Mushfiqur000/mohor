@@ -327,3 +327,26 @@ window.togglePasswordVisibility = function(inputId, btn) {
         btn.textContent = '👁️';
     }
 };
+
+// --- Password Reset Handler ---
+window.handleForgotPassword = async function(evt) {
+    if (evt) evt.preventDefault();
+
+    const emailInput = document.getElementById('loginEmail');
+    const email = emailInput ? emailInput.value.trim() : '';
+
+    if (!email) {
+        notify(window.currentLang === 'en' ? 'Please enter your email address in the field above.' : 'অনুগ্রহ করে উপরের ফিল্ডে আপনার ইমেইল এড্রেসটি দিন।', 'error');
+        return;
+    }
+
+    setBtnLoading(evt, true);
+    try {
+        await auth.sendPasswordResetEmail(email);
+        notify(window.currentLang === 'en' ? 'Password reset link sent to your email!' : 'আপনার ইমেইলে পাসওয়ার্ড রিসেট লিঙ্ক পাঠানো হয়েছে!', 'success');
+    } catch (error) {
+        notify((window.currentLang === 'en' ? 'Reset failed: ' : 'রিসেট ব্যর্থ হয়েছে: ') + error.message, 'error');
+    } finally {
+        setBtnLoading(evt, false);
+    }
+};
