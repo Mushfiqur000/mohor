@@ -14,8 +14,17 @@ function notify(message, type) {
 }
 function tr(key) { return (typeof window.t === 'function') ? window.t(key) : key; }
 
-function setBtnLoading(evt, isLoading) {
-    const btn = evt && evt.currentTarget;
+function setBtnLoading(evtOrBtn, isLoading) {
+    let btn = null;
+    if (evtOrBtn) {
+        if (evtOrBtn.tagName || evtOrBtn.nodeType) {
+            btn = evtOrBtn;
+        } else if (evtOrBtn.currentTarget) {
+            btn = evtOrBtn.currentTarget;
+        } else if (evtOrBtn.target && typeof evtOrBtn.target.closest === 'function') {
+            btn = evtOrBtn.target.closest('button, input[type="submit"]');
+        }
+    }
     if (!btn) return;
     btn.classList.toggle('is-loading', isLoading);
     btn.disabled = isLoading;
@@ -241,6 +250,7 @@ auth.onAuthStateChanged(async (user) => {
 });
 
 window.handleSignup = async function(evt) {
+    const btnTarget = evt ? (evt.currentTarget || (evt.target && evt.target.closest ? evt.target.closest('button') : null)) : null;
     const nameInput = document.getElementById('signupName');
     const emailInput = document.getElementById('signupEmail');
     const passInput = document.getElementById('signupPassword');
@@ -251,7 +261,7 @@ window.handleSignup = async function(evt) {
 
     if (!email || !password) { notify(window.currentLang === 'en' ? 'Please enter email and password.' : 'অনুগ্রহ করে ইমেইল ও পাসওয়ার্ড দিন।', 'error'); return; }
 
-    setBtnLoading(evt, true);
+    setBtnLoading(btnTarget, true);
     try {
         const userCredential = await auth.createUserWithEmailAndPassword(email, password);
         if (name) await userCredential.user.updateProfile({ displayName: name });
@@ -264,11 +274,12 @@ window.handleSignup = async function(evt) {
     } catch (error) {
         notify((window.currentLang === 'en' ? 'Signup failed: ' : 'সাইন আপ ব্যর্থ হয়েছে: ') + error.message, 'error');
     } finally {
-        setBtnLoading(evt, false);
+        setBtnLoading(btnTarget, false);
     }
 };
 
 window.handleLogin = async function(evt) {
+    const btnTarget = evt ? (evt.currentTarget || (evt.target && evt.target.closest ? evt.target.closest('button') : null)) : null;
     const emailInput = document.getElementById('loginEmail');
     const passInput = document.getElementById('loginPassword');
     const email = emailInput ? emailInput.value.trim() : '';
@@ -276,30 +287,32 @@ window.handleLogin = async function(evt) {
 
     if (!email || !password) { notify(window.currentLang === 'en' ? 'Please enter email and password.' : 'অনুগ্রহ করে ইমেইল ও পাসওয়ার্ড দিন।', 'error'); return; }
 
-    setBtnLoading(evt, true);
+    setBtnLoading(btnTarget, true);
     try {
         await auth.signInWithEmailAndPassword(email, password);
         notify(window.currentLang === 'en' ? 'Logged in successfully!' : 'সফলভাবে লগইন হয়েছে!', 'success');
     } catch (error) {
         notify((window.currentLang === 'en' ? 'Login failed: ' : 'লগইন ব্যর্থ হয়েছে: ') + error.message, 'error');
     } finally {
-        setBtnLoading(evt, false);
+        setBtnLoading(btnTarget, false);
     }
 };
 
 window.handleLogout = async function(evt) {
-    setBtnLoading(evt, true);
+    const btnTarget = evt ? (evt.currentTarget || (evt.target && evt.target.closest ? evt.target.closest('button') : null)) : null;
+    setBtnLoading(btnTarget, true);
     try {
         await auth.signOut();
         notify(window.currentLang === 'en' ? 'Logged out successfully.' : 'সফলভাবে লগ আউট হয়েছে।', 'success');
     } catch (error) {
         notify((window.currentLang === 'en' ? 'Logout error: ' : 'লগ আউট এরর: ') + error.message, 'error');
     } finally {
-        setBtnLoading(evt, false);
+        setBtnLoading(btnTarget, false);
     }
 };
 
 window.saveUserProfile = async function(evt) {
+    const btnTarget = evt ? (evt.currentTarget || (evt.target && evt.target.closest ? evt.target.closest('button') : null)) : null;
     if (!window.currentUser) { notify(window.currentLang === 'en' ? 'You must be logged in to save an address.' : 'ঠিকানা সেভ করতে অবশ্যই লগইন থাকতে হবে।', 'error'); return; }
 
     const nameInput = document.getElementById('profileName');
@@ -310,7 +323,7 @@ window.saveUserProfile = async function(evt) {
     const phone = phoneInput ? phoneInput.value.trim() : '';
     const address = addressInput ? addressInput.value.trim() : '';
 
-    setBtnLoading(evt, true);
+    setBtnLoading(btnTarget, true);
     try {
         let updatePayload = { phone, address };
         if (nameToSave) { updatePayload.name = nameToSave; updatePayload.customerName = nameToSave; }
@@ -320,7 +333,7 @@ window.saveUserProfile = async function(evt) {
     } catch (error) {
         notify((window.currentLang === 'en' ? 'Error saving profile: ' : 'প্রোফাইল সেভ করতে সমস্যা: ') + error.message, 'error');
     } finally {
-        setBtnLoading(evt, false);
+        setBtnLoading(btnTarget, false);
     }
 };
 
@@ -342,6 +355,7 @@ window.togglePasswordVisibility = function(inputId, btn) {
 window.handleForgotPassword = async function(evt) {
     if (evt) evt.preventDefault();
 
+    const btnTarget = evt ? (evt.currentTarget || (evt.target && evt.target.closest ? evt.target.closest('button') : null)) : null;
     const resetEmailInput = document.getElementById('resetEmail');
     const loginEmailInput = document.getElementById('loginEmail');
     const email = (resetEmailInput && resetEmailInput.value.trim()) || (loginEmailInput && loginEmailInput.value.trim()) || '';
@@ -352,10 +366,16 @@ window.handleForgotPassword = async function(evt) {
         return;
     }
 
-    setBtnLoading(evt, true);
+    setBtnLoading(btnTarget, true);
     try {
         await auth.sendPasswordResetEmail(email);
-        notify(isBengali ? 'পাসওয়ার্ড রিসেট লিঙ্ক পাঠানো হয়েছে!' : 'Password reset link sent to your email!', 'success');
+        notify(isBengali ? 'পাসওয়ার্ড রিসেট লিঙ্ক সফলভাবে পাঠানো হয়েছে!' : 'Password reset link sent successfully!', 'success');
+
+        const resetBtn = btnTarget || document.querySelector('#forgotPasswordContainer .btn');
+        if (resetBtn) {
+            const label = resetBtn.querySelector('.btn-label');
+            if (label) label.textContent = isBengali ? 'লিঙ্ক সফলভাবে পাঠানো হয়েছে!' : 'Link Sent Successfully!';
+        }
 
         const successNotice = document.getElementById('forgotSuccessNotice');
         if (successNotice) {
@@ -383,6 +403,6 @@ window.handleForgotPassword = async function(evt) {
     } catch (error) {
         notify((isBengali ? 'রিসেট ব্যর্থ হয়েছে: ' : 'Reset failed: ') + error.message, 'error');
     } finally {
-        setBtnLoading(evt, false);
+        setBtnLoading(btnTarget, false);
     }
 };
