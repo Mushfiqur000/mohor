@@ -379,6 +379,11 @@ window.checkoutToAdmin = async function() {
 
         await window.db.collection('orders').add(newOrder);
 
+        // Trigger instant Telegram notification to the store owner
+        if (typeof window.sendTelegramNotification === 'function') {
+            window.sendTelegramNotification(newOrder);
+        }
+
         notify(window.currentLang === 'en' ? 'Order placed successfully! We will contact you soon.' : 'আপনার অর্ডারটি সফলভাবে সম্পন্ন হয়েছে! আমরা শীঘ্রই যোগাযোগ করব।', 'success');
 
         window.cart = [];
