@@ -263,6 +263,47 @@ window.showToast = function(message, type) {
 };
 
 // ==========================================================================
+// Telegram Notification Function (Global)
+// ==========================================================================
+window.sendTelegramNotification = async function(orderData) {
+    const BOT_TOKEN = '8931701022:AAFFKEtKLUTgoGctWm-sPtqWXM2DcxljG7k';
+    const CHAT_ID = '8349757290';
+
+    const itemsText = Array.isArray(orderData.items)
+        ? orderData.items.map(item => `• ${item.name || item.title || 'Item'} (x${item.qty}) - ৳${item.price}`).join('\n')
+        : 'No items detailed';
+
+    const message = `
+<b>🛍️ NEW ORDER PLACED!</b>
+
+👤 <b>Customer:</b> ${orderData.customerName || 'N/A'}
+📞 <b>Phone:</b> ${orderData.customerPhone || 'N/A'}
+📍 <b>Address:</b> ${orderData.deliveryAddress || 'N/A'}
+
+<b>Order Items:</b>
+${itemsText}
+
+💵 <b>Subtotal:</b> ৳${orderData.subtotal || 0}
+💰 <b>Total Amount:</b> ৳${orderData.totalAmount || 0}
+📌 <b>Status:</b> ${orderData.status || 'pending'}
+    `;
+
+    try {
+        await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                chat_id: CHAT_ID,
+                text: message,
+                parse_mode: 'HTML'
+            })
+        });
+    } catch (error) {
+        console.error('Telegram notification error:', error);
+    }
+};
+
+// ==========================================================================
 // Product catalog loading (Firestore, memoized so every page can safely
 // call/await this without triggering duplicate reads)
 // ==========================================================================
