@@ -274,7 +274,7 @@ src="https://www.facebook.com/tr?id=920711640501746&ev=PageView&noscript=1"
                         <button type="button" class="toggle-password-btn" onclick="window.togglePasswordVisibility('loginPassword', this)" aria-label="Toggle password visibility">👁️</button>
                     </div>
                     <div style="text-align: right; margin-top: -6px; margin-bottom: 14px;">
-                        <a href="#" class="auth-switch-link" style="font-size: 0.78rem;" onclick="window.handleForgotPassword(event); return false;">Forgot Password?</a>
+                        <a href="#" class="auth-switch-link" style="font-size: 0.78rem;" onclick="window.showAuthView('forgot'); return false;">Forgot Password?</a>
                     </div>
                     <button type="button" class="btn btn-dark btn-block" onclick="window.handleLogin(event)"><span class="spinner"></span><span class="btn-label" data-i18n="accLoginBtn">Log In</span></button>
                     <p class="auth-tabs-msg"><span data-i18n="accNoAccount">Don't have an account?</span> <a href="#" class="auth-switch-link" onclick="window.toggleAuthMode();return false;" data-i18n="accSignUpLink">Sign up</a></p>
@@ -289,6 +289,16 @@ src="https://www.facebook.com/tr?id=920711640501746&ev=PageView&noscript=1"
                     </div>
                     <button type="button" class="btn btn-dark btn-block" onclick="window.handleSignup(event)"><span class="spinner"></span><span class="btn-label" data-i18n="accSignupBtn">Sign Up</span></button>
                     <p class="auth-tabs-msg"><span data-i18n="accHasAccount">Already have an account?</span> <a href="#" class="auth-switch-link" onclick="window.toggleAuthMode();return false;" data-i18n="accLoginLink">Log in</a></p>
+                </div>
+                <div id="forgotPasswordContainer" style="display:none;">
+                    <h4 style="font-size:1.05rem; margin-bottom:16px; text-align:center;">Reset Password / পাসওয়ার্ড রিসেট</h4>
+                    <p style="font-size:0.85rem; color:var(--ink-muted, #888); margin-bottom:16px; text-align:center;">Enter your registered email address to receive a password reset link.<br>পাসওয়ার্ড রিসেট লিঙ্ক পেতে আপনার নিবন্ধিত ইমেইল দিন।</p>
+                    <div class="field"><input type="email" id="resetEmail" class="input" data-i18n-placeholder="accEmailPlaceholder" placeholder="Email Address"></div>
+                    <button type="button" class="btn btn-dark btn-block" onclick="window.handleForgotPassword(event)"><span class="spinner"></span><span class="btn-label">Send Reset Link / লিঙ্ক পাঠান</span></button>
+
+                    <div id="forgotSuccessNotice" style="display:none; margin-top:16px; padding:14px; background:rgba(201, 161, 74, 0.1); border:1px solid #C9A14A; border-radius:8px; font-size:0.82rem; line-height:1.5;"></div>
+
+                    <p class="auth-tabs-msg" style="margin-top:16px;"><a href="#" class="auth-switch-link" onclick="window.showAuthView('login');return false;">&larr; Back to Log in / লগইনে ফিরুন</a></p>
                 </div>
             </div>
 
