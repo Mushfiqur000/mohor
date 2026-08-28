@@ -313,3 +313,17 @@ window.saveUserProfile = async function(evt) {
         setBtnLoading(evt, false);
     }
 };
+
+// --- Password Visibility Toggle Handler ---
+window.togglePasswordVisibility = function(inputId, btn) {
+    const passwordInput = document.getElementById(inputId);
+    if (!passwordInput) return;
+
+    if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        btn.textContent = '🙈';
+    } else {
+        passwordInput.type = 'password';
+        btn.textContent = '👁️';
+    }
+};
