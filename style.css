@@ -19,8 +19,8 @@
   --muslin: #F5F1EC;
   --parchment: #FBF8F3;
   --surface: #FFFFFF;
-  --ink: #221B18;            /* Black / Dark text in Light Mode */
-  --ink-muted: #665F5B;      /* Crisp readable muted text */
+  --ink: #221B18;             /* Black / Dark text in Light Mode */
+  --ink-muted: #665F5B;       /* Crisp readable muted text */
   --ink-faint: #8C847E;
   --border: #E7DFD5;
   --border-strong: #C8BCAC;
@@ -67,8 +67,8 @@
   --muslin: #0b0b0c;
   --parchment: #121214;
   --surface: #17171a;
-  --ink: #f3efe9;            /* White / Light text in Dark Mode */
-  --ink-muted: #cfc9c5;      /* Light gray muted text */
+  --ink: #f3efe9;             /* White / Light text in Dark Mode */
+  --ink-muted: #cfc9c5;       /* Light gray muted text */
   --ink-faint: #9f9a96;
   --border: #26262a;
   --border-strong: #38383e;
@@ -274,6 +274,41 @@ select.input {
 .field-error { border-color: var(--rust) !important; box-shadow: 0 0 0 3px var(--rust-soft) !important; }
 @keyframes shakeError { 10%, 90% { transform: translateX(-1px); } 20%, 80% { transform: translateX(2px); } 30%, 50%, 70% { transform: translateX(-4px); } 40%, 60% { transform: translateX(4px); } }
 .shake { animation: shakeError 460ms; }
+
+/* --- Password Field & Toggle Eye Button --- */
+.password-field-group {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-field-group .input {
+  width: 100%;
+  padding-right: 42px; /* Extra right padding so typed password text doesn't overlap the eye icon */
+}
+
+.toggle-password-btn {
+  position: absolute;
+  right: 12px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.05rem;
+  line-height: 1;
+  opacity: 0.65;
+  transition: opacity var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease);
+  padding: 4px;
+  user-select: none;
+  color: var(--ink);
+}
+
+.toggle-password-btn:hover {
+  opacity: 1;
+}
+
+.toggle-password-btn:active {
+  transform: scale(0.92);
+}
 
 /* ==========================================================================
    Header / Nav
