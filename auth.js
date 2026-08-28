@@ -48,14 +48,24 @@ document.addEventListener('click', (e) => {
 if (closeAccountBtn) closeAccountBtn.addEventListener('click', window.closeAccountSidebar);
 if (accountOverlay) accountOverlay.addEventListener('click', window.closeAccountSidebar);
 
+// --- Auth view switching (Login / Signup / Forgot Password) ---
+window.showAuthView = function(viewName) {
+    const loginCont = document.getElementById('loginFormContainer');
+    const signupCont = document.getElementById('signupFormContainer');
+    const forgotCont = document.getElementById('forgotPasswordContainer');
+
+    if (loginCont) loginCont.style.display = (viewName === 'login') ? 'block' : 'none';
+    if (signupCont) signupCont.style.display = (viewName === 'signup') ? 'block' : 'none';
+    if (forgotCont) forgotCont.style.display = (viewName === 'forgot') ? 'block' : 'none';
+};
+
 // --- Toggle between Login / Signup views inside the Account sidebar ---
 window.toggleAuthMode = function() {
     const loginCont = document.getElementById('loginFormContainer');
     const signupCont = document.getElementById('signupFormContainer');
     if (!loginCont || !signupCont) return;
     const showingLogin = loginCont.style.display !== 'none';
-    loginCont.style.display = showingLogin ? 'none' : 'block';
-    signupCont.style.display = showingLogin ? 'block' : 'none';
+    window.showAuthView(showingLogin ? 'signup' : 'login');
 };
 
 // --- One canonical place to push saved profile data into every form on the
@@ -332,20 +342,46 @@ window.togglePasswordVisibility = function(inputId, btn) {
 window.handleForgotPassword = async function(evt) {
     if (evt) evt.preventDefault();
 
-    const emailInput = document.getElementById('loginEmail');
-    const email = emailInput ? emailInput.value.trim() : '';
+    const resetEmailInput = document.getElementById('resetEmail');
+    const loginEmailInput = document.getElementById('loginEmail');
+    const email = (resetEmailInput && resetEmailInput.value.trim()) || (loginEmailInput && loginEmailInput.value.trim()) || '';
+    const isBengali = (window.currentLang === 'bn');
 
     if (!email) {
-        notify(window.currentLang === 'en' ? 'Please enter your email address in the field above.' : 'অনুগ্রহ করে উপরের ফিল্ডে আপনার ইমেইল এড্রেসটি দিন।', 'error');
+        notify(isBengali ? 'অনুগ্রহ করে ইমেইল এড্রেসটি দিন।' : 'Please enter your email address.', 'error');
         return;
     }
 
     setBtnLoading(evt, true);
     try {
         await auth.sendPasswordResetEmail(email);
-        notify(window.currentLang === 'en' ? 'Password reset link sent to your email!' : 'আপনার ইমেইলে পাসওয়ার্ড রিসেট লিঙ্ক পাঠানো হয়েছে!', 'success');
+        notify(isBengali ? 'পাসওয়ার্ড রিসেট লিঙ্ক পাঠানো হয়েছে!' : 'Password reset link sent to your email!', 'success');
+
+        const successNotice = document.getElementById('forgotSuccessNotice');
+        if (successNotice) {
+            successNotice.style.display = 'block';
+            successNotice.innerHTML = `
+                <strong style="color:#C9A14A; display:block; margin-bottom:6px;">
+                    📧 ${isBengali ? 'ইমেইল পাঠানো হয়েছে:' : 'Reset Link Sent to'} ${email}
+                </strong>
+                <p style="margin:0 0 8px 0; font-size:0.82rem;">
+                    ${isBengali ? 'নতুন পাসওয়ার্ড তৈরি করতে ইমেলের ভেতরের লিঙ্কে ক্লিক বা কপি করুন।' : 'Check your email inbox and click or copy the reset link inside.'}
+                </p>
+                <div style="background:rgba(0,0,0,0.3); padding:10px 12px; border-radius:6px; font-size:0.78rem; line-height:1.5;">
+                    <strong style="color:#e06650; display:block; margin-bottom:4px;">
+                        ⚠️ ${isBengali ? 'ইমেইল পাচ্ছেন না? স্প্যাম ফোল্ডার চেক করুন:' : 'Can\'t find the email? Check Spam Folder:'}
+                    </strong>
+                    <ul style="margin:4px 0 0 16px; padding:0; color:#ccc;">
+                        <li>${isBengali ? 'গুগল মেইল (Gmail) এর <strong>Spam / Junk</strong> অথবা <strong>Promotions</strong> ট্যাব চেক করুন।' : 'Check your Gmail <strong>Spam / Junk</strong> or <strong>Promotions</strong> tab.'}</li>
+                        <li>${isBengali ? 'প্রেরকের ইমেইল থাকবে: <code>noreply@mohor-app.firebaseapp.com</code>' : 'Sender address: <code>noreply@mohor-app.firebaseapp.com</code>'}</li>
+                        <li>${isBengali ? 'ভবিষ্যতে মেসেজ সরাসরি ইনবক্সে পেতে ইমেইলটি খুলে <strong>"Report as Not Spam"</strong> এ ক্লিক করুন।' : 'Click <strong>"Report as Not Spam"</strong> so future emails land in your main inbox.'}</li>
+                        <li>${isBengali ? 'এরপর লিঙ্কে ক্লিক করে নতুন পাসওয়ার্ড সেট করুন।' : 'Copy or click the reset link to create your new password.'}</li>
+                    </ul>
+                </div>
+            `;
+        }
     } catch (error) {
-        notify((window.currentLang === 'en' ? 'Reset failed: ' : 'রিসেট ব্যর্থ হয়েছে: ') + error.message, 'error');
+        notify((isBengali ? 'রিসেট ব্যর্থ হয়েছে: ' : 'Reset failed: ') + error.message, 'error');
     } finally {
         setBtnLoading(evt, false);
     }
