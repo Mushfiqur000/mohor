@@ -55,7 +55,7 @@ src="https://www.facebook.com/tr?id=920711640501746&ev=PageView&noscript=1"
     <div class="product-detail">
         <div class="pd-gallery">
             <div class="pd-gallery-main" id="mainImageWrap">
-                <img id="mainImage" src="" alt="">
+                <img id="mainImage" src="" alt="Mohor Clothings Product Image">
             </div>
             <div class="pd-thumbs" id="thumbnailContainer"></div>
         </div>
@@ -102,7 +102,7 @@ src="https://www.facebook.com/tr?id=920711640501746&ev=PageView&noscript=1"
     <div class="lightbox" id="imageModal">
         <button type="button" class="lightbox-close" id="closeModal" aria-label="Close">&times;</button>
         <button type="button" class="lightbox-nav lightbox-prev" id="prevModal" aria-label="Previous image">&#10094;</button>
-        <img id="modalImg" alt="">
+        <img id="modalImg" alt="Mohor Clothings Product Lightbox">
         <button type="button" class="lightbox-nav lightbox-next" id="nextModal" aria-label="Next image">&#10095;</button>
         <div class="lightbox-actions" id="lightboxActions">
             <button type="button" id="lightboxAddToCart" class="btn btn-brass" data-i18n="addToCart">Add to Cart</button>
@@ -154,15 +154,25 @@ src="https://www.facebook.com/tr?id=920711640501746&ev=PageView&noscript=1"
             const mainImg = document.getElementById('mainImage');
             mainImg.style.animation = 'none';
             mainImg.src = src;
+            if (activeProduct) {
+                const titleText = getProductText(activeProduct.title);
+                mainImg.alt = titleText ? `${titleText} - Mohor Clothings` : "Mohor Clothings Product Image";
+            }
             if (animate !== false) requestAnimationFrame(() => { mainImg.style.animation = ''; });
         }
 
         function renderDynamicText() {
             if (!activeProduct) return;
 
-            document.getElementById('prodTitle').innerText = getProductText(activeProduct.title);
+            const titleText = getProductText(activeProduct.title);
+            document.getElementById('prodTitle').innerText = titleText;
             document.getElementById('prodDesc').innerHTML = getProductText(activeProduct.description);
             document.getElementById('prodCategory').innerText = (activeProduct.category || '').replace('-', ' ');
+
+            const mainImg = document.getElementById('mainImage');
+            if (mainImg && titleText) {
+                mainImg.alt = `${titleText} - Mohor Clothings`;
+            }
 
             const detailsList = document.getElementById('prodDetails');
             const detailsSection = document.getElementById('detailsSection');
@@ -202,6 +212,7 @@ src="https://www.facebook.com/tr?id=920711640501746&ev=PageView&noscript=1"
                 return;
             }
 
+            const titleText = getProductText(activeProduct.title);
             document.getElementById('prodPrice').innerText = '৳ ' + activeProduct.price;
             renderDynamicText();
 
@@ -212,7 +223,7 @@ src="https://www.facebook.com/tr?id=920711640501746&ev=PageView&noscript=1"
             images.forEach((imgSrc, index) => {
                 const thumb = document.createElement('div');
                 thumb.className = 'thumbnail' + (index === 0 ? ' active' : '');
-                thumb.innerHTML = `<img src="${imgSrc}" alt="" onerror="this.onerror=null;this.src='assets/image-placeholder.svg';">`;
+                thumb.innerHTML = `<img src="${imgSrc}" alt="${titleText} Thumbnail ${index + 1} - Mohor Clothings" loading="lazy" onerror="this.onerror=null;this.src='assets/image-placeholder.svg';">`;
                 thumb.onclick = () => {
                     currentImageIndex = index;
                     setMainImage(imgSrc);
@@ -320,6 +331,7 @@ src="https://www.facebook.com/tr?id=920711640501746&ev=PageView&noscript=1"
             document.getElementById('mainImage').onclick = function() {
                 modal.classList.add('active');
                 modalImg.src = images[currentImageIndex];
+                modalImg.alt = `${getProductText(activeProduct.title)} - Mohor Clothings`;
             };
             document.getElementById('closeModal').onclick = () => modal.classList.remove('active');
             modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('active'); });
@@ -328,6 +340,7 @@ src="https://www.facebook.com/tr?id=920711640501746&ev=PageView&noscript=1"
             function changeImage(direction) {
                 currentImageIndex = (currentImageIndex + direction + images.length) % images.length;
                 modalImg.src = images[currentImageIndex];
+                modalImg.alt = `${getProductText(activeProduct.title)} - Mohor Clothings`;
                 setMainImage(images[currentImageIndex]);
                 thumbContainer.querySelectorAll('.thumbnail').forEach((t, i) => t.classList.toggle('active', i === currentImageIndex));
             }
