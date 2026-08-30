@@ -515,11 +515,8 @@ function updateProducts() {
             let productText = `${getText(product.title)} ${product.category || ''} ${getText(product.description) || ''}`.toLowerCase();
             if (productText.includes('formal')) productText += ' dress outfit wear office professional corporate';
             if (productText.includes('kurti')) productText += ' dress outfit single shirt top casual';
-            if (productText.includes('three-piece') || productText.includes('three piece')) productText += ' dress outfit suit salwar kameez set 3 piece';
+            if (productText.includes('three-piece') || productText.includes('three piece')) productText += ' dress outfit suit salwar kameez set';
             if (productText.includes('khadi')) productText += ' dress outfit traditional cotton ethnic authentic';
-            if (productText.includes('co-ord') || productText.includes('coord') || productText.includes('two-piece') || productText.includes('two piece') || productText.includes('2-piece')) productText += ' matching set 2 piece two piece top bottom outfit dress co ord coord';
-            if (productText.includes('shirt')) productText += ' top kurti casual upper wear blouse';
-            if (productText.includes('pant') || productText.includes('trouser') || productText.includes('bottom')) productText += ' pant trouser palazzo pajama bottom wear';
 
             let searchKeywords = searchTerm.split(/\s+/);
             searchMatch = searchKeywords.every(word => productText.includes(word));
