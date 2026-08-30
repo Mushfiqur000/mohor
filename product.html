@@ -1,18 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Product Details | Mohor Clothings</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Details | Mohor Clothings</title>
 
-    <link rel="icon" type="image/png" sizes="512x512" href="assets/favicon-512.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
-    <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="assets/favicon-512.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+    <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Work+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+Bengali:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Work+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+Bengali:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
 <!-- Meta Pixel Code -->
 <script>
 !function(f,b,e,v,n,t,s)
@@ -33,344 +33,331 @@ src="https://www.facebook.com/tr?id=920711640501746&ev=PageView&noscript=1"
 </head>
 <body class="has-fixed-bottom-bar">
 
-    <header class="product-nav">
-        <nav class="nav container">
-            <a href="index.html" class="back-btn">
-                <svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-                <span class="hide-mobile" data-i18n="backBtn">Back</span>
-            </a>
-            <a href="index.html" class="brand-logo" aria-label="Mohor Clothings — Home">
-                <img src="assets/logo-ink.png" alt="Mohor Clothings" width="120" height="36">
-            </a>
-            <div class="nav-actions">
-                <button type="button" id="langToggleBtn" class="lang-btn" aria-label="Switch language">EN<span class="lang-sep">/</span>বাং</button>
-                <a href="cart.html" class="icon-btn" aria-label="Cart">
-                    <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-                    <span class="cart-badge" id="cartBadgeIcon" style="display:none;">0</span>
-                </a>
-            </div>
-        </nav>
-    </header>
+    <header class="product-nav">
+        <nav class="nav container">
+            <a href="index.html" class="back-btn">
+                <svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                <span class="hide-mobile" data-i18n="backBtn">Back</span>
+            </a>
+            <a href="index.html" class="brand-logo" aria-label="Mohor Clothings — Home">
+                <img src="assets/logo-ink.png" alt="Mohor Clothings" width="120" height="36">
+            </a>
+            <div class="nav-actions">
+                <button type="button" id="langToggleBtn" class="lang-btn" aria-label="Switch language">EN<span class="lang-sep">/</span>বাং</button>
+                <a href="cart.html" class="icon-btn" aria-label="Cart">
+                    <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                    <span class="cart-badge" id="cartBadgeIcon" style="display:none;">0</span>
+                </a>
+            </div>
+        </nav>
+    </header>
 
-    <div class="product-detail">
-        <div class="pd-gallery">
-            <div class="pd-gallery-main" id="mainImageWrap">
-                <img id="mainImage" src="" alt="Mohor Clothings Product Image">
-            </div>
-            <div class="pd-thumbs" id="thumbnailContainer"></div>
-        </div>
+    <div class="product-detail">
+        <div class="pd-gallery">
+            <div class="pd-gallery-main" id="mainImageWrap">
+                <img id="mainImage" src="" alt="">
+            </div>
+            <div class="pd-thumbs" id="thumbnailContainer"></div>
+        </div>
 
-        <div class="pd-info">
-            <span class="card-cat" id="prodCategory"></span>
-            <h1 id="prodTitle">Loading…</h1>
-            <div class="pd-price" id="prodPrice"></div>
+        <div class="pd-info">
+            <span class="card-cat" id="prodCategory"></span>
+            <h1 id="prodTitle">Loading…</h1>
+            <div class="pd-price" id="prodPrice"></div>
 
-            <div class="opt-group" id="colorSection" style="display:none;">
-                <h5 data-i18n="colorSelect">Select Color</h5>
-                <div class="opt-row" id="colorOptions"></div>
-                <div class="opt-warn" id="colorWarning" data-i18n="colorWarning">Please select a color</div>
-            </div>
+            <div class="opt-group" id="colorSection" style="display:none;">
+                <h5 data-i18n="colorSelect">Select Color</h5>
+                <div class="opt-row" id="colorOptions"></div>
+                <div class="opt-warn" id="colorWarning" data-i18n="colorWarning">Please select a color</div>
+            </div>
 
-            <div class="opt-group">
-                <h5 data-i18n="sizeSelect">Select Size</h5>
-                <div class="opt-row" id="sizeOptions"></div>
-                <div class="opt-warn" id="sizeWarning" data-i18n="sizeWarning">Please select a size</div>
-                <div class="size-measure-box" id="sizeMeasurements"></div>
-            </div>
+            <div class="opt-group">
+                <h5 data-i18n="sizeSelect">Select Size</h5>
+                <div class="opt-row" id="sizeOptions"></div>
+                <div class="opt-warn" id="sizeWarning" data-i18n="sizeWarning">Please select a size</div>
+                <div class="size-measure-box" id="sizeMeasurements"></div>
+            </div>
 
-            <button type="button" id="addToCartBtn" class="btn btn-brass btn-block modal-add-btn" data-i18n="addToCart">Add to Cart</button>
-            <button type="button" id="buyNowBtnInline" class="btn btn-dark btn-block buy-now-inline" style="margin-top:10px;" data-i18n="buyNow">Buy Now</button>
+            <button type="button" id="addToCartBtn" class="btn btn-brass btn-block modal-add-btn" data-i18n="addToCart">Add to Cart</button>
+            <button type="button" id="buyNowBtnInline" class="btn btn-dark btn-block buy-now-inline" style="margin-top:10px;" data-i18n="buyNow">Buy Now</button>
 
-            <div class="opt-group" style="margin-top:24px;">
-                <h5 data-i18n="descTitle">Description</h5>
-                <p class="modal-desc" id="prodDesc"></p>
-            </div>
+            <div class="opt-group" style="margin-top:24px;">
+                <h5 data-i18n="descTitle">Description</h5>
+                <p class="modal-desc" id="prodDesc"></p>
+            </div>
 
-            <div class="opt-group" id="detailsSection" style="display:none;">
-                <h5 data-i18n="detailsTitle">The Details</h5>
-                <ul class="details-list" id="prodDetails"></ul>
-            </div>
-        </div>
-    </div>
+            <div class="opt-group" id="detailsSection" style="display:none;">
+                <h5 data-i18n="detailsTitle">The Details</h5>
+                <ul class="details-list" id="prodDetails"></ul>
+            </div>
+        </div>
+    </div>
 
-    <div class="pd-bottom-bar">
-        <button type="button" class="btn btn-outline" style="flex:1;" id="addToCartBtnMobile" data-i18n="addToCart">Add to Cart</button>
-        <button type="button" class="btn btn-dark" style="flex:1;" id="buyNowBtn" data-i18n="buyNow">Buy Now</button>
-    </div>
+    <div class="pd-bottom-bar">
+        <button type="button" class="btn btn-outline" style="flex:1;" id="addToCartBtnMobile" data-i18n="addToCart">Add to Cart</button>
+        <button type="button" class="btn btn-dark" style="flex:1;" id="buyNowBtn" data-i18n="buyNow">Buy Now</button>
+    </div>
 
-    <!-- Lightbox -->
-    <div class="lightbox" id="imageModal">
-        <button type="button" class="lightbox-close" id="closeModal" aria-label="Close">&times;</button>
-        <button type="button" class="lightbox-nav lightbox-prev" id="prevModal" aria-label="Previous image">&#10094;</button>
-        <img id="modalImg" alt="Mohor Clothings Product Lightbox">
-        <button type="button" class="lightbox-nav lightbox-next" id="nextModal" aria-label="Next image">&#10095;</button>
-        <div class="lightbox-actions" id="lightboxActions">
-            <button type="button" id="lightboxAddToCart" class="btn btn-brass" data-i18n="addToCart">Add to Cart</button>
-            <button type="button" id="lightboxBuyNow" class="btn btn-dark" data-i18n="buyNow">Buy Now</button>
-        </div>
-    </div>
+    <!-- Lightbox -->
+    <div class="lightbox" id="imageModal">
+        <button type="button" class="lightbox-close" id="closeModal" aria-label="Close">&times;</button>
+        <button type="button" class="lightbox-nav lightbox-prev" id="prevModal" aria-label="Previous image">&#10094;</button>
+        <img id="modalImg" alt="">
+        <button type="button" class="lightbox-nav lightbox-next" id="nextModal" aria-label="Next image">&#10095;</button>
+        <div class="lightbox-actions" id="lightboxActions">
+            <button type="button" id="lightboxAddToCart" class="btn btn-brass" data-i18n="addToCart">Add to Cart</button>
+            <button type="button" id="lightboxBuyNow" class="btn btn-dark" data-i18n="buyNow">Buy Now</button>
+        </div>
+    </div>
 
-    <a href="https://wa.me/8801330113027" class="fab-whatsapp" target="_blank" rel="noopener" aria-label="Chat with us on WhatsApp">
-        <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
-    </a>
+    <a href="https://wa.me/8801330113027" class="fab-whatsapp" target="_blank" rel="noopener" aria-label="Chat with us on WhatsApp">
+        <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+    </a>
 
-    <!-- Firebase CDN SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyALxypXDkF9QexbD_wE7-ADALIdj5vd-rY",
-            authDomain: "mohor-app.firebaseapp.com",
-            projectId: "mohor-app",
-            storageBucket: "mohor-app.firebasestorage.app",
-            messagingSenderId: "989000457004",
-            appId: "1:989000457004:web:5679b256e20d94e27daa89"
-        };
-        if (typeof firebase !== 'undefined' && !firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
-        }
-        window.db = firebase.firestore();
-    </script>
+    <!-- Firebase CDN SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyALxypXDkF9QexbD_wE7-ADALIdj5vd-rY",
+            authDomain: "mohor-app.firebaseapp.com",
+            projectId: "mohor-app",
+            storageBucket: "mohor-app.firebasestorage.app",
+            messagingSenderId: "989000457004",
+            appId: "1:989000457004:web:5679b256e20d94e27daa89"
+        };
+        if (typeof firebase !== 'undefined' && !firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        window.db = firebase.firestore();
+    </script>
 
-    <script src="products.js?v=18"></script>
-    <script src="app.js?v=18"></script>
-    <script src="cart.js?v=18"></script>
-    <script type="module" src="auth.js?v=18"></script>
+    <script src="products.js?v=18"></script>
+    <script src="app.js?v=18"></script>
+    <script src="cart.js?v=18"></script>
+    <script type="module" src="auth.js?v=18"></script>
 
-    <script>
-        let currentSelectedSize = null;
-        let currentSelectedColor = null;
-        let activeProduct = null;
-        let currentImageIndex = 0;
+    <script>
+        let currentSelectedSize = null;
+        let currentSelectedColor = null;
+        let activeProduct = null;
+        let currentImageIndex = 0;
 
-        function getProductText(field) {
-            if (!field) return "";
-            if (typeof field === 'string') return field;
-            return field[window.currentLang] || field['en'] || "";
-        }
+        function getProductText(field) {
+            if (!field) return "";
+            if (typeof field === 'string') return field;
+            return field[window.currentLang] || field['en'] || "";
+        }
 
-        function setMainImage(src, animate) {
-            const mainImg = document.getElementById('mainImage');
-            mainImg.style.animation = 'none';
-            mainImg.src = src;
-            if (activeProduct) {
-                const titleText = getProductText(activeProduct.title);
-                mainImg.alt = titleText ? `${titleText} - Mohor Clothings` : "Mohor Clothings Product Image";
-            }
-            if (animate !== false) requestAnimationFrame(() => { mainImg.style.animation = ''; });
-        }
+        function setMainImage(src, animate) {
+            const mainImg = document.getElementById('mainImage');
+            mainImg.style.animation = 'none';
+            mainImg.src = src;
+            if (animate !== false) requestAnimationFrame(() => { mainImg.style.animation = ''; });
+        }
 
-        function renderDynamicText() {
-            if (!activeProduct) return;
+        function renderDynamicText() {
+            if (!activeProduct) return;
 
-            const titleText = getProductText(activeProduct.title);
-            document.getElementById('prodTitle').innerText = titleText;
-            document.getElementById('prodDesc').innerHTML = getProductText(activeProduct.description);
-            document.getElementById('prodCategory').innerText = (activeProduct.category || '').replace('-', ' ');
+            document.getElementById('prodTitle').innerText = getProductText(activeProduct.title);
+            document.getElementById('prodDesc').innerHTML = getProductText(activeProduct.description);
+            document.getElementById('prodCategory').innerText = (activeProduct.category || '').replace('-', ' ');
 
-            const mainImg = document.getElementById('mainImage');
-            if (mainImg && titleText) {
-                mainImg.alt = `${titleText} - Mohor Clothings`;
-            }
+            const detailsList = document.getElementById('prodDetails');
+            const detailsSection = document.getElementById('detailsSection');
+            detailsList.innerHTML = '';
+            let detailsArray = [];
+            if (activeProduct.details) detailsArray = Array.isArray(activeProduct.details) ? activeProduct.details : (activeProduct.details[window.currentLang] || activeProduct.details['en'] || []);
+            if (detailsArray.length > 0) {
+                detailsSection.style.display = 'block';
+                detailsArray.forEach(text => { const li = document.createElement('li'); li.innerText = text; detailsList.appendChild(li); });
+            } else {
+                detailsSection.style.display = 'none';
+            }
 
-            const detailsList = document.getElementById('prodDetails');
-            const detailsSection = document.getElementById('detailsSection');
-            detailsList.innerHTML = '';
-            let detailsArray = [];
-            if (activeProduct.details) detailsArray = Array.isArray(activeProduct.details) ? activeProduct.details : (activeProduct.details[window.currentLang] || activeProduct.details['en'] || []);
-            if (detailsArray.length > 0) {
-                detailsSection.style.display = 'block';
-                detailsArray.forEach(text => { const li = document.createElement('li'); li.innerText = text; detailsList.appendChild(li); });
-            } else {
-                detailsSection.style.display = 'none';
-            }
+            if (currentSelectedSize && activeProduct.sizeMeasurements && activeProduct.sizeMeasurements[currentSelectedSize]) {
+                const box = document.getElementById('sizeMeasurements');
+                const md = activeProduct.sizeMeasurements[currentSelectedSize];
+                box.innerHTML = (typeof md === 'string') ? md : (md[window.currentLang] || md['en'] || "");
+            }
+        }
 
-            if (currentSelectedSize && activeProduct.sizeMeasurements && activeProduct.sizeMeasurements[currentSelectedSize]) {
-                const box = document.getElementById('sizeMeasurements');
-                const md = activeProduct.sizeMeasurements[currentSelectedSize];
-                box.innerHTML = (typeof md === 'string') ? md : (md[window.currentLang] || md['en'] || "");
-            }
-        }
+        window.addEventListener('languageChanged', renderDynamicText);
 
-        window.addEventListener('languageChanged', renderDynamicText);
+        document.addEventListener('DOMContentLoaded', async () => {
+            const params = new URLSearchParams(window.location.search);
+            const targetId = params.get('id');
 
-        document.addEventListener('DOMContentLoaded', async () => {
-            const params = new URLSearchParams(window.location.search);
-            const targetId = params.get('id');
+            await window.loadStoreProducts();
+            const allProducts = (Array.isArray(window.firestoreProducts) && window.firestoreProducts.length > 0)
+                ? window.firestoreProducts
+                : (window.productsData || []);
 
-            await window.loadStoreProducts();
-            const allProducts = (Array.isArray(window.firestoreProducts) && window.firestoreProducts.length > 0)
-                ? window.firestoreProducts
-                : (window.productsData || []);
+            activeProduct = allProducts.find(p => String(p.id) === String(targetId));
 
-            activeProduct = allProducts.find(p => String(p.id) === String(targetId));
+            if (!activeProduct) {
+                document.getElementById('prodTitle').innerText = 'Product Not Found';
+                document.getElementById('mainImageWrap').innerHTML = '';
+                return;
+            }
 
-            if (!activeProduct) {
-                document.getElementById('prodTitle').innerText = 'Product Not Found';
-                document.getElementById('mainImageWrap').innerHTML = '';
-                return;
-            }
+            document.getElementById('prodPrice').innerText = '৳ ' + activeProduct.price;
+            renderDynamicText();
 
-            const titleText = getProductText(activeProduct.title);
-            document.getElementById('prodPrice').innerText = '৳ ' + activeProduct.price;
-            renderDynamicText();
+            const thumbContainer = document.getElementById('thumbnailContainer');
+            const images = (activeProduct.images && activeProduct.images.length > 0) ? activeProduct.images : ['assets/image-placeholder.svg'];
+            setMainImage(images[0], false);
 
-            const thumbContainer = document.getElementById('thumbnailContainer');
-            const images = (activeProduct.images && activeProduct.images.length > 0) ? activeProduct.images : ['assets/image-placeholder.svg'];
-            setMainImage(images[0], false);
+            images.forEach((imgSrc, index) => {
+                const thumb = document.createElement('div');
+                thumb.className = 'thumbnail' + (index === 0 ? ' active' : '');
+                thumb.innerHTML = `<img src="${imgSrc}" alt="" onerror="this.onerror=null;this.src='assets/image-placeholder.svg';">`;
+                thumb.onclick = () => {
+                    currentImageIndex = index;
+                    setMainImage(imgSrc);
+                    thumbContainer.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
+                    thumb.classList.add('active');
+                };
+                thumbContainer.appendChild(thumb);
+            });
+            document.getElementById('mainImage').onerror = function() { this.onerror = null; this.src = 'assets/image-placeholder.svg'; };
 
-            images.forEach((imgSrc, index) => {
-                const thumb = document.createElement('div');
-                thumb.className = 'thumbnail' + (index === 0 ? ' active' : '');
-                thumb.innerHTML = `<img src="${imgSrc}" alt="${titleText} Thumbnail ${index + 1} - Mohor Clothings" loading="lazy" onerror="this.onerror=null;this.src='assets/image-placeholder.svg';">`;
-                thumb.onclick = () => {
-                    currentImageIndex = index;
-                    setMainImage(imgSrc);
-                    thumbContainer.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
-                    thumb.classList.add('active');
-                };
-                thumbContainer.appendChild(thumb);
-            });
-            document.getElementById('mainImage').onerror = function() { this.onerror = null; this.src = 'assets/image-placeholder.svg'; };
+            // Sizes (toggle to unselect)
+            const sizeContainer = document.getElementById('sizeOptions');
+            const measurementBox = document.getElementById('sizeMeasurements');
+            if (activeProduct.sizes && activeProduct.sizes.length > 0) {
+                activeProduct.sizes.forEach(size => {
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = 'opt-btn size-btn';
+                    btn.innerText = size;
+                    btn.onclick = () => {
+                        const warn = document.getElementById('sizeWarning');
+                        if (btn.classList.contains('selected')) {
+                            btn.classList.remove('selected');
+                            currentSelectedSize = null;
+                            measurementBox.classList.remove('show');
+                        } else {
+                            document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('selected'));
+                            btn.classList.add('selected');
+                            currentSelectedSize = size;
+                            if (warn) warn.classList.remove('show');
+                            if (activeProduct.sizeMeasurements && activeProduct.sizeMeasurements[size]) {
+                                const md = activeProduct.sizeMeasurements[size];
+                                measurementBox.innerHTML = (typeof md === 'string') ? md : (md[window.currentLang] || md['en'] || "");
+                                measurementBox.classList.add('show');
+                            } else {
+                                measurementBox.classList.remove('show');
+                            }
+                        }
+                    };
+                    sizeContainer.appendChild(btn);
+                });
+            }
 
-            // Sizes (toggle to unselect)
-            const sizeContainer = document.getElementById('sizeOptions');
-            const measurementBox = document.getElementById('sizeMeasurements');
-            if (activeProduct.sizes && activeProduct.sizes.length > 0) {
-                activeProduct.sizes.forEach(size => {
-                    const btn = document.createElement('button');
-                    btn.type = 'button';
-                    btn.className = 'opt-btn size-btn';
-                    btn.innerText = size;
-                    btn.onclick = () => {
-                        const warn = document.getElementById('sizeWarning');
-                        if (btn.classList.contains('selected')) {
-                            btn.classList.remove('selected');
-                            currentSelectedSize = null;
-                            measurementBox.classList.remove('show');
-                        } else {
-                            document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('selected'));
-                            btn.classList.add('selected');
-                            currentSelectedSize = size;
-                            if (warn) warn.classList.remove('show');
-                            if (activeProduct.sizeMeasurements && activeProduct.sizeMeasurements[size]) {
-                                const md = activeProduct.sizeMeasurements[size];
-                                measurementBox.innerHTML = (typeof md === 'string') ? md : (md[window.currentLang] || md['en'] || "");
-                                measurementBox.classList.add('show');
-                            } else {
-                                measurementBox.classList.remove('show');
-                            }
-                        }
-                    };
-                    sizeContainer.appendChild(btn);
-                });
-            }
+            // Colors (toggle to unselect)
+            const colorContainer = document.getElementById('colorOptions');
+            const colorSection = document.getElementById('colorSection');
+            let colorArray = [];
+            if (activeProduct.colors) colorArray = Array.isArray(activeProduct.colors) ? activeProduct.colors : (activeProduct.colors[window.currentLang] || activeProduct.colors['en'] || []);
 
-            // Colors (toggle to unselect)
-            const colorContainer = document.getElementById('colorOptions');
-            const colorSection = document.getElementById('colorSection');
-            let colorArray = [];
-            if (activeProduct.colors) colorArray = Array.isArray(activeProduct.colors) ? activeProduct.colors : (activeProduct.colors[window.currentLang] || activeProduct.colors['en'] || []);
+            if (colorArray.length > 0) {
+                colorSection.style.display = 'block';
+                colorArray.forEach(color => {
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = 'opt-btn color-btn';
+                    btn.innerText = color;
+                    btn.onclick = () => {
+                        const warn = document.getElementById('colorWarning');
+                        if (btn.classList.contains('selected')) {
+                            btn.classList.remove('selected');
+                            currentSelectedColor = null;
+                        } else {
+                            document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('selected'));
+                            btn.classList.add('selected');
+                            currentSelectedColor = color;
+                            if (warn) warn.classList.remove('show');
+                        }
+                    };
+                    colorContainer.appendChild(btn);
+                });
+            }
 
-            if (colorArray.length > 0) {
-                colorSection.style.display = 'block';
-                colorArray.forEach(color => {
-                    const btn = document.createElement('button');
-                    btn.type = 'button';
-                    btn.className = 'opt-btn color-btn';
-                    btn.innerText = color;
-                    btn.onclick = () => {
-                        const warn = document.getElementById('colorWarning');
-                        if (btn.classList.contains('selected')) {
-                            btn.classList.remove('selected');
-                            currentSelectedColor = null;
-                        } else {
-                            document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('selected'));
-                            btn.classList.add('selected');
-                            currentSelectedColor = color;
-                            if (warn) warn.classList.remove('show');
-                        }
-                    };
-                    colorContainer.appendChild(btn);
-                });
-            }
+            function validateSelection() {
+                let valid = true;
+                if (activeProduct.sizes && activeProduct.sizes.length > 0 && !currentSelectedSize) {
+                    const warn = document.getElementById('sizeWarning'); if (warn) warn.classList.add('show');
+                    valid = false;
+                }
+                // Consistent with the desktop quick-view modal: a color must be
+                // chosen whenever the product actually offers color options.
+                if (colorArray.length > 0 && !currentSelectedColor) {
+                    const warn = document.getElementById('colorWarning'); if (warn) warn.classList.add('show');
+                    valid = false;
+                }
+                return valid;
+            }
 
-            function validateSelection() {
-                let valid = true;
-                if (activeProduct.sizes && activeProduct.sizes.length > 0 && !currentSelectedSize) {
-                    const warn = document.getElementById('sizeWarning'); if (warn) warn.classList.add('show');
-                    valid = false;
-                }
-                // Consistent with the desktop quick-view modal: a color must be
-                // chosen whenever the product actually offers color options.
-                if (colorArray.length > 0 && !currentSelectedColor) {
-                    const warn = document.getElementById('colorWarning'); if (warn) warn.classList.add('show');
-                    valid = false;
-                }
-                return valid;
-            }
+            function doAddToCart() {
+                if (!validateSelection()) return false;
+                if (typeof window.addToCart === 'function') {
+                    window.addToCart(activeProduct, currentSelectedSize || 'Standard', currentSelectedColor);
+                }
+                return true;
+            }
 
-            function doAddToCart() {
-                if (!validateSelection()) return false;
-                if (typeof window.addToCart === 'function') {
-                    window.addToCart(activeProduct, currentSelectedSize || 'Standard', currentSelectedColor);
-                }
-                return true;
-            }
+            document.getElementById('addToCartBtn').onclick = doAddToCart;
+            document.getElementById('addToCartBtnMobile').onclick = doAddToCart;
+            document.getElementById('buyNowBtnInline').onclick = () => { if (doAddToCart()) window.location.href = 'cart.html'; };
+            document.getElementById('buyNowBtn').onclick = () => { if (doAddToCart()) window.location.href = 'cart.html'; };
 
-            document.getElementById('addToCartBtn').onclick = doAddToCart;
-            document.getElementById('addToCartBtnMobile').onclick = doAddToCart;
-            document.getElementById('buyNowBtnInline').onclick = () => { if (doAddToCart()) window.location.href = 'cart.html'; };
-            document.getElementById('buyNowBtn').onclick = () => { if (doAddToCart()) window.location.href = 'cart.html'; };
+            // Lightbox
+            const modal = document.getElementById('imageModal');
+            const modalImg = document.getElementById('modalImg');
 
-            // Lightbox
-            const modal = document.getElementById('imageModal');
-            const modalImg = document.getElementById('modalImg');
+            document.getElementById('mainImage').onclick = function() {
+                modal.classList.add('active');
+                modalImg.src = images[currentImageIndex];
+            };
+            document.getElementById('closeModal').onclick = () => modal.classList.remove('active');
+            modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('active'); });
+            document.addEventListener('keydown', (e) => { if (e.key === 'Escape') modal.classList.remove('active'); });
 
-            document.getElementById('mainImage').onclick = function() {
-                modal.classList.add('active');
-                modalImg.src = images[currentImageIndex];
-                modalImg.alt = `${getProductText(activeProduct.title)} - Mohor Clothings`;
-            };
-            document.getElementById('closeModal').onclick = () => modal.classList.remove('active');
-            modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('active'); });
-            document.addEventListener('keydown', (e) => { if (e.key === 'Escape') modal.classList.remove('active'); });
+            function changeImage(direction) {
+                currentImageIndex = (currentImageIndex + direction + images.length) % images.length;
+                modalImg.src = images[currentImageIndex];
+                setMainImage(images[currentImageIndex]);
+                thumbContainer.querySelectorAll('.thumbnail').forEach((t, i) => t.classList.toggle('active', i === currentImageIndex));
+            }
+            document.getElementById('nextModal').onclick = () => changeImage(1);
+            document.getElementById('prevModal').onclick = () => changeImage(-1);
 
-            function changeImage(direction) {
-                currentImageIndex = (currentImageIndex + direction + images.length) % images.length;
-                modalImg.src = images[currentImageIndex];
-                modalImg.alt = `${getProductText(activeProduct.title)} - Mohor Clothings`;
-                setMainImage(images[currentImageIndex]);
-                thumbContainer.querySelectorAll('.thumbnail').forEach((t, i) => t.classList.toggle('active', i === currentImageIndex));
-            }
-            document.getElementById('nextModal').onclick = () => changeImage(1);
-            document.getElementById('prevModal').onclick = () => changeImage(-1);
+            let touchstartX = 0, touchendX = 0;
+            modal.addEventListener('touchstart', e => { if (e.touches.length === 1) touchstartX = e.changedTouches[0].screenX; });
+            modal.addEventListener('touchend', e => {
+                if (e.changedTouches.length !== 1) return;
+                touchendX = e.changedTouches[0].screenX;
+                const threshold = 50;
+                if (touchendX < touchstartX - threshold) changeImage(1);
+                if (touchendX > touchstartX + threshold) changeImage(-1);
+            });
 
-            let touchstartX = 0, touchendX = 0;
-            modal.addEventListener('touchstart', e => { if (e.touches.length === 1) touchstartX = e.changedTouches[0].screenX; });
-            modal.addEventListener('touchend', e => {
-                if (e.changedTouches.length !== 1) return;
-                touchendX = e.changedTouches[0].screenX;
-                const threshold = 50;
-                if (touchendX < touchstartX - threshold) changeImage(1);
-                if (touchendX > touchstartX + threshold) changeImage(-1);
-            });
-
-            // Lightbox action buttons: allow adding to cart or buying from the image modal
-            const lbAdd = document.getElementById('lightboxAddToCart');
-            const lbBuy = document.getElementById('lightboxBuyNow');
-            if (lbAdd) {
-                lbAdd.addEventListener('click', () => {
-                    if (doAddToCart()) modal.classList.remove('active');
-                });
-            }
-            if (lbBuy) {
-                lbBuy.addEventListener('click', () => {
-                    if (doAddToCart()) window.location.href = 'cart.html';
-                });
-            }
-        });
-    </script>
+            // Lightbox action buttons: allow adding to cart or buying from the image modal
+            const lbAdd = document.getElementById('lightboxAddToCart');
+            const lbBuy = document.getElementById('lightboxBuyNow');
+            if (lbAdd) {
+                lbAdd.addEventListener('click', () => {
+                    if (doAddToCart()) modal.classList.remove('active');
+                });
+            }
+            if (lbBuy) {
+                lbBuy.addEventListener('click', () => {
+                    if (doAddToCart()) window.location.href = 'cart.html';
+                });
+            }
+        });
+    </script>
 </body>
 </html>
