@@ -388,11 +388,11 @@ function renderProducts(productsToRender) {
         const displayTitle = getText(product.title);
         const displayCategory = (product.category || "").replace('-', ' ');
 
-        // If list view, render a row layout
+        // Google Image Search optimization with brand terms
         if (viewMode === 'list') {
             card.innerHTML = `
                 <div class="card-media">
-                    <img src="${productCoverImage(product)}" alt="${displayTitle} - Mohor Clothings" loading="lazy" onerror="this.onerror=null;this.src='assets/image-placeholder.svg';">
+                    <img src="${productCoverImage(product)}" alt="${displayTitle} - Mohor Clothings Mohor Dress" loading="lazy" onerror="this.onerror=null;this.src='assets/image-placeholder.svg';">
                 </div>
                 <div class="card-body">
                     <div class="card-title">${displayTitle}</div>
@@ -405,7 +405,7 @@ function renderProducts(productsToRender) {
             card.innerHTML = `
                 <div class="card-media">
                     <span class="card-cat">${displayCategory}</span>
-                    <img src="${productCoverImage(product)}" alt="${displayTitle} - Mohor Clothings" loading="lazy" onerror="this.onerror=null;this.src='assets/image-placeholder.svg';">
+                    <img src="${productCoverImage(product)}" alt="${displayTitle} - Mohor Clothings Mohor Dress" loading="lazy" onerror="this.onerror=null;this.src='assets/image-placeholder.svg';">
                     <div class="card-quick">Quick View</div>
                 </div>
                 <div class="card-body">
@@ -626,13 +626,13 @@ function openProductModal(product) {
     thumbContainer.innerHTML = '';
 
     const images = (product.images && product.images.length > 0) ? product.images : ['assets/image-placeholder.svg'];
-    mainImage.innerHTML = `<img src="${images[0]}" alt="${getText(product.title)} - Mohor Clothings" loading="lazy" onerror="this.onerror=null;this.src='assets/image-placeholder.svg';">`;
+    mainImage.innerHTML = `<img src="${images[0]}" alt="${getText(product.title)} - Mohor Clothings Mohor Dress" loading="lazy" onerror="this.onerror=null;this.src='assets/image-placeholder.svg';">`;
     images.forEach((imgSrc, index) => {
         const thumb = document.createElement('div');
         thumb.className = 'thumbnail' + (index === 0 ? ' active' : '');
-        thumb.innerHTML = `<img src="${imgSrc}" alt="${getText(product.title)} Thumbnail - Mohor Clothings" loading="lazy" onerror="this.onerror=null;this.src='assets/image-placeholder.svg';">`;
+        thumb.innerHTML = `<img src="${imgSrc}" alt="${getText(product.title)} Mohor Dress - Image ${index + 1}" loading="lazy" onerror="this.onerror=null;this.src='assets/image-placeholder.svg';">`;
         thumb.onclick = () => {
-            mainImage.innerHTML = `<img src="${imgSrc}" alt="${getText(product.title)} - Mohor Clothings" loading="lazy">`;
+            mainImage.innerHTML = `<img src="${imgSrc}" alt="${getText(product.title)} - Mohor Clothings Mohor Dress" loading="lazy">`;
             thumbContainer.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
             thumb.classList.add('active');
         };
