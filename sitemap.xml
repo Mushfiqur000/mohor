@@ -26,14 +26,14 @@
     <priority>0.5</priority>
   </url>
 
-  <!-- Example Product Pages with Image Extensions -->
+  <!-- Product Pages with Image Extensions -->
   <url>
     <loc>https://mohor.me/product.html?id=1</loc>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
     <image:image>
       <image:loc>https://mohor.me/assets/products/product-1-main.jpg</image:loc>
-      <image:title>Mohor Dress Handcrafted Three-Piece Set</image:title>
+      <image:title>Mohor Dress Handcrafted Three-Piece Set — Mohor Clothings</image:title>
       <image:caption>Premium handcrafted women Mohor dress from Mohor Clothings Sylhet.</image:caption>
     </image:image>
   </url>
