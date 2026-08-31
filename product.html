@@ -158,10 +158,11 @@ src="https://www.facebook.com/tr?id=920711640501746&ev=PageView&noscript=1"
             return field[window.currentLang] || field['en'] || "";
         }
 
-        function setMainImage(src, animate) {
+        function setMainImage(src, altText, animate) {
             const mainImg = document.getElementById('mainImage');
             mainImg.style.animation = 'none';
             mainImg.src = src;
+            if (altText) mainImg.alt = altText;
             if (animate !== false) requestAnimationFrame(() => { mainImg.style.animation = ''; });
         }
 
@@ -229,7 +230,8 @@ src="https://www.facebook.com/tr?id=920711640501746&ev=PageView&noscript=1"
             if (ogImg && images[0]) ogImg.content = images[0];
 
             const mainImgEl = document.getElementById('mainImage');
-            if (mainImgEl) mainImgEl.alt = `${prodTitleStr} - Mohor Clothings Mohor Dress`;
+            const keywordAltText = `${prodTitleStr} - Mohor Clothings Mohor Dress`;
+            if (mainImgEl) mainImgEl.alt = keywordAltText;
 
             // Dynamic Schema.org Product JSON-LD Metadata Injection
             const schemaData = {
@@ -261,15 +263,16 @@ src="https://www.facebook.com/tr?id=920711640501746&ev=PageView&noscript=1"
             renderDynamicText();
 
             const thumbContainer = document.getElementById('thumbnailContainer');
-            setMainImage(images[0], false);
+            setMainImage(images[0], keywordAltText, false);
 
             images.forEach((imgSrc, index) => {
                 const thumb = document.createElement('div');
                 thumb.className = 'thumbnail' + (index === 0 ? ' active' : '');
-                thumb.innerHTML = `<img src="${imgSrc}" alt="${prodTitleStr} - Mohor Dress Image ${index + 1}" onerror="this.onerror=null;this.src='assets/image-placeholder.svg';">`;
+                const thumbAltText = `${prodTitleStr} - Mohor Dress Image ${index + 1}`;
+                thumb.innerHTML = `<img src="${imgSrc}" alt="${thumbAltText}" onerror="this.onerror=null;this.src='assets/image-placeholder.svg';">`;
                 thumb.onclick = () => {
                     currentImageIndex = index;
-                    setMainImage(imgSrc);
+                    setMainImage(imgSrc, thumbAltText);
                     thumbContainer.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
                     thumb.classList.add('active');
                 };
@@ -372,6 +375,7 @@ src="https://www.facebook.com/tr?id=920711640501746&ev=PageView&noscript=1"
             document.getElementById('mainImage').onclick = function() {
                 modal.classList.add('active');
                 modalImg.src = images[currentImageIndex];
+                modalImg.alt = `${prodTitleStr} - Mohor Dress Full Image ${currentImageIndex + 1}`;
             };
             document.getElementById('closeModal').onclick = () => modal.classList.remove('active');
             modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('active'); });
@@ -380,7 +384,9 @@ src="https://www.facebook.com/tr?id=920711640501746&ev=PageView&noscript=1"
             function changeImage(direction) {
                 currentImageIndex = (currentImageIndex + direction + images.length) % images.length;
                 modalImg.src = images[currentImageIndex];
-                setMainImage(images[currentImageIndex]);
+                const activeAltText = `${prodTitleStr} - Mohor Dress Image ${currentImageIndex + 1}`;
+                modalImg.alt = activeAltText;
+                setMainImage(images[currentImageIndex], activeAltText);
                 thumbContainer.querySelectorAll('.thumbnail').forEach((t, i) => t.classList.toggle('active', i === currentImageIndex));
             }
             document.getElementById('nextModal').onclick = () => changeImage(1);
