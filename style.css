@@ -19,7 +19,7 @@
   --muslin: #F5F1EC;
   --parchment: #FBF8F3;
   --surface: #FFFFFF;
-  --ink: #221B18;              /* Black / Dark text in Light Mode */
+  --ink: #221B18;               /* Black / Dark text in Light Mode */
   --ink-muted: #665F5B;        /* Crisp readable muted text */
   --ink-faint: #8C847E;
   --border: #E7DFD5;
@@ -116,9 +116,10 @@ body {
   line-height: 1.6;
   font-size: 15.5px;
   -webkit-font-smoothing: antialiased;
-  opacity: 0;
+  opacity: 1 !important; /* Fixed: Render instantly to eliminate LCP delay */
+  visibility: visible !important;
 }
-body.is-ready { opacity: 1; transition: opacity 420ms var(--ease); }
+body.is-ready { opacity: 1; }
 
 h1, h2, h3, h4, h5, h6 { font-family: var(--font-display); font-weight: 600; line-height: 1.18; color: var(--ink); }
 a { color: inherit; text-decoration: none; }
