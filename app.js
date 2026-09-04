@@ -175,7 +175,7 @@ function updateUIText() {
         if (val) el.setAttribute('aria-label', val);
     });
 
-    if (document.getElementById('productGrid')) updateProducts();
+    if (document.getElementById('productGrid')) window.updateProducts();
     if (typeof window.updateCartUI === "function") window.updateCartUI();
     if (typeof window.updateDeliveryPolicyAndTotal === "function") window.updateDeliveryPolicyAndTotal();
 }
@@ -464,6 +464,15 @@ function initViewControls() {
     apply();
 }
 
+// Ensure updateProducts stores last rendered for re-render
+const origUpdateProducts = updateProducts;
+window.updateProducts = function() {
+    origUpdateProducts();
+    const grid = document.getElementById('productGrid');
+    // capture last rendered source for view re-renders
+    window._lastRenderedProducts = (Array.isArray(window.firestoreProducts) && window.firestoreProducts.length>0) ? window.firestoreProducts : (window.productsData || []);
+};
+
 document.addEventListener('DOMContentLoaded', () => { initViewControls(); });
 
 // Escape helper used in renderProducts inline JSON
@@ -519,8 +528,6 @@ function updateProducts() {
     if (sortValue === 'low-high') filtered.sort((a, b) => a.price - b.price);
     else if (sortValue === 'high-low') filtered.sort((a, b) => b.price - a.price);
 
-    // Save filtered array to prevent resetting active filters on view toggle
-    window._lastRenderedProducts = filtered;
     renderProducts(filtered);
 }
 window.updateProducts = updateProducts;
@@ -554,7 +561,7 @@ let selectedColor = null;
 // Track last focused element so focus can be restored when dialogs close
 let _lastFocusedElement = null;
 
-// Layout-safe focus trap (prevents offsetParent forced reflows)
+// Simple focus trap for dialogs/modals (keyboard-only, small footprint)
 function trapFocus(container) {
     const selector = 'a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), [tabindex]:not([tabindex="-1"])';
     const nodes = Array.from(container.querySelectorAll(selector)).filter(n => !n.hasAttribute('disabled') && n.getAttribute('tabindex') !== '-1');
