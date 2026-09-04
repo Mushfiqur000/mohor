@@ -175,7 +175,7 @@ function updateUIText() {
         if (val) el.setAttribute('aria-label', val);
     });
 
-    if (document.getElementById('productGrid')) window.updateProducts();
+    if (document.getElementById('productGrid')) updateProducts();
     if (typeof window.updateCartUI === "function") window.updateCartUI();
     if (typeof window.updateDeliveryPolicyAndTotal === "function") window.updateDeliveryPolicyAndTotal();
 }
@@ -464,6 +464,8 @@ function initViewControls() {
     apply();
 }
 
+document.addEventListener('DOMContentLoaded', () => { initViewControls(); });
+
 // Escape helper used in renderProducts inline JSON
 function escapeHtml(json) { return String(json).replace(/\\/g,'\\\\').replace(/'/g, "\\'").replace(/\"/g,'\\\"'); }
 
@@ -517,16 +519,13 @@ function updateProducts() {
     if (sortValue === 'low-high') filtered.sort((a, b) => a.price - b.price);
     else if (sortValue === 'high-low') filtered.sort((a, b) => b.price - a.price);
 
-    // Capture last rendered source for view re-renders
+    // Save filtered array to prevent resetting active filters on view toggle
     window._lastRenderedProducts = filtered;
-
     renderProducts(filtered);
 }
 window.updateProducts = updateProducts;
 
 document.addEventListener('DOMContentLoaded', () => {
-    initViewControls();
-
     document.querySelectorAll('.filter-checkbox').forEach(cb => cb.addEventListener('change', updateProducts));
 
     const sortSelect = document.getElementById('sortSelect');
@@ -555,10 +554,10 @@ let selectedColor = null;
 // Track last focused element so focus can be restored when dialogs close
 let _lastFocusedElement = null;
 
-// Simple focus trap for dialogs/modals (keyboard-only, small footprint)
+// Layout-safe focus trap (prevents offsetParent forced reflows)
 function trapFocus(container) {
     const selector = 'a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), [tabindex]:not([tabindex="-1"])';
-    const nodes = Array.from(container.querySelectorAll(selector)).filter(n => n.offsetParent !== null || n === document.activeElement);
+    const nodes = Array.from(container.querySelectorAll(selector)).filter(n => !n.hasAttribute('disabled') && n.getAttribute('tabindex') !== '-1');
     if (nodes.length === 0) return;
     const first = nodes[0];
     const last = nodes[nodes.length - 1];
@@ -789,7 +788,16 @@ document.addEventListener('DOMContentLoaded', () => {
 document.addEventListener('DOMContentLoaded', () => {
     const header = document.getElementById('siteHeader');
     if (header) {
-        const onScroll = () => header.classList.toggle('scrolled', window.scrollY > 8);
+        let ticking = false;
+        const onScroll = () => {
+            if (!ticking) {
+                requestAnimationFrame(() => {
+                    header.classList.toggle('scrolled', window.scrollY > 8);
+                    ticking = false;
+                });
+                ticking = true;
+            }
+        };
         onScroll();
         window.addEventListener('scroll', onScroll, { passive: true });
     }
