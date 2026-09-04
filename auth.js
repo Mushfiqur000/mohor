@@ -5,8 +5,24 @@
 
 window.currentUser = null;
 
-const db = window.db;
-const auth = firebase.auth();
+// Safe lazy proxies for db and auth to prevent Firebase initialization timing errors
+const db = new Proxy({}, {
+    get(target, prop) {
+        const realDb = window.db || (typeof firebase !== 'undefined' && firebase.apps && firebase.apps.length ? firebase.firestore() : null);
+        if (!realDb) return function() {};
+        const val = realDb[prop];
+        return typeof val === 'function' ? val.bind(realDb) : val;
+    }
+});
+
+const auth = new Proxy({}, {
+    get(target, prop) {
+        const realAuth = (typeof firebase !== 'undefined' && firebase.apps && firebase.apps.length ? firebase.auth() : null);
+        if (!realAuth) return function() {};
+        const val = realAuth[prop];
+        return typeof val === 'function' ? val.bind(realAuth) : val;
+    }
+});
 
 function notify(message, type) {
     if (typeof window.showToast === 'function') window.showToast(message, type);
@@ -228,26 +244,33 @@ async function loadUserOrders(uid) {
 }
 window.loadUserOrders = loadUserOrders;
 
-auth.onAuthStateChanged(async (user) => {
-    window.currentUser = user;
-    const authView = document.getElementById('authView');
-    const profileView = document.getElementById('profileView');
+function initAuthStateListener() {
+    if (typeof firebase !== 'undefined' && firebase.apps && firebase.apps.length) {
+        firebase.auth().onAuthStateChanged(async (user) => {
+            window.currentUser = user;
+            const authView = document.getElementById('authView');
+            const profileView = document.getElementById('profileView');
 
-    if (user) {
-        if (authView) authView.style.display = 'none';
-        if (profileView) profileView.style.display = 'block';
-        const emailDisplay = document.getElementById('userProfileEmail');
-        if (emailDisplay) emailDisplay.innerText = user.email;
-        const avatarInitial = document.getElementById('profileAvatarInitial');
-        if (avatarInitial) avatarInitial.innerText = (user.displayName || user.email || '?').trim().charAt(0).toUpperCase();
+            if (user) {
+                if (authView) authView.style.display = 'none';
+                if (profileView) profileView.style.display = 'block';
+                const emailDisplay = document.getElementById('userProfileEmail');
+                if (emailDisplay) emailDisplay.innerText = user.email;
+                const avatarInitial = document.getElementById('profileAvatarInitial');
+                if (avatarInitial) avatarInitial.innerText = (user.displayName || user.email || '?').trim().charAt(0).toUpperCase();
 
-        await loadUserData(user.uid);
-        await loadUserOrders(user.uid);
+                await loadUserData(user.uid);
+                await loadUserOrders(user.uid);
+            } else {
+                if (authView) authView.style.display = 'block';
+                if (profileView) profileView.style.display = 'none';
+            }
+        });
     } else {
-        if (authView) authView.style.display = 'block';
-        if (profileView) profileView.style.display = 'none';
+        setTimeout(initAuthStateListener, 50);
     }
-});
+}
+initAuthStateListener();
 
 window.handleSignup = async function(evt) {
     const btnTarget = evt ? (evt.currentTarget || (evt.target && evt.target.closest ? evt.target.closest('button') : null)) : null;
