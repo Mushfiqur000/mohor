@@ -52,6 +52,15 @@ function getCanonicalPrice(item) {
 // Load cart from storage so it survives page reloads / mobile navigation.
 window.cart = JSON.parse(localStorage.getItem('mohor_cart') || '[]');
 
+// Save cart state safely on pagehide instead of unload (BFCache friendly)
+window.addEventListener('pagehide', () => {
+    try {
+        localStorage.setItem('mohor_cart', JSON.stringify(window.cart || []));
+    } catch (e) {
+        console.error('Error saving cart on pagehide:', e);
+    }
+});
+
 const cartOverlay = document.getElementById('cartOverlay');
 const cartSidebar = document.getElementById('cartSidebar');
 const cartItemsContainer = document.getElementById('cartItemsContainer') || document.getElementById('cartItems');
@@ -342,7 +351,7 @@ window.checkoutToAdmin = async function() {
         let activeUid = null;
         let activeEmail = null;
 
-        if (typeof firebase !== 'undefined' && firebase.auth().currentUser) {
+        if (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser) {
             activeUid = firebase.auth().currentUser.uid;
             activeEmail = firebase.auth().currentUser.email;
         } else if (window.currentUser) {
@@ -361,6 +370,8 @@ window.checkoutToAdmin = async function() {
         const verifiedSubtotal = Number(verifiedItems.reduce((sum, item) => sum + (item.price * item.qty), 0)) || 0;
         const verifiedTotal = Number(verifiedSubtotal + (orderData.deliveryFee || 0)) || 0;
 
+        const dbInstance = window.db || (typeof firebase !== 'undefined' && firebase.firestore ? firebase.firestore() : null);
+
         const newOrder = {
             userId: activeUid,
             userEmail: activeEmail,
@@ -373,11 +384,15 @@ window.checkoutToAdmin = async function() {
             totalAmount: verifiedTotal,
             items: verifiedItems,
             // Use serverTimestamp so ordering and timezone are canonical
-            orderDate: firebase && firebase.firestore ? firebase.firestore.FieldValue.serverTimestamp() : new Date().toISOString(),
+            orderDate: typeof firebase !== 'undefined' && firebase.firestore && firebase.firestore.FieldValue ? firebase.firestore.FieldValue.serverTimestamp() : new Date().toISOString(),
             status: 'pending'
         };
 
-        await window.db.collection('orders').add(newOrder);
+        if (dbInstance) {
+            await dbInstance.collection('orders').add(newOrder);
+        } else {
+            throw new Error("Firestore database instance is not available.");
+        }
 
         // Trigger instant Telegram notification to the store owner
         if (typeof window.sendTelegramNotification === 'function') {
