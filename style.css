@@ -19,8 +19,8 @@
   --muslin: #F5F1EC;
   --parchment: #FBF8F3;
   --surface: #FFFFFF;
-  --ink: #221B18;             /* Black / Dark text in Light Mode */
-  --ink-muted: #665F5B;       /* Crisp readable muted text */
+  --ink: #221B18;              /* Black / Dark text in Light Mode */
+  --ink-muted: #665F5B;        /* Crisp readable muted text */
   --ink-faint: #8C847E;
   --border: #E7DFD5;
   --border-strong: #C8BCAC;
@@ -67,8 +67,8 @@
   --muslin: #0b0b0c;
   --parchment: #121214;
   --surface: #17171a;
-  --ink: #f3efe9;             /* White / Light text in Dark Mode */
-  --ink-muted: #cfc9c5;       /* Light gray muted text */
+  --ink: #f3efe9;              /* White / Light text in Dark Mode */
+  --ink-muted: #cfc9c5;        /* Light gray muted text */
   --ink-faint: #9f9a96;
   --border: #26262a;
   --border-strong: #38383e;
@@ -881,4 +881,18 @@ select.input {
 .modal-title,
 .product-details h2 {
   color: var(--ink) !important;
+}
+
+/* ==========================================================================
+   Critical Performance Override: Force immediate rendering above-the-fold
+   ========================================================================== */
+#siteHeader,
+.hero,
+.hero-media,
+.hero-media img,
+.hero-scrim {
+  opacity: 1 !important;
+  visibility: visible !important;
+  transform: none !important;
+  transition: none !important;
 }
