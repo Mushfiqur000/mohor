@@ -7,7 +7,7 @@ function escapeHtml(value) {
     return String(value ?? '').replace(/[&<>"']/g, (ch) => ({
         '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
     }[ch]));
-}
+} 
 
 function notify(message, type) {
     if (typeof window.showToast === 'function') window.showToast(message, type);
