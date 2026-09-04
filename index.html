@@ -145,7 +145,7 @@
             </div>
 
             <div class="shop-layout">
-                <div class="filters-overlay" id="filtersOverlay"></div>
+      0         <div class="filters-overlay" id="filtersOverlay"></div>
                 <aside class="filters" id="sidebar">
                     <div class="filters-head">
                         <strong data-i18n="filterBtn">Filters</strong>
@@ -276,38 +276,44 @@
         <div class="account-body">
             <div id="authView">
                 <div id="loginFormContainer">
-                    <h4 style="font-size:1.05rem; margin-bottom:16px; text-align:center;" data-i18n="accLoginTitle">Login to Your Account</h4>
-                    <div class="field"><input type="email" id="loginEmail" class="input" data-i18n-placeholder="accEmailPlaceholder" placeholder="Email Address"></div>
-                    <div class="field password-field-group">
-                        <input type="password" id="loginPassword" class="input" data-i18n-placeholder="accPassPlaceholder" placeholder="Password">
-                        <button type="button" class="toggle-password-btn" onclick="window.togglePasswordVisibility('loginPassword', this)" aria-label="Toggle password visibility">👁️</button>
-                    </div>
-                    <div style="text-align: right; margin-top: -6px; margin-bottom: 14px;">
-                        <a href="#" class="auth-switch-link" style="font-size: 0.78rem;" onclick="window.showAuthView('forgot'); return false;">Forgot Password?</a>
-                    </div>
-                    <button type="button" class="btn btn-dark btn-block" onclick="window.handleLogin(event)"><span class="spinner"></span><span class="btn-label" data-i18n="accLoginBtn">Log In</span></button>
-                    <p class="auth-tabs-msg"><span data-i18n="accNoAccount">Don't have an account?</span> <a href="#" class="auth-switch-link" onclick="window.toggleAuthMode();return false;" data-i18n="accSignUpLink">Sign up</a></p>
+                    <form id="loginForm" onsubmit="event.preventDefault(); window.handleLogin(event);">
+                        <h4 style="font-size:1.05rem; margin-bottom:16px; text-align:center;" data-i18n="accLoginTitle">Login to Your Account</h4>
+                        <div class="field"><input type="email" id="loginEmail" class="input" data-i18n-placeholder="accEmailPlaceholder" placeholder="Email Address"></div>
+                        <div class="field password-field-group">
+                            <input type="password" id="loginPassword" class="input" data-i18n-placeholder="accPassPlaceholder" placeholder="Password">
+                            <button type="button" class="toggle-password-btn" onclick="window.togglePasswordVisibility('loginPassword', this)" aria-label="Toggle password visibility">👁️</button>
+                        </div>
+                        <div style="text-align: right; margin-top: -6px; margin-bottom: 14px;">
+                            <a href="#" class="auth-switch-link" style="font-size: 0.78rem;" onclick="window.showAuthView('forgot'); return false;">Forgot Password?</a>
+                        </div>
+                        <button type="submit" class="btn btn-dark btn-block"><span class="spinner"></span><span class="btn-label" data-i18n="accLoginBtn">Log In</span></button>
+                        <p class="auth-tabs-msg"><span data-i18n="accNoAccount">Don't have an account?</span> <a href="#" class="auth-switch-link" onclick="window.toggleAuthMode();return false;" data-i18n="accSignUpLink">Sign up</a></p>
+                    </form>
                 </div>
                 <div id="signupFormContainer" style="display:none;">
-                    <h4 style="font-size:1.05rem; margin-bottom:16px; text-align:center;" data-i18n="accSignupTitle">Create an Account</h4>
-                    <div class="field"><input type="text" id="signupName" class="input" data-i18n-placeholder="accNamePlaceholder" placeholder="Full Name"></div>
-                    <div class="field"><input type="email" id="signupEmail" class="input" data-i18n-placeholder="accEmailPlaceholder" placeholder="Email Address"></div>
-                    <div class="field password-field-group">
-                        <input type="password" id="signupPassword" class="input" data-i18n-placeholder="accPassMinPlaceholder" placeholder="Password (min 6 characters)">
-                        <button type="button" class="toggle-password-btn" onclick="window.togglePasswordVisibility('signupPassword', this)" aria-label="Toggle password visibility">👁️</button>
-                    </div>
-                    <button type="button" class="btn btn-dark btn-block" onclick="window.handleSignup(event)"><span class="spinner"></span><span class="btn-label" data-i18n="accSignupBtn">Sign Up</span></button>
-                    <p class="auth-tabs-msg"><span data-i18n="accHasAccount">Already have an account?</span> <a href="#" class="auth-switch-link" onclick="window.toggleAuthMode();return false;" data-i18n="accLoginLink">Log in</a></p>
+                    <form id="signupForm" onsubmit="event.preventDefault(); window.handleSignup(event);">
+                        <h4 style="font-size:1.05rem; margin-bottom:16px; text-align:center;" data-i18n="accSignupTitle">Create an Account</h4>
+                        <div class="field"><input type="text" id="signupName" class="input" data-i18n-placeholder="accNamePlaceholder" placeholder="Full Name"></div>
+                        <div class="field"><input type="email" id="signupEmail" class="input" data-i18n-placeholder="accEmailPlaceholder" placeholder="Email Address"></div>
+                        <div class="field password-field-group">
+                            <input type="password" id="signupPassword" class="input" data-i18n-placeholder="accPassMinPlaceholder" placeholder="Password (min 6 characters)">
+                            <button type="button" class="toggle-password-btn" onclick="window.togglePasswordVisibility('signupPassword', this)" aria-label="Toggle password visibility">👁️</button>
+                        </div>
+                        <button type="submit" class="btn btn-dark btn-block"><span class="spinner"></span><span class="btn-label" data-i18n="accSignupBtn">Sign Up</span></button>
+                        <p class="auth-tabs-msg"><span data-i18n="accHasAccount">Already have an account?</span> <a href="#" class="auth-switch-link" onclick="window.toggleAuthMode();return false;" data-i18n="accLoginLink">Log in</a></p>
+                    </form>
                 </div>
                 <div id="forgotPasswordContainer" style="display:none;">
-                    <h4 style="font-size:1.05rem; margin-bottom:16px; text-align:center;">Reset Password / পাসওয়ার্ড রিসেট</h4>
-                    <p style="font-size:0.85rem; color:var(--ink-muted, #888); margin-bottom:16px; text-align:center;">Enter your registered email address to receive a password reset link.<br>পাসওয়ার্ড রিসেট লিঙ্ক পেতে আপনার নিবন্ধিত ইমেইল দিন।</p>
-                    <div class="field"><input type="email" id="resetEmail" class="input" data-i18n-placeholder="accEmailPlaceholder" placeholder="Email Address"></div>
-                    <button type="button" class="btn btn-dark btn-block" onclick="window.handleForgotPassword(event)"><span class="spinner"></span><span class="btn-label">Send Reset Link / লিঙ্ক পাঠান</span></button>
+                    <form id="forgotForm" onsubmit="event.preventDefault(); window.handleForgotPassword(event);">
+                        <h4 style="font-size:1.05rem; margin-bottom:16px; text-align:center;">Reset Password / পাসওয়ার্ড রিসেট</h4>
+                        <p style="font-size:0.85rem; color:var(--ink-muted, #888); margin-bottom:16px; text-align:center;">Enter your registered email address to receive a password reset link.<br>পাসওয়ার্ড রিসেট লিঙ্ক পেতে আপনার নিবন্ধিত ইমেইল দিন।</p>
+                        <div class="field"><input type="email" id="resetEmail" class="input" data-i18n-placeholder="accEmailPlaceholder" placeholder="Email Address"></div>
+                        <button type="submit" class="btn btn-dark btn-block"><span class="spinner"></span><span class="btn-label">Send Reset Link / লিঙ্ক পাঠান</span></button>
 
-                    <div id="forgotSuccessNotice" style="display:none; margin-top:16px; padding:14px; background:rgba(201, 161, 74, 0.1); border:1px solid #C9A14A; border-radius:8px; font-size:0.82rem; line-height:1.5;"></div>
+                        <div id="forgotSuccessNotice" style="display:none; margin-top:16px; padding:14px; background:rgba(201, 161, 74, 0.1); border:1px solid #C9A14A; border-radius:8px; font-size:0.82rem; line-height:1.5;"></div>
 
-                    <p class="auth-tabs-msg" style="margin-top:16px;"><a href="#" class="auth-switch-link" onclick="window.showAuthView('login');return false;">&larr; Back to Log in / লগইনে ফিরুন</a></p>
+                        <p class="auth-tabs-msg" style="margin-top:16px;"><a href="#" class="auth-switch-link" onclick="window.showAuthView('login');return false;">&larr; Back to Log in / লগইনে ফিরুন</a></p>
+                    </form>
                 </div>
             </div>
 
@@ -371,61 +377,67 @@
     </footer>
 
     <!-- Firebase CDN SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
     <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyALxypXDkF9QexbD_wE7-ADALIdj5vd-rY",
-            authDomain: "mohor-app.firebaseapp.com",
-            projectId: "mohor-app",
-            storageBucket: "mohor-app.firebasestorage.app",
-            messagingSenderId: "989000457004",
-            appId: "1:989000457004:web:5679b256e20d94e27daa89"
-        };
-        if (typeof firebase !== 'undefined' && !firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
-        }
-        window.db = firebase.firestore();
+        document.addEventListener('DOMContentLoaded', () => {
+            const firebaseConfig = {
+                apiKey: "AIzaSyALxypXDkF9QexbD_wE7-ADALIdj5vd-rY",
+                authDomain: "mohor-app.firebaseapp.com",
+                projectId: "mohor-app",
+                storageBucket: "mohor-app.firebasestorage.app",
+                messagingSenderId: "989000457004",
+                appId: "1:989000457004:web:5679b256e20d94e27daa89"
+            };
+            if (typeof firebase !== 'undefined' && !firebase.apps.length) {
+                firebase.initializeApp(firebaseConfig);
+            }
+            if (typeof firebase !== 'undefined') {
+                window.db = firebase.firestore();
+            }
+        });
     </script>
 
-    <script src="products.js?v=20"></script>
-    <script src="app.js?v=20"></script>
-    <script src="cart.js?v=20"></script>
-    <script type="module" src="auth.js?v=20"></script>
+    <script defer src="products.js?v=20"></script>
+    <script defer src="app.js?v=20"></script>
+    <script defer src="cart.js?v=20"></script>
+    <script defer type="module" src="auth.js?v=20"></script>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            window.loadStoreProducts().then(() => {
-                if (window.firestoreProducts && window.firestoreProducts.length > 0) {
-                    const schemaItems = window.firestoreProducts.map((p, idx) => ({
-                        "@type": "ListItem",
-                        "position": idx + 1,
-                        "item": {
-                            "@type": "Product",
-                            "name": (typeof p.title === 'string' ? p.title : (p.title?.en || 'Dress')) + " - Mohor Dress",
-                            "image": (p.images && p.images[0]) ? p.images[0] : "https://mohor.me/assets/banner-1920.webp",
-                            "url": `https://mohor.me/product.html?id=${p.id}`,
-                            "brand": { "@type": "Brand", "name": "Mohor Clothings" },
-                            "offers": {
-                                "@type": "Offer",
-                                "priceCurrency": "BDT",
-                                "price": p.price,
-                                "availability": "https://schema.org/InStock"
+            if (typeof window.loadStoreProducts === 'function') {
+                window.loadStoreProducts().then(() => {
+                    if (window.firestoreProducts && window.firestoreProducts.length > 0) {
+                        const schemaItems = window.firestoreProducts.map((p, idx) => ({
+                            "@type": "ListItem",
+                            "position": idx + 1,
+                            "item": {
+                                "@type": "Product",
+                                "name": (typeof p.title === 'string' ? p.title : (p.title?.en || 'Dress')) + " - Mohor Dress",
+                                "image": (p.images && p.images[0]) ? p.images[0] : "https://mohor.me/assets/banner-1920.webp",
+                                "url": `https://mohor.me/product.html?id=${p.id}`,
+                                "brand": { "@type": "Brand", "name": "Mohor Clothings" },
+                                "offers": {
+                                    "@type": "Offer",
+                                    "priceCurrency": "BDT",
+                                    "price": p.price,
+                                    "availability": "https://schema.org/InStock"
+                                }
                             }
-                        }
-                    }));
-                    const itemListSchema = {
-                        "@context": "https://schema.org",
-                        "@type": "ItemList",
-                        "itemListElement": schemaItems
-                    };
-                    const script = document.createElement('script');
-                    script.type = 'application/ld+json';
-                    script.textContent = JSON.stringify(itemListSchema);
-                    document.head.appendChild(script);
-                }
-            });
+                        }));
+                        const itemListSchema = {
+                            "@context": "https://schema.org",
+                            "@type": "ItemList",
+                            "itemListElement": schemaItems
+                        };
+                        const script = document.createElement('script');
+                        script.type = 'application/ld+json';
+                        script.textContent = JSON.stringify(itemListSchema);
+                        document.head.appendChild(script);
+                    }
+                });
+            }
             setTimeout(() => { if (typeof updateUIText === 'function') updateUIText(); }, 60);
         });
     </script>
