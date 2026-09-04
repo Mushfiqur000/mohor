@@ -175,7 +175,7 @@ function updateUIText() {
         if (val) el.setAttribute('aria-label', val);
     });
 
-    if (document.getElementById('productGrid')) updateProducts();
+    if (document.getElementById('productGrid')) window.updateProducts();
     if (typeof window.updateCartUI === "function") window.updateCartUI();
     if (typeof window.updateDeliveryPolicyAndTotal === "function") window.updateDeliveryPolicyAndTotal();
 }
@@ -464,17 +464,6 @@ function initViewControls() {
     apply();
 }
 
-// Ensure updateProducts stores last rendered for re-render
-const origUpdateProducts = updateProducts;
-window.updateProducts = function() {
-    origUpdateProducts();
-    const grid = document.getElementById('productGrid');
-    // capture last rendered source for view re-renders
-    window._lastRenderedProducts = (Array.isArray(window.firestoreProducts) && window.firestoreProducts.length>0) ? window.firestoreProducts : (window.productsData || []);
-};
-
-document.addEventListener('DOMContentLoaded', () => { initViewControls(); });
-
 // Escape helper used in renderProducts inline JSON
 function escapeHtml(json) { return String(json).replace(/\\/g,'\\\\').replace(/'/g, "\\'").replace(/\"/g,'\\\"'); }
 
@@ -528,11 +517,16 @@ function updateProducts() {
     if (sortValue === 'low-high') filtered.sort((a, b) => a.price - b.price);
     else if (sortValue === 'high-low') filtered.sort((a, b) => b.price - a.price);
 
+    // Capture last rendered source for view re-renders
+    window._lastRenderedProducts = filtered;
+
     renderProducts(filtered);
 }
 window.updateProducts = updateProducts;
 
 document.addEventListener('DOMContentLoaded', () => {
+    initViewControls();
+
     document.querySelectorAll('.filter-checkbox').forEach(cb => cb.addEventListener('change', updateProducts));
 
     const sortSelect = document.getElementById('sortSelect');
