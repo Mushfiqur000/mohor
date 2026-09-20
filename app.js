@@ -353,7 +353,8 @@ ${itemsText}
         const response = await fetch(endpoint, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ order: orderData, message, parse_mode: 'HTML' })
+            body: JSON.stringify({ order: orderData, message, parse_mode: 'HTML' }),
+            keepalive: true
         });
         if (!response.ok) throw new Error(`Telegram proxy returned HTTP ${response.status}`);
         return true;
