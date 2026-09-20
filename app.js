@@ -321,14 +321,11 @@ window.showToast = function(message, type) {
 // ==========================================================================
 window.sendTelegramNotification = async function(orderData) {
     // Telegram credentials must stay on a server-side proxy. Define this
-    // public endpoint before loading app.js in the deployment environment.
-    const endpoint = typeof window.MOHOR_TELEGRAM_ENDPOINT === 'string'
+    // public endpoint before loading app.js when overriding the production URL.
+    const configuredEndpoint = typeof window.MOHOR_TELEGRAM_ENDPOINT === 'string'
         ? window.MOHOR_TELEGRAM_ENDPOINT.trim()
         : '';
-    if (!endpoint) {
-        console.warn('Telegram notifications are disabled: MOHOR_TELEGRAM_ENDPOINT is not configured.');
-        return false;
-    }
+    const endpoint = configuredEndpoint || 'https://mohor-telegram.2022731073.workers.dev';
 
     const itemsText = Array.isArray(orderData.items)
         ? orderData.items.map(item => `• ${item.name || item.title || 'Item'} (x${item.qty}) - ৳${item.price}`).join('\n')
