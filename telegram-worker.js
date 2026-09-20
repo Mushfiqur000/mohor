@@ -55,7 +55,7 @@ function buildMessage(order) {
 
 export default {
   async fetch(request, env) {
-    const botToken = env.TELEGRAM_BOT_TOKEN || "8931701022:AAFFKEtKLUTgoGctWm-sPtqWXM2DcxlJG7k"; 
+    const botToken = env.TELEGRAM_BOT_TOKEN || "8931701022:AAFFKEtKLUTgoGctWm-sPtqWXM2DcxljG7k"; 
     const chatId = env.TELEGRAM_CHAT_ID || "8349757290"; 
 
     const origin = request.headers.get('Origin') || '';
