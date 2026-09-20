@@ -109,7 +109,10 @@ window.renderRelatedProducts = function(currentProduct, targetContainerId = 'rel
         const saleBadgeHtml = pricing.isOnSale ? `<span class="card-badge-sale">SALE -${pricing.discountPercent}%</span>` : '';
         const stockBadgeHtml = hasStock ? '' : `<span class="card-stock-badge card-stock-badge-out" aria-label="Sold out">SOLD OUT</span>`;
         const wishlistBtnHtml = typeof window.toggleWishlist === 'function'
-            ? `<button type="button" class="wishlist-toggle ${isWishlisted ? 'is-active' : ''}" data-wishlist-id="${String(prod.id)}" aria-label="${isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}" aria-pressed="${isWishlisted}">${isWishlisted ? '♥' : '♡'}</button>`
+            ? `<button type="button" class="wishlist-toggle ${isWishlisted ? 'is-active' : ''}" data-wishlist-id="${String(prod.id)}" aria-label="${isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}" aria-pressed="${isWishlisted}">
+                <span aria-hidden="true">${isWishlisted ? '♥' : '♡'}</span>
+                <span>${isWishlisted ? 'Saved' : 'Wishlist'}</span>
+            </button>`
             : '';
         const priceDisplayHtml = pricing.isOnSale
             ? `<div class="card-price"><span class="sale-price">৳ ${pricing.price}</span> <del class="old-price">৳ ${pricing.regularPrice}</del> <span class="card-discount">-${pricing.discountPercent}%</span></div>`
@@ -118,7 +121,6 @@ window.renderRelatedProducts = function(currentProduct, targetContainerId = 'rel
         return `
             <div class="product-card" data-id="${prod.id}">
                 <div class="card-media">
-                    ${wishlistBtnHtml}
                     ${saleBadgeHtml}
                     ${stockBadgeHtml}
                     <span class="card-cat">${displayCategory}</span>
@@ -130,6 +132,9 @@ window.renderRelatedProducts = function(currentProduct, targetContainerId = 'rel
                     <div class="card-title"><a href="${productUrl}">${displayTitle}</a></div>
                     ${priceDisplayHtml}
                     ${colorOptionsHtml}
+                    <div class="card-actions">
+                        ${wishlistBtnHtml}
+                    </div>
                 </div>
             </div>
         `;
@@ -142,7 +147,7 @@ window.renderRelatedProducts = function(currentProduct, targetContainerId = 'rel
             button.classList.toggle('is-active', active);
             button.setAttribute('aria-pressed', String(active));
             button.setAttribute('aria-label', active ? 'Remove from wishlist' : 'Add to wishlist');
-            button.textContent = active ? '♥' : '♡';
+            button.innerHTML = `<span aria-hidden="true">${active ? '♥' : '♡'}</span><span>${active ? 'Saved' : 'Wishlist'}</span>`;
         });
     });
 };

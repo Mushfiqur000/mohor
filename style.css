@@ -1318,12 +1318,14 @@ select.input {
 .product-grid.view-list { display: block; }
 .product-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
 .wishlist-toggle {
-  position: absolute; z-index: 2; top: 12px; right: 12px; width: 38px; height: 38px;
-  border: 1px solid var(--border); border-radius: 50%; background: color-mix(in srgb, var(--surface) 90%, transparent);
-  color: var(--ink); font-size: 1.35rem; line-height: 1; display: grid; place-items: center;
+  border: 1px solid var(--border); border-radius: var(--radius-full); background: transparent;
+  color: var(--ink-muted); font-size: .75rem; line-height: 1; display: inline-flex; align-items: center;
+  gap: 6px; padding: 7px 11px; cursor: pointer;
   transition: color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease);
 }
 .wishlist-toggle:hover, .wishlist-toggle.is-active { color: var(--maroon); background: var(--maroon-soft); transform: scale(1.06); }
+.card-actions { display: flex; justify-content: flex-start; margin-top: 2px; }
+.card-actions .wishlist-toggle { position: static; }
 .product-wishlist-btn {
   display: inline-flex; align-items: center; border: 1px solid var(--border-strong); border-radius: var(--radius-full);
   padding: 9px 15px; background: transparent; color: var(--ink-muted); font-size: .8rem; margin: 12px 0 8px;
