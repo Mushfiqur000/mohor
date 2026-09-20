@@ -5,15 +5,23 @@
  *   TELEGRAM_BOT_TOKEN
  *   TELEGRAM_CHAT_ID
  *
- * Deploy this file separately, then expose its URL as
- * window.MOHOR_TELEGRAM_ENDPOINT before app.js loads.
+ * Deploy this file separately. The frontend has this worker URL as its
+ * production default, while window.MOHOR_TELEGRAM_ENDPOINT can override it.
  */
 
-const allowedOrigin = 'https://mohor.me';
+const allowedOrigins = new Set([
+  'https://mohor.me',
+  'https://www.mohor.me'
+]);
+
+function isAllowedOrigin(origin) {
+  return allowedOrigins.has(origin);
+}
 
 function corsHeaders(origin) {
+  const responseOrigin = isAllowedOrigin(origin) ? origin : 'https://mohor.me';
   return {
-    'Access-Control-Allow-Origin': origin === allowedOrigin ? origin : allowedOrigin,
+    'Access-Control-Allow-Origin': responseOrigin,
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type',
     'Content-Type': 'application/json'
@@ -57,9 +65,12 @@ export default {
   async fetch(request, env) {
     const origin = request.headers.get('Origin') || '';
     if (request.method === 'OPTIONS') {
+      if (!isAllowedOrigin(origin)) {
+        return new Response(JSON.stringify({ error: 'Forbidden' }), { status: 403, headers: corsHeaders(origin) });
+      }
       return new Response(null, { headers: corsHeaders(origin) });
     }
-    if (request.method !== 'POST' || origin !== allowedOrigin) {
+    if (request.method !== 'POST' || !isAllowedOrigin(origin)) {
       return new Response(JSON.stringify({ error: 'Forbidden' }), { status: 403, headers: corsHeaders(origin) });
     }
 
