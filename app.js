@@ -320,8 +320,15 @@ window.showToast = function(message, type) {
 // Telegram Notification Function (Global)
 // ==========================================================================
 window.sendTelegramNotification = async function(orderData) {
-    const BOT_TOKEN = '8931701022:AAFFKEtKLUTgoGctWm-sPtqWXM2DcxljG7k';
-    const CHAT_ID = '8349757290';
+    // Telegram credentials must stay on a server-side proxy. Define this
+    // public endpoint before loading app.js in the deployment environment.
+    const endpoint = typeof window.MOHOR_TELEGRAM_ENDPOINT === 'string'
+        ? window.MOHOR_TELEGRAM_ENDPOINT.trim()
+        : '';
+    if (!endpoint) {
+        console.warn('Telegram notifications are disabled: MOHOR_TELEGRAM_ENDPOINT is not configured.');
+        return false;
+    }
 
     const itemsText = Array.isArray(orderData.items)
         ? orderData.items.map(item => `• ${item.name || item.title || 'Item'} (x${item.qty}) - ৳${item.price}`).join('\n')
@@ -343,17 +350,16 @@ ${itemsText}
     `;
 
     try {
-        await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+        const response = await fetch(endpoint, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                chat_id: CHAT_ID,
-                text: message,
-                parse_mode: 'HTML'
-            })
+            body: JSON.stringify({ order: orderData, message, parse_mode: 'HTML' })
         });
+        if (!response.ok) throw new Error(`Telegram proxy returned HTTP ${response.status}`);
+        return true;
     } catch (error) {
         console.error('Telegram notification error:', error);
+        return false;
     }
 };
 

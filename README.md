@@ -107,14 +107,14 @@ Firebase Auth account that your Firestore rules grant admin access to.
 
 ## Security note
 
-`app.js` sends the store's Telegram bot token directly from the browser to
-notify the owner of new orders. Anyone can read this token from the page
-source and use it to send messages as that bot. The Meta Conversions API
-integration already solves the equivalent problem correctly — a small
-Cloudflare Worker (or similar) holds the secret and the client calls the
-worker instead of the third-party API directly. The Telegram notification
-should be moved behind the same kind of proxy, and the current token should
-be rotated via BotFather once that's in place.
+Telegram order notifications are sent through a server-side proxy configured
+with the public `window.MOHOR_TELEGRAM_ENDPOINT` value before `app.js` loads.
+The proxy must keep `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID` in its own
+secret store, validate the request, and forward the message to Telegram's
+`sendMessage` API. The browser never receives either secret. If the endpoint
+is not configured, checkout still succeeds and the notification is skipped
+with a console warning. Rotate any token that was previously exposed in the
+client via BotFather before enabling the proxy.
 
 ## Deployment
 
