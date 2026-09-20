@@ -838,7 +838,6 @@ function renderProducts(productsToRender) {
         if (viewMode === 'list') {
             card.innerHTML = `
                 <div class="card-media">
-                    <button type="button" class="wishlist-toggle ${window.isWishlisted(product.id) ? 'is-active' : ''}" data-wishlist-id="${String(product.id)}" aria-label="${window.isWishlisted(product.id) ? 'Remove from wishlist' : 'Add to wishlist'}" aria-pressed="${window.isWishlisted(product.id)}">${window.isWishlisted(product.id) ? '♥' : '♡'}</button>
                     ${saleBadgeHtml}
                     ${stockBadgeHtml}
                     <a class="card-media-link" href="${productUrl}" aria-label="${displayTitle}">${mediaContentHtml}</a>
@@ -847,12 +846,17 @@ function renderProducts(productsToRender) {
                     <div class="card-title"><a href="${productUrl}">${displayTitle}</a></div>
                     ${priceDisplayHtml}
                     ${colorOptionsHtml}
+                    <div class="card-actions">
+                        <button type="button" class="wishlist-toggle" data-wishlist-id="${String(product.id)}" aria-label="${window.isWishlisted(product.id) ? 'Remove from wishlist' : 'Add to wishlist'}" aria-pressed="${window.isWishlisted(product.id)}">
+                            <span aria-hidden="true">${window.isWishlisted(product.id) ? '♥' : '♡'}</span>
+                            <span>${window.isWishlisted(product.id) ? 'Saved' : 'Wishlist'}</span>
+                        </button>
+                    </div>
                 </div>
             `;
         } else {
             card.innerHTML = `
                 <div class="card-media">
-                    <button type="button" class="wishlist-toggle ${window.isWishlisted(product.id) ? 'is-active' : ''}" data-wishlist-id="${String(product.id)}" aria-label="${window.isWishlisted(product.id) ? 'Remove from wishlist' : 'Add to wishlist'}" aria-pressed="${window.isWishlisted(product.id)}">${window.isWishlisted(product.id) ? '♥' : '♡'}</button>
                     ${saleBadgeHtml}
                     ${stockBadgeHtml}
                     <span class="card-cat">${displayCategory}</span>
@@ -907,7 +911,7 @@ function renderProducts(productsToRender) {
             button.classList.toggle('is-active', active);
             button.setAttribute('aria-pressed', String(active));
             button.setAttribute('aria-label', active ? 'Remove from wishlist' : 'Add to wishlist');
-            button.textContent = active ? '♥' : '♡';
+            button.innerHTML = `<span aria-hidden="true">${active ? '♥' : '♡'}</span><span>${active ? 'Saved' : 'Wishlist'}</span>`;
         });
     });
     requestAnimationFrame(() => productGrid.classList.add('in-view'));
