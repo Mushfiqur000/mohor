@@ -55,10 +55,8 @@ function buildMessage(order) {
 
 export default {
   async fetch(request, env) {
-    // --- ADDED YOUR TOKEN AND A PLACEHOLDER FOR CHAT ID ---
-    const botToken = "8931701022:AAFFKEtKLUTgoGctWm-sPtqWXM2DcxlJG7k"; 
-    // Replace the string below with your actual Telegram Chat ID (e.g., "123456789")
-    const chatId = env.TELEGRAM_CHAT_ID || "PUT_YOUR_CHAT_ID_HERE"; 
+    const botToken = env.TELEGRAM_BOT_TOKEN || "8931701022:AAFFKEtKLUTgoGctWm-sPtqWXM2DcxlJG7k"; 
+    const chatId = env.TELEGRAM_CHAT_ID || "8349757290"; 
 
     const origin = request.headers.get('Origin') || '';
     if (request.method === 'OPTIONS') {
