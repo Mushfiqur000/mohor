@@ -508,7 +508,10 @@ window.checkoutToAdmin = async function() {
 
         // Trigger instant Telegram notification to the store owner
         if (typeof window.sendTelegramNotification === 'function') {
-            window.sendTelegramNotification({ ...newOrder, id: docRef.id });
+            // Wait for the request before redirecting; otherwise navigation can
+            // cancel the notification before the browser sends it.
+            const telegramSent = await window.sendTelegramNotification({ ...newOrder, id: docRef.id });
+            if (!telegramSent) console.warn('Order saved, but Telegram notification was not delivered.');
         }
 
         // Track the completed purchase once, right here at the moment the

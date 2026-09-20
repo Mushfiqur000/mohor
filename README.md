@@ -116,6 +116,12 @@ is not configured, checkout still succeeds and the notification is skipped
 with a console warning. Rotate any token that was previously exposed in the
 client via BotFather before enabling the proxy.
 
+`telegram-worker.js` is a deployable Cloudflare Worker reference implementation.
+After deploying it, set its two Worker secrets and define the deployed URL as
+`window.MOHOR_TELEGRAM_ENDPOINT` before `app.js` in the storefront pages. The
+checkout waits for this request before redirecting, so successful orders are
+not silently lost during navigation.
+
 ## Deployment
 
 Push to the branch configured for GitHub Pages. The `CNAME` file points the
