@@ -61,8 +61,8 @@ src="https://www.facebook.com/tr?id=920711640501746&ev=PageView&noscript=1"
     <div class="product-detail">
         <div class="pd-gallery">
             <div class="pd-gallery-main" id="mainImageWrap" tabindex="0" aria-label="Product image gallery">
-                <img id="mainImage" src="" alt="Mohor Clothings Dress" fetchpriority="high" decoding="async">
-                <img id="nextImage" src="" alt="" aria-hidden="true" loading="lazy" decoding="async">
+                <img id="mainImage" src="" alt="Mohor Clothings Dress" width="800" height="1000" fetchpriority="high" loading="eager" decoding="async">
+                <img id="nextImage" src="" alt="" aria-hidden="true" width="800" height="1000" loading="lazy" decoding="async">
                 <button type="button" class="gallery-arrow gallery-prev" id="galleryPrev" aria-label="Previous product image">&#10094;</button>
                 <button type="button" class="gallery-arrow gallery-next" id="galleryNext" aria-label="Next product image">&#10095;</button>
                 <span class="gallery-hint">Click to zoom</span>
@@ -404,19 +404,21 @@ src="https://www.facebook.com/tr?id=920711640501746&ev=PageView&noscript=1"
             const thumbContainer = document.getElementById('thumbnailContainer');
             setMainImage(images[0], keywordAltText, false);
 
+            const thumbnailFragment = document.createDocumentFragment();
             images.forEach((imgSrc, index) => {
                 const thumb = document.createElement('div');
                 thumb.className = 'thumbnail' + (index === 0 ? ' active' : '');
                 const thumbAltText = `${prodTitleStr} - Mohor Dress Image ${index + 1}`;
-                thumb.innerHTML = `<img src="${imgSrc}" alt="${thumbAltText}" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='assets/image-placeholder.svg';">`;
+                thumb.innerHTML = `<img src="${imgSrc}" alt="${thumbAltText}" width="64" height="80" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='assets/image-placeholder.svg';">`;
                 thumb.onclick = () => {
                     currentImageIndex = index;
                     setMainImage(imgSrc, thumbAltText);
                     thumbContainer.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
                     thumb.classList.add('active');
                 };
-                thumbContainer.appendChild(thumb);
+                thumbnailFragment.appendChild(thumb);
             });
+            thumbContainer.replaceChildren(thumbnailFragment);
             document.getElementById('mainImage').onerror = function() { this.onerror = null; this.src = 'assets/image-placeholder.svg'; };
 
             // Render Recommendations
@@ -457,6 +459,7 @@ src="https://www.facebook.com/tr?id=920711640501746&ev=PageView&noscript=1"
                 }
             };
             if (activeProduct.sizes && activeProduct.sizes.length > 0) {
+                const sizeFragment = document.createDocumentFragment();
                 activeProduct.sizes.forEach(size => {
                     const btn = document.createElement('button');
                     btn.type = 'button';
@@ -483,8 +486,9 @@ src="https://www.facebook.com/tr?id=920711640501746&ev=PageView&noscript=1"
                             }
                         }
                     };
-                    sizeContainer.appendChild(btn);
+                    sizeFragment.appendChild(btn);
                 });
+                sizeContainer.replaceChildren(sizeFragment);
             }
             refreshSizeAvailability();
 
@@ -496,6 +500,7 @@ src="https://www.facebook.com/tr?id=920711640501746&ev=PageView&noscript=1"
 
             if (colorArray.length > 0) {
                 colorSection.style.display = 'block';
+                const colorFragment = document.createDocumentFragment();
                 colorArray.forEach(color => {
                     const btn = document.createElement('button');
                     btn.type = 'button';
@@ -527,8 +532,9 @@ src="https://www.facebook.com/tr?id=920711640501746&ev=PageView&noscript=1"
                             refreshSizeAvailability();
                         }
                     };
-                    colorContainer.appendChild(btn);
+                    colorFragment.appendChild(btn);
                 });
+                colorContainer.replaceChildren(colorFragment);
             }
 
             function validateSelection() {
