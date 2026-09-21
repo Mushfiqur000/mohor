@@ -226,7 +226,13 @@ window.loadHomepageBanners = async function() {
         const render = index => {
             activeIndex = (index + banners.length) % banners.length;
             const banner = banners[activeIndex];
-            image.src = banner.imageUrl;
+            const imageUrl = banner.imageUrl.trim();
+            // The fallback markup has a static srcset. Remove it before
+            // assigning a Firestore URL so the browser cannot keep selecting
+            // one of the bundled fallback candidates.
+            image.removeAttribute('srcset');
+            image.removeAttribute('sizes');
+            image.src = imageUrl;
             image.alt = banner.title || 'Mohor Clothings collection';
             title.textContent = banner.title || '';
             subtitle.textContent = banner.subtitle || '';
@@ -239,6 +245,10 @@ window.loadHomepageBanners = async function() {
                 dot.setAttribute('aria-current', dotIndex === activeIndex ? 'true' : 'false');
             });
         };
+        image.addEventListener('error', () => {
+            console.warn('Homepage banner image failed to load:', image.currentSrc || image.src);
+            hero.classList.remove('banner-ready');
+        });
         dots.innerHTML = '';
         banners.forEach((banner, index) => {
             const dot = document.createElement('button');
