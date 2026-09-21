@@ -296,6 +296,9 @@ tbody tr:hover { background: rgba(245,241,236,0.6); }
 .image-preview-row img { width: 56px; height: 68px; object-fit: cover; border-radius: 6px; border: 1px solid var(--border); background: var(--muslin); }
 .image-preview-row img.broken { opacity: .3; border-style: dashed; }
 
+.form-hint.success { color: var(--sage-dark); }
+.form-hint.error { color: var(--rust-dark); }
+
 #upload-status { margin-top: 12px; font-size: 13px; font-weight: 600; text-align: center; min-height: 18px; }
 #upload-status.success { color: var(--sage-dark); }
 #upload-status.error { color: var(--rust-dark); }
@@ -720,9 +723,12 @@ tbody tr:hover { background: rgba(245,241,236,0.6); }
                 </div>
 
                 <div class="form-group full-width">
-                  <label for="prod-images">ImgBB Image Links (one per line)</label>
-                  <textarea id="prod-images" rows="3" placeholder="https://i.ibb.co/.../image1.jpg&#10;https://i.ibb.co/.../image2.jpg" required></textarea>
-                  <div class="form-hint">Upload to ImgBB, copy the direct image link, paste one per line.</div>
+                  <label for="prod-image-files">Product Images</label>
+                  <input type="file" id="prod-image-files" accept="image/*" multiple>
+                  <div class="form-hint">Choose one or more images to upload directly to Cloudflare R2.</div>
+                  <div id="image-upload-status" class="form-hint" aria-live="polite"></div>
+                  <textarea id="prod-images" rows="3" placeholder="Uploaded image URLs (one per line)" required></textarea>
+                  <div class="form-hint">Existing image URLs can be kept or edited below.</div>
                   <div class="image-preview-row" id="image-preview-row"></div>
                 </div>
               </div>
@@ -1576,12 +1582,94 @@ document.getElementById('variant-stock-grid').addEventListener('input', updateTo
 /* Live image preview */
 const imagesTextarea = document.getElementById('prod-images');
 const previewRow = document.getElementById('image-preview-row');
+const imageFilesInput = document.getElementById('prod-image-files');
+const imageUploadStatus = document.getElementById('image-upload-status');
+const R2_UPLOAD_ENDPOINT = 'https://mohor-uploader.2022731073.workers.dev/';
+const R2_PUBLIC_DOMAIN = 'https://images.mohor.me/';
+const R2_UPLOAD_SECRET = '018:GoodluckCoc';
+let imageUploadPromise = Promise.resolve();
+
 function updateImagePreview() {
   const urls = imagesTextarea.value.split('\n').map(u => u.trim()).filter(u => u.startsWith('http'));
   previewRow.innerHTML = urls.map(u => `<img src="${escapeHtml(u)}" alt="">`).join('');
   previewRow.querySelectorAll('img').forEach(img => img.addEventListener('error', () => img.classList.add('broken')));
 }
 imagesTextarea.addEventListener('input', updateImagePreview);
+
+function createUniqueImageName(file) {
+  const extension = (file.name.match(/\.[a-z0-9]+$/i) || [''])[0].toLowerCase();
+  const randomPart = typeof crypto.randomUUID === 'function'
+    ? crypto.randomUUID()
+    : Math.random().toString(36).slice(2);
+  return `${Date.now()}-${randomPart}${extension}`;
+}
+
+async function uploadImageToR2(file) {
+  const filename = createUniqueImageName(file);
+  const uploadUrl = new URL(R2_UPLOAD_ENDPOINT);
+  uploadUrl.searchParams.set('filename', filename);
+
+  const response = await fetch(uploadUrl, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${R2_UPLOAD_SECRET}`,
+      'Content-Type': file.type || 'application/octet-stream'
+    },
+    body: file
+  });
+
+  let result;
+  try {
+    result = await response.json();
+  } catch (error) {
+    throw new Error(`Image upload returned invalid JSON (HTTP ${response.status}).`);
+  }
+
+  if (!response.ok) {
+    throw new Error(result.error || result.message || `Image upload failed (HTTP ${response.status}).`);
+  }
+
+  const returnedUrl = result.url || result.publicUrl || result.data?.url;
+  const returnedFilename = result.filename || result.key || result.name;
+  const publicUrl = returnedUrl || (returnedFilename
+    ? new URL(encodeURIComponent(returnedFilename), R2_PUBLIC_DOMAIN).href
+    : '');
+
+  if (!publicUrl) {
+    throw new Error('Image upload succeeded but the Worker did not return a public URL.');
+  }
+  return publicUrl;
+}
+
+imageFilesInput.addEventListener('change', () => {
+  const files = Array.from(imageFilesInput.files || []);
+  if (!files.length) return;
+
+  imageFilesInput.disabled = true;
+  uploadBtn.disabled = true;
+  imageUploadStatus.textContent = `Uploading ${files.length} image${files.length === 1 ? '' : 's'}…`;
+  imageUploadStatus.className = 'form-hint';
+
+  imageUploadPromise = Promise.all(files.map(uploadImageToR2))
+    .then(urls => {
+      const existingUrls = imagesTextarea.value.split('\n').map(u => u.trim()).filter(Boolean);
+      imagesTextarea.value = [...existingUrls, ...urls].join('\n');
+      updateImagePreview();
+      imageUploadStatus.textContent = `${urls.length} image${urls.length === 1 ? '' : 's'} uploaded successfully.`;
+      imageUploadStatus.className = 'form-hint success';
+    })
+    .catch(error => {
+      console.error('Image upload error:', error);
+      imageUploadStatus.textContent = `Image upload failed: ${error.message}`;
+      imageUploadStatus.className = 'form-hint error';
+      showToast(`Image upload failed: ${error.message}`, 'error');
+    })
+    .finally(() => {
+      imageFilesInput.disabled = false;
+      imageFilesInput.value = '';
+      uploadBtn.disabled = false;
+    });
+});
 
 const addProductForm = document.getElementById('add-product-form');
 const uploadBtn = document.getElementById('upload-btn');
@@ -1624,6 +1712,9 @@ function loadProductIntoForm(id) {
   
   document.getElementById('prod-seo').value = Array.isArray(prod.seoKeywords) ? prod.seoKeywords.join(', ') : '';
   document.getElementById('prod-images').value = Array.isArray(prod.images) ? prod.images.join('\n') : '';
+  imageFilesInput.value = '';
+  imageUploadStatus.textContent = '';
+  imageUploadStatus.className = 'form-hint';
   updateImagePreview();
 
   sizeBlocksContainer.innerHTML = '';
@@ -1660,6 +1751,9 @@ function cancelEdit() {
   resetSizeBlocks();
   renderVariantStockGrid();
   updateImagePreview();
+  imageFilesInput.value = '';
+  imageUploadStatus.textContent = '';
+  imageUploadStatus.className = 'form-hint';
   formHeading.textContent = 'Upload New Product';
   uploadBtn.textContent = 'Upload Product to Live Website';
   cancelEditBtn.style.display = 'none';
@@ -1677,6 +1771,7 @@ addProductForm.addEventListener('submit', async (e) => {
   uploadStatus.className = '';
 
   try {
+    await imageUploadPromise;
     const title = {
       en: document.getElementById('prod-title-en').value.trim(),
       bn: document.getElementById('prod-title-bn').value.trim() || document.getElementById('prod-title-en').value.trim()
