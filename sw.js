@@ -6,9 +6,9 @@
 // service worker adds a second, much longer-lived cache layer entirely
 // under the site's own control:
 //
-//   - Same-origin static files (style.css, app.js, cart.js, products.js,
-//     images/icons/fonts under assets/) are cache-first: once fetched, they
-//     load instantly from the cache on every later visit.
+//   - Same-origin static files (style.css, home.css, app.js, cart.js,
+//     products.js, images/icons/fonts under assets/) are cache-first: once
+//     fetched, they load instantly from the cache on every later visit.
 //   - HTML pages are network-first with a cache fallback: a visitor always
 //     gets the latest shell when online, but the page still loads from
 //     cache if the network is slow or unavailable.
@@ -18,18 +18,19 @@
 //     data, break auth, or interfere with tracking.
 //
 // CACHE_VERSION is tied to the site's own ?v= cache-busting number. Bump it
-// whenever style.css/app.js/cart.js/products.js/auth.js change so old,
+// whenever style.css/home.css/app.js/cart.js/products.js/auth.js change so old,
 // cached copies are dropped rather than lingering forever.
 // ==========================================================================
 
-const CACHE_VERSION = 'v27';
+const CACHE_VERSION = 'v28';
 const CACHE_NAME = `mohor-static-${CACHE_VERSION}`;
 
 const PRECACHE_URLS = [
-  '/style.css?v=27',
-  '/products.js?v=27',
-  '/app.js?v=27',
-  '/cart.js?v=27',
+  '/style.css?v=28',
+  '/home.css?v=28',
+  '/products.js?v=28',
+  '/app.js?v=28',
+  '/cart.js?v=28',
   '/assets/logo-ink.png',
   '/assets/logo-white.png',
   '/assets/favicon-32.png',
