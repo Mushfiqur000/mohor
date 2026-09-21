@@ -22,6 +22,8 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://firestore.googleapis.com">
+    <link rel="preconnect" href="https://images.mohor.me">
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Work+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+Bengali:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css?v=27">
 <noscript><img height="1" width="1" style="display:none"
@@ -59,7 +61,7 @@ src="https://www.facebook.com/tr?id=920711640501746&ev=PageView&noscript=1"
 
     <div class="product-detail">
         <div class="pd-gallery">
-            <div class="pd-gallery-main" id="mainImageWrap" tabindex="0" aria-label="Product image gallery">
+            <div class="pd-gallery-main" id="mainImageWrap" tabindex="0" role="group" aria-label="Product image gallery">
                 <img id="mainImage" src="" alt="Mohor Clothings Dress" width="800" height="1000" fetchpriority="high" loading="eager" decoding="async">
                 <img id="nextImage" src="" alt="" aria-hidden="true" width="800" height="1000" loading="lazy" decoding="async">
                 <button type="button" class="gallery-arrow gallery-prev" id="galleryPrev" aria-label="Previous product image">&#10094;</button>
@@ -147,7 +149,7 @@ src="https://www.facebook.com/tr?id=920711640501746&ev=PageView&noscript=1"
         <div class="lightbox-zoom-stage" id="lightboxZoomStage">
             <img id="modalImg" alt="Mohor Clothings Dress Full Image" width="800" height="1000" loading="lazy" decoding="async">
         </div>
-        <div class="lightbox-zoom-controls" aria-label="Image zoom controls">
+        <div class="lightbox-zoom-controls" role="group" aria-label="Image zoom controls">
             <button type="button" id="zoomOut" aria-label="Zoom out">−</button>
             <button type="button" id="zoomReset" aria-label="Reset zoom">Reset</button>
             <button type="button" id="zoomIn" aria-label="Zoom in">+</button>
@@ -168,24 +170,33 @@ src="https://www.facebook.com/tr?id=920711640501746&ev=PageView&noscript=1"
          local cart, and checkout itself always happens on a different page
          (the cart drawer or /cart/), which loads auth on its own. -->
     <script defer src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-    <script defer src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js" onload="window.initializeFirebase()" onerror="window.initializeFirebase()"></script>
     <script>
-        const firebaseConfig = {
-                apiKey: "AIzaSyALxypXDkF9QexbD_wE7-ADALIdj5vd-rY",
-                authDomain: "mohor-app.firebaseapp.com",
-                projectId: "mohor-app",
-                storageBucket: "mohor-app.firebasestorage.app",
-                messagingSenderId: "989000457004",
-                appId: "1:989000457004:web:5679b256e20d94e27daa89"
-        };
-        if (typeof firebase !== 'undefined') {
-            try {
-                if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-                window.db = firebase.firestore();
-            } catch (error) {
-                console.warn('Firebase product data unavailable:', error);
-            }
-        }
+        window.firebaseReady = new Promise(resolve => {
+            window.initializeFirebase = () => {
+                const firebaseConfig = {
+                    apiKey: "AIzaSyALxypXDkF9QexbD_wE7-ADALIdj5vd-rY",
+                    authDomain: "mohor-app.firebaseapp.com",
+                    projectId: "mohor-app",
+                    storageBucket: "mohor-app.firebasestorage.app",
+                    messagingSenderId: "989000457004",
+                    appId: "1:989000457004:web:5679b256e20d94e27daa89"
+                };
+                if (typeof firebase === 'undefined') {
+                    console.warn('Firebase product data unavailable: SDK failed to load');
+                    resolve(null);
+                    return;
+                }
+                try {
+                    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+                    window.db = firebase.firestore();
+                    resolve(window.db);
+                } catch (error) {
+                    console.warn('Firebase product data unavailable:', error);
+                    resolve(null);
+                }
+            };
+        });
     </script>
 
     <script defer src="products.js?v=27"></script>
@@ -299,6 +310,7 @@ src="https://www.facebook.com/tr?id=920711640501746&ev=PageView&noscript=1"
 
         if (typeof window.loadStoreProduct !== 'function') {
             window.loadStoreProduct = async function(productId) {
+                await window.firebaseReady;
                 if (!productId || !window.db || typeof window.db.collection !== 'function') return null;
                 try {
                     const snapshot = await window.db.collection('products').doc(String(productId)).get();
@@ -312,12 +324,12 @@ src="https://www.facebook.com/tr?id=920711640501746&ev=PageView&noscript=1"
             };
         }
 
+        const targetId = new URLSearchParams(window.location.search).get('id');
+        const productDataPromise = window.loadStoreProduct(targetId);
+
         document.addEventListener('DOMContentLoaded', async () => {
           try {
-            const params = new URLSearchParams(window.location.search);
-            const targetId = params.get('id');
-
-            activeProduct = await window.loadStoreProduct(targetId);
+            activeProduct = await productDataPromise;
             if (!activeProduct) {
                 const fallbackProducts = window.productsData || [];
                 activeProduct = fallbackProducts.find(p => String(p.id) === String(targetId));
