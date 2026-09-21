@@ -1516,6 +1516,32 @@ function collectSizesFromForm() {
   return { sizesArray, sizeMeasurementsMap };
 }
 
+function getColorName(value, lang = 'en') {
+  if (typeof value === 'string') return value.trim();
+  if (!value || typeof value !== 'object') return '';
+  if (typeof value.name === 'string') return value.name.trim();
+  if (value.name && typeof value.name === 'object') {
+    return String(value.name[lang] || value.name.en || value.name.bn || '').trim();
+  }
+  return String(value[lang] || value.en || value.bn || '').trim();
+}
+
+function getColorEntries(field) {
+  const englishValues = Array.isArray(field)
+    ? field
+    : (field && Array.isArray(field.en) ? field.en : []);
+  const bengaliValues = Array.isArray(field)
+    ? field
+    : (field && Array.isArray(field.bn) ? field.bn : []);
+
+  return englishValues.map((value, index) => {
+    const englishName = getColorName(value, 'en');
+    const bengaliName = getColorName(bengaliValues[index], 'bn') || englishName;
+    const hex = typeof value === 'object' && value ? (value.hex || '') : '';
+    return { englishName, bengaliName, hex };
+  }).filter(color => color.englishName);
+}
+
 function migrateVariantStock(existing, colors, sizes, legacySizeQuantities = {}, legacyQuantity = 0) {
   const migrated = {};
   const source = existing && typeof existing === 'object' ? existing : {};
@@ -1596,16 +1622,9 @@ function updateImagePreview() {
 }
 imagesTextarea.addEventListener('input', updateImagePreview);
 
-function createUniqueImageName(file) {
-  const extension = (file.name.match(/\.[a-z0-9]+$/i) || [''])[0].toLowerCase();
-  const randomPart = typeof crypto.randomUUID === 'function'
-    ? crypto.randomUUID()
-    : Math.random().toString(36).slice(2);
-  return `${Date.now()}-${randomPart}${extension}`;
-}
-
 async function uploadImageToR2(file) {
-  const filename = createUniqueImageName(file);
+  const filename = file.name;
+  if (!filename) throw new Error('Selected image has no filename.');
   const uploadUrl = new URL(R2_UPLOAD_ENDPOINT);
   uploadUrl.searchParams.set('filename', filename);
 
@@ -1630,15 +1649,10 @@ async function uploadImageToR2(file) {
   }
 
   const returnedUrl = result.url || result.publicUrl || result.data?.url;
-  const returnedFilename = result.filename || result.key || result.name;
-  const publicUrl = returnedUrl || (returnedFilename
-    ? new URL(encodeURIComponent(returnedFilename), R2_PUBLIC_DOMAIN).href
-    : '');
-
-  if (!publicUrl) {
-    throw new Error('Image upload succeeded but the Worker did not return a public URL.');
+  if (typeof returnedUrl !== 'string' && !result.filename && !result.key && !result.name) {
+    throw new Error('Image upload succeeded but the Worker did not return image metadata.');
   }
-  return publicUrl;
+  return new URL(encodeURIComponent(filename), R2_PUBLIC_DOMAIN).href;
 }
 
 imageFilesInput.addEventListener('change', () => {
@@ -1690,11 +1704,10 @@ function loadProductIntoForm(id) {
   document.getElementById('prod-original-price').value = prod.originalPrice || '';
   document.getElementById('prod-qty').value = prod.quantity || 0;
   
-  document.getElementById('prod-colors-en').value = getSafeArr(prod.colors, 'en').join(', ');
-  document.getElementById('prod-colors-bn').value = getSafeArr(prod.colors, 'bn').join(', ');
-  document.getElementById('prod-colors-hex').value = Array.isArray(prod.colors)
-    ? prod.colors.map(c => typeof c === 'object' ? (c.hex || '') : '').join(', ')
-    : '';
+  const colorEntries = getColorEntries(prod.colors);
+  document.getElementById('prod-colors-en').value = colorEntries.map(color => color.englishName).join(', ');
+  document.getElementById('prod-colors-bn').value = colorEntries.map(color => color.bengaliName).join(', ');
+  document.getElementById('prod-colors-hex').value = colorEntries.map(color => color.hex).join(', ');
   const existingVariantStock = prod.variantStock || prod.stockByVariant || {};
   
   document.getElementById('prod-measurements-en').value = getSafeStr(prod.measurementsGuide, 'en');
