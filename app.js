@@ -236,8 +236,11 @@ window.loadHomepageBanners = async function() {
             image.alt = banner.title || 'Mohor Clothings collection';
             title.textContent = banner.title || '';
             subtitle.textContent = banner.subtitle || '';
-            button.textContent = banner.buttonText || 'SHOP NOW';
-            button.href = banner.link || '#shop';
+            const buttonText = banner.buttonText || 'SHOP NOW';
+            button.textContent = buttonText;
+            button.href = buttonText.trim().toLowerCase() === 'shop now'
+                ? '#shop'
+                : (banner.link || '#shop');
             copy.hidden = false;
             hero.classList.add('banner-ready');
             dots.querySelectorAll('button').forEach((dot, dotIndex) => {
