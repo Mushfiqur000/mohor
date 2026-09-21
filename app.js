@@ -196,7 +196,70 @@ function updateUIText() {
 }
 window.updateUIText = updateUIText;
 
+// Homepage banner carousel. The bundled hero remains in the markup as a
+// graceful fallback when Firestore is unavailable or has no banner records.
+window.loadHomepageBanners = async function() {
+    const hero = document.getElementById('heroBanner');
+    const image = document.getElementById('heroBannerImage');
+    const copy = document.getElementById('heroBannerCopy');
+    const title = document.getElementById('heroBannerTitle');
+    const subtitle = document.getElementById('heroBannerSubtitle');
+    const button = document.getElementById('heroBannerButton');
+    const dots = document.getElementById('heroBannerDots');
+    if (!hero || !image || !copy || !title || !subtitle || !button || !dots) return;
+
+    for (let attempt = 0; attempt < 20 && (!window.db || typeof window.db.collection !== 'function'); attempt += 1) {
+        await new Promise(resolve => window.setTimeout(resolve, 100));
+    }
+    if (!window.db || typeof window.db.collection !== 'function') return;
+
+    try {
+        const snapshot = await window.db.collection('banners').get();
+        const banners = snapshot.docs
+            .map(doc => ({ id: doc.id, ...doc.data() }))
+            .filter(banner => typeof banner.imageUrl === 'string' && banner.imageUrl.trim())
+            .sort((a, b) => Number(a.order || 0) - Number(b.order || 0));
+        if (!banners.length) return;
+
+        let activeIndex = 0;
+        let timer;
+        const render = index => {
+            activeIndex = (index + banners.length) % banners.length;
+            const banner = banners[activeIndex];
+            image.src = banner.imageUrl;
+            image.alt = banner.title || 'Mohor Clothings collection';
+            title.textContent = banner.title || '';
+            subtitle.textContent = banner.subtitle || '';
+            button.textContent = banner.buttonText || 'SHOP NOW';
+            button.href = banner.link || '#shop';
+            copy.hidden = false;
+            hero.classList.add('banner-ready');
+            dots.querySelectorAll('button').forEach((dot, dotIndex) => {
+                dot.classList.toggle('active', dotIndex === activeIndex);
+                dot.setAttribute('aria-current', dotIndex === activeIndex ? 'true' : 'false');
+            });
+        };
+        dots.innerHTML = '';
+        banners.forEach((banner, index) => {
+            const dot = document.createElement('button');
+            dot.type = 'button';
+            dot.setAttribute('aria-label', `Show banner ${index + 1}`);
+            dot.addEventListener('click', () => {
+                render(index);
+                window.clearInterval(timer);
+                timer = window.setInterval(() => render(activeIndex + 1), 6000);
+            });
+            dots.appendChild(dot);
+        });
+        render(0);
+        if (banners.length > 1) timer = window.setInterval(() => render(activeIndex + 1), 6000);
+    } catch (error) {
+        console.warn('Homepage banner fetch error:', error);
+    }
+};
+
 document.addEventListener('DOMContentLoaded', () => {
+    window.loadHomepageBanners();
     const langToggleBtn = document.getElementById('langToggleBtn');
     if (langToggleBtn) {
         langToggleBtn.addEventListener('click', () => {
