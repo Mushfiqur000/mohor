@@ -145,7 +145,7 @@ src="https://www.facebook.com/tr?id=920711640501746&ev=PageView&noscript=1"
         <button type="button" class="lightbox-close" id="closeModal" aria-label="Close">&times;</button>
         <button type="button" class="lightbox-nav lightbox-prev" id="prevModal" aria-label="Previous image">&#10094;</button>
         <div class="lightbox-zoom-stage" id="lightboxZoomStage">
-            <img id="modalImg" alt="Mohor Clothings Dress Full Image" loading="lazy" decoding="async">
+            <img id="modalImg" alt="Mohor Clothings Dress Full Image" width="800" height="1000" loading="lazy" decoding="async">
         </div>
         <div class="lightbox-zoom-controls" aria-label="Image zoom controls">
             <button type="button" id="zoomOut" aria-label="Zoom out">−</button>
@@ -170,22 +170,22 @@ src="https://www.facebook.com/tr?id=920711640501746&ev=PageView&noscript=1"
     <script defer src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script defer src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const firebaseConfig = {
+        const firebaseConfig = {
                 apiKey: "AIzaSyALxypXDkF9QexbD_wE7-ADALIdj5vd-rY",
                 authDomain: "mohor-app.firebaseapp.com",
                 projectId: "mohor-app",
                 storageBucket: "mohor-app.firebasestorage.app",
                 messagingSenderId: "989000457004",
                 appId: "1:989000457004:web:5679b256e20d94e27daa89"
-            };
-            if (typeof firebase !== 'undefined' && !firebase.apps.length) {
-                firebase.initializeApp(firebaseConfig);
-            }
-            if (typeof firebase !== 'undefined') {
+        };
+        if (typeof firebase !== 'undefined') {
+            try {
+                if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
                 window.db = firebase.firestore();
+            } catch (error) {
+                console.warn('Firebase product data unavailable:', error);
             }
-        });
+        }
     </script>
 
     <script defer src="products.js?v=27"></script>
@@ -210,9 +210,18 @@ src="https://www.facebook.com/tr?id=920711640501746&ev=PageView&noscript=1"
             return field[window.currentLang] || field['en'] || "";
         }
 
+        function setImageDimensions(image, width = 800, height = 1000) {
+            if (!image) return;
+            image.width = width;
+            image.height = height;
+            image.style.aspectRatio = `${width} / ${height}`;
+        }
+
         function setMainImage(src, altText, animate) {
             const mainImg = document.getElementById('mainImage');
             const nextImg = document.getElementById('nextImage');
+            setImageDimensions(mainImg);
+            setImageDimensions(nextImg);
             if (!nextImg || animate === false || !mainImg.src) {
                 window.clearTimeout(galleryTransitionTimer);
                 mainImg.className = '';
@@ -304,6 +313,7 @@ src="https://www.facebook.com/tr?id=920711640501746&ev=PageView&noscript=1"
         }
 
         document.addEventListener('DOMContentLoaded', async () => {
+          try {
             const params = new URLSearchParams(window.location.search);
             const targetId = params.get('id');
 
@@ -318,6 +328,11 @@ src="https://www.facebook.com/tr?id=920711640501746&ev=PageView&noscript=1"
                 document.getElementById('mainImageWrap').innerHTML = '';
                 return;
             }
+
+            const images = (activeProduct.images && activeProduct.images.length > 0) ? activeProduct.images : ['assets/image-placeholder.svg'];
+            const prodTitleStr = getProductText(activeProduct.title);
+            setMainImage(images[0], `${prodTitleStr} - Mohor Clothings Mohor Dress`, false);
+            await new Promise(resolve => requestAnimationFrame(resolve));
 
             const wishlistButton = document.getElementById('productWishlistBtn');
             const syncWishlistButton = () => {
@@ -336,7 +351,6 @@ src="https://www.facebook.com/tr?id=920711640501746&ev=PageView&noscript=1"
             syncWishlistButton();
 
             // SEO & Google Image Indexing Dynamic Enhancements
-            const prodTitleStr = getProductText(activeProduct.title);
             document.title = `${prodTitleStr} | Mohor Clothings - Mohor Dress`;
 
             let metaDesc = document.querySelector('meta[name="description"]');
@@ -349,7 +363,6 @@ src="https://www.facebook.com/tr?id=920711640501746&ev=PageView&noscript=1"
             let ogDesc = document.querySelector('meta[property="og:description"]');
             if (ogDesc) ogDesc.content = getProductText(activeProduct.description).slice(0, 150);
 
-            const images = (activeProduct.images && activeProduct.images.length > 0) ? activeProduct.images : ['assets/image-placeholder.svg'];
             let ogImg = document.querySelector('meta[property="og:image"]');
             const absoluteImageUrl = imageUrl => imageUrl.startsWith('http') ? imageUrl : new URL(imageUrl, document.baseURI).href;
             if (ogImg && images[0]) ogImg.content = absoluteImageUrl(images[0]);
@@ -399,6 +412,7 @@ src="https://www.facebook.com/tr?id=920711640501746&ev=PageView&noscript=1"
             }
 
             renderDynamicText();
+            await new Promise(resolve => window.setTimeout(resolve, 0));
 
             const thumbContainer = document.getElementById('thumbnailContainer');
             setMainImage(images[0], keywordAltText, false);
@@ -678,6 +692,11 @@ src="https://www.facebook.com/tr?id=920711640501746&ev=PageView&noscript=1"
                     buyNow();
                 });
             }
+          } catch (error) {
+            console.error('Product page initialization failed:', error);
+            const title = document.getElementById('prodTitle');
+            if (title) title.textContent = 'Unable to load product';
+          }
         });
     </script>
 

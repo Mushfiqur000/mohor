@@ -125,7 +125,7 @@ window.renderRelatedProducts = function(currentProduct, targetContainerId = 'rel
                     ${stockBadgeHtml}
                     <span class="card-cat">${displayCategory}</span>
                     <a class="card-media-link" href="${productUrl}" aria-label="${displayTitle}">
-                        <img src="${coverImage}" alt="${displayTitle}" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='assets/image-placeholder.svg';">
+                        <img src="${coverImage}" alt="${displayTitle}" width="400" height="500" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='assets/image-placeholder.svg';">
                     </a>
                 </div>
                 <div class="card-body">

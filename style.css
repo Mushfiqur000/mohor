@@ -828,7 +828,10 @@ select.input {
 .opt-row { display: flex; flex-wrap: wrap; gap: 8px; }
 .opt-btn {
   border: 1px solid var(--border-strong); background: var(--surface); color: var(--ink); padding: 9px 15px;
-  border-radius: var(--radius-full); font-size: 0.8rem; transition: all var(--dur-fast) var(--ease);
+  border-radius: var(--radius-full); font-size: 0.8rem;
+  transition: transform var(--dur-fast) var(--ease), opacity var(--dur-fast) var(--ease),
+    color var(--dur-fast) var(--ease), background-color var(--dur-fast) var(--ease),
+    border-color var(--dur-fast) var(--ease);
 }
 .opt-btn:hover { border-color: var(--brass); }
 .opt-btn.selected { background: var(--ink); color: var(--muslin); border-color: var(--ink); }
