@@ -110,8 +110,9 @@
     </header>
 
     <section class="hero">
-        <div class="hero-media">
+        <div class="hero-media" id="heroBanner">
             <img
+                id="heroBannerImage"
                 src="assets/banner-800.webp"
                 srcset="assets/banner-800.webp 800w, assets/banner-1280.webp 1280w, assets/banner-1920.webp 1920w, assets/banner-2560.webp 2560w"
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 800px, 1280px"
@@ -120,6 +121,13 @@
                 width="1920"
                 height="1080">
             <div class="hero-scrim"></div>
+            <div class="hero-copy" id="heroBannerCopy" hidden>
+                <p class="hero-eyebrow">MOHOR CLOTHINGS</p>
+                <h1 id="heroBannerTitle"></h1>
+                <p id="heroBannerSubtitle"></p>
+                <a id="heroBannerButton" class="hero-cta" href="#shop">SHOP NOW</a>
+            </div>
+            <div class="hero-dots" id="heroBannerDots" aria-label="Homepage banners"></div>
             <a href="#shop" class="hero-scroll-cue" aria-label="Scroll to the collection">
                 <svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
                 <span data-i18n="navShop">Shop</span>

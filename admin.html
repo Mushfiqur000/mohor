@@ -298,6 +298,19 @@ tbody tr:hover { background: rgba(245,241,236,0.6); }
 
 .form-hint.success { color: var(--sage-dark); }
 .form-hint.error { color: var(--rust-dark); }
+.banner-admin-list { display: grid; gap: 12px; }
+.banner-admin-row { display: grid; grid-template-columns: 112px 1fr auto; gap: 14px; align-items: center; padding: 12px; border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--surface); }
+.banner-admin-row img { width: 112px; height: 70px; object-fit: cover; border-radius: var(--radius-sm); background: var(--muslin); }
+.banner-admin-meta { min-width: 0; }
+.banner-admin-title { font-family: var(--font-display); font-size: 17px; font-weight: 600; }
+.banner-admin-subtitle { color: var(--ink-muted); font-size: 12.5px; margin-top: 3px; }
+.banner-admin-link { color: var(--ink-muted); display: block; font-size: 11px; margin-top: 5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.banner-admin-actions { display: flex; gap: 7px; }
+@media (max-width: 620px) {
+  .banner-admin-row { grid-template-columns: 78px 1fr; }
+  .banner-admin-row img { width: 78px; height: 58px; }
+  .banner-admin-actions { grid-column: 1 / -1; }
+}
 
 #upload-status { margin-top: 12px; font-size: 13px; font-weight: 600; text-align: center; min-height: 18px; }
 #upload-status.success { color: var(--sage-dark); }
@@ -446,6 +459,10 @@ tbody tr:hover { background: rgba(245,241,236,0.6); }
         <button class="nav-item" data-section="inventory" type="button">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><line x1="12" y1="13" x2="12" y2="21"/></svg>
           Inventory
+        </button>
+        <button class="nav-item" data-section="banners" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9" r="1.5"/><path d="M3 16l5-5 4 4 3-3 6 5"/></svg>
+          Banners
         </button>
       </nav>
       <div class="sidebar-foot">Orders &middot; Catalog &middot; Stock</div>
@@ -757,6 +774,55 @@ tbody tr:hover { background: rgba(245,241,236,0.6); }
           </div>
         </section>
 
+        <!-- HOMEPAGE BANNERS -->
+        <section id="section-banners" class="page-section">
+          <div class="admin-card">
+            <div class="admin-card-header">
+              <h2 id="banner-form-heading">Add Homepage Banner</h2>
+              <button type="button" class="btn btn-ghost btn-sm" id="cancel-banner-edit-btn" style="display:none;">Cancel edit</button>
+            </div>
+            <form id="banner-form">
+              <div class="form-grid">
+                <div class="form-group full-width">
+                  <label for="banner-image-file">Banner Image</label>
+                  <input type="file" id="banner-image-file" accept="image/*">
+                  <div class="form-hint">Upload directly to Cloudflare R2. An existing image URL is retained while editing unless replaced.</div>
+                  <div id="banner-image-status" class="form-hint" aria-live="polite"></div>
+                  <input type="url" id="banner-image-url" placeholder="https://images.mohor.me/banner.webp" required>
+                </div>
+                <div class="form-group">
+                  <label for="banner-title">Title</label>
+                  <input type="text" id="banner-title" placeholder="Break the mould" required>
+                </div>
+                <div class="form-group">
+                  <label for="banner-subtitle">Subtitle</label>
+                  <input type="text" id="banner-subtitle" placeholder="Explore Puja/26">
+                </div>
+                <div class="form-group">
+                  <label for="banner-button-text">Button Text</label>
+                  <input type="text" id="banner-button-text" value="SHOP NOW">
+                </div>
+                <div class="form-group">
+                  <label for="banner-link">Link</label>
+                  <input type="text" id="banner-link" placeholder="#shop or /?category=kurti">
+                </div>
+                <div class="form-group">
+                  <label for="banner-order">Display Order</label>
+                  <input type="number" id="banner-order" min="0" step="1" value="0" required>
+                </div>
+              </div>
+              <button type="submit" class="btn btn-primary" id="save-banner-btn">Save Banner</button>
+              <div id="banner-form-status" class="form-hint" aria-live="polite"></div>
+            </form>
+          </div>
+          <div class="admin-card">
+            <div class="admin-card-header"><h2>Live Homepage Banners</h2></div>
+            <div id="banner-list" class="banner-admin-list">
+              <div class="empty-note">Loading banners&hellip;</div>
+            </div>
+          </div>
+        </section>
+
       </main>
     </div>
   </div>
@@ -801,6 +867,7 @@ const adminEmail = "mushfiqurrahman2222@gmail.com";
 let allOrders = [];
 let allProducts = [];
 let editingProductId = null;
+let editingBannerId = null;
 
 let orderSearch = '';
 let orderStatusFilter = 'All';
@@ -958,6 +1025,7 @@ onAuthStateChanged(auth, (user) => {
     document.getElementById('user-email').innerText = user.email;
     fetchOrders();
     fetchProducts();
+    fetchBanners();
   } else if (user) {
     signOut(auth).then(() => {
       loginSection.style.display = 'flex';
@@ -999,6 +1067,129 @@ document.getElementById('forgot-password-link').addEventListener('click', async 
 });
 
 logoutBtn.addEventListener('click', () => signOut(auth));
+
+/* ---------- FIRESTORE: HOMEPAGE BANNERS ---------- */
+const bannerForm = document.getElementById('banner-form');
+const bannerImageFile = document.getElementById('banner-image-file');
+const bannerImageUrl = document.getElementById('banner-image-url');
+const bannerImageStatus = document.getElementById('banner-image-status');
+const bannerFormStatus = document.getElementById('banner-form-status');
+const saveBannerBtn = document.getElementById('save-banner-btn');
+const cancelBannerEditBtn = document.getElementById('cancel-banner-edit-btn');
+let bannerImageUploadPromise = Promise.resolve();
+
+bannerImageFile.addEventListener('change', () => {
+  const file = bannerImageFile.files && bannerImageFile.files[0];
+  if (!file) return;
+  bannerImageFile.disabled = true;
+  saveBannerBtn.disabled = true;
+  bannerImageStatus.textContent = 'Uploading banner image…';
+  bannerImageStatus.className = 'form-hint';
+  bannerImageUploadPromise = uploadImageToR2(file)
+    .then(url => {
+      bannerImageUrl.value = url;
+      bannerImageStatus.textContent = 'Banner image uploaded successfully.';
+      bannerImageStatus.className = 'form-hint success';
+    })
+    .catch(error => {
+      console.error('Banner image upload error:', error);
+      bannerImageStatus.textContent = 'Image upload failed: ' + error.message;
+      bannerImageStatus.className = 'form-hint error';
+      showToast('Banner image upload failed: ' + error.message, 'error');
+    })
+    .finally(() => {
+      bannerImageFile.disabled = false;
+      bannerImageFile.value = '';
+      saveBannerBtn.disabled = false;
+    });
+});
+
+function resetBannerForm() {
+  editingBannerId = null;
+  bannerForm.reset();
+  document.getElementById('banner-button-text').value = 'SHOP NOW';
+  document.getElementById('banner-order').value = '0';
+  document.getElementById('banner-form-heading').textContent = 'Add Homepage Banner';
+  saveBannerBtn.textContent = 'Save Banner';
+  cancelBannerEditBtn.style.display = 'none';
+  bannerImageStatus.textContent = '';
+  bannerFormStatus.textContent = '';
+  bannerImageStatus.className = 'form-hint';
+  bannerFormStatus.className = 'form-hint';
+}
+
+async function loadBannerIntoForm(id) {
+  try {
+    const snapshot = await getDocs(collection(db, "banners"));
+    const bannerDoc = snapshot.docs.find(item => item.id === id);
+    if (!bannerDoc) throw new Error('Banner not found.');
+    const banner = bannerDoc.data();
+    editingBannerId = id;
+    bannerImageUrl.value = banner.imageUrl || '';
+    document.getElementById('banner-title').value = banner.title || '';
+    document.getElementById('banner-subtitle').value = banner.subtitle || '';
+    document.getElementById('banner-button-text').value = banner.buttonText || 'SHOP NOW';
+    document.getElementById('banner-link').value = banner.link || '#shop';
+    document.getElementById('banner-order').value = Number(banner.order || 0);
+    document.getElementById('banner-form-heading').textContent = 'Edit Homepage Banner';
+    saveBannerBtn.textContent = 'Update Banner';
+    cancelBannerEditBtn.style.display = 'inline-flex';
+    switchSection('banners');
+  } catch (error) {
+    console.error('Banner load error:', error);
+    showToast('Could not load banner: ' + error.message, 'error');
+  }
+}
+
+function deleteBanner(id) {
+  showConfirm('Delete this homepage banner?', async () => {
+    try {
+      await deleteDoc(doc(db, "banners", id));
+      if (editingBannerId === id) resetBannerForm();
+      showToast('Banner deleted.', 'success');
+    } catch (error) {
+      console.error('Banner delete error:', error);
+      showToast('Could not delete banner: ' + error.message, 'error');
+    }
+  }, 'Delete', true);
+}
+
+bannerForm.addEventListener('submit', async (event) => {
+  event.preventDefault();
+  saveBannerBtn.disabled = true;
+  bannerFormStatus.textContent = 'Saving banner…';
+  bannerFormStatus.className = 'form-hint';
+  try {
+    await bannerImageUploadPromise;
+    const payload = {
+      imageUrl: bannerImageUrl.value.trim(),
+      title: document.getElementById('banner-title').value.trim(),
+      subtitle: document.getElementById('banner-subtitle').value.trim(),
+      buttonText: document.getElementById('banner-button-text').value.trim() || 'SHOP NOW',
+      link: document.getElementById('banner-link').value.trim() || '#shop',
+      order: Number(document.getElementById('banner-order').value) || 0
+    };
+    if (!payload.imageUrl) throw new Error('Upload a banner image or provide an image URL.');
+    if (!payload.title) throw new Error('Enter a banner title.');
+    if (editingBannerId) {
+      await updateDoc(doc(db, "banners", editingBannerId), payload);
+    } else {
+      await addDoc(collection(db, "banners"), payload);
+    }
+    bannerFormStatus.textContent = editingBannerId ? 'Banner updated successfully.' : 'Banner saved successfully.';
+    bannerFormStatus.className = 'form-hint success';
+    showToast(editingBannerId ? 'Banner updated.' : 'Banner saved.', 'success');
+    resetBannerForm();
+  } catch (error) {
+    console.error('Banner save error:', error);
+    bannerFormStatus.textContent = 'Could not save banner: ' + error.message;
+    bannerFormStatus.className = 'form-hint error';
+    showToast('Could not save banner: ' + error.message, 'error');
+  } finally {
+    saveBannerBtn.disabled = false;
+  }
+});
+cancelBannerEditBtn.addEventListener('click', resetBannerForm);
 
 /* ---------- FIRESTORE: ORDERS ---------- */
 function fetchOrders() {
@@ -1256,6 +1447,45 @@ function fetchProducts() {
   }, (error) => {
     console.error('Products listener error:', error);
     showToast('Could not load products: ' + error.message, 'error');
+  });
+}
+
+function fetchBanners() {
+  onSnapshot(collection(db, "banners"), (snapshot) => {
+    const banners = [];
+    snapshot.forEach(d => banners.push({ id: d.id, ...d.data() }));
+    banners.sort((a, b) => Number(a.order || 0) - Number(b.order || 0));
+    renderBannerList(banners);
+  }, (error) => {
+    console.error('Banners listener error:', error);
+    showToast('Could not load banners: ' + error.message, 'error');
+  });
+}
+
+function renderBannerList(banners) {
+  const list = document.getElementById('banner-list');
+  if (!banners.length) {
+    list.innerHTML = '<div class="empty-note">No homepage banners yet. Add your first banner above.</div>';
+    return;
+  }
+  list.innerHTML = banners.map(banner => `
+    <div class="banner-admin-row">
+      <img src="${escapeHtml(banner.imageUrl || '')}" alt="">
+      <div class="banner-admin-meta">
+        <div class="banner-admin-title">${escapeHtml(banner.title || 'Untitled banner')}</div>
+        <div class="banner-admin-subtitle">${escapeHtml(banner.subtitle || '')} · Order ${Number(banner.order || 0)}</div>
+        <a class="banner-admin-link" href="${escapeHtml(banner.link || '#')}" target="_blank" rel="noopener">${escapeHtml(banner.link || '#')}</a>
+      </div>
+      <div class="banner-admin-actions">
+        <button type="button" class="btn btn-secondary btn-sm edit-banner-btn" data-id="${escapeHtml(banner.id)}">Edit</button>
+        <button type="button" class="btn btn-danger btn-sm delete-banner-btn" data-id="${escapeHtml(banner.id)}">Delete</button>
+      </div>
+    </div>`).join('');
+  list.querySelectorAll('.edit-banner-btn').forEach(button => {
+    button.addEventListener('click', () => loadBannerIntoForm(button.dataset.id));
+  });
+  list.querySelectorAll('.delete-banner-btn').forEach(button => {
+    button.addEventListener('click', () => deleteBanner(button.dataset.id));
   });
 }
 
