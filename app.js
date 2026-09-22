@@ -928,7 +928,7 @@ function renderProducts(productsToRender) {
         if (hasMultipleImages && viewMode !== 'list') {
             const dotsHtml = images.map((_, idx) => `<span class="slider-dot ${idx === 0 ? 'active' : ''}" data-index="${idx}"></span>`).join('');
             const slidesHtml = images.map((imgSrc, idx) => `
-                <img src="${imgSrc}" class="card-slide-img ${idx === 0 ? 'active' : ''}" alt="${displayTitle} - Mohor Clothings Mohor Dress Image ${idx + 1}" loading="${productIndex === 0 && idx === 0 ? 'eager' : 'lazy'}" ${productIndex === 0 && idx === 0 ? 'fetchpriority="high"' : ''} decoding="async" onerror="this.onerror=null;this.src='assets/image-placeholder.svg';">
+                <img src="${imgSrc}" class="card-slide-img ${idx === 0 ? 'active' : ''}" alt="${displayTitle} - Mohor Clothings Mohor Dress Image ${idx + 1}" width="400" height="500" loading="${productIndex === 0 && idx === 0 ? 'eager' : 'lazy'}" ${productIndex === 0 && idx === 0 ? 'fetchpriority="high"' : ''} decoding="async" onerror="this.onerror=null;this.src='assets/image-placeholder.svg';">
             `).join('');
 
             mediaContentHtml = `
@@ -938,7 +938,7 @@ function renderProducts(productsToRender) {
                 </div>
             `;
         } else {
-            mediaContentHtml = `<img src="${productCoverImage(product)}" alt="${displayTitle} - Mohor Clothings Mohor Dress" loading="${productIndex < 2 ? 'eager' : 'lazy'}" ${productIndex === 0 ? 'fetchpriority="high"' : ''} decoding="async" onerror="this.onerror=null;this.src='assets/image-placeholder.svg';">`;
+            mediaContentHtml = `<img src="${productCoverImage(product)}" alt="${displayTitle} - Mohor Clothings Mohor Dress" width="400" height="500" loading="${productIndex < 2 ? 'eager' : 'lazy'}" ${productIndex === 0 ? 'fetchpriority="high"' : ''} decoding="async" onerror="this.onerror=null;this.src='assets/image-placeholder.svg';">`;
         }
 
         if (viewMode === 'list') {
@@ -1188,7 +1188,7 @@ function renderRelatedProducts(currentProduct) {
         card.innerHTML = `
             <div class="rel-card-media">
                 ${pricing.isOnSale ? `<span class="rel-sale-badge">-${pricing.discountPercent}%</span>` : ''}
-                <img src="${productCoverImage(relProduct)}" alt="${getText(relProduct.title)} - Mohor Dress" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='assets/image-placeholder.svg';">
+                <img src="${productCoverImage(relProduct)}" alt="${getText(relProduct.title)} - Mohor Dress" width="400" height="500" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='assets/image-placeholder.svg';">
             </div>
             <div class="rel-card-info">
                 <div class="rel-card-title">${getText(relProduct.title)}</div>
