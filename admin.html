@@ -1964,25 +1964,32 @@ function compressAndResizeImage(file, maxWidth, maxHeight, quality) {
       URL.revokeObjectURL(objectUrl);
       const targetRatio = maxWidth / maxHeight;
       const sourceRatio = image.width / image.height;
+      const scale = Math.min(1, maxWidth / image.width, maxHeight / image.height);
       let cropWidth = image.width;
       let cropHeight = image.height;
       let sourceX = 0;
       let sourceY = 0;
-      if (sourceRatio > targetRatio) {
+      let outputWidth = Math.round(image.width * scale);
+      let outputHeight = Math.round(image.height * scale);
+      if (scale < 1 && sourceRatio > targetRatio) {
         cropWidth = image.height * targetRatio;
         sourceX = (image.width - cropWidth) / 2;
-      } else if (sourceRatio < targetRatio) {
+        outputWidth = Math.min(maxWidth, Math.round(cropWidth * scale));
+        outputHeight = Math.min(maxHeight, Math.round(image.height * scale));
+      } else if (scale < 1 && sourceRatio < targetRatio) {
         cropHeight = image.width / targetRatio;
         sourceY = (image.height - cropHeight) / 2;
+        outputWidth = Math.min(maxWidth, Math.round(image.width * scale));
+        outputHeight = Math.min(maxHeight, Math.round(cropHeight * scale));
       }
 
       const canvas = document.createElement('canvas');
-      canvas.width = maxWidth;
-      canvas.height = maxHeight;
+      canvas.width = outputWidth;
+      canvas.height = outputHeight;
       const context = canvas.getContext('2d');
       context.imageSmoothingEnabled = true;
       context.imageSmoothingQuality = 'high';
-      context.drawImage(image, sourceX, sourceY, cropWidth, cropHeight, 0, 0, maxWidth, maxHeight);
+      context.drawImage(image, sourceX, sourceY, cropWidth, cropHeight, 0, 0, outputWidth, outputHeight);
       canvas.toBlob(blob => {
         if (blob) resolve(blob);
         else reject(new Error('Could not compress image.'));
@@ -2034,8 +2041,9 @@ async function processProductImages(files) {
   for (let index = 0; index < files.length; index += 1) {
     const file = files[index];
     imageUploadStatus.textContent = `Compressing photo ${index + 1} of ${files.length}…`;
-    const thumbBlob = await compressAndResizeImage(file, 400, 533, 0.84);
-    const detailBlob = await compressAndResizeImage(file, 1000, 1333, 0.88);
+    const thumbBlob = await compressAndResizeImage(file, 400, 533, 0.80);
+    const generatedDetailBlob = await compressAndResizeImage(file, 1000, 1333, 0.80);
+    const detailBlob = generatedDetailBlob.size > file.size ? file : generatedDetailBlob;
     const baseName = file.name.replace(/\.[^.]+$/, '').replace(/[^a-z0-9_-]+/gi, '-').toLowerCase() || `product-${Date.now()}`;
     const uniqueName = `${baseName}-${Date.now()}-${index}`;
 
