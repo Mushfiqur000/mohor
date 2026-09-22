@@ -658,12 +658,9 @@ function normalizeProductSnapshot(doc) {
 
 function sortProductsForDisplay(products) {
     return products.sort((a, b) => {
-        const aOrder = Number(a.displayOrder);
-        const bOrder = Number(b.displayOrder);
-        const hasOrder = Number.isFinite(aOrder) && Number.isFinite(bOrder) && aOrder !== bOrder;
-        if (hasOrder) return aOrder - bOrder;
-        if (Number.isFinite(aOrder) && !Number.isFinite(bOrder)) return -1;
-        if (!Number.isFinite(aOrder) && Number.isFinite(bOrder)) return 1;
+        const aOrder = Number(a.displayOrder) || 999;
+        const bOrder = Number(b.displayOrder) || 999;
+        if (aOrder !== bOrder) return aOrder - bOrder;
         return String(b.createdAt || '').localeCompare(String(a.createdAt || ''));
     });
 }
