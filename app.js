@@ -656,6 +656,18 @@ function normalizeProductSnapshot(doc) {
     };
 }
 
+function sortProductsForDisplay(products) {
+    return products.sort((a, b) => {
+        const aOrder = Number(a.displayOrder);
+        const bOrder = Number(b.displayOrder);
+        const hasOrder = Number.isFinite(aOrder) && Number.isFinite(bOrder) && aOrder !== bOrder;
+        if (hasOrder) return aOrder - bOrder;
+        if (Number.isFinite(aOrder) && !Number.isFinite(bOrder)) return -1;
+        if (!Number.isFinite(aOrder) && Number.isFinite(bOrder)) return 1;
+        return String(b.createdAt || '').localeCompare(String(a.createdAt || ''));
+    });
+}
+
 // Cross-page catalog cache: the storefront is a multi-page site, so without
 // this every single navigation (home -> product -> cart) re-downloads the
 // entire product collection from Firestore. sessionStorage survives across
@@ -697,7 +709,7 @@ window.loadStoreProducts = function() {
         // Serve the cached catalog immediately so the grid never has to sit on
         // a skeleton while a page that already fetched this data recently
         // waits on the network again.
-        window.firestoreProducts = cached.products;
+        window.firestoreProducts = sortProductsForDisplay(cached.products);
         window._catalogPending = false;
     }
 
@@ -731,13 +743,14 @@ window.loadStoreProducts = function() {
                     if (!orderedIds.has(String(doc.id))) legacyProducts.push(normalizeProductSnapshot(doc));
                 });
                 legacyProducts.sort((a, b) => String(b.createdAt || '').localeCompare(String(a.createdAt || '')));
-                dynamicProducts = orderedProducts.concat(legacyProducts);
+                dynamicProducts = sortProductsForDisplay(orderedProducts.concat(legacyProducts));
             } catch (orderError) {
                 console.warn("displayOrder query unavailable; falling back to createdAt:", orderError);
                 const querySnapshot = await window.db.collection("products")
                     .orderBy("createdAt", "desc")
                     .get();
                 querySnapshot.forEach((doc) => dynamicProducts.push(normalizeProductSnapshot(doc)));
+                dynamicProducts = sortProductsForDisplay(dynamicProducts);
             }
             if (dynamicProducts.length > 0) {
                 window.firestoreProducts = dynamicProducts;
