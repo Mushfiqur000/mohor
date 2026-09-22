@@ -103,7 +103,7 @@ window.renderRelatedProducts = function(currentProduct, targetContainerId = 'rel
         const productUrl = typeof productPageUrl === 'function' ? productPageUrl(prod) : `/product/?id=${prod.id}`;
         const coverImage = typeof productCoverImage === 'function'
             ? productCoverImage(prod)
-            : (prod.thumbnail || prod.thumbImage || (prod.images && prod.images[0]) || 'assets/image-placeholder.svg');
+            : (prod.thumbnail || prod.thumbImage || (prod.images && prod.images[0] || '').replace(/-detail\.webp(?=$|\?)/i, '-thumb.webp') || 'assets/image-placeholder.svg');
         const colorOptionsHtml = typeof colorSwatchesHtml === 'function' ? colorSwatchesHtml(prod) : '';
         const isWishlisted = typeof window.isWishlisted === 'function' && window.isWishlisted(prod.id);
         const hasStock = typeof window.productHasStock === 'function' ? window.productHasStock(prod) : true;

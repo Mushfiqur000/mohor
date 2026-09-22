@@ -506,12 +506,13 @@ window.checkoutToAdmin = async function() {
             throw new Error("Firestore database instance is not available.");
         }
 
-        // Trigger instant Telegram notification to the store owner
+        const purchaseContentIds = window.cart.map(item => String(item.id ?? item.name));
+
+        // Notify the store owner in the background after Firestore confirms the order.
         if (typeof window.sendTelegramNotification === 'function') {
-            // Wait for the request before redirecting; otherwise navigation can
-            // cancel the notification before the browser sends it.
-            const telegramSent = await window.sendTelegramNotification({ ...newOrder, id: docRef.id });
-            if (!telegramSent) console.warn('Order saved, but Telegram notification was not delivered.');
+            window.sendTelegramNotification({ ...newOrder, id: docRef.id })
+                .then(sent => { if (!sent) console.warn('Order saved, but Telegram notification was not delivered.'); })
+                .catch(error => console.warn('Telegram notification failed:', error));
         }
 
         // Track the completed purchase once, right here at the moment the
@@ -520,7 +521,7 @@ window.checkoutToAdmin = async function() {
         // success page intentionally stays lightweight and doesn't re-fire it).
         if (typeof window.trackMetaEvent === 'function') {
             window.trackMetaEvent('Purchase', {}, {
-                content_ids: window.cart.map(item => String(item.id ?? item.name)),
+                content_ids: purchaseContentIds,
                 content_type: 'product',
                 num_items: verifiedItems.reduce((sum, item) => sum + item.qty, 0),
                 value: verifiedTotal,
