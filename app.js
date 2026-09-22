@@ -792,6 +792,12 @@ function productCoverImage(product) {
     return (product.images && product.images.length > 0) ? product.images[0] : 'assets/image-placeholder.svg';
 }
 
+function catalogImageAttributes(source, alt, loading = 'lazy') {
+    const original = source || 'assets/image-placeholder.svg';
+    return `src="${original}" alt="${alt}" width="400" height="533" loading="${loading}" decoding="async" onerror="this.onerror=null;this.src='assets/image-placeholder.svg';"`;
+}
+window.catalogImageAttributes = catalogImageAttributes;
+
 function productPageUrl(product) {
     return `/product/?id=${encodeURIComponent(String(product.id))}`;
 }
@@ -928,7 +934,7 @@ function renderProducts(productsToRender) {
         if (hasMultipleImages && viewMode !== 'list') {
             const dotsHtml = images.map((_, idx) => `<span class="slider-dot ${idx === 0 ? 'active' : ''}" data-index="${idx}"></span>`).join('');
             const slidesHtml = images.map((imgSrc, idx) => `
-                <img src="${imgSrc}" class="card-slide-img ${idx === 0 ? 'active' : ''}" alt="${displayTitle} - Mohor Clothings Mohor Dress Image ${idx + 1}" width="400" height="500" loading="${productIndex === 0 && idx === 0 ? 'eager' : 'lazy'}" ${productIndex === 0 && idx === 0 ? 'fetchpriority="high"' : ''} decoding="async" onerror="this.onerror=null;this.src='assets/image-placeholder.svg';">
+                <img ${catalogImageAttributes(imgSrc, `${displayTitle} - Mohor Clothings Mohor Dress Image ${idx + 1}`, productIndex === 0 && idx === 0 ? 'eager' : 'lazy')} class="card-slide-img ${idx === 0 ? 'active' : ''}" ${productIndex === 0 && idx === 0 ? 'fetchpriority="high"' : ''}>
             `).join('');
 
             mediaContentHtml = `
@@ -938,7 +944,7 @@ function renderProducts(productsToRender) {
                 </div>
             `;
         } else {
-            mediaContentHtml = `<img src="${productCoverImage(product)}" alt="${displayTitle} - Mohor Clothings Mohor Dress" width="400" height="500" loading="${productIndex < 2 ? 'eager' : 'lazy'}" ${productIndex === 0 ? 'fetchpriority="high"' : ''} decoding="async" onerror="this.onerror=null;this.src='assets/image-placeholder.svg';">`;
+            mediaContentHtml = `<img ${catalogImageAttributes(productCoverImage(product), `${displayTitle} - Mohor Clothings Mohor Dress`, productIndex < 2 ? 'eager' : 'lazy')} ${productIndex === 0 ? 'fetchpriority="high"' : ''}>`;
         }
 
         if (viewMode === 'list') {
@@ -1188,7 +1194,7 @@ function renderRelatedProducts(currentProduct) {
         card.innerHTML = `
             <div class="rel-card-media">
                 ${pricing.isOnSale ? `<span class="rel-sale-badge">-${pricing.discountPercent}%</span>` : ''}
-                <img src="${productCoverImage(relProduct)}" alt="${getText(relProduct.title)} - Mohor Dress" width="400" height="500" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='assets/image-placeholder.svg';">
+                <img ${catalogImageAttributes(productCoverImage(relProduct), `${getText(relProduct.title)} - Mohor Dress`)} >
             </div>
             <div class="rel-card-info">
                 <div class="rel-card-title">${getText(relProduct.title)}</div>
