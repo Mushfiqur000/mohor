@@ -1012,12 +1012,8 @@ function renderProducts(productsToRender) {
                     showSlide(Number(dot.getAttribute('data-index')));
                 });
             });
-            let slideTimer = window.setInterval(() => showSlide(activeSlide + 1), 5000);
-            card.addEventListener('mouseenter', () => window.clearInterval(slideTimer));
-            card.addEventListener('mouseleave', () => {
-                window.clearInterval(slideTimer);
-                slideTimer = window.setInterval(() => showSlide(activeSlide + 1), 5000);
-            });
+            const startDelay = 5000 + ((productIndex % 4) * 1500);
+            window.initCardSlideshow(card, productIndex, () => showSlide(activeSlide + 1), startDelay);
         }
 
         productGrid.appendChild(card);

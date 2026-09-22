@@ -46,6 +46,116 @@ if (Array.isArray(window.productsData)) {
 }
 
 /**
+ * Shared product-card slideshow lifecycle.
+ * Add the card-sliders-hover-only class to <html>, or call
+ * window.setCardSliderHoverOnly(true), to opt desktop cards into hover-only
+ * playback. Mobile playback remains visibility-aware.
+ */
+(function initCardSliderController() {
+    const slideControllers = new Set();
+    const mobileQuery = window.matchMedia('(max-width: 767px)');
+    const mobileVisibility = new WeakMap();
+    let mobileObserver = null;
+
+    const isHoverOnly = () => document.documentElement.classList.contains('card-sliders-hover-only');
+    const isMobileViewport = () => mobileQuery.matches;
+
+    const canAutoSlide = controller => {
+        if (controller.interacting) return false;
+        if (!isMobileViewport() && isHoverOnly() && !controller.hovering) return false;
+        return !isMobileViewport() || !mobileObserver || mobileVisibility.get(controller.card) === true;
+    };
+
+    const createMobileObserver = () => {
+        if (mobileObserver || !('IntersectionObserver' in window)) return;
+        mobileObserver = new IntersectionObserver(entries => {
+            entries.forEach(entry => {
+                const controller = entry.target._cardSliderController;
+                mobileVisibility.set(entry.target, entry.isIntersecting);
+                if (!controller) return;
+                if (entry.isIntersecting) controller.resume();
+                else controller.pause();
+            });
+        }, { threshold: 0.1 });
+    };
+
+    const createController = (card, startDelay, showSlide) => {
+        let startTimeout = null;
+        let slideTimer = null;
+        const controller = {
+            card,
+            hovering: false,
+            interacting: false,
+            pause() {
+                window.clearTimeout(startTimeout);
+                window.clearInterval(slideTimer);
+                startTimeout = null;
+                slideTimer = null;
+            },
+            resume() {
+                controller.pause();
+                if (!canAutoSlide(controller)) return;
+                startTimeout = window.setTimeout(() => {
+                    if (!canAutoSlide(controller)) return;
+                    showSlide();
+                    slideTimer = window.setInterval(showSlide, 5000);
+                }, startDelay);
+            },
+            refresh() {
+                controller.pause();
+                controller.resume();
+            }
+        };
+
+        card._cardSliderController = controller;
+        slideControllers.add(controller);
+        createMobileObserver();
+        if (mobileObserver) {
+            mobileVisibility.set(card, false);
+            mobileObserver.observe(card);
+        }
+
+        card.addEventListener('mouseenter', () => {
+            controller.hovering = true;
+            controller.pause();
+            if (!isMobileViewport() && isHoverOnly()) controller.resume();
+        });
+        card.addEventListener('mouseleave', () => {
+            controller.hovering = false;
+            controller.resume();
+        });
+        card.addEventListener('touchstart', () => {
+            controller.interacting = true;
+            controller.pause();
+        }, { passive: true });
+        card.addEventListener('touchend', () => {
+            controller.interacting = false;
+            controller.resume();
+        }, { passive: true });
+        card.addEventListener('touchcancel', () => {
+            controller.interacting = false;
+            controller.resume();
+        }, { passive: true });
+        controller.resume();
+        return controller;
+    };
+
+    window.initCardSlideshow = function(card, cardIndex, showSlide, startDelay) {
+        if (!card || typeof showSlide !== 'function') return null;
+        return createController(card, startDelay ?? (5000 + ((cardIndex % 4) * 1500)), showSlide);
+    };
+
+    window.setCardSliderHoverOnly = function(enabled) {
+        document.documentElement.classList.toggle('card-sliders-hover-only', Boolean(enabled));
+        slideControllers.forEach(controller => controller.refresh());
+    };
+
+    mobileQuery.addEventListener?.('change', () => {
+        slideControllers.forEach(controller => controller.refresh());
+    });
+})();
+
+/**
  * Related Products Recommendation Generator
  * Smart Category Matching: Primary-sorts items in the same category.
  * Dynamic Fallback Logic: Backfills remaining slots with top items from other categories.
