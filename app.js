@@ -646,6 +646,8 @@ function normalizeProductSnapshot(doc) {
         sizeQuantities: data.sizeQuantities || {},
         variantStock: data.variantStock || data.stockByVariant || {},
         quantity: Number(data.quantity || 0),
+        displayOrder: Number.isFinite(Number(data.displayOrder)) ? Number(data.displayOrder) : null,
+        createdAt: data.createdAt || null,
         measurementsGuide: data.measurementsGuide || "",
         description: data.description || "",
         details: data.details || [],
@@ -711,11 +713,32 @@ window.loadStoreProducts = function() {
             if (typeof window.db === 'undefined' || !window.db) {
                 return;
             }
-            const querySnapshot = await window.db.collection("products").get();
-            const dynamicProducts = [];
-            querySnapshot.forEach((doc) => {
-                dynamicProducts.push(normalizeProductSnapshot(doc));
-            });
+            let dynamicProducts = [];
+            try {
+                const orderedSnapshot = await window.db.collection("products")
+                    .orderBy("displayOrder", "asc")
+                    .get();
+                const orderedProducts = [];
+                orderedSnapshot.forEach((doc) => orderedProducts.push(normalizeProductSnapshot(doc)));
+
+                // Firestore omits documents that do not have displayOrder from
+                // an orderBy query, so append legacy documents using the old
+                // createdAt ordering.
+                const allSnapshot = await window.db.collection("products").get();
+                const orderedIds = new Set(orderedProducts.map(product => product.id));
+                const legacyProducts = [];
+                allSnapshot.forEach((doc) => {
+                    if (!orderedIds.has(String(doc.id))) legacyProducts.push(normalizeProductSnapshot(doc));
+                });
+                legacyProducts.sort((a, b) => String(b.createdAt || '').localeCompare(String(a.createdAt || '')));
+                dynamicProducts = orderedProducts.concat(legacyProducts);
+            } catch (orderError) {
+                console.warn("displayOrder query unavailable; falling back to createdAt:", orderError);
+                const querySnapshot = await window.db.collection("products")
+                    .orderBy("createdAt", "desc")
+                    .get();
+                querySnapshot.forEach((doc) => dynamicProducts.push(normalizeProductSnapshot(doc)));
+            }
             if (dynamicProducts.length > 0) {
                 window.firestoreProducts = dynamicProducts;
                 writeProductsCache(dynamicProducts);

@@ -636,8 +636,8 @@ tbody tr:hover { background: rgba(245,241,236,0.6); }
             </div>
             <div class="table-scroll">
               <table>
-                <thead><tr><th>Image</th><th>Title &amp; Price</th><th>Stock</th><th>Sizes</th><th>Action</th></tr></thead>
-                <tbody id="admin-products-table-body"><tr><td colspan="5" style="text-align:center;color:#888;">Loading catalog&hellip;</td></tr></tbody>
+                <thead><tr><th>Position</th><th>Image</th><th>Title &amp; Price</th><th>Stock</th><th>Sizes</th><th>Action</th></tr></thead>
+                <tbody id="admin-products-table-body"><tr><td colspan="6" style="text-align:center;color:#888;">Loading catalog&hellip;</td></tr></tbody>
               </table>
             </div>
             <div class="pagination" id="products-pagination"></div>
@@ -1440,7 +1440,22 @@ function fetchProducts() {
   onSnapshot(collection(db, "products"), (snapshot) => {
     allProducts = [];
     snapshot.forEach(d => allProducts.push({ id: d.id, ...d.data() }));
-    allProducts.sort((a, b) => parseDate(b.createdAt).getTime() - parseDate(a.createdAt).getTime());
+    allProducts.sort((a, b) => {
+      const aOrder = Number.isFinite(Number(a.displayOrder)) ? Number(a.displayOrder) : Number.MAX_SAFE_INTEGER;
+      const bOrder = Number.isFinite(Number(b.displayOrder)) ? Number(b.displayOrder) : Number.MAX_SAFE_INTEGER;
+      return aOrder - bOrder || parseDate(b.createdAt).getTime() - parseDate(a.createdAt).getTime();
+    });
+    const productsMissingOrder = allProducts.filter(product => !Number.isFinite(Number(product.displayOrder)));
+    if (productsMissingOrder.length > 0) {
+      const migrationBatch = writeBatch(db);
+      allProducts.forEach((product, index) => {
+        migrationBatch.update(doc(db, "products", product.id), { displayOrder: index + 1 });
+      });
+      migrationBatch.commit().catch(error => {
+        console.error('Display order migration error:', error);
+        showToast('Could not initialize product positions: ' + error.message, 'error');
+      });
+    }
     renderOverview();
     renderProductsTable();
     renderInventoryTable();
@@ -1518,7 +1533,7 @@ function renderProductsTable() {
 
   const tbody = document.getElementById('admin-products-table-body');
   if (filtered.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:#888;padding:24px;">${allProducts.length === 0 ? "Your catalog is empty. Use \u201C+ New Product\u201D above to add your first item." : 'No products match your search.'}</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:#888;padding:24px;">${allProducts.length === 0 ? "Your catalog is empty. Use \u201C+ New Product\u201D above to add your first item." : 'No products match your search.'}</td></tr>`;
   } else {
     tbody.innerHTML = pageItems.map(prod => {
       const img = prod.images && prod.images.length > 0 ? prod.images[0] : '';
@@ -1530,8 +1545,10 @@ function renderProductsTable() {
         ? `<span class="mono" style="color:var(--maroon);font-weight:700;">${money(prod.price)}</span> <del class="mono" style="color:var(--rust);font-size:11px;">${money(prod.originalPrice)}</del>`
         : `<span class="mono" style="color:#C9A14A;font-weight:600;">${money(prod.price)}</span>`;
 
+      const position = allProducts.findIndex(product => product.id === prod.id) + 1;
       return `
         <tr>
+          <td style="width:82px;"><input class="product-position-input" type="number" min="1" max="${allProducts.length}" value="${position}" data-id="${escapeHtml(prod.id)}" aria-label="Position for ${escapeHtml(displayTitle)}" style="width:62px;padding:6px 7px;"></td>
           <td>${img ? `<img src="${escapeHtml(img)}" alt="" style="width:44px;height:54px;object-fit:cover;border-radius:6px;">` : '<div style="width:44px;height:54px;background:#F5F1EC;border-radius:6px;"></div>'}</td>
           <td><strong>${escapeHtml(displayTitle)}</strong><br>${priceHtml}<br><span style="font-size:11px;color:#a89f9a;text-transform:uppercase;letter-spacing:.3px;">${escapeHtml((prod.category || 'three-piece').replace('-', ' '))}</span></td>
           <td>${stockBadge(prod.quantity)}</td>
@@ -1546,8 +1563,38 @@ function renderProductsTable() {
 
   tbody.querySelectorAll('.edit-btn').forEach(btn => btn.addEventListener('click', () => loadProductIntoForm(btn.dataset.id)));
   tbody.querySelectorAll('.delete-btn').forEach(btn => btn.addEventListener('click', () => handleDeleteProduct(btn.dataset.id)));
+  tbody.querySelectorAll('.product-position-input').forEach(input => {
+    input.addEventListener('change', () => reorderProduct(input.dataset.id, input.value));
+  });
 
   renderPagination('products-pagination', totalPages, productPage, (p) => { productPage = p; renderProductsTable(); });
+}
+
+async function reorderProduct(productId, requestedPosition) {
+  const oldIndex = allProducts.findIndex(product => product.id === productId);
+  if (oldIndex < 0) return;
+  const newIndex = Math.max(0, Math.min(allProducts.length - 1, Number(requestedPosition) - 1));
+  if (!Number.isInteger(newIndex)) {
+    renderProductsTable();
+    return;
+  }
+
+  const reordered = [...allProducts];
+  const [movedProduct] = reordered.splice(oldIndex, 1);
+  reordered.splice(newIndex, 0, movedProduct);
+  const batch = writeBatch(db);
+  reordered.forEach((product, index) => {
+    batch.update(doc(db, "products", product.id), { displayOrder: index + 1 });
+  });
+
+  try {
+    await batch.commit();
+    showToast('Catalog order updated.', 'success');
+  } catch (error) {
+    console.error('Product reorder error:', error);
+    showToast('Could not update catalog order: ' + error.message, 'error');
+    renderProductsTable();
+  }
 }
 
 document.getElementById('product-search').addEventListener('input', (e) => { productSearch = e.target.value; productPage = 1; renderProductsTable(); });
@@ -2088,7 +2135,13 @@ addProductForm.addEventListener('submit', async (e) => {
       uploadStatus.textContent = '✓ Product updated on the live website!';
     } else {
       payload.createdAt = new Date().toISOString();
-      await addDoc(collection(db, "products"), payload);
+      const batch = writeBatch(db);
+      allProducts.forEach((product, index) => {
+        batch.update(doc(db, "products", product.id), { displayOrder: index + 2 });
+      });
+      const newProductRef = doc(collection(db, "products"));
+      batch.set(newProductRef, { ...payload, displayOrder: 1 });
+      await batch.commit();
       uploadStatus.textContent = '✓ Product uploaded to the live website!';
     }
     uploadStatus.className = 'success';
