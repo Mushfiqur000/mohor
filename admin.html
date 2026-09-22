@@ -210,6 +210,7 @@ table { width: 100%; border-collapse: collapse; min-width: 760px; }
 th, td { padding: 12px 10px; text-align: left; border-bottom: 1px solid var(--border); font-size: 13.5px; vertical-align: top; }
 th { background: var(--muslin); color: var(--ink-muted); font-size: 11.5px; text-transform: uppercase; letter-spacing: .4px; font-weight: 600; }
 tbody tr:hover { background: rgba(245,241,236,0.6); }
+.product-order-dirty { background: rgba(201,161,74,0.12) !important; box-shadow: inset 3px 0 0 var(--brass); }
 .mono { font-family: var(--font-mono); }
 
 /* ============================================================
@@ -631,6 +632,10 @@ tbody tr:hover { background: rgba(245,241,236,0.6); }
               <h2>Live Store Catalog</h2>
               <button class="btn btn-primary btn-sm" id="goto-add-product-btn" type="button">+ New Product</button>
             </div>
+            <div class="toolbar" style="justify-content:flex-end;">
+              <button class="btn btn-primary btn-sm" id="save-product-order-btn" type="button" disabled>Save Order</button>
+              <button class="btn btn-secondary btn-sm" id="undo-product-order-btn" type="button" disabled>Undo / Reset</button>
+            </div>
             <div class="toolbar">
               <input type="text" id="product-search" placeholder="Search products by title&hellip;">
             </div>
@@ -878,6 +883,8 @@ const ORDERS_PER_PAGE = 8;
 let productSearch = '';
 let productPage = 1;
 const PRODUCTS_PER_PAGE = 10;
+let productOrderDraft = new Map();
+let productOrderDirty = false;
 
 let lowStockThreshold = 5;
 
@@ -1445,6 +1452,7 @@ function fetchProducts() {
       const bOrder = Number.isFinite(Number(b.displayOrder)) ? Number(b.displayOrder) : Number.MAX_SAFE_INTEGER;
       return aOrder - bOrder || parseDate(b.createdAt).getTime() - parseDate(a.createdAt).getTime();
     });
+    if (!productOrderDirty) productOrderDraft = new Map();
     const productsMissingOrder = allProducts.filter(product => !Number.isFinite(Number(product.displayOrder)));
     if (productsMissingOrder.length > 0) {
       const migrationBatch = writeBatch(db);
@@ -1545,9 +1553,13 @@ function renderProductsTable() {
         ? `<span class="mono" style="color:var(--maroon);font-weight:700;">${money(prod.price)}</span> <del class="mono" style="color:var(--rust);font-size:11px;">${money(prod.originalPrice)}</del>`
         : `<span class="mono" style="color:#C9A14A;font-weight:600;">${money(prod.price)}</span>`;
 
-      const position = allProducts.findIndex(product => product.id === prod.id) + 1;
+      const savedPosition = Number.isFinite(Number(prod.displayOrder))
+        ? Number(prod.displayOrder)
+        : allProducts.findIndex(product => product.id === prod.id) + 1;
+      const position = productOrderDraft.has(prod.id) ? productOrderDraft.get(prod.id) : savedPosition;
+      const isDirty = productOrderDraft.has(prod.id);
       return `
-        <tr>
+        <tr class="${isDirty ? 'product-order-dirty' : ''}">
           <td style="width:82px;"><input class="product-position-input" type="number" min="1" max="${allProducts.length}" value="${position}" data-id="${escapeHtml(prod.id)}" aria-label="Position for ${escapeHtml(displayTitle)}" style="width:62px;padding:6px 7px;"></td>
           <td>${img ? `<img src="${escapeHtml(img)}" alt="" style="width:44px;height:54px;object-fit:cover;border-radius:6px;">` : '<div style="width:44px;height:54px;background:#F5F1EC;border-radius:6px;"></div>'}</td>
           <td><strong>${escapeHtml(displayTitle)}</strong><br>${priceHtml}<br><span style="font-size:11px;color:#a89f9a;text-transform:uppercase;letter-spacing:.3px;">${escapeHtml((prod.category || 'three-piece').replace('-', ' '))}</span></td>
@@ -1564,39 +1576,83 @@ function renderProductsTable() {
   tbody.querySelectorAll('.edit-btn').forEach(btn => btn.addEventListener('click', () => loadProductIntoForm(btn.dataset.id)));
   tbody.querySelectorAll('.delete-btn').forEach(btn => btn.addEventListener('click', () => handleDeleteProduct(btn.dataset.id)));
   tbody.querySelectorAll('.product-position-input').forEach(input => {
-    input.addEventListener('change', () => reorderProduct(input.dataset.id, input.value));
+    input.addEventListener('change', () => {
+      const position = parseInt(input.value, 10);
+      if (!Number.isInteger(position) || position < 1) {
+        renderProductsTable();
+        return;
+      }
+      updateProductOrderDraft(input.dataset.id, position);
+    });
   });
 
   renderPagination('products-pagination', totalPages, productPage, (p) => { productPage = p; renderProductsTable(); });
 }
 
-async function reorderProduct(productId, requestedPosition) {
-  const oldIndex = allProducts.findIndex(product => product.id === productId);
+function updateProductOrderActions() {
+  document.getElementById('save-product-order-btn').disabled = !productOrderDirty;
+  document.getElementById('undo-product-order-btn').disabled = !productOrderDirty;
+}
+
+function updateProductOrderDraft(productId, requestedPosition) {
+  const ordered = allProducts.map((product, index) => ({
+    product,
+    index,
+    position: productOrderDraft.has(product.id)
+      ? parseInt(productOrderDraft.get(product.id), 10)
+      : (Number.isFinite(Number(product.displayOrder)) ? Number(product.displayOrder) : index + 1)
+  })).sort((a, b) => a.position - b.position || a.index - b.index);
+  const oldIndex = ordered.findIndex(item => item.product.id === productId);
   if (oldIndex < 0) return;
-  const newIndex = Math.max(0, Math.min(allProducts.length - 1, Number(requestedPosition) - 1));
-  if (!Number.isInteger(newIndex)) {
-    renderProductsTable();
-    return;
-  }
 
-  const reordered = [...allProducts];
-  const [movedProduct] = reordered.splice(oldIndex, 1);
-  reordered.splice(newIndex, 0, movedProduct);
-  const batch = writeBatch(db);
-  reordered.forEach((product, index) => {
-    batch.update(doc(db, "products", product.id), { displayOrder: index + 1 });
+  const newIndex = Math.min(ordered.length - 1, requestedPosition - 1);
+  const [moved] = ordered.splice(oldIndex, 1);
+  ordered.splice(newIndex, 0, moved);
+
+  const nextDraft = new Map();
+  ordered.forEach((item, index) => {
+    const savedPosition = Number.isFinite(Number(item.product.displayOrder))
+      ? Number(item.product.displayOrder)
+      : allProducts.indexOf(item.product) + 1;
+    if (savedPosition !== index + 1) nextDraft.set(item.product.id, index + 1);
   });
+  productOrderDraft = nextDraft;
+  productOrderDirty = productOrderDraft.size > 0;
+  updateProductOrderActions();
+  renderProductsTable();
+}
 
+async function saveProductOrder() {
+  if (!productOrderDirty) return;
+  const batch = writeBatch(db);
+  allProducts.forEach((product, index) => {
+    const savedPosition = Number.isFinite(Number(product.displayOrder)) ? Number(product.displayOrder) : index + 1;
+    const position = productOrderDraft.has(product.id)
+      ? parseInt(productOrderDraft.get(product.id), 10)
+      : savedPosition;
+    batch.update(doc(db, "products", product.id), { displayOrder: Number.isInteger(position) && position > 0 ? position : index + 1 });
+  });
   try {
     await batch.commit();
-    showToast('Catalog order updated.', 'success');
+    productOrderDraft = new Map();
+    productOrderDirty = false;
+    updateProductOrderActions();
+    showToast('Order saved successfully!', 'success');
   } catch (error) {
-    console.error('Product reorder error:', error);
-    showToast('Could not update catalog order: ' + error.message, 'error');
-    renderProductsTable();
+    console.error('Product order save error:', error);
+    showToast('Could not save catalog order: ' + error.message, 'error');
   }
 }
 
+function undoProductOrder() {
+  productOrderDraft = new Map();
+  productOrderDirty = false;
+  updateProductOrderActions();
+  renderProductsTable();
+}
+
+document.getElementById('save-product-order-btn').addEventListener('click', saveProductOrder);
+document.getElementById('undo-product-order-btn').addEventListener('click', undoProductOrder);
 document.getElementById('product-search').addEventListener('input', (e) => { productSearch = e.target.value; productPage = 1; renderProductsTable(); });
 
 function handleDeleteProduct(id) {
