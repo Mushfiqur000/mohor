@@ -233,6 +233,7 @@ window.loadHomepageBanners = async function() {
             image.removeAttribute('srcset');
             image.removeAttribute('sizes');
             image.src = imageUrl;
+            image.style.objectPosition = banner.objectPosition || '50% 50%';
             image.alt = banner.title || 'Mohor Clothings collection';
             title.textContent = banner.title || '';
             subtitle.textContent = banner.subtitle || '';
@@ -790,8 +791,12 @@ window.loadStoreProduct = async function(productId) {
 // Product grid rendering, filter / sort / search
 // ==========================================================================
 function productCoverImage(product) {
-    return product.thumbnail || product.thumbImage ||
-        ((product.images && product.images.length > 0) ? product.images[0] : 'assets/image-placeholder.svg');
+    const source = product.thumbnail || product.thumbImage ||
+        ((product.images && product.images.length > 0) ? product.images[0] : '');
+    if (source && /-detail\.webp(?:$|\?)/i.test(source)) {
+        return source.replace(/-detail\.webp(?=$|\?)/i, '-thumb.webp');
+    }
+    return source || 'assets/image-placeholder.svg';
 }
 
 function catalogImageAttributes(source, alt, loading = 'lazy') {

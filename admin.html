@@ -307,6 +307,8 @@ tbody tr:hover { background: rgba(245,241,236,0.6); }
 .banner-admin-subtitle { color: var(--ink-muted); font-size: 12.5px; margin-top: 3px; }
 .banner-admin-link { color: var(--ink-muted); display: block; font-size: 11px; margin-top: 5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .banner-admin-actions { display: flex; gap: 7px; }
+.banner-editor-preview { height: 320px; overflow: hidden; border-radius: var(--radius-md); background: var(--muslin); margin-top: 10px; }
+.banner-editor-preview img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 50%; display: block; }
 @media (max-width: 620px) {
   .banner-admin-row { grid-template-columns: 78px 1fr; }
   .banner-admin-row img { width: 78px; height: 58px; }
@@ -635,6 +637,7 @@ tbody tr:hover { background: rgba(245,241,236,0.6); }
             <div class="toolbar" style="justify-content:flex-end;">
               <button class="btn btn-primary btn-sm" id="save-product-order-btn" type="button" disabled>Save Order</button>
               <button class="btn btn-secondary btn-sm" id="undo-product-order-btn" type="button" disabled>Undo / Reset</button>
+              <button class="btn btn-secondary btn-sm" id="sync-legacy-thumbnails-btn" type="button">Sync Legacy Thumbnails</button>
             </div>
             <div class="toolbar">
               <input type="text" id="product-search" placeholder="Search products by title&hellip;">
@@ -794,6 +797,9 @@ tbody tr:hover { background: rgba(245,241,236,0.6); }
                   <div class="form-hint">Upload directly to Cloudflare R2. An existing image URL is retained while editing unless replaced.</div>
                   <div id="banner-image-status" class="form-hint" aria-live="polite"></div>
                   <input type="url" id="banner-image-url" placeholder="https://images.mohor.me/banner.webp" required>
+                  <div class="banner-editor-preview"><img id="banner-editor-preview-image" alt="Banner preview"></div>
+                  <label for="banner-object-position">Vertical Position</label>
+                  <input type="range" id="banner-object-position" min="0" max="100" value="50">
                 </div>
                 <div class="form-group">
                   <label for="banner-title">Title</label>
@@ -1083,7 +1089,16 @@ const bannerImageStatus = document.getElementById('banner-image-status');
 const bannerFormStatus = document.getElementById('banner-form-status');
 const saveBannerBtn = document.getElementById('save-banner-btn');
 const cancelBannerEditBtn = document.getElementById('cancel-banner-edit-btn');
+const bannerPreviewImage = document.getElementById('banner-editor-preview-image');
+const bannerObjectPosition = document.getElementById('banner-object-position');
 let bannerImageUploadPromise = Promise.resolve();
+
+function updateBannerPreview() {
+  bannerPreviewImage.src = bannerImageUrl.value.trim();
+  bannerPreviewImage.style.objectPosition = `50% ${bannerObjectPosition.value}%`;
+}
+bannerImageUrl.addEventListener('input', updateBannerPreview);
+bannerObjectPosition.addEventListener('input', updateBannerPreview);
 
 bannerImageFile.addEventListener('change', () => {
   const file = bannerImageFile.files && bannerImageFile.files[0];
@@ -1092,9 +1107,11 @@ bannerImageFile.addEventListener('change', () => {
   saveBannerBtn.disabled = true;
   bannerImageStatus.textContent = 'Uploading banner image…';
   bannerImageStatus.className = 'form-hint';
-  bannerImageUploadPromise = uploadImageToR2(file)
-    .then(url => {
+  bannerImageUploadPromise = compressAndResizeImage(file, 1200, 800, 0.80)
+      .then(blob => uploadImageToR2(blob, `banner-${Date.now()}.webp`))
+      .then(url => {
       bannerImageUrl.value = url;
+      updateBannerPreview();
       bannerImageStatus.textContent = 'Banner image uploaded successfully.';
       bannerImageStatus.className = 'form-hint success';
     })
@@ -1116,6 +1133,8 @@ function resetBannerForm() {
   bannerForm.reset();
   document.getElementById('banner-button-text').value = 'SHOP NOW';
   document.getElementById('banner-order').value = '0';
+  bannerObjectPosition.value = '50';
+  updateBannerPreview();
   document.getElementById('banner-form-heading').textContent = 'Add Homepage Banner';
   saveBannerBtn.textContent = 'Save Banner';
   cancelBannerEditBtn.style.display = 'none';
@@ -1133,6 +1152,8 @@ async function loadBannerIntoForm(id) {
     const banner = bannerDoc.data();
     editingBannerId = id;
     bannerImageUrl.value = banner.imageUrl || '';
+    bannerObjectPosition.value = Number(String(banner.objectPosition || '50').replace('%', '').trim()) || 50;
+    updateBannerPreview();
     document.getElementById('banner-title').value = banner.title || '';
     document.getElementById('banner-subtitle').value = banner.subtitle || '';
     document.getElementById('banner-button-text').value = banner.buttonText || 'SHOP NOW';
@@ -1174,7 +1195,8 @@ bannerForm.addEventListener('submit', async (event) => {
       subtitle: document.getElementById('banner-subtitle').value.trim(),
       buttonText: document.getElementById('banner-button-text').value.trim() || 'SHOP NOW',
       link: document.getElementById('banner-link').value.trim() || '#shop',
-      order: Number(document.getElementById('banner-order').value) || 0
+      order: Number(document.getElementById('banner-order').value) || 0,
+      objectPosition: `50% ${bannerObjectPosition.value}%`
     };
     if (!payload.imageUrl) throw new Error('Upload a banner image or provide an image URL.');
     if (!payload.title) throw new Error('Enter a banner title.');
@@ -1625,15 +1647,19 @@ function updateProductOrderDraft(productId, requestedPosition) {
 async function saveProductOrder() {
   if (!productOrderDirty) return;
   const batch = writeBatch(db);
-  allProducts.forEach((product, index) => {
-    const savedPosition = Number.isFinite(Number(product.displayOrder)) ? Number(product.displayOrder) : index + 1;
-    const position = productOrderDraft.has(product.id)
-      ? parseInt(productOrderDraft.get(product.id), 10)
-      : savedPosition;
-    batch.update(doc(db, "products", product.id), { displayOrder: Number.isInteger(position) && position > 0 ? position : index + 1 });
+  const changedProducts = allProducts.filter(product => productOrderDraft.has(product.id));
+  changedProducts.forEach(product => {
+    const position = parseInt(productOrderDraft.get(product.id), 10);
+    batch.update(doc(db, "products", product.id), { displayOrder: Number.isInteger(position) && position > 0 ? position : 1 });
   });
+  const saveButton = document.getElementById('save-product-order-btn');
+  saveButton.disabled = true;
+  saveButton.textContent = 'Saving order…';
   try {
-    await batch.commit();
+    await Promise.race([
+      batch.commit(),
+      new Promise((_, reject) => setTimeout(() => reject(new Error('Saving order timed out. Please try again.')), 10000))
+    ]);
     productOrderDraft = new Map();
     productOrderDirty = false;
     updateProductOrderActions();
@@ -1641,6 +1667,9 @@ async function saveProductOrder() {
   } catch (error) {
     console.error('Product order save error:', error);
     showToast('Could not save catalog order: ' + error.message, 'error');
+  } finally {
+    saveButton.textContent = 'Save Order';
+    updateProductOrderActions();
   }
 }
 
@@ -1653,6 +1682,32 @@ function undoProductOrder() {
 
 document.getElementById('save-product-order-btn').addEventListener('click', saveProductOrder);
 document.getElementById('undo-product-order-btn').addEventListener('click', undoProductOrder);
+document.getElementById('sync-legacy-thumbnails-btn').addEventListener('click', async () => {
+  const button = document.getElementById('sync-legacy-thumbnails-btn');
+  button.disabled = true;
+  button.textContent = 'Syncing thumbnails…';
+  try {
+    const snapshot = await getDocs(collection(db, 'products'));
+    const legacy = snapshot.docs.filter(item => {
+      const data = item.data() || {};
+      return !data.thumbnail && !data.thumbImage && typeof data.images?.[0] === 'string' && /-detail\.webp(?:$|\?)/i.test(data.images[0]);
+    });
+    if (legacy.length) {
+      const batch = writeBatch(db);
+      legacy.forEach(item => batch.update(doc(db, 'products', item.id), {
+        thumbnail: item.data().images[0].replace(/-detail\.webp(?=$|\?)/i, '-thumb.webp')
+      }));
+      await batch.commit();
+    }
+    showToast(`${legacy.length} legacy thumbnail${legacy.length === 1 ? '' : 's'} synced.`, 'success');
+  } catch (error) {
+    console.error('Thumbnail sync error:', error);
+    showToast('Could not sync thumbnails: ' + error.message, 'error');
+  } finally {
+    button.disabled = false;
+    button.textContent = 'Sync Legacy Thumbnails';
+  }
+});
 document.getElementById('product-search').addEventListener('input', (e) => { productSearch = e.target.value; productPage = 1; renderProductsTable(); });
 
 function handleDeleteProduct(id) {
