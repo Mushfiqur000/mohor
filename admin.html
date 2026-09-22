@@ -1947,6 +1947,7 @@ const R2_UPLOAD_ENDPOINT = 'https://mohor-uploader.2022731073.workers.dev/';
 const R2_PUBLIC_DOMAIN = 'https://images.mohor.me/';
 const R2_UPLOAD_SECRET = '018:GoodluckCoc';
 let imageUploadPromise = Promise.resolve();
+let productThumbnailUrl = '';
 
 function updateImagePreview() {
   const urls = imagesTextarea.value.split('\n').map(u => u.trim()).filter(u => u.startsWith('http'));
@@ -1955,8 +1956,47 @@ function updateImagePreview() {
 }
 imagesTextarea.addEventListener('input', updateImagePreview);
 
-async function uploadImageToR2(file) {
-  const filename = file.name;
+function compressAndResizeImage(file, maxWidth, maxHeight, quality) {
+  return new Promise((resolve, reject) => {
+    const objectUrl = URL.createObjectURL(file);
+    const image = new Image();
+    image.onload = () => {
+      URL.revokeObjectURL(objectUrl);
+      const targetRatio = maxWidth / maxHeight;
+      const sourceRatio = image.width / image.height;
+      let cropWidth = image.width;
+      let cropHeight = image.height;
+      let sourceX = 0;
+      let sourceY = 0;
+      if (sourceRatio > targetRatio) {
+        cropWidth = image.height * targetRatio;
+        sourceX = (image.width - cropWidth) / 2;
+      } else if (sourceRatio < targetRatio) {
+        cropHeight = image.width / targetRatio;
+        sourceY = (image.height - cropHeight) / 2;
+      }
+
+      const canvas = document.createElement('canvas');
+      canvas.width = maxWidth;
+      canvas.height = maxHeight;
+      const context = canvas.getContext('2d');
+      context.imageSmoothingEnabled = true;
+      context.imageSmoothingQuality = 'high';
+      context.drawImage(image, sourceX, sourceY, cropWidth, cropHeight, 0, 0, maxWidth, maxHeight);
+      canvas.toBlob(blob => {
+        if (blob) resolve(blob);
+        else reject(new Error('Could not compress image.'));
+      }, 'image/webp', quality);
+    };
+    image.onerror = () => {
+      URL.revokeObjectURL(objectUrl);
+      reject(new Error(`Could not read ${file.name}.`));
+    };
+    image.src = objectUrl;
+  });
+}
+
+async function uploadImageToR2(file, filename = file.name) {
   if (!filename) throw new Error('Selected image has no filename.');
   const uploadUrl = new URL(R2_UPLOAD_ENDPOINT);
   uploadUrl.searchParams.set('filename', filename);
@@ -1988,21 +2028,42 @@ async function uploadImageToR2(file) {
   return new URL(encodeURIComponent(filename), R2_PUBLIC_DOMAIN).href;
 }
 
+async function processProductImages(files) {
+  const detailUrls = [];
+  let firstThumbnailUrl = '';
+  for (let index = 0; index < files.length; index += 1) {
+    const file = files[index];
+    imageUploadStatus.textContent = `Compressing photo ${index + 1} of ${files.length}…`;
+    const thumbBlob = await compressAndResizeImage(file, 400, 533, 0.84);
+    const detailBlob = await compressAndResizeImage(file, 1000, 1333, 0.88);
+    const baseName = file.name.replace(/\.[^.]+$/, '').replace(/[^a-z0-9_-]+/gi, '-').toLowerCase() || `product-${Date.now()}`;
+    const uniqueName = `${baseName}-${Date.now()}-${index}`;
+
+    imageUploadStatus.textContent = `Uploading photo ${index + 1} of ${files.length}…`;
+    const thumbUrl = await uploadImageToR2(thumbBlob, `${uniqueName}-thumb.webp`);
+    const detailUrl = await uploadImageToR2(detailBlob, `${uniqueName}-detail.webp`);
+    if (!firstThumbnailUrl) firstThumbnailUrl = thumbUrl;
+    detailUrls.push(detailUrl);
+  }
+  return { detailUrls, thumbnailUrl: firstThumbnailUrl };
+}
+
 imageFilesInput.addEventListener('change', () => {
   const files = Array.from(imageFilesInput.files || []);
   if (!files.length) return;
 
   imageFilesInput.disabled = true;
   uploadBtn.disabled = true;
-  imageUploadStatus.textContent = `Uploading ${files.length} image${files.length === 1 ? '' : 's'}…`;
+  imageUploadStatus.textContent = `Preparing ${files.length} image${files.length === 1 ? '' : 's'}…`;
   imageUploadStatus.className = 'form-hint';
 
-  imageUploadPromise = Promise.all(files.map(uploadImageToR2))
-    .then(urls => {
+  imageUploadPromise = processProductImages(files)
+    .then(({ detailUrls, thumbnailUrl }) => {
       const existingUrls = imagesTextarea.value.split('\n').map(u => u.trim()).filter(Boolean);
-      imagesTextarea.value = [...existingUrls, ...urls].join('\n');
+      imagesTextarea.value = [...existingUrls, ...detailUrls].join('\n');
+      if (thumbnailUrl) productThumbnailUrl = thumbnailUrl;
       updateImagePreview();
-      imageUploadStatus.textContent = `${urls.length} image${urls.length === 1 ? '' : 's'} uploaded successfully.`;
+      imageUploadStatus.textContent = `${detailUrls.length} image${detailUrls.length === 1 ? '' : 's'} uploaded successfully.`;
       imageUploadStatus.className = 'form-hint success';
     })
     .catch(error => {
@@ -2058,6 +2119,7 @@ function loadProductIntoForm(id) {
   
   document.getElementById('prod-seo').value = Array.isArray(prod.seoKeywords) ? prod.seoKeywords.join(', ') : '';
   document.getElementById('prod-images').value = Array.isArray(prod.images) ? prod.images.join('\n') : '';
+  productThumbnailUrl = prod.thumbnail || prod.thumbImage || '';
   imageFilesInput.value = '';
   imageUploadStatus.textContent = '';
   imageUploadStatus.className = 'form-hint';
@@ -2093,6 +2155,7 @@ function loadProductIntoForm(id) {
 
 function cancelEdit() {
   editingProductId = null;
+  productThumbnailUrl = '';
   addProductForm.reset();
   resetSizeBlocks();
   renderVariantStockGrid();
@@ -2182,7 +2245,8 @@ addProductForm.addEventListener('submit', async (e) => {
       title, category, price, originalPrice: originalPrice > price ? originalPrice : 0,
       quantity: totalQuantity, sizeQuantities: sizeQuantitiesMap, variantStock, colors,
       sizes: sizesArray, sizeMeasurements: sizeMeasurementsMap,
-      measurementsGuide, description: desc, details, materials, care, seoKeywords, images
+      measurementsGuide, description: desc, details, materials, care, seoKeywords, images,
+      ...(productThumbnailUrl ? { thumbnail: productThumbnailUrl } : {})
     };
 
     if (isEditing) {

@@ -640,6 +640,7 @@ function normalizeProductSnapshot(doc) {
         originalPrice: data.originalPrice != null ? Number(data.originalPrice) : null,
         onSale: !!data.onSale,
         images: Array.isArray(data.images) ? data.images : [],
+        thumbnail: data.thumbnail || data.thumbImage || "",
         colors: data.colors || [],
         sizes: Array.isArray(data.sizes) ? data.sizes : [],
         sizeMeasurements: data.sizeMeasurements || {},
@@ -789,7 +790,8 @@ window.loadStoreProduct = async function(productId) {
 // Product grid rendering, filter / sort / search
 // ==========================================================================
 function productCoverImage(product) {
-    return (product.images && product.images.length > 0) ? product.images[0] : 'assets/image-placeholder.svg';
+    return product.thumbnail || product.thumbImage ||
+        ((product.images && product.images.length > 0) ? product.images[0] : 'assets/image-placeholder.svg');
 }
 
 function catalogImageAttributes(source, alt, loading = 'lazy') {

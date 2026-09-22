@@ -101,7 +101,9 @@ window.renderRelatedProducts = function(currentProduct, targetContainerId = 'rel
             ? window.getProductPricing(prod)
             : { price: prod.price, regularPrice: prod.regularPrice || prod.price, isOnSale: false, discountPercent: 0 };
         const productUrl = typeof productPageUrl === 'function' ? productPageUrl(prod) : `/product/?id=${prod.id}`;
-        const coverImage = typeof productCoverImage === 'function' ? productCoverImage(prod) : ((prod.images && prod.images[0]) || 'assets/image-placeholder.svg');
+        const coverImage = typeof productCoverImage === 'function'
+            ? productCoverImage(prod)
+            : (prod.thumbnail || prod.thumbImage || (prod.images && prod.images[0]) || 'assets/image-placeholder.svg');
         const colorOptionsHtml = typeof colorSwatchesHtml === 'function' ? colorSwatchesHtml(prod) : '';
         const isWishlisted = typeof window.isWishlisted === 'function' && window.isWishlisted(prod.id);
         const hasStock = typeof window.productHasStock === 'function' ? window.productHasStock(prod) : true;
