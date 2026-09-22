@@ -730,6 +730,9 @@ select.input {
 .card-slider-arrow:hover {
   background: #ffffff;
 }
+/* Add .card-sliders-hover-only to <html> to make desktop playback hover-only.
+   The same mode is available through window.setCardSliderHoverOnly(). */
+html.card-sliders-hover-only { --card-slider-auto-mode: hover; }
 .card-slider-prev { left: 8px; }
 .card-slider-next { right: 8px; }
 
