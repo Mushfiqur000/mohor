@@ -273,7 +273,12 @@ window.loadHomepageBanners = async function() {
 };
 
 document.addEventListener('DOMContentLoaded', () => {
-    window.loadHomepageBanners();
+    const loadBanners = () => window.loadHomepageBanners();
+    if ('requestIdleCallback' in window) {
+        requestIdleCallback(loadBanners, { timeout: 2500 });
+    } else {
+        window.setTimeout(loadBanners, 1200);
+    }
     const langToggleBtn = document.getElementById('langToggleBtn');
     if (langToggleBtn) {
         langToggleBtn.addEventListener('click', () => {
@@ -790,18 +795,22 @@ window.loadStoreProduct = async function(productId) {
 // ==========================================================================
 // Product grid rendering, filter / sort / search
 // ==========================================================================
-function productCoverImage(product) {
-    const source = product.thumbnail || product.thumbImage ||
-        ((product.images && product.images.length > 0) ? product.images[0] : '');
+function catalogImageSource(source) {
     if (source && /-detail\.webp(?:$|\?)/i.test(source)) {
         return source.replace(/-detail\.webp(?=$|\?)/i, '-thumb.webp');
     }
     return source || 'assets/image-placeholder.svg';
 }
 
+function productCoverImage(product) {
+    const source = product.thumbnail || product.thumbImage ||
+        ((product.images && product.images.length > 0) ? product.images[0] : '');
+    return catalogImageSource(source);
+}
+
 function catalogImageAttributes(source, alt, loading = 'lazy') {
-    const original = source || 'assets/image-placeholder.svg';
-    return `src="${original}" alt="${alt}" width="400" height="533" loading="${loading}" decoding="async" onerror="this.onerror=null;this.src='assets/image-placeholder.svg';"`;
+    const original = catalogImageSource(source);
+    return `src="${original}" alt="${alt}" width="400" height="533" sizes="(max-width: 767px) 45vw, 25vw" loading="${loading}" decoding="async" onerror="this.onerror=null;this.src='assets/image-placeholder.svg';"`;
 }
 window.catalogImageAttributes = catalogImageAttributes;
 
