@@ -178,13 +178,19 @@ src="https://www.facebook.com/tr?id=920711640501746&ev=PageView&noscript=1"
                 messagingSenderId: "989000457004",
                 appId: "1:989000457004:web:5679b256e20d94e27daa89"
         };
-        if (typeof firebase !== 'undefined') {
+        const initializeProductFirebase = () => {
+            if (typeof firebase === 'undefined') return false;
             try {
                 if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
                 window.db = firebase.firestore();
+                return true;
             } catch (error) {
                 console.warn('Firebase product data unavailable:', error);
+                return false;
             }
+        };
+        if (!initializeProductFirebase()) {
+            window.addEventListener('DOMContentLoaded', initializeProductFirebase, { once: true });
         }
     </script>
 
