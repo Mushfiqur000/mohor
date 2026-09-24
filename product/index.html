@@ -325,8 +325,11 @@ src="https://www.facebook.com/tr?id=920711640501746&ev=PageView&noscript=1"
             }
 
             if (!activeProduct) {
-                document.getElementById('prodTitle').innerText = 'Product Not Found';
-                document.getElementById('mainImageWrap').innerHTML = '';
+                // GitHub Pages cannot change the HTTP status for an existing
+                // product/index.html request. Redirect invalid IDs before
+                // rendering the empty product shell so users and crawlers
+                // reach a real catalog page instead of receiving a soft 404.
+                window.location.replace('https://mohor.me/');
                 return;
             }
 
