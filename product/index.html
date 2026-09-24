@@ -168,8 +168,8 @@ src="https://www.facebook.com/tr?id=920711640501746&ev=PageView&noscript=1"
          page reads sign-in state — Add to Cart / Buy Now only touch the
          local cart, and checkout itself always happens on a different page
          (the cart drawer or /cart/), which loads auth on its own. -->
-    <script defer src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-    <script defer src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+    <script defer data-cfasync="false" src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script defer data-cfasync="false" src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
     <script>
         const firebaseConfig = {
                 apiKey: "AIzaSyALxypXDkF9QexbD_wE7-ADALIdj5vd-rY",
@@ -202,12 +202,12 @@ src="https://www.facebook.com/tr?id=920711640501746&ev=PageView&noscript=1"
         });
     </script>
 
-    <script defer src="products.js?v=27"></script>
+    <script defer data-cfasync="false" src="products.js?v=27"></script>
         <script>
         window.MOHOR_TELEGRAM_ENDPOINT = "https://mohor-telegram.2022731073.workers.dev";
     </script>
-    <script defer src="app.js?v=27"></script>
-    <script defer src="cart.js?v=27"></script>
+    <script defer data-cfasync="false" src="app.js?v=27"></script>
+    <script defer data-cfasync="false" src="cart.js?v=27"></script>
 
     <script>
         let currentSelectedSize = null;
