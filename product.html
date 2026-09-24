@@ -178,20 +178,27 @@ src="https://www.facebook.com/tr?id=920711640501746&ev=PageView&noscript=1"
                 messagingSenderId: "989000457004",
                 appId: "1:989000457004:web:5679b256e20d94e27daa89"
         };
-        const initializeProductFirebase = () => {
-            if (typeof firebase === 'undefined') return false;
-            try {
-                if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-                window.db = firebase.firestore();
-                return true;
-            } catch (error) {
-                console.warn('Firebase product data unavailable:', error);
-                return false;
-            }
-        };
-        if (!initializeProductFirebase()) {
-            window.addEventListener('DOMContentLoaded', initializeProductFirebase, { once: true });
-        }
+        window.productFirebaseReady = new Promise(resolve => {
+            const startedAt = Date.now();
+            const waitForFirebase = () => {
+                if (typeof firebase !== 'undefined') {
+                    try {
+                        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+                        window.db = firebase.firestore();
+                        resolve(true);
+                        return;
+                    } catch (error) {
+                        console.warn('Firebase product data unavailable:', error);
+                    }
+                }
+                if (Date.now() - startedAt >= 10000) {
+                    resolve(false);
+                    return;
+                }
+                window.setTimeout(waitForFirebase, 50);
+            };
+            waitForFirebase();
+        });
     </script>
 
     <script defer src="products.js?v=27"></script>
@@ -320,6 +327,7 @@ src="https://www.facebook.com/tr?id=920711640501746&ev=PageView&noscript=1"
 
         document.addEventListener('DOMContentLoaded', async () => {
           try {
+            await window.productFirebaseReady;
             const params = new URLSearchParams(window.location.search);
             const targetId = params.get('id');
 
