@@ -197,7 +197,7 @@ function updateUIText() {
 window.updateUIText = updateUIText;
 
 // Homepage banner carousel. The bundled hero remains in the markup as a
-// graceful fallback when Firestore is unavailable or has no banner records.
+// graceful fallback when D1 is unavailable or has no banner records.
 window.loadHomepageBanners = async function() {
     const hero = document.getElementById('heroBanner');
     const image = document.getElementById('heroBannerImage');
@@ -208,17 +208,12 @@ window.loadHomepageBanners = async function() {
     const dots = document.getElementById('heroBannerDots');
     if (!hero || !image || !copy || !title || !subtitle || !button || !dots) return;
 
-    for (let attempt = 0; attempt < 20 && (!window.db || typeof window.db.collection !== 'function'); attempt += 1) {
-        await new Promise(resolve => window.setTimeout(resolve, 100));
-    }
-    if (!window.db || typeof window.db.collection !== 'function') return;
-
     try {
-        const snapshot = await window.db.collection('banners').get();
-        const banners = snapshot.docs
-            .map(doc => ({ id: doc.id, ...doc.data() }))
+        const response = await fetch('/api/banners');
+        if (!response.ok) throw new Error(`Banner request failed (${response.status})`);
+        const banners = (await response.json())
             .filter(banner => typeof banner.imageUrl === 'string' && banner.imageUrl.trim())
-            .sort((a, b) => Number(a.order || 0) - Number(b.order || 0));
+            .sort((a, b) => Number(a.displayOrder ?? a.order ?? 0) - Number(b.displayOrder ?? b.order ?? 0));
         if (!banners.length) return;
 
         let activeIndex = 0;
@@ -228,7 +223,7 @@ window.loadHomepageBanners = async function() {
             const banner = banners[activeIndex];
             const imageUrl = banner.imageUrl.trim();
             // The fallback markup has a static srcset. Remove it before
-            // assigning a Firestore URL so the browser cannot keep selecting
+            // assigning a D1 URL so the browser cannot keep selecting
             // one of the bundled fallback candidates.
             image.removeAttribute('srcset');
             image.removeAttribute('sizes');
@@ -526,11 +521,9 @@ function initPromoBannerAndCountdown() {
         return;
     }
 
-    if (typeof window.db === 'undefined' || !window.db) return;
-
     // Same short-lived cache idea as the product catalog: the banner rarely
     // changes minute-to-minute, so re-fetching it on every single page
-    // navigation is a Firestore round trip this site doesn't need to make.
+    // navigation is a D1 round trip this site doesn't need to make.
     const PROMO_CACHE_KEY = 'mohor_promo_cache_v1';
     const PROMO_CACHE_TTL_MS = 3 * 60 * 1000;
     let cachedPromo = null;
@@ -545,18 +538,23 @@ function initPromoBannerAndCountdown() {
     } catch (err) { /* ignore — falls through to a live fetch */ }
 
     const settingsPromise = cachedPromo
-        ? Promise.resolve({ exists: true, data: () => cachedPromo })
-        : window.db.collection("settings").doc("storefront").get().then(doc => {
-            if (doc.exists) {
-                try { sessionStorage.setItem(PROMO_CACHE_KEY, JSON.stringify({ data: doc.data(), savedAt: Date.now() })); }
+        ? Promise.resolve(cachedPromo)
+        : fetch('/api/settings').then(response => {
+            if (!response.ok) throw new Error(`Settings request failed (${response.status})`);
+            return response.json();
+        }).then(rows => {
+            const data = Array.isArray(rows)
+                ? (rows.find(row => row.id === 'storefront' || row.key === 'storefront') || rows[0])
+                : rows;
+            if (data) {
+                try { sessionStorage.setItem(PROMO_CACHE_KEY, JSON.stringify({ data, savedAt: Date.now() })); }
                 catch (err) { /* non-fatal */ }
             }
-            return doc;
+            return data;
         });
 
-    settingsPromise.then(doc => {
-        if (!doc.exists) return;
-        const data = doc.data();
+    settingsPromise.then(data => {
+        if (!data) return;
 
         if (data.saleActive && data.bannerText) {
             banner.style.display = 'block';
@@ -629,7 +627,7 @@ window.updateCartSavingsSummary = function() {
 };
 
 // ==========================================================================
-// Product catalog loading (Firestore, memoized so every page can safely
+// Product catalog loading (D1, memoized so every page can safely
 // call/await this without triggering duplicate reads)
 // ==========================================================================
 let _productsLoadPromise = null;
@@ -674,7 +672,7 @@ function sortProductsForDisplay(products) {
 
 // Cross-page catalog cache: the storefront is a multi-page site, so without
 // this every single navigation (home -> product -> cart) re-downloads the
-// entire product collection from Firestore. sessionStorage survives across
+// entire product collection from D1. sessionStorage survives across
 // page loads (but not tabs/sessions), so we use it as a short-lived,
 // stale-while-revalidate cache: a fresh visit within the same browsing
 // session renders instantly from cache while a real fetch quietly confirms
@@ -726,36 +724,15 @@ window.loadStoreProducts = function() {
 
     _productsLoadPromise = (async () => {
         try {
-            if (typeof window.db === 'undefined' || !window.db) {
-                return;
-            }
-            let dynamicProducts = [];
-            try {
-                const orderedSnapshot = await window.db.collection("products")
-                    .orderBy("displayOrder", "asc")
-                    .get();
-                const orderedProducts = [];
-                orderedSnapshot.forEach((doc) => orderedProducts.push(normalizeProductSnapshot(doc)));
-
-                // Firestore omits documents that do not have displayOrder from
-                // an orderBy query, so append legacy documents using the old
-                // createdAt ordering.
-                const allSnapshot = await window.db.collection("products").get();
-                const orderedIds = new Set(orderedProducts.map(product => product.id));
-                const legacyProducts = [];
-                allSnapshot.forEach((doc) => {
-                    if (!orderedIds.has(String(doc.id))) legacyProducts.push(normalizeProductSnapshot(doc));
-                });
-                legacyProducts.sort((a, b) => String(b.createdAt || '').localeCompare(String(a.createdAt || '')));
-                dynamicProducts = sortProductsForDisplay(orderedProducts.concat(legacyProducts));
-            } catch (orderError) {
-                console.warn("displayOrder query unavailable; falling back to createdAt:", orderError);
-                const querySnapshot = await window.db.collection("products")
-                    .orderBy("createdAt", "desc")
-                    .get();
-                querySnapshot.forEach((doc) => dynamicProducts.push(normalizeProductSnapshot(doc)));
-                dynamicProducts = sortProductsForDisplay(dynamicProducts);
-            }
+            const response = await fetch('/api/products');
+            if (!response.ok) throw new Error(`Product request failed (${response.status})`);
+            const rows = await response.json();
+            const dynamicProducts = sortProductsForDisplay(
+                (Array.isArray(rows) ? rows : []).map(row => normalizeProductSnapshot({
+                    id: row.id,
+                    data: () => row
+                }))
+            );
             if (dynamicProducts.length > 0) {
                 window.firestoreProducts = dynamicProducts;
                 writeProductsCache(dynamicProducts);
@@ -781,11 +758,12 @@ window.loadStoreProduct = async function(productId) {
     const fromCatalog = catalog.find(product => String(product.id) === String(productId));
     if (fromCatalog) return fromCatalog;
 
-    if (!window.db || typeof window.db.collection !== "function") return null;
-
     try {
-        const snapshot = await window.db.collection("products").doc(String(productId)).get();
-        return snapshot.exists ? normalizeProductSnapshot(snapshot) : null;
+        const response = await fetch(`/api/products?id=${encodeURIComponent(String(productId))}`);
+        if (response.status === 404) return null;
+        if (!response.ok) throw new Error(`Product request failed (${response.status})`);
+        const row = await response.json();
+        return normalizeProductSnapshot({ id: row.id, data: () => row });
     } catch (err) {
         console.error("Error loading product from database:", err);
         return null;
