@@ -8,16 +8,5 @@
       "database_name": "mohor-db",
       "database_id": "eb1b375e-a0aa-413f-80b2-130082b97b16"
     }
-  ],
-  "env": {
-    "previews": {
-      "d1_databases": [
-        {
-          "binding": "DB",
-          "database_name": "mohor-db",
-          "database_id": "eb1b375e-a0aa-413f-80b2-130082b97b16"
-        }
-      }
-    }
-  }
+  ]
 }
