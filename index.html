@@ -502,28 +502,6 @@
         </div>
     </footer>
 
-    <!-- Firebase CDN SDKs -->
-    <script defer data-cfasync="false" src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-    <script defer data-cfasync="false" src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const firebaseConfig = {
-                apiKey: "AIzaSyALxypXDkF9QexbD_wE7-ADALIdj5vd-rY",
-                authDomain: "mohor-app.firebaseapp.com",
-                projectId: "mohor-app",
-                storageBucket: "mohor-app.firebasestorage.app",
-                messagingSenderId: "989000457004",
-                appId: "1:989000457004:web:5679b256e20d94e27daa89"
-            };
-            if (typeof firebase !== 'undefined' && !firebase.apps.length) {
-                firebase.initializeApp(firebaseConfig);
-            }
-            if (typeof firebase !== 'undefined') {
-                window.db = firebase.firestore();
-            }
-        });
-    </script>
-
     <script defer data-cfasync="false" src="products.js?v=28"></script>
         <script>
         window.MOHOR_TELEGRAM_ENDPOINT = "https://mohor-telegram.2022731073.workers.dev";
@@ -548,8 +526,7 @@
             });
             window.loadMohorAuth = () => {
                 if (!authPromise) {
-                    authPromise = loadScript('https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js')
-                        .then(() => loadScript('auth.js?v=28', 'module'));
+                    authPromise = loadScript('auth.js?v=28', 'module');
                 }
                 return authPromise;
             };

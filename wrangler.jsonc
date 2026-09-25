@@ -1,0 +1,10 @@
+{
+  "name": "mohor",
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "mohor-db",
+      "database_id": "YOUR_D1_DATABASE_ID"
+    }
+  ]
+}
