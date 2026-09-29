@@ -1,5 +1,5 @@
 // ==========================================================================
-// MOHOR CLOTHINGS â€” cart.js
+// MOHOR CLOTHINGS — cart.js
 // Cart state, cart UI, dynamic discount savings engine, and the two checkout paths.
 // ==========================================================================
 
@@ -258,7 +258,7 @@ window.updateDeliveryPolicyAndTotal = function() {
     window.updateCartUI();
 };
 
-// Render Cart Total Savings Indicators ("You save à§³ X on this order!")
+// Render Cart Total Savings Indicators ("You save ৳ X on this order!")
 function renderSavingsIndicators(totalSavings) {
     const savingsTargets = [
         document.getElementById('cartSavings'),
@@ -326,8 +326,8 @@ window.updateCartUI = function() {
             if (item.color) metaParts.push('Color: ' + escapeHtml(item.color));
 
             const priceMarkup = (details.savingsPerUnit > 0)
-                ? `<span class="price-original" style="text-decoration:line-through;color:#888;font-size:0.82em;margin-right:4px;">à§³${details.regularPrice * item.qty}</span> à§³${itemTotal}`
-                : `à§³${itemTotal}`;
+                ? `<span class="price-original" style="text-decoration:line-through;color:#888;font-size:0.82em;margin-right:4px;">৳${details.regularPrice * item.qty}</span> ৳${itemTotal}`
+                : `৳${itemTotal}`;
 
             const row = document.createElement('div');
             row.className = 'cart-item';
@@ -336,7 +336,7 @@ window.updateCartUI = function() {
                     <div class="ci-name">${escapeHtml(item.baseTitle || item.name)}</div>
                     <div class="ci-meta">${metaParts.join(' &middot; ')}</div>
                     <div class="qty-stepper">
-                        <button type="button" aria-label="Decrease quantity" data-action="dec">âˆ’</button>
+                        <button type="button" aria-label="Decrease quantity" data-action="dec">−</button>
                         <span>${item.qty}</span>
                         <button type="button" aria-label="Increase quantity" data-action="inc">+</button>
                     </div>
@@ -397,31 +397,31 @@ function validateCheckoutInputs() {
     const policyAgree = policyElement ? policyElement.checked : true;
 
     if (!nameInput) {
-        notify(window.currentLang === 'en' ? 'Please enter your full name.' : 'à¦…à¦¨à§à¦—à§à¦°à¦¹ à¦•à¦°à§‡ à¦†à¦ªà¦¨à¦¾à¦° à¦ªà§à¦°à§‹ à¦¨à¦¾à¦® à¦¦à¦¿à¦¨à¥¤', 'error');
+        notify(window.currentLang === 'en' ? 'Please enter your full name.' : 'অনুগ্রহ করে আপনার পুরো নাম দিন।', 'error');
         fieldFlash(nameEl); return null;
     }
     if (!phoneInput) {
-        notify(window.currentLang === 'en' ? 'Please enter your mobile number.' : 'à¦…à¦¨à§à¦—à§à¦°à¦¹ à¦•à¦°à§‡ à¦†à¦ªà¦¨à¦¾à¦° à¦®à§‹à¦¬à¦¾à¦‡à¦² à¦¨à¦®à§à¦¬à¦° à¦¦à¦¿à¦¨à¥¤', 'error');
+        notify(window.currentLang === 'en' ? 'Please enter your mobile number.' : 'অনুগ্রহ করে আপনার মোবাইল নম্বর দিন।', 'error');
         fieldFlash(phoneEl); return null;
     }
 
     // Basic Bangladesh mobile number validation (01XXXXXXXXX)
     const bdPhoneRegex = /^01[0-9]{9}$/;
     if (!bdPhoneRegex.test(phoneInput)) {
-        notify(window.currentLang === 'en' ? 'Please enter a valid BD mobile number (01XXXXXXXXX).' : 'à¦¸à¦ à¦¿à¦• à¦®à§‹à¦¬à¦¾à¦‡à¦² à¦¨à¦®à§à¦¬à¦° à¦¦à¦¿à¦¨ (01XXXXXXXXX)à¥¤', 'error');
+        notify(window.currentLang === 'en' ? 'Please enter a valid BD mobile number (01XXXXXXXXX).' : 'সঠিক মোবাইল নম্বর দিন (01XXXXXXXXX)।', 'error');
         fieldFlash(phoneEl); return null;
     }
 
     if (!addressInput) {
-        notify(window.currentLang === 'en' ? 'Please enter your delivery address.' : 'à¦…à¦¨à§à¦—à§à¦°à¦¹ à¦•à¦°à§‡ à¦†à¦ªà¦¨à¦¾à¦° à¦¡à§‡à¦²à¦¿à¦­à¦¾à¦°à¦¿ à¦ à¦¿à¦•à¦¾à¦¨à¦¾ à¦¦à¦¿à¦¨à¥¤', 'error');
+        notify(window.currentLang === 'en' ? 'Please enter your delivery address.' : 'অনুগ্রহ করে আপনার ডেলিভারি ঠিকানা দিন।', 'error');
         fieldFlash(addressEl); return null;
     }
     if (!zoneSelect || !zoneSelect.value) {
-        notify(window.currentLang === 'en' ? 'Please select a delivery zone.' : 'à¦…à¦¨à§à¦—à§à¦°à¦¹ à¦•à¦°à§‡ à¦¡à§‡à¦²à¦¿à¦­à¦¾à¦°à¦¿ à¦œà§‹à¦¨ à¦¨à¦¿à¦°à§à¦¬à¦¾à¦šà¦¨ à¦•à¦°à§à¦¨à¥¤', 'error');
+        notify(window.currentLang === 'en' ? 'Please select a delivery zone.' : 'অনুগ্রহ করে ডেলিভারি জোন নির্বাচন করুন।', 'error');
         fieldFlash(zoneSelect); return null;
     }
     if (policyElement && !policyAgree) {
-        notify(window.currentLang === 'en' ? 'Please agree to the Delivery & Return Policy.' : 'à¦…à¦¨à§à¦—à§à¦°à¦¹ à¦•à¦°à§‡ à¦¡à§‡à¦²à¦¿à¦­à¦¾à¦°à¦¿ à¦“ à¦°à¦¿à¦Ÿà¦¾à¦°à§à¦¨ à¦ªà¦²à¦¿à¦¸à¦¿à¦¤à§‡ à¦¸à¦®à§à¦®à¦¤ à¦¹à§‹à¦¨à¥¤', 'error');
+        notify(window.currentLang === 'en' ? 'Please agree to the Delivery & Return Policy.' : 'অনুগ্রহ করে ডেলিভারি ও রিটার্ন পলিসিতে সম্মত হোন।', 'error');
         return null;
     }
 
@@ -477,22 +477,22 @@ window.checkoutToWhatsApp = function() {
     window.cart.forEach((item, index) => {
         const details = getCanonicalItemDetails(item);
         const itemTotal = details.effectivePrice * Number(item.qty);
-        message += `${index + 1}. ${encodeURIComponent(item.name)} (Size: ${encodeURIComponent(item.size)}) | Qty: ${item.qty} - à§³${itemTotal}%0A`;
+        message += `${index + 1}. ${encodeURIComponent(item.name)} (Size: ${encodeURIComponent(item.size)}) | Qty: ${item.qty} - ৳${itemTotal}%0A`;
     });
-    message += `%0A*Subtotal: à§³${orderData.subtotal}*`;
+    message += `%0A*Subtotal: ৳${orderData.subtotal}*`;
     if (orderData.totalSavings > 0) {
-        message += `%0A*Total Savings: à§³${orderData.totalSavings}*`;
+        message += `%0A*Total Savings: ৳${orderData.totalSavings}*`;
     }
-    message += `%0A*Delivery (${encodeURIComponent(orderData.zoneText)}): à§³${orderData.deliveryFee}*`;
-    message += `%0A*FINAL TOTAL: à§³${orderData.finalTotal}*%0A`;
+    message += `%0A*Delivery (${encodeURIComponent(orderData.zoneText)}): ৳${orderData.deliveryFee}*`;
+    message += `%0A*FINAL TOTAL: ৳${orderData.finalTotal}*%0A`;
     message += `%0A*CUSTOMER DETAILS:*%0AName: ${encodeURIComponent(orderData.name)}%0APhone: ${encodeURIComponent(orderData.phone)}%0AAddress: ${encodeURIComponent(orderData.address)}`;
 
-    // Open WhatsApp first â€” only clear the cart once we know the redirect fired
+    // Open WhatsApp first — only clear the cart once we know the redirect fired
     const win = window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${message}`, '_blank');
     window.cart = [];
     window.updateCartUI();
     syncCartToApi();
-    if (!win) notify(window.currentLang === 'en' ? 'Please allow pop-ups to continue to WhatsApp.' : 'à¦¹à§‹à¦¯à¦¼à¦¾à¦Ÿà¦¸à¦…à§à¦¯à¦¾à¦ªà§‡ à¦¯à§‡à¦¤à§‡ à¦…à¦¨à§à¦—à§à¦°à¦¹ à¦•à¦°à§‡ à¦ªà¦ª-à¦†à¦ªà§‡à¦° à¦…à¦¨à§à¦®à¦¤à¦¿ à¦¦à¦¿à¦¨à¥¤', 'error');
+    if (!win) notify(window.currentLang === 'en' ? 'Please allow pop-ups to continue to WhatsApp.' : 'হোয়াটসঅ্যাপে যেতে অনুগ্রহ করে পপ-আপের অনুমতি দিন।', 'error');
 };
 
 // Option 2: Direct website order through the Worker API.
@@ -562,7 +562,7 @@ window.checkoutToAdmin = async function() {
         }
 
         // Track the completed purchase once, right here at the moment the
-        // order is actually confirmed written â€” this is the single source of
+        // order is actually confirmed written — this is the single source of
         // truth for the Purchase conversion event (the standalone order
         // success page intentionally stays lightweight and doesn't re-fire it).
         if (typeof window.trackMetaEvent === 'function') {
@@ -575,7 +575,7 @@ window.checkoutToAdmin = async function() {
             });
         }
 
-        notify(window.currentLang === 'en' ? 'Order placed successfully! We will contact you soon.' : 'à¦†à¦ªà¦¨à¦¾à¦° à¦…à¦°à§à¦¡à¦¾à¦°à¦Ÿà¦¿ à¦¸à¦«à¦²à¦­à¦¾à¦¬à§‡ à¦¸à¦®à§à¦ªà¦¨à§à¦¨ à¦¹à¦¯à¦¼à§‡à¦›à§‡! à¦†à¦®à¦°à¦¾ à¦¶à§€à¦˜à§à¦°à¦‡ à¦¯à§‹à¦—à¦¾à¦¯à§‹à¦— à¦•à¦°à¦¬à¥¤', 'success');
+        notify(window.currentLang === 'en' ? 'Order placed successfully! We will contact you soon.' : 'আপনার অর্ডারটি সফলভাবে সম্পন্ন হয়েছে! আমরা শীঘ্রই যোগাযোগ করব।', 'success');
 
         window.cart = [];
         window.updateCartUI();
@@ -589,7 +589,7 @@ window.checkoutToAdmin = async function() {
         window.location.href = `/order-success/?orderId=${docRef.id}`;
     } catch (error) {
         console.error('Error saving order: ', error);
-        notify(window.currentLang === 'en' ? 'There was an error placing your order. Please try WhatsApp instead.' : 'à¦…à¦°à§à¦¡à¦¾à¦° à¦ªà§à¦²à§‡à¦¸ à¦•à¦°à¦¤à§‡ à¦¸à¦®à¦¸à§à¦¯à¦¾ à¦¹à¦¯à¦¼à§‡à¦›à§‡à¥¤ à¦…à¦¨à§à¦—à§à¦°à¦¹ à¦•à¦°à§‡ à¦¹à§‹à¦¯à¦¼à¦¾à¦Ÿà¦¸à¦…à§à¦¯à¦¾à¦ªà§‡ à¦šà§‡à¦·à§à¦Ÿà¦¾ à¦•à¦°à§à¦¨à¥¤', 'error');
+        notify(window.currentLang === 'en' ? 'There was an error placing your order. Please try WhatsApp instead.' : 'অর্ডার প্লেস করতে সমস্যা হয়েছে। অনুগ্রহ করে হোয়াটসঅ্যাপে চেষ্টা করুন।', 'error');
     } finally {
         if (confirmBtn) { confirmBtn.classList.remove('is-loading'); confirmBtn.disabled = false; }
     }

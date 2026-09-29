@@ -139,6 +139,14 @@ export default {
       };
     }
 
+    function sortOrders(rows) {
+      return rows.sort((a, b) => {
+        const left = Date.parse(a.orderDate || a.created_at || a.order_date || '') || 0;
+        const right = Date.parse(b.orderDate || b.created_at || b.order_date || '') || 0;
+        return right - left;
+      });
+    }
+
     // Send Telegram Order Alert
     async function notifyTelegram(order) {
       if (!env.TELEGRAM_BOT_TOKEN || !env.TELEGRAM_CHAT_ID) return;
@@ -555,15 +563,15 @@ export default {
 
         try {
           if (user.role === 'admin') {
-            const { results } = await env.DB.prepare('SELECT * FROM orders ORDER BY created_at DESC').all();
-            return Response.json((results || []).map(normalizeOrder));
+            const { results } = await env.DB.prepare('SELECT * FROM orders').all();
+            return Response.json(sortOrders((results || []).map(normalizeOrder)));
           } else {
             const { results } = await env.DB.prepare(
-              'SELECT * FROM orders WHERE user_id = ? OR user_email = ? ORDER BY created_at DESC'
+              'SELECT * FROM orders WHERE user_id = ? OR user_email = ?'
             )
               .bind(user.id, user.email)
               .all();
-            return Response.json((results || []).map(normalizeOrder));
+            return Response.json(sortOrders((results || []).map(normalizeOrder)));
           }
         } catch (e) {
           return Response.json({ error: e.message }, { status: 500 });

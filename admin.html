@@ -488,7 +488,7 @@ tbody tr:hover { background: rgba(245,241,236,0.6); }
         <!-- OVERVIEW -->
         <section id="section-overview" class="page-section active">
           <div class="stats-grid">
-            <div class="stat-card"><h3>Total Sales</h3><div class="number" id="stat-sales">à§³0</div></div>
+            <div class="stat-card"><h3>Total Sales</h3><div class="number" id="stat-sales">৳0</div></div>
             <div class="stat-card"><h3>Total Orders</h3><div class="number" id="stat-orders">0</div></div>
             <div class="stat-card"><h3>Pending Actions</h3><div class="number" id="stat-pending">0</div></div>
             <div class="stat-card"><h3>Low Stock Alerts</h3><div class="number" id="stat-lowstock">0</div></div>
@@ -558,7 +558,7 @@ tbody tr:hover { background: rgba(245,241,236,0.6); }
               <div class="history-cal-dow">Wed</div><div class="history-cal-dow">Thu</div><div class="history-cal-dow">Fri</div><div class="history-cal-dow">Sat</div>
             </div>
             <div class="history-cal-grid" id="history-cal-grid"></div>
-            <div class="form-hint">Darker days had more orders. Tap a day to see its hourly breakdown and order list below â€” tap it again (or use "View whole month") to zoom back out.</div>
+            <div class="form-hint">Darker days had more orders. Tap a day to see its hourly breakdown and order list below — tap it again (or use "View whole month") to zoom back out.</div>
             <div class="form-hint" id="history-undated-note" style="display:none;"></div>
           </div>
 
@@ -665,7 +665,7 @@ tbody tr:hover { background: rgba(245,241,236,0.6); }
                 <div class="form-group">
                   <label>Product Title</label>
                   <input type="text" id="prod-title-en" placeholder="English (e.g. Peach Vila 3-Piece)" required style="margin-bottom:8px;">
-                  <input type="text" id="prod-title-bn" placeholder="Bengali (e.g. à¦ªà¦¿à¦š à¦­à¦¿à¦²à¦¾ à¦¥à§à¦°à¦¿-à¦ªà¦¿à¦¸)">
+                  <input type="text" id="prod-title-bn" placeholder="Bengali (e.g. পিচ ভিলা থ্রি-পিস)">
                 </div>
 
                 <div class="form-group">
@@ -699,7 +699,7 @@ tbody tr:hover { background: rgba(245,241,236,0.6); }
                 <div class="form-group full-width">
                   <label>Colors (comma separated)</label>
                   <input type="text" id="prod-colors-en" placeholder="English: Peach Pink, Navy Blue" required style="margin-bottom:8px;">
-                  <input type="text" id="prod-colors-bn" placeholder="Bengali: à¦ªà¦¿à¦š à¦ªà¦¿à¦™à§à¦•, à¦¨à§‡à¦­à¦¿ à¦¬à§à¦²à§">
+                  <input type="text" id="prod-colors-bn" placeholder="Bengali: পিচ পিঙ্ক, নেভি ব্লু">
                   <input type="text" id="prod-colors-hex" placeholder="Optional colour codes in the same order: #E8A39A, #1D3557">
                   <div class="form-hint">Use one hex code per colour, in the same order as the names. Leave blank when a colour has no swatch.</div>
                 </div>
@@ -1053,12 +1053,16 @@ loginForm.addEventListener('submit', (e) => {
   const pass = document.getElementById('login-password').value.trim();
   document.getElementById('login-message').className = 'login-msg';
 
-  if (email !== adminEmail) {
-    showLoginMessage('error', 'Access denied. Admin email required.');
-    return;
-  }
   api('/api/auth/login', {method:'POST', body: JSON.stringify({email, password: pass})}).then(data => {
-    localStorage.setItem('authToken', data.token); localStorage.setItem('authUser', JSON.stringify(data.user)); initAdmin();
+    localStorage.setItem('authToken', data.token);
+    localStorage.setItem('authUser', JSON.stringify(data.user));
+    if (data.user && (data.user.role === 'admin' || data.user.admin || data.user.email === adminEmail)) {
+      initAdmin();
+    } else {
+      showLoginMessage('error', 'Access denied. An administrator account is required.');
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('authUser');
+    }
   }).catch(error => showLoginMessage('error', 'Login failed: ' + error.message));
 });
 
@@ -1100,7 +1104,7 @@ bannerImageFile.addEventListener('change', () => {
   if (!file) return;
   bannerImageFile.disabled = true;
   saveBannerBtn.disabled = true;
-  bannerImageStatus.textContent = 'Uploading banner imageâ€¦';
+  bannerImageStatus.textContent = 'Uploading banner image…';
   bannerImageStatus.className = 'form-hint';
   bannerImageUploadPromise = compressAndResizeImage(file, 1200, 800, 0.80)
       .then(blob => uploadImageToR2(blob, `banner-${Date.now()}.webp`))
@@ -1179,7 +1183,7 @@ function deleteBanner(id) {
 bannerForm.addEventListener('submit', async (event) => {
   event.preventDefault();
   saveBannerBtn.disabled = true;
-  bannerFormStatus.textContent = 'Saving bannerâ€¦';
+  bannerFormStatus.textContent = 'Saving banner…';
   bannerFormStatus.className = 'form-hint';
   try {
     await bannerImageUploadPromise;
@@ -1226,10 +1230,10 @@ async function fetchOrders() {
 async function updateOrderStatus(orderId, newStatus, buttonEl, selectEl) {
   const originalText = buttonEl.innerText;
   try {
-    buttonEl.innerText = 'â€¦';
+    buttonEl.innerText = '…';
     buttonEl.disabled = true;
     await api('/api/orders', {method: 'PUT', body: JSON.stringify({id: orderId, status: newStatus})});
-    buttonEl.innerText = 'âœ“ Saved';
+    buttonEl.innerText = '✓ Saved';
     selectEl.className = 'status-select ' + statusClass(newStatus);
     showToast('Order status updated to ' + newStatus, 'success');
     setTimeout(() => { buttonEl.innerText = originalText; buttonEl.disabled = false; }, 1600);
@@ -1287,7 +1291,7 @@ function renderOrdersTable() {
 
   const tbody = document.getElementById('orders-table-body');
   if (filtered.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:#888;padding:24px;">${allOrders.length === 0 ? 'No orders yet â€” they will appear here as customers check out.' : 'No orders match your search or filter.'}</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:#888;padding:24px;">${allOrders.length === 0 ? 'No orders yet — they will appear here as customers check out.' : 'No orders match your search or filter.'}</td></tr>`;
   } else {
     tbody.innerHTML = pageItems.map(order => {
       let itemsHtml = '<span style="color:#a89f9a;">No items detailed</span>';
@@ -1485,7 +1489,7 @@ function renderBannerList(banners) {
       <img src="${escapeHtml(banner.imageUrl || '')}" alt="">
       <div class="banner-admin-meta">
         <div class="banner-admin-title">${escapeHtml(banner.title || 'Untitled banner')}</div>
-        <div class="banner-admin-subtitle">${escapeHtml(banner.subtitle || '')} Â· Order ${Number(banner.order || 0)}</div>
+        <div class="banner-admin-subtitle">${escapeHtml(banner.subtitle || '')} · Order ${Number(banner.order || 0)}</div>
         <a class="banner-admin-link" href="${escapeHtml(banner.link || '#')}" target="_blank" rel="noopener">${escapeHtml(banner.link || '#')}</a>
       </div>
       <div class="banner-admin-actions">
@@ -1514,7 +1518,7 @@ function sizeStockSummary(product) {
       ? Number(product.sizeQuantities[size]) || 0
       : Number(product.quantity) || 0;
     return `${size}: ${qty}`;
-  }).join(' Â· ');
+  }).join(' · ');
 }
 
 function renderProductsTable() {
@@ -1616,7 +1620,7 @@ async function saveProductOrder() {
   const changedProducts = allProducts.filter(product => productOrderDraft.has(product.id));
   const saveButton = document.getElementById('save-product-order-btn');
   saveButton.disabled = true;
-  saveButton.textContent = 'Saving orderâ€¦';
+  saveButton.textContent = 'Saving order…';
   try {
     await Promise.race([
       Promise.all(changedProducts.map(product => api(`/api/products?id=${product.id}`, { method: 'PUT', body: JSON.stringify({ displayOrder: Number(productOrderDraft.get(product.id)) || 1 }) }))),
@@ -1647,7 +1651,7 @@ document.getElementById('undo-product-order-btn').addEventListener('click', undo
 document.getElementById('sync-legacy-thumbnails-btn').addEventListener('click', async () => {
   const button = document.getElementById('sync-legacy-thumbnails-btn');
   button.disabled = true;
-  button.textContent = 'Syncing thumbnailsâ€¦';
+  button.textContent = 'Syncing thumbnails…';
   try {
     const products = await api('/api/products');
     const legacy = (Array.isArray(products) ? products : []).filter(item => {
@@ -1725,7 +1729,7 @@ async function applyStorewideDiscount() {
       // top banner automatically" part silently never worked.
       const bannerPayload = {
         saleActive: true,
-        bannerText: `FLAT ${percent}% OFF â€” Limited Time Offer! T&C Apply`,
+        bannerText: `FLAT ${percent}% OFF — Limited Time Offer! T&C Apply`,
         bannerBadge: `-${percent}%`,
         saleEndTime: expiryVal ? new Date(expiryVal).toISOString() : null,
         discountPercent: percent,
@@ -1765,7 +1769,7 @@ async function resetAllDiscounts() {
         saleEndTime: null,
         discountPercent: 0,
         updatedAt: new Date().toISOString()
-      });
+      })});
 
       showToast('All product discounts and top banner have been reset.', 'success');
     } catch (err) {
@@ -1816,7 +1820,7 @@ function createSizeBlockHTML(label = '', measurementsTextEn = '', measurementsTe
         <button type="button" class="remove-size-btn" title="Remove size">&times;</button>
       </div>
       <textarea class="size-measurements-input en" rows="2" placeholder="EN: Body/Chest: 38&#10;Waist: 34-36">${escapeHtml(measurementsTextEn)}</textarea>
-      <textarea class="size-measurements-input bn" rows="2" placeholder="BN: à¦¬à¦¡à¦¿/à¦šà§‡à¦¸à§à¦Ÿ: à§©à§®&#10;à¦•à§‹à¦®à¦°: à§©à§ª-à§©à§¬" style="margin-top: 5px;">${escapeHtml(measurementsTextBn)}</textarea>
+      <textarea class="size-measurements-input bn" rows="2" placeholder="BN: বডি/চেস্ট: ৩৮&#10;কোমর: ৩৪-৩৬" style="margin-top: 5px;">${escapeHtml(measurementsTextBn)}</textarea>
     </div>`;
 }
 
@@ -2051,14 +2055,14 @@ async function processProductImages(files) {
   let firstThumbnailUrl = '';
   for (let index = 0; index < files.length; index += 1) {
     const file = files[index];
-    imageUploadStatus.textContent = `Compressing photo ${index + 1} of ${files.length}â€¦`;
+    imageUploadStatus.textContent = `Compressing photo ${index + 1} of ${files.length}…`;
     const thumbBlob = await compressAndResizeImage(file, 400, 533, 0.80);
     const generatedDetailBlob = await compressAndResizeImage(file, 1000, 1333, 0.80);
     const detailBlob = generatedDetailBlob.size > file.size ? file : generatedDetailBlob;
     const baseName = file.name.replace(/\.[^.]+$/, '').replace(/[^a-z0-9_-]+/gi, '-').toLowerCase() || `product-${Date.now()}`;
     const uniqueName = `${baseName}-${Date.now()}-${index}`;
 
-    imageUploadStatus.textContent = `Uploading photo ${index + 1} of ${files.length}â€¦`;
+    imageUploadStatus.textContent = `Uploading photo ${index + 1} of ${files.length}…`;
     const thumbUrl = await uploadImageToR2(thumbBlob, `${uniqueName}-thumb.webp`);
     const detailUrl = await uploadImageToR2(detailBlob, `${uniqueName}-detail.webp`);
     if (!firstThumbnailUrl) firstThumbnailUrl = thumbUrl;
@@ -2073,7 +2077,7 @@ imageFilesInput.addEventListener('change', () => {
 
   imageFilesInput.disabled = true;
   uploadBtn.disabled = true;
-  imageUploadStatus.textContent = `Preparing ${files.length} image${files.length === 1 ? '' : 's'}â€¦`;
+  imageUploadStatus.textContent = `Preparing ${files.length} image${files.length === 1 ? '' : 's'}…`;
   imageUploadStatus.className = 'form-hint';
 
   imageUploadPromise = processProductImages(files)
@@ -2194,7 +2198,7 @@ addProductForm.addEventListener('submit', async (e) => {
   e.preventDefault();
   uploadBtn.disabled = true;
   const isEditing = !!editingProductId;
-  uploadBtn.innerText = isEditing ? 'Saving changesâ€¦' : 'Saving productâ€¦';
+  uploadBtn.innerText = isEditing ? 'Saving changes…' : 'Saving product…';
   uploadStatus.textContent = '';
   uploadStatus.className = '';
 
@@ -2271,11 +2275,11 @@ addProductForm.addEventListener('submit', async (e) => {
     if (isEditing) {
       payload.updatedAt = new Date().toISOString();
       await api(`/api/products?id=${editingProductId}`, {method: 'PUT', body: JSON.stringify(payload)});
-      uploadStatus.textContent = 'âœ“ Product updated on the live website!';
+      uploadStatus.textContent = '✓ Product updated on the live website!';
     } else {
       payload.createdAt = new Date().toISOString();
       await api('/api/products', { method: 'POST', body: JSON.stringify({ ...payload, displayOrder: 1 }) });
-      uploadStatus.textContent = 'âœ“ Product uploaded to the live website!';
+      uploadStatus.textContent = '✓ Product uploaded to the live website!';
     }
     uploadStatus.className = 'success';
     showToast(isEditing ? 'Product updated.' : 'Product uploaded.', 'success');
@@ -2386,7 +2390,7 @@ function renderHistoryCalendar() {
   const undatedNote = document.getElementById('history-undated-note');
   if (undatedCount > 0) {
     undatedNote.style.display = 'block';
-    undatedNote.textContent = `${undatedCount} order${undatedCount === 1 ? '' : 's'} have no recorded date and won't show on this calendar â€” find them in the main Orders tab.`;
+    undatedNote.textContent = `${undatedCount} order${undatedCount === 1 ? '' : 's'} have no recorded date and won't show on this calendar — find them in the main Orders tab.`;
   } else {
     undatedNote.style.display = 'none';
   }

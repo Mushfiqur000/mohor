@@ -1,5 +1,5 @@
 // ==========================================================================
-// MOHOR CLOTHINGS â€” app.js
+// MOHOR CLOTHINGS — app.js
 // Core UI: language/i18n, product catalog loading + rendering, quick-view
 // modal, nav interactions, toast notifications, scroll reveals.
 // ==========================================================================
@@ -19,14 +19,14 @@ window.uiTranslations = {
     en: {
         navShop: "Shop", navOrders: "Order History", navAbout: "About Us", navPolicy: "Policy", navAccount: "Account", navCart: "Cart",
         shopTitle: "Our Collection",
-        shopSubtitle: "Handcrafted three-piece sets, kurtis and khadi wear â€” cut and stitched in small batches.",
+        shopSubtitle: "Handcrafted three-piece sets, kurtis and khadi wear — cut and stitched in small batches.",
         filterBtn: "Filters", closeFilters: "Close",
         sortDefault: "Sort by: Featured", sortLowHigh: "Price: Low to High", sortHighLow: "Price: High to Low",
-        catTitle: "Category", catKurti: "Kurti", catThreePiece: "Three Piece", catKhadi: "Khadi", catFormal: "Formal Wear", catOnSale: "ðŸ”¥ On Sale",
-        priceTitle: "Price", price1: "Under à§³1500", price2: "à§³1500 â€“ à§³2500", price3: "Above à§³2500",
+        catTitle: "Category", catKurti: "Kurti", catThreePiece: "Three Piece", catKhadi: "Khadi", catFormal: "Formal Wear", catOnSale: "🔥 On Sale",
+        priceTitle: "Price", price1: "Under ৳1500", price2: "৳1500 – ৳2500", price3: "Above ৳2500",
         clearFilters: "Clear all",
         noProducts: "No pieces match your filters just yet. Try clearing a few and searching again.",
-        searchPlaceholder: "Search the collectionâ€¦",
+        searchPlaceholder: "Search the collection…",
         sizeSelect: "Select Size", sizeWarning: "Please select a size", colorSelect: "Select Color", colorWarning: "Please select a color",
         descTitle: "Description", detailsTitle: "The Details",
         addToCart: "Add to Cart", buyNow: "Buy Now", backBtn: "Back",
@@ -35,17 +35,17 @@ window.uiTranslations = {
         continueShopping: "Continue Shopping",
         cartSubtotal: "Subtotal", cartDelivery: "Delivery", cartTotal: "Total",
         btnConfirmOrder: "Confirm Order", btnWhatsApp: "Order via WhatsApp", orWhatsapp: "or",
-        footerText: "Â© 2026 Mohor Clothings Bangladesh. All Rights Reserved.",
-        footerTagline: "Handcrafted luxury fashion, stitched with tradition â€” from Sylhet to all of Bangladesh.",
+        footerText: "© 2026 Mohor Clothings Bangladesh. All Rights Reserved.",
+        footerTagline: "Handcrafted luxury fashion, stitched with tradition — from Sylhet to all of Bangladesh.",
         footerShopHeading: "Shop", footerHelpHeading: "Help", footerContactHeading: "Contact",
         footerDelivery: "Nationwide delivery across Bangladesh",
         footerMadeWith: "Handcrafted in Sylhet",
         checkoutName: "Full Name *", checkoutPhone: "Mobile Number *", checkoutAddress: "Complete Address *",
         deliveryAddressLabel: "Delivery Address *",
         policyAgreeText: "I agree to the", policyLink: "Delivery & Return Policy",
-        selectDeliveryZone: "Select Delivery Zone *", zoneInside: "Inside Sylhet (à§³70)", zoneOutside: "Outside Sylhet (à§³140)",
-        zoneDeliveryInside: "Inside Sylhet: estimated delivery in 1â€“3 business days. Our team will confirm by phone before dispatch.",
-        zoneDeliveryOutside: "Outside Sylhet: estimated delivery in 3â€“5 business days via courier. Our team will confirm by phone before dispatch.",
+        selectDeliveryZone: "Select Delivery Zone *", zoneInside: "Inside Sylhet (৳70)", zoneOutside: "Outside Sylhet (৳140)",
+        zoneDeliveryInside: "Inside Sylhet: estimated delivery in 1–3 business days. Our team will confirm by phone before dispatch.",
+        zoneDeliveryOutside: "Outside Sylhet: estimated delivery in 3–5 business days via courier. Our team will confirm by phone before dispatch.",
         aboutEyebrow: "Est. in Sylhet",
         aboutTitle: "About Mohor Clothings",
         aboutText: "Welcome to Mohor Clothings, your premier destination for handcrafted luxury fashion in Bangladesh. From our breathable, premium soft cotton Three-Piece ensembles to our elegantly tailored Kurtis and authentic Khadi wear, every piece is designed with the modern woman in mind. Whether you are stepping into a university classroom, leading a corporate meeting, or celebrating a festive occasion, our collections offer the perfect fit. Proudly serving Sylhet and customers nationwide, we are dedicated to bringing you high-quality embroidery and timeless designs that empower your everyday wardrobe.",
@@ -62,12 +62,12 @@ window.uiTranslations = {
         accSavedProfile: "Saved Profile", accProfileNamePlaceholder: "Your Name",
         accPhonePlaceholder: "Default Phone", accAddressPlaceholder: "Default Delivery Address",
         accSaveProfileBtn: "Save Profile", accOrderHistory: "My Order History",
-        accLoadingOrders: "Loading ordersâ€¦", accNoOrders: "No order history found yet.",
+        accLoadingOrders: "Loading orders…", accNoOrders: "No order history found yet.",
 
         policyPageTitle: "Delivery & Return Policy",
         policyEyebrow: "Please read before ordering",
         policy1Title: "Delivery Information",
-        policy1Text: "We deliver nationwide across Bangladesh. Delivery inside Sylhet costs à§³70 and usually takes 1â€“3 business days. Delivery outside Sylhet costs à§³140 and usually takes 3â€“5 business days. The applicable charge is shown at checkout.",
+        policy1Text: "We deliver nationwide across Bangladesh. Delivery inside Sylhet costs ৳70 and usually takes 1–3 business days. Delivery outside Sylhet costs ৳140 and usually takes 3–5 business days. The applicable charge is shown at checkout.",
         policy2Title: "Order Confirmation",
         policy2Text: "Once you place an order via WhatsApp or the website, our team verifies product availability and sends you a confirmation message along with the final bill, including delivery charges, before processing.",
         policy3Title: "Return & Exchange Policy",
@@ -86,73 +86,73 @@ window.uiTranslations = {
         cartSavingsOrder: "on this order!"
     },
     bn: {
-        navShop: "à¦¶à¦ª", navOrders: "à¦…à¦°à§à¦¡à¦¾à¦° à¦¹à¦¿à¦¸à§à¦Ÿà§à¦°à¦¿", navAbout: "à¦†à¦®à¦¾à¦¦à§‡à¦° à¦¸à¦®à§à¦ªà¦°à§à¦•à§‡", navPolicy: "à¦ªà¦²à¦¿à¦¸à¦¿", navAccount: "à¦…à§à¦¯à¦¾à¦•à¦¾à¦‰à¦¨à§à¦Ÿ", navCart: "à¦•à¦¾à¦°à§à¦Ÿ",
-        shopTitle: "à¦†à¦®à¦¾à¦¦à§‡à¦° à¦•à¦¾à¦²à§‡à¦•à¦¶à¦¨",
-        shopSubtitle: "à¦¹à¦¾à¦¤à§‡ à¦¤à§ˆà¦°à¦¿ à¦¥à§à¦°à¦¿-à¦ªà¦¿à¦¸, à¦•à§à¦°à§à¦¤à¦¿ à¦“ à¦–à¦¾à¦¦à¦¿ â€” à¦…à¦²à§à¦ª à¦¸à¦‚à¦–à§à¦¯à¦¾à¦¯à¦¼ à¦¯à¦¤à§à¦¨à¦¸à¦¹à¦•à¦¾à¦°à§‡ à¦¤à§ˆà¦°à¦¿à¥¤",
-        filterBtn: "à¦«à¦¿à¦²à§à¦Ÿà¦¾à¦°", closeFilters: "à¦¬à¦¨à§à¦§ à¦•à¦°à§à¦¨",
-        sortDefault: "à¦¸à¦¾à¦œà¦¾à¦¨: à¦«à¦¿à¦šà¦¾à¦°à§à¦¡", sortLowHigh: "à¦¦à¦¾à¦®: à¦•à¦® à¦¥à§‡à¦•à§‡ à¦¬à§‡à¦¶à¦¿", sortHighLow: "à¦¦à¦¾à¦®: à¦¬à§‡à¦¶à¦¿ à¦¥à§‡à¦•à§‡ à¦•à¦®",
-        catTitle: "à¦•à§à¦¯à¦¾à¦Ÿà¦¾à¦—à¦°à¦¿", catKurti: "à¦•à§à¦°à§à¦¤à¦¿", catThreePiece: "à¦¥à§à¦°à¦¿-à¦ªà¦¿à¦¸", catKhadi: "à¦–à¦¾à¦¦à¦¿", catFormal: "à¦«à¦°à¦®à¦¾à¦² à¦“à¦¯à¦¼à§à¦¯à¦¾à¦°", catOnSale: "ðŸ”¥ à¦›à¦¾à¦¡à¦¼à§‡à¦° à¦ªà¦£à§à¦¯",
-        priceTitle: "à¦®à§‚à¦²à§à¦¯", price1: "à§³à§§à§«à§¦à§¦ à¦à¦° à¦¨à¦¿à¦šà§‡", price2: "à§³à§§à§«à§¦à§¦ â€“ à§³à§¨à§«à§¦à§¦", price3: "à§³à§¨à§«à§¦à§¦ à¦à¦° à¦‰à¦ªà¦°à§‡",
-        clearFilters: "à¦¸à¦¬ à¦®à§à¦›à§à¦¨",
-        noProducts: "à¦†à¦ªà¦¨à¦¾à¦° à¦«à¦¿à¦²à§à¦Ÿà¦¾à¦°à§‡à¦° à¦¸à¦¾à¦¥à§‡ à¦®à¦¿à¦²à¦›à§‡ à¦à¦®à¦¨ à¦•à¦¿à¦›à§ à¦ªà¦¾à¦“à¦¯à¦¼à¦¾ à¦¯à¦¾à¦¯à¦¼à¦¨à¦¿à¥¤ à¦•à¦¿à¦›à§ à¦«à¦¿à¦²à§à¦Ÿà¦¾à¦° à¦®à§à¦›à§‡ à¦†à¦¬à¦¾à¦° à¦šà§‡à¦·à§à¦Ÿà¦¾ à¦•à¦°à§à¦¨à¥¤",
-        searchPlaceholder: "à¦•à¦¾à¦²à§‡à¦•à¦¶à¦¨à§‡ à¦–à§à¦à¦œà§à¦¨â€¦",
-        sizeSelect: "à¦¸à¦¾à¦‡à¦œ à¦¨à¦¿à¦°à§à¦¬à¦¾à¦šà¦¨ à¦•à¦°à§à¦¨", sizeWarning: "à¦…à¦¨à§à¦—à§à¦°à¦¹ à¦•à¦°à§‡ à¦à¦•à¦Ÿà¦¿ à¦¸à¦¾à¦‡à¦œ à¦¨à¦¿à¦°à§à¦¬à¦¾à¦šà¦¨ à¦•à¦°à§à¦¨", colorSelect: "à¦°à¦‚ à¦¨à¦¿à¦°à§à¦¬à¦¾à¦šà¦¨ à¦•à¦°à§à¦¨", colorWarning: "à¦…à¦¨à§à¦—à§à¦°à¦¹ à¦•à¦°à§‡ à¦à¦•à¦Ÿà¦¿ à¦°à¦‚ à¦¨à¦¿à¦°à§à¦¬à¦¾à¦šà¦¨ à¦•à¦°à§à¦¨",
-        descTitle: "à¦¬à¦¿à¦¬à¦°à¦£", detailsTitle: "à¦¬à¦¿à¦¸à§à¦¤à¦¾à¦°à¦¿à¦¤",
-        addToCart: "à¦•à¦¾à¦°à§à¦Ÿà§‡ à¦¯à§‹à¦— à¦•à¦°à§à¦¨", buyNow: "à¦à¦–à¦¨à¦‡ à¦•à¦¿à¦¨à§à¦¨", backBtn: "à¦«à¦¿à¦°à§‡ à¦¯à¦¾à¦¨",
-        addedToCart: "à¦•à¦¾à¦°à§à¦Ÿà§‡ à¦¯à§‹à¦— à¦•à¦°à¦¾ à¦¹à¦¯à¦¼à§‡à¦›à§‡",
-        cartTitle: "à¦†à¦ªà¦¨à¦¾à¦° à¦•à¦¾à¦°à§à¦Ÿ", cartEmpty: "à¦†à¦ªà¦¨à¦¾à¦° à¦•à¦¾à¦°à§à¦Ÿ à¦–à¦¾à¦²à¦¿à¥¤", cartEmptySub: "à¦†à¦ªà¦¨à¦¾à¦° à¦¯à§‹à¦— à¦•à¦°à¦¾ à¦ªà¦£à§à¦¯ à¦à¦–à¦¾à¦¨à§‡ à¦¦à§‡à¦–à¦¾ à¦¯à¦¾à¦¬à§‡à¥¤",
-        continueShopping: "à¦•à§‡à¦¨à¦¾à¦•à¦¾à¦Ÿà¦¾ à¦šà¦¾à¦²à¦¿à¦¯à¦¼à§‡ à¦¯à¦¾à¦¨",
-        cartSubtotal: "à¦¸à¦¾à¦¬à¦Ÿà§‹à¦Ÿà¦¾à¦²", cartDelivery: "à¦¡à§‡à¦²à¦¿à¦­à¦¾à¦°à¦¿", cartTotal: "à¦¸à¦°à§à¦¬à¦®à§‹à¦Ÿ",
-        btnConfirmOrder: "à¦…à¦°à§à¦¡à¦¾à¦° à¦•à¦¨à¦«à¦¾à¦°à§à¦® à¦•à¦°à§à¦¨", btnWhatsApp: "à¦¹à§‹à¦¯à¦¼à¦¾à¦Ÿà¦¸à¦…à§à¦¯à¦¾à¦ªà§‡ à¦…à¦°à§à¦¡à¦¾à¦° à¦•à¦°à§à¦¨", orWhatsapp: "à¦…à¦¥à¦¬à¦¾",
-        footerText: "Â© à§¨à§¦à§¨à§¬ à¦®à§‹à¦¹à¦° à¦•à§à¦²à¦¥à¦¿à¦‚à¦¸ à¦¬à¦¾à¦‚à¦²à¦¾à¦¦à§‡à¦¶à¥¤ à¦¸à¦°à§à¦¬à¦¸à§à¦¬à¦¤à§à¦¬ à¦¸à¦‚à¦°à¦•à§à¦·à¦¿à¦¤à¥¤",
-        footerTagline: "à¦à¦¤à¦¿à¦¹à§à¦¯à§‡à¦° à¦¸à§à¦¤à§‹à¦¯à¦¼ à¦¬à§‹à¦¨à¦¾ à¦¹à¦¾à¦¤à§‡ à¦¤à§ˆà¦°à¦¿ à¦¬à¦¿à¦²à¦¾à¦¸à¦¬à¦¹à§à¦² à¦«à§à¦¯à¦¾à¦¶à¦¨ â€” à¦¸à¦¿à¦²à§‡à¦Ÿ à¦¥à§‡à¦•à§‡ à¦¸à¦¾à¦°à¦¾ à¦¬à¦¾à¦‚à¦²à¦¾à¦¦à§‡à¦¶à§‡à¥¤",
-        footerShopHeading: "à¦¶à¦ª", footerHelpHeading: "à¦¸à¦¹à¦¾à¦¯à¦¼à¦¤à¦¾", footerContactHeading: "à¦¯à§‹à¦—à¦¾à¦¯à§‹à¦—",
-        footerDelivery: "à¦¸à¦¾à¦°à¦¾ à¦¬à¦¾à¦‚à¦²à¦¾à¦¦à§‡à¦¶à§‡ à¦¡à§‡à¦²à¦¿à¦­à¦¾à¦°à¦¿",
-        footerMadeWith: "à¦¸à¦¿à¦²à§‡à¦Ÿà§‡ à¦¹à¦¾à¦¤à§‡ à¦¤à§ˆà¦°à¦¿",
-        checkoutName: "à¦ªà§à¦°à§‹ à¦¨à¦¾à¦® *", checkoutPhone: "à¦®à§‹à¦¬à¦¾à¦‡à¦² à¦¨à¦®à§à¦¬à¦° *", checkoutAddress: "à¦¸à¦®à§à¦ªà§‚à¦°à§à¦£ à¦ à¦¿à¦•à¦¾à¦¨à¦¾ *",
-        deliveryAddressLabel: "à¦¡à§‡à¦²à¦¿à¦­à¦¾à¦°à¦¿ à¦ à¦¿à¦•à¦¾à¦¨à¦¾ *",
-        policyAgreeText: "à¦†à¦®à¦¿ à¦¸à¦®à§à¦®à¦¤", policyLink: "à¦¡à§‡à¦²à¦¿à¦­à¦¾à¦°à¦¿ à¦“ à¦°à¦¿à¦Ÿà¦¾à¦°à§à¦¨ à¦ªà¦²à¦¿à¦¸à¦¿à¦¤à§‡",
-        selectDeliveryZone: "à¦¡à§‡à¦²à¦¿à¦­à¦¾à¦°à¦¿ à¦œà§‹à¦¨ à¦¨à¦¿à¦°à§à¦¬à¦¾à¦šà¦¨ à¦•à¦°à§à¦¨ *", zoneInside: "à¦¸à¦¿à¦²à§‡à¦Ÿà§‡à¦° à¦­à¦¿à¦¤à¦°à§‡ (à§³à§­à§¦)", zoneOutside: "à¦¸à¦¿à¦²à§‡à¦Ÿà§‡à¦° à¦¬à¦¾à¦‡à¦°à§‡ (à§³à§§à§ªà§¦)",
-        zoneDeliveryInside: "à¦¸à¦¿à¦²à§‡à¦Ÿà§‡à¦° à¦­à¦¿à¦¤à¦°à§‡: à¦†à¦¨à§à¦®à¦¾à¦¨à¦¿à¦• à¦¡à§‡à¦²à¦¿à¦­à¦¾à¦°à¦¿ à¦¸à¦®à¦¯à¦¼ à§§â€“à§© à¦•à¦°à§à¦®à¦¦à¦¿à¦¬à¦¸à¥¤ à¦ªà¦¾à¦ à¦¾à¦¨à§‹à¦° à¦†à¦—à§‡ à¦†à¦®à¦¾à¦¦à§‡à¦° à¦Ÿà¦¿à¦® à¦«à§‹à¦¨à§‡ à¦¨à¦¿à¦¶à§à¦šà¦¿à¦¤ à¦•à¦°à¦¬à§‡à¥¤",
-        zoneDeliveryOutside: "à¦¸à¦¿à¦²à§‡à¦Ÿà§‡à¦° à¦¬à¦¾à¦‡à¦°à§‡: à¦•à§à¦°à¦¿à¦¯à¦¼à¦¾à¦°à§‡ à¦†à¦¨à§à¦®à¦¾à¦¨à¦¿à¦• à¦¡à§‡à¦²à¦¿à¦­à¦¾à¦°à¦¿ à¦¸à¦®à¦¯à¦¼ à§©â€“à§« à¦•à¦°à§à¦®à¦¦à¦¿à¦¬à¦¸à¥¤ à¦ªà¦¾à¦ à¦¾à¦¨à§‹à¦° à¦†à¦—à§‡ à¦†à¦®à¦¾à¦¦à§‡à¦° à¦Ÿà¦¿à¦® à¦«à§‹à¦¨à§‡ à¦¨à¦¿à¦¶à§à¦šà¦¿à¦¤ à¦•à¦°à¦¬à§‡à¥¤",
-        aboutEyebrow: "à¦¸à¦¿à¦²à§‡à¦Ÿà§‡ à¦ªà§à¦°à¦¤à¦¿à¦·à§à¦ à¦¿à¦¤",
-        aboutTitle: "à¦®à§‹à¦¹à¦° à¦•à§à¦²à¦¥à¦¿à¦‚à¦¸ à¦¸à¦®à§à¦ªà¦°à§à¦•à§‡",
-        aboutText: "à¦®à§‹à¦¹à¦° à¦•à§à¦²à¦¥à¦¿à¦‚à¦¸à§‡ à¦†à¦ªà¦¨à¦¾à¦•à§‡ à¦¸à§à¦¬à¦¾à¦—à¦¤à¦® â€” à¦¬à¦¾à¦‚à¦²à¦¾à¦¦à§‡à¦¶à§‡ à¦¹à¦¾à¦¤à§‡ à¦¤à§ˆà¦°à¦¿ à¦¬à¦¿à¦²à¦¾à¦¸à¦¬à¦¹à§à¦² à¦«à§à¦¯à¦¾à¦¶à¦¨à§‡à¦° à¦œà¦¨à§à¦¯ à¦†à¦ªà¦¨à¦¾à¦° à¦ªà§à¦°à¦§à¦¾à¦¨ à¦—à¦¨à§à¦¤à¦¬à§à¦¯à¥¤ à¦†à¦®à¦¾à¦¦à§‡à¦° à¦¨à¦¿à¦ƒà¦¶à§à¦¬à¦¾à¦¸à¦¯à§‹à¦—à§à¦¯, à¦ªà§à¦°à¦¿à¦®à¦¿à¦¯à¦¼à¦¾à¦® à¦¸à¦«à¦Ÿ à¦•à¦Ÿà¦¨ à¦¥à§à¦°à¦¿-à¦ªà¦¿à¦¸ à¦¥à§‡à¦•à§‡ à¦¶à§à¦°à§ à¦•à¦°à§‡ à¦®à¦¾à¦°à§à¦œà¦¿à¦¤à¦­à¦¾à¦¬à§‡ à¦¤à§ˆà¦°à¦¿ à¦•à§à¦°à§à¦¤à¦¿ à¦à¦¬à¦‚ à¦ªà§à¦°à¦•à§ƒà¦¤ à¦–à¦¾à¦¦à¦¿ à¦ªà§‹à¦¶à¦¾à¦• â€” à¦ªà§à¦°à¦¤à¦¿à¦Ÿà¦¿ à¦ªà¦¿à¦¸ à¦†à¦§à§à¦¨à¦¿à¦• à¦¨à¦¾à¦°à§€à¦° à¦•à¦¥à¦¾ à¦®à¦¾à¦¥à¦¾à¦¯à¦¼ à¦°à§‡à¦–à§‡ à¦¡à¦¿à¦œà¦¾à¦‡à¦¨ à¦•à¦°à¦¾ à¦¹à¦¯à¦¼à§‡à¦›à§‡à¥¤ à¦†à¦ªà¦¨à¦¿ à¦¬à¦¿à¦¶à§à¦¬à¦¬à¦¿à¦¦à§à¦¯à¦¾à¦²à¦¯à¦¼à§‡à¦° à¦•à§à¦²à¦¾à¦¸à§‡ à¦¯à¦¾à¦¨, à¦•à¦°à§à¦ªà§‹à¦°à§‡à¦Ÿ à¦®à¦¿à¦Ÿà¦¿à¦‚ à¦ªà¦°à¦¿à¦šà¦¾à¦²à¦¨à¦¾ à¦•à¦°à§à¦¨ à¦¬à¦¾ à¦‰à§Žà¦¸à¦¬ à¦‰à¦¦à¦¯à¦¾à¦ªà¦¨ à¦•à¦°à§à¦¨ â€” à¦†à¦®à¦¾à¦¦à§‡à¦° à¦•à¦¾à¦²à§‡à¦•à¦¶à¦¨à§‡ à¦°à¦¯à¦¼à§‡à¦›à§‡ à¦‰à¦ªà¦¯à§à¦•à§à¦¤ à¦ªà§‹à¦¶à¦¾à¦•à¥¤ à¦¸à¦¿à¦²à§‡à¦Ÿ à¦“ à¦¸à¦¾à¦°à¦¾ à¦¦à§‡à¦¶à§‡à¦° à¦—à§à¦°à¦¾à¦¹à¦•à¦¦à§‡à¦° à¦¸à§‡à¦¬à¦¾ à¦¦à¦¿à¦¤à§‡ à¦ªà§‡à¦°à§‡ à¦†à¦®à¦°à¦¾ à¦—à¦°à§à¦¬à¦¿à¦¤, à¦à¦¬à¦‚ à¦‰à¦šà§à¦šà¦®à¦¾à¦¨à§‡à¦° à¦à¦®à¦¬à§à¦°à¦¯à¦¼à¦¡à¦¾à¦°à¦¿ à¦“ à¦•à¦¾à¦²à¦œà¦¯à¦¼à§€ à¦¡à¦¿à¦œà¦¾à¦‡à¦¨ à¦†à¦ªà¦¨à¦¾à¦° à¦¨à¦¿à¦¤à§à¦¯à¦¦à¦¿à¦¨à§‡à¦° à¦ªà§‹à¦¶à¦¾à¦•à§‡ à¦¯à§‹à¦— à¦•à¦°à¦¤à§‡ à¦†à¦®à¦°à¦¾ à¦ªà§à¦°à¦¤à¦¿à¦¶à§à¦°à§à¦¤à¦¿à¦¬à¦¦à§à¦§à¥¤",
-        pillar1Title: "à¦¹à¦¸à§à¦¤à¦¨à¦¿à¦°à§à¦®à¦¿à¦¤ à¦¬à¦¿à¦¬à¦°à¦£", pillar1Text: "à¦ªà§à¦°à¦¤à¦¿à¦Ÿà¦¿ à¦ªà¦¿à¦¸à§‡ à¦¹à¦¾à¦¤à§‡ à¦•à¦°à¦¾ à¦‰à¦šà§à¦šà¦®à¦¾à¦¨à§‡à¦° à¦à¦®à¦¬à§à¦°à¦¯à¦¼à¦¡à¦¾à¦°à¦¿ à¦“ à¦«à¦¿à¦¨à¦¿à¦¶à¦¿à¦‚à¥¤",
-        pillar2Title: "à¦ªà§à¦°à¦¿à¦®à¦¿à¦¯à¦¼à¦¾à¦® à¦«à§‡à¦¬à§à¦°à¦¿à¦•", pillar2Text: "à¦†à¦°à¦¾à¦®à§‡à¦° à¦œà¦¨à§à¦¯ à¦¬à§‡à¦›à§‡ à¦¨à§‡à¦“à¦¯à¦¼à¦¾ à¦¨à¦¿à¦ƒà¦¶à§à¦¬à¦¾à¦¸à¦¯à§‹à¦—à§à¦¯ à¦ªà§à¦°à¦¿à¦®à¦¿à¦¯à¦¼à¦¾à¦® à¦¸à¦«à¦Ÿ à¦•à¦Ÿà¦¨ à¦“ à¦ªà§à¦°à¦•à§ƒà¦¤ à¦–à¦¾à¦¦à¦¿à¥¤",
-        pillar3Title: "à¦¸à¦¾à¦°à¦¾à¦¦à§‡à¦¶à§‡ à¦¡à§‡à¦²à¦¿à¦­à¦¾à¦°à¦¿", pillar3Text: "à¦¸à¦¿à¦²à§‡à¦Ÿ à¦“ à¦¸à¦¾à¦°à¦¾ à¦¬à¦¾à¦‚à¦²à¦¾à¦¦à§‡à¦¶à§‡à¦° à¦—à§à¦°à¦¾à¦¹à¦•à¦¦à§‡à¦° à¦•à¦¾à¦›à§‡ à¦—à¦°à§à¦¬à§‡à¦° à¦¸à¦¾à¦¥à§‡ à¦ªà§Œà¦à¦›à§‡ à¦¦à¦¿à¦šà§à¦›à¦¿à¥¤",
+        navShop: "শপ", navOrders: "অর্ডার হিস্ট্রি", navAbout: "আমাদের সম্পর্কে", navPolicy: "পলিসি", navAccount: "অ্যাকাউন্ট", navCart: "কার্ট",
+        shopTitle: "আমাদের কালেকশন",
+        shopSubtitle: "হাতে তৈরি থ্রি-পিস, কুর্তি ও খাদি — অল্প সংখ্যায় যত্নসহকারে তৈরি।",
+        filterBtn: "ফিল্টার", closeFilters: "বন্ধ করুন",
+        sortDefault: "সাজান: ফিচার্ড", sortLowHigh: "দাম: কম থেকে বেশি", sortHighLow: "দাম: বেশি থেকে কম",
+        catTitle: "ক্যাটাগরি", catKurti: "কুর্তি", catThreePiece: "থ্রি-পিস", catKhadi: "খাদি", catFormal: "ফরমাল ওয়্যার", catOnSale: "🔥 ছাড়ের পণ্য",
+        priceTitle: "মূল্য", price1: "৳১৫০০ এর নিচে", price2: "৳১৫০০ – ৳২৫০০", price3: "৳২৫০০ এর উপরে",
+        clearFilters: "সব মুছুন",
+        noProducts: "আপনার ফিল্টারের সাথে মিলছে এমন কিছু পাওয়া যায়নি। কিছু ফিল্টার মুছে আবার চেষ্টা করুন।",
+        searchPlaceholder: "কালেকশনে খুঁজুন…",
+        sizeSelect: "সাইজ নির্বাচন করুন", sizeWarning: "অনুগ্রহ করে একটি সাইজ নির্বাচন করুন", colorSelect: "রং নির্বাচন করুন", colorWarning: "অনুগ্রহ করে একটি রং নির্বাচন করুন",
+        descTitle: "বিবরণ", detailsTitle: "বিস্তারিত",
+        addToCart: "কার্টে যোগ করুন", buyNow: "এখনই কিনুন", backBtn: "ফিরে যান",
+        addedToCart: "কার্টে যোগ করা হয়েছে",
+        cartTitle: "আপনার কার্ট", cartEmpty: "আপনার কার্ট খালি।", cartEmptySub: "আপনার যোগ করা পণ্য এখানে দেখা যাবে।",
+        continueShopping: "কেনাকাটা চালিয়ে যান",
+        cartSubtotal: "সাবটোটাল", cartDelivery: "ডেলিভারি", cartTotal: "সর্বমোট",
+        btnConfirmOrder: "অর্ডার কনফার্ম করুন", btnWhatsApp: "হোয়াটসঅ্যাপে অর্ডার করুন", orWhatsapp: "অথবা",
+        footerText: "© ২০২৬ মোহর ক্লথিংস বাংলাদেশ। সর্বস্বত্ব সংরক্ষিত।",
+        footerTagline: "ঐতিহ্যের সুতোয় বোনা হাতে তৈরি বিলাসবহুল ফ্যাশন — সিলেট থেকে সারা বাংলাদেশে।",
+        footerShopHeading: "শপ", footerHelpHeading: "সহায়তা", footerContactHeading: "যোগাযোগ",
+        footerDelivery: "সারা বাংলাদেশে ডেলিভারি",
+        footerMadeWith: "সিলেটে হাতে তৈরি",
+        checkoutName: "পুরো নাম *", checkoutPhone: "মোবাইল নম্বর *", checkoutAddress: "সম্পূর্ণ ঠিকানা *",
+        deliveryAddressLabel: "ডেলিভারি ঠিকানা *",
+        policyAgreeText: "আমি সম্মত", policyLink: "ডেলিভারি ও রিটার্ন পলিসিতে",
+        selectDeliveryZone: "ডেলিভারি জোন নির্বাচন করুন *", zoneInside: "সিলেটের ভিতরে (৳৭০)", zoneOutside: "সিলেটের বাইরে (৳১৪০)",
+        zoneDeliveryInside: "সিলেটের ভিতরে: আনুমানিক ডেলিভারি সময় ১–৩ কর্মদিবস। পাঠানোর আগে আমাদের টিম ফোনে নিশ্চিত করবে।",
+        zoneDeliveryOutside: "সিলেটের বাইরে: কুরিয়ারে আনুমানিক ডেলিভারি সময় ৩–৫ কর্মদিবস। পাঠানোর আগে আমাদের টিম ফোনে নিশ্চিত করবে।",
+        aboutEyebrow: "সিলেটে প্রতিষ্ঠিত",
+        aboutTitle: "মোহর ক্লথিংস সম্পর্কে",
+        aboutText: "মোহর ক্লথিংসে আপনাকে স্বাগতম — বাংলাদেশে হাতে তৈরি বিলাসবহুল ফ্যাশনের জন্য আপনার প্রধান গন্তব্য। আমাদের নিঃশ্বাসযোগ্য, প্রিমিয়াম সফট কটন থ্রি-পিস থেকে শুরু করে মার্জিতভাবে তৈরি কুর্তি এবং প্রকৃত খাদি পোশাক — প্রতিটি পিস আধুনিক নারীর কথা মাথায় রেখে ডিজাইন করা হয়েছে। আপনি বিশ্ববিদ্যালয়ের ক্লাসে যান, কর্পোরেট মিটিং পরিচালনা করুন বা উৎসব উদযাপন করুন — আমাদের কালেকশনে রয়েছে উপযুক্ত পোশাক। সিলেট ও সারা দেশের গ্রাহকদের সেবা দিতে পেরে আমরা গর্বিত, এবং উচ্চমানের এমব্রয়ডারি ও কালজয়ী ডিজাইন আপনার নিত্যদিনের পোশাকে যোগ করতে আমরা প্রতিশ্রুতিবদ্ধ।",
+        pillar1Title: "হস্তনির্মিত বিবরণ", pillar1Text: "প্রতিটি পিসে হাতে করা উচ্চমানের এমব্রয়ডারি ও ফিনিশিং।",
+        pillar2Title: "প্রিমিয়াম ফেব্রিক", pillar2Text: "আরামের জন্য বেছে নেওয়া নিঃশ্বাসযোগ্য প্রিমিয়াম সফট কটন ও প্রকৃত খাদি।",
+        pillar3Title: "সারাদেশে ডেলিভারি", pillar3Text: "সিলেট ও সারা বাংলাদেশের গ্রাহকদের কাছে গর্বের সাথে পৌঁছে দিচ্ছি।",
 
-        accTitle: "à¦•à¦¾à¦¸à§à¦Ÿà¦®à¦¾à¦° à¦…à§à¦¯à¦¾à¦•à¦¾à¦‰à¦¨à§à¦Ÿ", accLoginTitle: "à¦†à¦ªà¦¨à¦¾à¦° à¦…à§à¦¯à¦¾à¦•à¦¾à¦‰à¦¨à§à¦Ÿà§‡ à¦²à¦—à¦‡à¦¨ à¦•à¦°à§à¦¨",
-        accEmailPlaceholder: "à¦‡à¦®à§‡à¦‡à¦² à¦ à¦¿à¦•à¦¾à¦¨à¦¾", accPassPlaceholder: "à¦ªà¦¾à¦¸à¦“à¦¯à¦¼à¦¾à¦°à§à¦¡",
-        accLoginBtn: "à¦²à¦—à¦‡à¦¨", accNoAccount: "à¦…à§à¦¯à¦¾à¦•à¦¾à¦‰à¦¨à§à¦Ÿ à¦¨à§‡à¦‡?", accSignUpLink: "à¦¸à¦¾à¦‡à¦¨ à¦†à¦ª à¦•à¦°à§à¦¨",
-        accSignupTitle: "à¦à¦•à¦Ÿà¦¿ à¦…à§à¦¯à¦¾à¦•à¦¾à¦‰à¦¨à§à¦Ÿ à¦¤à§ˆà¦°à¦¿ à¦•à¦°à§à¦¨", accNamePlaceholder: "à¦ªà§à¦°à§‹ à¦¨à¦¾à¦®", accPassMinPlaceholder: "à¦ªà¦¾à¦¸à¦“à¦¯à¦¼à¦¾à¦°à§à¦¡ (à¦•à¦®à¦ªà¦•à§à¦·à§‡ à§¬ à¦…à¦•à§à¦·à¦°)",
-        accSignupBtn: "à¦¸à¦¾à¦‡à¦¨ à¦†à¦ª", accHasAccount: "à¦‡à¦¤à¦¿à¦®à¦§à§à¦¯à§‡ à¦…à§à¦¯à¦¾à¦•à¦¾à¦‰à¦¨à§à¦Ÿ à¦†à¦›à§‡?", accLoginLink: "à¦²à¦—à¦‡à¦¨ à¦•à¦°à§à¦¨",
-        accLoggedInAs: "à¦²à¦—à¦‡à¦¨ à¦•à¦°à¦¾ à¦†à¦›à§‡", accLogoutBtn: "à¦²à¦— à¦†à¦‰à¦Ÿ",
-        accSavedProfile: "à¦¸à¦‚à¦°à¦•à§à¦·à¦¿à¦¤ à¦ªà§à¦°à§‹à¦«à¦¾à¦‡à¦²", accProfileNamePlaceholder: "à¦†à¦ªà¦¨à¦¾à¦° à¦¨à¦¾à¦®",
-        accPhonePlaceholder: "à¦¡à¦¿à¦«à¦²à§à¦Ÿ à¦«à§‹à¦¨ à¦¨à¦®à§à¦¬à¦°", accAddressPlaceholder: "à¦¡à¦¿à¦«à¦²à§à¦Ÿ à¦¡à§‡à¦²à¦¿à¦­à¦¾à¦°à¦¿ à¦ à¦¿à¦•à¦¾à¦¨à¦¾",
-        accSaveProfileBtn: "à¦ªà§à¦°à§‹à¦«à¦¾à¦‡à¦² à¦¸à§‡à¦­ à¦•à¦°à§à¦¨", accOrderHistory: "à¦†à¦®à¦¾à¦° à¦…à¦°à§à¦¡à¦¾à¦° à¦¹à¦¿à¦¸à§à¦Ÿà§à¦°à¦¿",
-        accLoadingOrders: "à¦…à¦°à§à¦¡à¦¾à¦° à¦²à§‹à¦¡ à¦¹à¦šà§à¦›à§‡â€¦", accNoOrders: "à¦•à§‹à¦¨à§‹ à¦…à¦°à§à¦¡à¦¾à¦° à¦¹à¦¿à¦¸à§à¦Ÿà§à¦°à¦¿ à¦ªà¦¾à¦“à¦¯à¦¼à¦¾ à¦¯à¦¾à¦¯à¦¼à¦¨à¦¿à¥¤",
+        accTitle: "কাস্টমার অ্যাকাউন্ট", accLoginTitle: "আপনার অ্যাকাউন্টে লগইন করুন",
+        accEmailPlaceholder: "ইমেইল ঠিকানা", accPassPlaceholder: "পাসওয়ার্ড",
+        accLoginBtn: "লগইন", accNoAccount: "অ্যাকাউন্ট নেই?", accSignUpLink: "সাইন আপ করুন",
+        accSignupTitle: "একটি অ্যাকাউন্ট তৈরি করুন", accNamePlaceholder: "পুরো নাম", accPassMinPlaceholder: "পাসওয়ার্ড (কমপক্ষে ৬ অক্ষর)",
+        accSignupBtn: "সাইন আপ", accHasAccount: "ইতিমধ্যে অ্যাকাউন্ট আছে?", accLoginLink: "লগইন করুন",
+        accLoggedInAs: "লগইন করা আছে", accLogoutBtn: "লগ আউট",
+        accSavedProfile: "সংরক্ষিত প্রোফাইল", accProfileNamePlaceholder: "আপনার নাম",
+        accPhonePlaceholder: "ডিফল্ট ফোন নম্বর", accAddressPlaceholder: "ডিফল্ট ডেলিভারি ঠিকানা",
+        accSaveProfileBtn: "প্রোফাইল সেভ করুন", accOrderHistory: "আমার অর্ডার হিস্ট্রি",
+        accLoadingOrders: "অর্ডার লোড হচ্ছে…", accNoOrders: "কোনো অর্ডার হিস্ট্রি পাওয়া যায়নি।",
 
-        policyPageTitle: "à¦¡à§‡à¦²à¦¿à¦­à¦¾à¦°à¦¿ à¦“ à¦°à¦¿à¦Ÿà¦¾à¦°à§à¦¨ à¦ªà¦²à¦¿à¦¸à¦¿",
-        policyEyebrow: "à¦…à¦°à§à¦¡à¦¾à¦°à§‡à¦° à¦†à¦—à§‡ à¦ªà¦¡à¦¼à§à¦¨",
-        policy1Title: "à¦¡à§‡à¦²à¦¿à¦­à¦¾à¦°à¦¿ à¦¤à¦¥à§à¦¯",
-        policy1Text: "à¦†à¦®à¦°à¦¾ à¦¸à¦¾à¦°à¦¾ à¦¬à¦¾à¦‚à¦²à¦¾à¦¦à§‡à¦¶à§‡ à¦¡à§‡à¦²à¦¿à¦­à¦¾à¦°à¦¿ à¦¦à¦¿à¦¯à¦¼à§‡ à¦¥à¦¾à¦•à¦¿à¥¤ à¦¸à¦¿à¦²à§‡à¦Ÿà§‡à¦° à¦­à¦¿à¦¤à¦°à§‡ à¦¡à§‡à¦²à¦¿à¦­à¦¾à¦°à¦¿ à¦šà¦¾à¦°à§à¦œ à§³à§­à§¦ à¦à¦¬à¦‚ à¦¸à¦¾à¦§à¦¾à¦°à¦£à¦¤ à§§â€“à§© à¦•à¦°à§à¦®à¦¦à¦¿à¦¬à¦¸ à¦¸à¦®à¦¯à¦¼ à¦²à¦¾à¦—à§‡à¥¤ à¦¸à¦¿à¦²à§‡à¦Ÿà§‡à¦° à¦¬à¦¾à¦‡à¦°à§‡ à¦¡à§‡à¦²à¦¿à¦­à¦¾à¦°à¦¿ à¦šà¦¾à¦°à§à¦œ à§³à§§à§ªà§¦ à¦à¦¬à¦‚ à¦¸à¦¾à¦§à¦¾à¦°à¦£à¦¤ à§©â€“à§« à¦•à¦°à§à¦®à¦¦à¦¿à¦¬à¦¸ à¦¸à¦®à¦¯à¦¼ à¦²à¦¾à¦—à§‡à¥¤ à¦ªà§à¦°à¦¯à§‹à¦œà§à¦¯ à¦šà¦¾à¦°à§à¦œ à¦šà§‡à¦•à¦†à¦‰à¦Ÿà§‡ à¦¦à§‡à¦–à¦¾à¦¨à§‹ à¦¹à¦¬à§‡à¥¤",
-        policy2Title: "à¦…à¦°à§à¦¡à¦¾à¦° à¦•à¦¨à¦«à¦¾à¦°à§à¦®à§‡à¦¶à¦¨",
-        policy2Text: "à¦¹à§‹à¦¯à¦¼à¦¾à¦Ÿà¦¸à¦…à§à¦¯à¦¾à¦ª à¦¬à¦¾ à¦“à¦¯à¦¼à§‡à¦¬à¦¸à¦¾à¦‡à¦Ÿà§‡à¦° à¦®à¦¾à¦§à§à¦¯à¦®à§‡ à¦…à¦°à§à¦¡à¦¾à¦° à¦•à¦°à¦¾à¦° à¦ªà¦°, à¦†à¦®à¦¾à¦¦à§‡à¦° à¦Ÿà¦¿à¦® à¦ªà¦£à§à¦¯à§‡à¦° à¦ªà§à¦°à¦¾à¦ªà§à¦¯à¦¤à¦¾ à¦¯à¦¾à¦šà¦¾à¦‡ à¦•à¦°à§‡ à¦à¦¬à¦‚ à¦ªà§à¦°à¦¸à§‡à¦¸à¦¿à¦‚ à¦à¦° à¦†à¦—à§‡ à¦¡à§‡à¦²à¦¿à¦­à¦¾à¦°à¦¿ à¦šà¦¾à¦°à§à¦œà¦¸à¦¹ à¦šà§‚à¦¡à¦¼à¦¾à¦¨à§à¦¤ à¦¬à¦¿à¦² à¦“ à¦à¦•à¦Ÿà¦¿ à¦•à¦¨à¦«à¦¾à¦°à§à¦®à§‡à¦¶à¦¨ à¦®à§‡à¦¸à§‡à¦œ à¦ªà¦¾à¦ à¦¾à¦¯à¦¼à¥¤",
-        policy3Title: "à¦°à¦¿à¦Ÿà¦¾à¦°à§à¦¨ à¦“ à¦à¦•à§à¦¸à¦šà§‡à¦žà§à¦œ à¦ªà¦²à¦¿à¦¸à¦¿",
-        policy3Text: "à¦†à¦®à¦°à¦¾ à¦†à¦®à¦¾à¦¦à§‡à¦° à¦¹à¦¾à¦¤à§‡ à¦¤à§ˆà¦°à¦¿ à¦ªà§‹à¦¶à¦¾à¦•à§‡à¦° à¦®à¦¾à¦¨à§‡à¦° à¦¬à¦¿à¦·à¦¯à¦¼à§‡ à¦—à¦°à§à¦¬à¦¬à§‹à¦§ à¦•à¦°à¦¿à¥¤ à¦¤à¦¬à§‡, à¦¯à¦¦à¦¿ à¦†à¦ªà¦¨à¦¿ à¦•à§‹à¦¨à§‹ à¦¤à§à¦°à§à¦Ÿà¦¿à¦ªà§‚à¦°à§à¦£ à¦¬à¦¾ à¦­à§à¦² à¦ªà¦£à§à¦¯ à¦ªà¦¾à¦¨, à¦…à¦¨à§à¦—à§à¦°à¦¹ à¦•à¦°à§‡ à¦¡à§‡à¦²à¦¿à¦­à¦¾à¦°à¦¿ à¦ªà¦¾à¦“à¦¯à¦¼à¦¾à¦° à§¨à§ª à¦˜à¦£à§à¦Ÿà¦¾à¦° à¦®à¦§à§à¦¯à§‡ à¦†à¦®à¦¾à¦¦à§‡à¦° à¦œà¦¾à¦¨à¦¾à¦¨à¥¤ à¦ªà¦£à§à¦¯à¦Ÿà¦¿ à¦…à¦¬à¦¶à§à¦¯à¦‡ à¦…à¦¬à§à¦¯à¦¬à¦¹à§ƒà¦¤, à¦…à¦§à§‹à¦¯à¦¼à¦¾ à¦à¦¬à¦‚ à¦…à¦°à¦¿à¦œà¦¿à¦¨à¦¾à¦² à¦ªà§à¦¯à¦¾à¦•à§‡à¦œà¦¿à¦‚ à¦“ à¦Ÿà§à¦¯à¦¾à¦—à¦¸à¦¹ à¦¥à¦¾à¦•à¦¤à§‡ à¦¹à¦¬à§‡à¥¤ à¦•à§‹à¦¨à§‹ à¦•à§à¦·à¦¤à¦¿ à¦¬à¦¾ à¦¤à§à¦°à§à¦Ÿà¦¿à¦° à¦¦à¦¾à¦¬à¦¿à¦° à¦œà¦¨à§à¦¯ à¦…à¦¨à§à¦—à§à¦°à¦¹ à¦•à¦°à§‡ à¦à¦•à¦Ÿà¦¿ à¦†à¦¨à¦¬à¦•à§à¦¸à¦¿à¦‚ à¦­à¦¿à¦¡à¦¿à¦“ à¦°à§‡à¦•à¦°à§à¦¡ à¦•à¦°à§à¦¨à¥¤",
-        policy4Title: "à¦°à¦™à§‡à¦° à¦¡à¦¿à¦¸à¦•à§à¦²à§‡à¦‡à¦®à¦¾à¦°",
-        policy4Text: "à¦¯à¦¦à¦¿à¦“ à¦†à¦®à¦°à¦¾ à¦¨à¦¿à¦¶à§à¦šà¦¿à¦¤ à¦•à¦°à¦¾à¦° à¦šà§‡à¦·à§à¦Ÿà¦¾ à¦•à¦°à¦¿ à¦¯à§‡ à¦†à¦®à¦¾à¦¦à§‡à¦° à¦›à¦¬à¦¿à¦—à§à¦²à§‹ à¦ªà¦£à§à¦¯à§‡à¦° à¦¸à¦ à¦¿à¦• à¦°à¦‚ à¦‰à¦ªà¦¸à§à¦¥à¦¾à¦ªà¦¨ à¦•à¦°à§‡, à¦«à¦Ÿà§‹à¦—à§à¦°à¦¾à¦«à¦¿à¦° à¦¸à¦®à¦¯à¦¼ à¦†à¦²à§‹à¦° à¦•à¦¾à¦°à¦£à§‡ à¦¬à¦¾ à¦†à¦ªà¦¨à¦¾à¦° à¦¡à¦¿à¦­à¦¾à¦‡à¦¸à§‡à¦° à¦¡à¦¿à¦¸à¦ªà§à¦²à§‡ à¦¸à§‡à¦Ÿà¦¿à¦‚à¦¸à§‡à¦° à¦•à¦¾à¦°à¦£à§‡ à¦ªà§à¦°à¦•à§ƒà¦¤ à¦°à¦‚ à¦¸à¦¾à¦®à¦¾à¦¨à§à¦¯ à¦­à¦¿à¦¨à§à¦¨ à¦¹à¦¤à§‡ à¦ªà¦¾à¦°à§‡à¥¤ à¦¶à§à¦§à§à¦®à¦¾à¦¤à§à¦° à¦¸à¦¾à¦®à¦¾à¦¨à§à¦¯ à¦°à¦™à§‡à¦° à¦ªà¦¾à¦°à§à¦¥à¦•à§à¦¯à§‡à¦° à¦•à¦¾à¦°à¦£à§‡ à¦•à§‹à¦¨à§‹ à¦à¦•à§à¦¸à¦šà§‡à¦žà§à¦œ à¦—à§à¦°à¦¹à¦£à¦¯à§‹à¦—à§à¦¯ à¦¹à¦¬à§‡ à¦¨à¦¾à¥¤",
+        policyPageTitle: "ডেলিভারি ও রিটার্ন পলিসি",
+        policyEyebrow: "অর্ডারের আগে পড়ুন",
+        policy1Title: "ডেলিভারি তথ্য",
+        policy1Text: "আমরা সারা বাংলাদেশে ডেলিভারি দিয়ে থাকি। সিলেটের ভিতরে ডেলিভারি চার্জ ৳৭০ এবং সাধারণত ১–৩ কর্মদিবস সময় লাগে। সিলেটের বাইরে ডেলিভারি চার্জ ৳১৪০ এবং সাধারণত ৩–৫ কর্মদিবস সময় লাগে। প্রযোজ্য চার্জ চেকআউটে দেখানো হবে।",
+        policy2Title: "অর্ডার কনফার্মেশন",
+        policy2Text: "হোয়াটসঅ্যাপ বা ওয়েবসাইটের মাধ্যমে অর্ডার করার পর, আমাদের টিম পণ্যের প্রাপ্যতা যাচাই করে এবং প্রসেসিং এর আগে ডেলিভারি চার্জসহ চূড়ান্ত বিল ও একটি কনফার্মেশন মেসেজ পাঠায়।",
+        policy3Title: "রিটার্ন ও এক্সচেঞ্জ পলিসি",
+        policy3Text: "আমরা আমাদের হাতে তৈরি পোশাকের মানের বিষয়ে গর্ববোধ করি। তবে, যদি আপনি কোনো ত্রুটিপূর্ণ বা ভুল পণ্য পান, অনুগ্রহ করে ডেলিভারি পাওয়ার ২৪ ঘণ্টার মধ্যে আমাদের জানান। পণ্যটি অবশ্যই অব্যবহৃত, অধোয়া এবং অরিজিনাল প্যাকেজিং ও ট্যাগসহ থাকতে হবে। কোনো ক্ষতি বা ত্রুটির দাবির জন্য অনুগ্রহ করে একটি আনবক্সিং ভিডিও রেকর্ড করুন।",
+        policy4Title: "রঙের ডিসক্লেইমার",
+        policy4Text: "যদিও আমরা নিশ্চিত করার চেষ্টা করি যে আমাদের ছবিগুলো পণ্যের সঠিক রং উপস্থাপন করে, ফটোগ্রাফির সময় আলোর কারণে বা আপনার ডিভাইসের ডিসপ্লে সেটিংসের কারণে প্রকৃত রং সামান্য ভিন্ন হতে পারে। শুধুমাত্র সামান্য রঙের পার্থক্যের কারণে কোনো এক্সচেঞ্জ গ্রহণযোগ্য হবে না।",
 
-        loginPageTitle: "à¦®à§‹à¦¹à¦°-à¦ à¦¸à§à¦¬à¦¾à¦—à¦¤à¦®", loginPageSub: "à¦¦à§à¦°à§à¦¤ à¦šà§‡à¦•à¦†à¦‰à¦Ÿà§‡à¦° à¦œà¦¨à§à¦¯ à¦²à¦—à¦‡à¦¨ à¦•à¦°à§‡ à¦†à¦ªà¦¨à¦¾à¦° à¦¤à¦¥à§à¦¯ à¦¸à¦‚à¦°à¦•à§à¦·à¦£ à¦•à¦°à§à¦¨à¥¤",
-        continueGuest: "à¦—à§‡à¦¸à§à¦Ÿ à¦¹à¦¿à¦¸à§‡à¦¬à§‡ à¦šà¦¾à¦²à¦¿à¦¯à¦¼à§‡ à¦¯à¦¾à¦¨",
+        loginPageTitle: "মোহর-এ স্বাগতম", loginPageSub: "দ্রুত চেকআউটের জন্য লগইন করে আপনার তথ্য সংরক্ষণ করুন।",
+        continueGuest: "গেস্ট হিসেবে চালিয়ে যান",
 
         // Blueprint Additions
-        promoEndsIn: "à¦¶à§‡à¦· à¦¹à¦¤à§‡ à¦¬à¦¾à¦•à¦¿:",
-        relatedProductsTitle: "à¦†à¦ªà¦¨à¦¾à¦° à¦ªà¦›à¦¨à§à¦¦ à¦¹à¦¤à§‡ à¦ªà¦¾à¦°à§‡",
-        relatedProductsSub: "à¦†à¦®à¦¾à¦¦à§‡à¦° à¦•à¦¾à¦²à§‡à¦•à¦¶à¦¨ à¦¥à§‡à¦•à§‡ à¦†à¦ªà¦¨à¦¾à¦° à¦œà¦¨à§à¦¯ à¦¬à¦¿à¦¶à§‡à¦· à¦¨à¦¿à¦°à§à¦¬à¦¾à¦šà¦¨",
-        cartSavingsText: "à¦†à¦ªà¦¨à¦¿ à¦¸à§‡à¦­ à¦•à¦°à¦›à§‡à¦¨",
-        cartSavingsOrder: "à¦à¦‡ à¦…à¦°à§à¦¡à¦¾à¦°à§‡!"
+        promoEndsIn: "শেষ হতে বাকি:",
+        relatedProductsTitle: "আপনার পছন্দ হতে পারে",
+        relatedProductsSub: "আমাদের কালেকশন থেকে আপনার জন্য বিশেষ নির্বাচন",
+        cartSavingsText: "আপনি সেভ করছেন",
+        cartSavingsOrder: "এই অর্ডারে!"
     }
 };
 
@@ -408,22 +408,22 @@ window.sendTelegramNotification = async function(orderData) {
     const endpoint = configuredEndpoint || 'https://mohor-telegram.2022731073.workers.dev';
 
     const itemsText = Array.isArray(orderData.items)
-        ? orderData.items.map(item => `â€¢ ${item.name || item.title || 'Item'} (x${item.qty}) - à§³${item.price}`).join('\n')
+        ? orderData.items.map(item => `• ${item.name || item.title || 'Item'} (x${item.qty}) - ৳${item.price}`).join('\n')
         : 'No items detailed';
 
     const message = `
-<b>ðŸ›ï¸ NEW ORDER PLACED!</b>
+<b>🛍️ NEW ORDER PLACED!</b>
 
-ðŸ‘¤ <b>Customer:</b> ${orderData.customerName || 'N/A'}
-ðŸ“ž <b>Phone:</b> ${orderData.customerPhone || 'N/A'}
-ðŸ“ <b>Address:</b> ${orderData.deliveryAddress || 'N/A'}
+👤 <b>Customer:</b> ${orderData.customerName || 'N/A'}
+📞 <b>Phone:</b> ${orderData.customerPhone || 'N/A'}
+📍 <b>Address:</b> ${orderData.deliveryAddress || 'N/A'}
 
 <b>Order Items:</b>
 ${itemsText}
 
-ðŸ’µ <b>Subtotal:</b> à§³${orderData.subtotal || 0}
-ðŸ’° <b>Total Amount:</b> à§³${orderData.totalAmount || 0}
-ðŸ“Œ <b>Status:</b> ${orderData.status || 'pending'}
+💵 <b>Subtotal:</b> ৳${orderData.subtotal || 0}
+💰 <b>Total Amount:</b> ৳${orderData.totalAmount || 0}
+📌 <b>Status:</b> ${orderData.status || 'pending'}
     `;
 
     try {
@@ -538,7 +538,7 @@ function initPromoBannerAndCountdown() {
                 cachedPromo = parsed.data;
             }
         }
-    } catch (err) { /* ignore â€” falls through to a live fetch */ }
+    } catch (err) { /* ignore — falls through to a live fetch */ }
 
     const settingsPromise = cachedPromo
         ? Promise.resolve(cachedPromo)
@@ -619,7 +619,7 @@ window.updateCartSavingsSummary = function() {
         });
 
         if (totalSavings > 0) {
-            amountSpan.innerText = `à§³ ${totalSavings.toLocaleString()}`;
+            amountSpan.innerText = `৳ ${totalSavings.toLocaleString()}`;
             banner.style.display = 'block';
         } else {
             banner.style.display = 'none';
@@ -707,7 +707,7 @@ function writeProductsCache(products) {
     try {
         sessionStorage.setItem(PRODUCTS_CACHE_KEY, JSON.stringify({ products, savedAt: Date.now() }));
     } catch (err) {
-        // sessionStorage can be unavailable (private browsing, quota, etc.) â€”
+        // sessionStorage can be unavailable (private browsing, quota, etc.) —
         // caching is a pure optimization, so failing silently here is safe.
     }
 }
@@ -872,7 +872,7 @@ function colorSwatchesHtml(product) {
         grey: '#969696', gray: '#969696', gold: '#c9a14a', mustard: '#c59b39'
     };
 
-    return `<div class="card-colors" aria-label="${window.currentLang === 'bn' ? 'à¦‰à¦ªà¦²à¦¬à§à¦§ à¦°à¦‚' : 'Available colors'}">` +
+    return `<div class="card-colors" aria-label="${window.currentLang === 'bn' ? 'উপলব্ধ রং' : 'Available colors'}">` +
         colors.slice(0, 6).map(color => {
             const label = getColorName(color);
             if (!label) return '';
@@ -931,8 +931,8 @@ function renderProducts(productsToRender) {
 
         // FEATURE 1: Strikethrough Pricing HTML
         const priceDisplayHtml = pricing.isOnSale
-            ? `<div class="card-price"><span class="sale-price">à§³ ${pricing.price}</span> <del class="old-price">à§³ ${pricing.regularPrice}</del> <span class="card-discount">-${pricing.discountPercent}%</span></div>`
-            : `<div class="card-price">à§³ ${pricing.price}</div>`;
+            ? `<div class="card-price"><span class="sale-price">৳ ${pricing.price}</span> <del class="old-price">৳ ${pricing.regularPrice}</del> <span class="card-discount">-${pricing.discountPercent}%</span></div>`
+            : `<div class="card-price">৳ ${pricing.price}</div>`;
 
         // FEATURE 2: In-Card Image Slideshow HTML
         let mediaContentHtml = '';
@@ -965,7 +965,7 @@ function renderProducts(productsToRender) {
                     ${colorOptionsHtml}
                     <div class="card-actions">
                         <button type="button" class="wishlist-toggle" data-wishlist-id="${String(product.id)}" aria-label="${window.isWishlisted(product.id) ? 'Remove from wishlist' : 'Add to wishlist'}" aria-pressed="${window.isWishlisted(product.id)}">
-                            <span aria-hidden="true">${window.isWishlisted(product.id) ? 'â™¥' : 'â™¡'}</span>
+                            <span aria-hidden="true">${window.isWishlisted(product.id) ? '♥' : '♡'}</span>
                             <span>${window.isWishlisted(product.id) ? 'Saved' : 'Wishlist'}</span>
                         </button>
                     </div>
@@ -1024,7 +1024,7 @@ function renderProducts(productsToRender) {
             button.classList.toggle('is-active', active);
             button.setAttribute('aria-pressed', String(active));
             button.setAttribute('aria-label', active ? 'Remove from wishlist' : 'Add to wishlist');
-            button.innerHTML = `<span aria-hidden="true">${active ? 'â™¥' : 'â™¡'}</span><span>${active ? 'Saved' : 'Wishlist'}</span>`;
+            button.innerHTML = `<span aria-hidden="true">${active ? '♥' : '♡'}</span><span>${active ? 'Saved' : 'Wishlist'}</span>`;
         });
     });
     requestAnimationFrame(() => productGrid.classList.add('in-view'));
@@ -1200,8 +1200,8 @@ function renderRelatedProducts(currentProduct) {
             <div class="rel-card-info">
                 <div class="rel-card-title">${getText(relProduct.title)}</div>
                 <div class="rel-card-price">
-                    <span class="rel-price">à§³ ${pricing.price}</span>
-                    ${pricing.isOnSale ? `<del class="rel-old-price">à§³ ${pricing.regularPrice}</del>` : ''}
+                    <span class="rel-price">৳ ${pricing.price}</span>
+                    ${pricing.isOnSale ? `<del class="rel-old-price">৳ ${pricing.regularPrice}</del>` : ''}
                 </div>
             </div>
         `;
@@ -1285,7 +1285,7 @@ function openProductModal(product) {
 
     // FEATURE 1: Modal Price & Badges
     document.getElementById('modalTitle').innerText = getText(product.title);
-    document.getElementById('modalPrice').innerText = `à§³ ${pricing.price}`;
+    document.getElementById('modalPrice').innerText = `৳ ${pricing.price}`;
     const modalColorSummary = document.getElementById('modalColorSummary');
     if (modalColorSummary) {
         let summaryColors = product.colors;
@@ -1293,7 +1293,7 @@ function openProductModal(product) {
             summaryColors = summaryColors[window.currentLang] || summaryColors.en || [];
         }
         modalColorSummary.textContent = Array.isArray(summaryColors) && summaryColors.length
-            ? `${window.currentLang === 'bn' ? 'à¦°à¦‚' : 'Color'}: ${summaryColors.join(', ')}`
+            ? `${window.currentLang === 'bn' ? 'রং' : 'Color'}: ${summaryColors.join(', ')}`
             : '';
     }
 
@@ -1302,7 +1302,7 @@ function openProductModal(product) {
     const discountBadgeEl = document.getElementById('modalDiscountBadge');
 
     if (pricing.isOnSale) {
-        if (origPriceEl) { origPriceEl.innerText = `à§³ ${pricing.regularPrice}`; origPriceEl.style.display = 'inline-block'; }
+        if (origPriceEl) { origPriceEl.innerText = `৳ ${pricing.regularPrice}`; origPriceEl.style.display = 'inline-block'; }
         if (savingsTagEl) { savingsTagEl.innerText = `-${pricing.discountPercent}% OFF`; savingsTagEl.style.display = 'inline-block'; }
         if (discountBadgeEl) { discountBadgeEl.innerText = `-${pricing.discountPercent}% OFF`; discountBadgeEl.style.display = 'inline-block'; }
     } else {
@@ -1502,7 +1502,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!valid) return;
 
             // AddToCart is tracked once, globally, by the wrapped window.addToCart
-            // installed below (see "Intercept cart.js addToCart calls globally") â€”
+            // installed below (see "Intercept cart.js addToCart calls globally") —
             // tracking it again here would double-count the event in Meta Ads Manager.
             if (typeof window.addToCart === "function") {
                 window.addToCart(currentViewingProduct, selectedSize || 'Standard', selectedColor);

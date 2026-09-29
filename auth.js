@@ -1,4 +1,4 @@
-// MOHOR CLOTHINGS â€” API authentication and customer account UI.
+// MOHOR CLOTHINGS — API authentication and customer account UI.
 
 const AUTH_TOKEN_KEY = 'authToken';
 const AUTH_USER_KEY = 'authUser';
@@ -62,7 +62,7 @@ window.applyUserDataToForms = applyUserDataToForms;
 async function loadUserOrders() {
     const container = document.getElementById('userOrderHistoryContainer');
     if (!container || !isLoggedIn()) return;
-    container.innerHTML = `<p class="order-history-loading">${tr('accLoadingOrders') || 'Loading ordersâ€¦'}</p>`;
+    container.innerHTML = `<p class="order-history-loading">${tr('accLoadingOrders') || 'Loading orders…'}</p>`;
     try {
         const data = await api('/api/orders');
         const rows = (Array.isArray(data) ? data : data.orders || []).map(order => {
@@ -102,7 +102,15 @@ window.showAuthView = function(view) {
 window.toggleAuthMode = function() { window.showAuthView(document.getElementById('loginFormContainer')?.style.display !== 'none' ? 'signup' : 'login'); };
 window.closeAccountSidebar = function() { document.getElementById('accountSidebar')?.classList.remove('active'); document.getElementById('accountOverlay')?.classList.remove('active'); };
 window.openAccountSidebar = function() { document.getElementById('accountSidebar')?.classList.add('active'); document.getElementById('accountOverlay')?.classList.add('active'); };
-document.addEventListener('click', e => { if (e.target.closest('#openAccountBtn, .open-account-btn')) { e.preventDefault(); window.openAccountSidebar(); } });
+document.addEventListener('click', e => {
+    if (e.target.closest('#openAccountBtn, .open-account-btn')) {
+        e.preventDefault();
+        window.openAccountSidebar();
+    } else if (e.target.closest('#closeAccountBtn, #accountOverlay')) {
+        e.preventDefault();
+        window.closeAccountSidebar();
+    }
+});
 
 window.handleSignup = async function(evt) {
     const name = document.getElementById('signupName')?.value.trim() || '', email = document.getElementById('signupEmail')?.value.trim() || '', password = document.getElementById('signupPassword')?.value.trim() || '';
@@ -123,15 +131,26 @@ window.saveUserProfile = async function(evt) {
     if (!isLoggedIn()) return notify('You must be logged in to save an address.', 'error');
     const payload = { name: document.getElementById('profileName')?.value.trim() || '', phone: document.getElementById('profilePhone')?.value.trim() || '', address: document.getElementById('profileAddress')?.value.trim() || '' };
     setBtnLoading(evt, true);
-    try { const user = await api('/api/auth/me', { method: 'PUT', body: JSON.stringify(payload) }); setAuth(getAuthToken(), user); applyUserDataToForms(user); notify('Profile saved successfully!', 'success'); }
+    try {
+        const response = await api('/api/auth/me', { method: 'PUT', body: JSON.stringify(payload) });
+        const user = response.user || response;
+        setAuth(getAuthToken(), user);
+        applyUserDataToForms(user);
+        notify('Profile saved successfully!', 'success');
+    }
     catch (e) { notify('Error saving profile: ' + e.message, 'error'); } finally { setBtnLoading(evt, false); }
 };
-window.togglePasswordVisibility = function(id, btn) { const input = document.getElementById(id); if (input) { input.type = input.type === 'password' ? 'text' : 'password'; if (btn) btn.textContent = input.type === 'password' ? 'ðŸ‘ï¸' : 'ðŸ™ˆ'; } };
+window.togglePasswordVisibility = function(id, btn) { const input = document.getElementById(id); if (input) { input.type = input.type === 'password' ? 'text' : 'password'; if (btn) btn.textContent = input.type === 'password' ? '👁️' : '🙈'; } };
 window.handleForgotPassword = function() { notify('Password reset is not available yet. Please contact support.', 'error'); };
 
 (async function initAuth() {
     const token = getAuthToken();
     if (!token) return updateAuthUI(null);
-    try { const user = await api('/api/auth/me'); setAuth(token, user); updateAuthUI(user); }
+    try {
+        const response = await api('/api/auth/me');
+        const user = response.user || response;
+        setAuth(token, user);
+        updateAuthUI(user);
+    }
     catch (_) { logout(); }
 })();
