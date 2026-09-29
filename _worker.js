@@ -141,6 +141,11 @@ export default {
       return env.DB.prepare('SELECT * FROM users WHERE id = ? LIMIT 1').bind(userId).first();
     }
 
+    async function getTableColumns(tableName) {
+      const { results } = await env.DB.prepare(`PRAGMA table_info("${tableName}")`).all();
+      return new Set((results || []).map(column => column.name));
+    }
+
     function normalizeOrder(row) {
       const parsed = parseJsonFields(row);
       return {
@@ -526,6 +531,7 @@ export default {
         try {
           const data = await request.json();
           const authUser = await getAuthUser(request);
+          const available = await getTableColumns('orders');
 
           const orderId = 'ORD-' + Date.now();
           const userId = authUser ? authUser.id : data.userId || null;
@@ -544,28 +550,32 @@ export default {
             status: 'Pending',
           };
 
+          const fields = [
+            [['id', 'order_id'], newOrder.id],
+            [['user_id', 'userId'], newOrder.user_id],
+            [['user_email', 'userEmail'], newOrder.user_email],
+            [['customer_name', 'customerName', 'name'], newOrder.customer_name],
+            [['customer_phone', 'customerPhone', 'phone'], newOrder.customer_phone],
+            [['delivery_address', 'deliveryAddress', 'address'], newOrder.delivery_address],
+            [['items', 'order_items'], newOrder.items],
+            [['subtotal'], newOrder.subtotal],
+            [['total_amount', 'totalAmount', 'total'], newOrder.total_amount],
+            [['status', 'order_status'], newOrder.status],
+          ];
+          const selected = fields
+            .map(([candidates, value]) => [candidates.find(column => available.has(column)), value])
+            .filter(([column]) => column);
+          const columns = selected.map(([column]) => column);
+          if (!columns.length) throw new Error('The orders table has no writable columns');
+          const placeholders = columns.map(() => '?').join(', ');
           await env.DB.prepare(
-            `INSERT INTO orders (id, user_id, user_email, customer_name, customer_phone, delivery_address, items, subtotal, total_amount, status)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
-          )
-            .bind(
-              newOrder.id,
-              newOrder.user_id,
-              newOrder.user_email,
-              newOrder.customer_name,
-              newOrder.customer_phone,
-              newOrder.delivery_address,
-              newOrder.items,
-              newOrder.subtotal,
-              newOrder.total_amount,
-              newOrder.status
-            )
-            .run();
+            `INSERT INTO orders (${columns.map(column => `"${column}"`).join(', ')}) VALUES (${placeholders})`
+          ).bind(...selected.map(([, value]) => value)).run();
 
           // Fire Telegram Order Notification
           await notifyTelegram(newOrder);
 
-          return json({ success: true, orderId: newOrder.id });
+          return json({ success: true, id: newOrder.id, orderId: newOrder.id });
         } catch (e) {
           return json({ error: e.message }, { status: 500 });
         }
@@ -577,15 +587,27 @@ export default {
         if (!user) return json({ error: 'Unauthorized' }, { status: 401 });
 
         try {
+          const available = await getTableColumns('orders');
+          const userIdColumn = available.has('user_id') ? 'user_id' : available.has('userId') ? 'userId' : null;
+          const userEmailColumn = available.has('user_email') ? 'user_email' : available.has('userEmail') ? 'userEmail' : null;
           if (user.role === 'admin') {
             const { results } = await env.DB.prepare('SELECT * FROM orders').all();
             return json(sortOrders((results || []).map(normalizeOrder)));
           } else {
+            const predicates = [];
+            const bindings = [];
+            if (userIdColumn) {
+              predicates.push(`"${userIdColumn}" = ?`);
+              bindings.push(user.id);
+            }
+            if (userEmailColumn) {
+              predicates.push(`"${userEmailColumn}" = ?`);
+              bindings.push(user.email);
+            }
+            if (!predicates.length) return json([]);
             const { results } = await env.DB.prepare(
-              'SELECT * FROM orders WHERE user_id = ? OR user_email = ?'
-            )
-              .bind(user.id, user.email)
-              .all();
+              `SELECT * FROM orders WHERE ${predicates.join(' OR ')}`
+            ).bind(...bindings).all();
             return json(sortOrders((results || []).map(normalizeOrder)));
           }
         } catch (e) {
