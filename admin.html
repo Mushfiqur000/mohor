@@ -488,7 +488,7 @@ tbody tr:hover { background: rgba(245,241,236,0.6); }
         <!-- OVERVIEW -->
         <section id="section-overview" class="page-section active">
           <div class="stats-grid">
-            <div class="stat-card"><h3>Total Sales</h3><div class="number" id="stat-sales">৳0</div></div>
+            <div class="stat-card"><h3>Total Sales</h3><div class="number" id="stat-sales">à§³0</div></div>
             <div class="stat-card"><h3>Total Orders</h3><div class="number" id="stat-orders">0</div></div>
             <div class="stat-card"><h3>Pending Actions</h3><div class="number" id="stat-pending">0</div></div>
             <div class="stat-card"><h3>Low Stock Alerts</h3><div class="number" id="stat-lowstock">0</div></div>
@@ -558,7 +558,7 @@ tbody tr:hover { background: rgba(245,241,236,0.6); }
               <div class="history-cal-dow">Wed</div><div class="history-cal-dow">Thu</div><div class="history-cal-dow">Fri</div><div class="history-cal-dow">Sat</div>
             </div>
             <div class="history-cal-grid" id="history-cal-grid"></div>
-            <div class="form-hint">Darker days had more orders. Tap a day to see its hourly breakdown and order list below — tap it again (or use "View whole month") to zoom back out.</div>
+            <div class="form-hint">Darker days had more orders. Tap a day to see its hourly breakdown and order list below â€” tap it again (or use "View whole month") to zoom back out.</div>
             <div class="form-hint" id="history-undated-note" style="display:none;"></div>
           </div>
 
@@ -661,11 +661,11 @@ tbody tr:hover { background: rgba(245,241,236,0.6); }
             </div>
             <form id="add-product-form">
               <div class="form-grid">
-                
+
                 <div class="form-group">
                   <label>Product Title</label>
                   <input type="text" id="prod-title-en" placeholder="English (e.g. Peach Vila 3-Piece)" required style="margin-bottom:8px;">
-                  <input type="text" id="prod-title-bn" placeholder="Bengali (e.g. পিচ ভিলা থ্রি-পিস)">
+                  <input type="text" id="prod-title-bn" placeholder="Bengali (e.g. à¦ªà¦¿à¦š à¦­à¦¿à¦²à¦¾ à¦¥à§à¦°à¦¿-à¦ªà¦¿à¦¸)">
                 </div>
 
                 <div class="form-group">
@@ -699,7 +699,7 @@ tbody tr:hover { background: rgba(245,241,236,0.6); }
                 <div class="form-group full-width">
                   <label>Colors (comma separated)</label>
                   <input type="text" id="prod-colors-en" placeholder="English: Peach Pink, Navy Blue" required style="margin-bottom:8px;">
-                  <input type="text" id="prod-colors-bn" placeholder="Bengali: পিচ পিঙ্ক, নেভি ব্লু">
+                  <input type="text" id="prod-colors-bn" placeholder="Bengali: à¦ªà¦¿à¦š à¦ªà¦¿à¦™à§à¦•, à¦¨à§‡à¦­à¦¿ à¦¬à§à¦²à§">
                   <input type="text" id="prod-colors-hex" placeholder="Optional colour codes in the same order: #E8A39A, #1D3557">
                   <div class="form-hint">Use one hex code per colour, in the same order as the names. Leave blank when a colour has no swatch.</div>
                 </div>
@@ -856,9 +856,16 @@ tbody tr:hover { background: rgba(245,241,236,0.6); }
      ============================================================ -->
 <script type="module">
 /* ---------- D1 ADMIN API ---------- */
-const auth = null;
-const db = null;
 const adminEmail = "mushfiqurrahman2222@gmail.com";
+const api = async (path, options = {}) => {
+  const token = localStorage.getItem('authToken');
+  const headers = { ...(options.body ? {'Content-Type':'application/json'} : {}), ...(token ? {Authorization: `Bearer ${token}`} : {}) };
+  const response = await fetch(path, {...options, headers});
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(data.error || `Request failed (${response.status})`);
+  return data;
+};
+const authUser = () => { try { return JSON.parse(localStorage.getItem('authUser') || 'null'); } catch (_) { return null; } };
 
 /* ---------- STATE ---------- */
 let allOrders = [];
@@ -930,7 +937,7 @@ function statusClass(status) {
   if (s === 'placed' || s === 'new') return 'status-pending';
   return 'status-' + (known.includes(s) ? s : 'pending');
 }
-function money(n) { return '৳' + Number(n || 0).toLocaleString(); }
+function money(n) { return 'à§³' + Number(n || 0).toLocaleString(); }
 
 function showToast(message, type = 'success') {
   const container = document.getElementById('toast-container');
@@ -1017,25 +1024,27 @@ function showLoginMessage(kind, text) {
   el.className = 'login-msg ' + (kind === 'error' ? 'error' : 'success');
 }
 
-onAuthStateChanged(auth, (user) => {
-  if (user && user.email === adminEmail) {
+async function initAdmin() {
+  try {
+    const user = await api('/api/auth/me');
+    if (user && (user.email === adminEmail || user.admin)) {
     loginSection.style.display = 'none';
     mainDashboard.style.display = 'block';
     document.getElementById('user-email').innerText = user.email;
     fetchOrders();
     fetchProducts();
     fetchBanners();
-  } else if (user) {
-    signOut(auth).then(() => {
+    } else {
       loginSection.style.display = 'flex';
       mainDashboard.style.display = 'none';
       showLoginMessage('error', 'Unauthorized. Please log in with the admin email.');
-    });
-  } else {
+    }
+  } catch (_) {
     loginSection.style.display = 'flex';
     mainDashboard.style.display = 'none';
   }
-});
+}
+initAdmin();
 
 loginForm.addEventListener('submit', (e) => {
   e.preventDefault();
@@ -1047,9 +1056,9 @@ loginForm.addEventListener('submit', (e) => {
     showLoginMessage('error', 'Access denied. Admin email required.');
     return;
   }
-  signInWithEmailAndPassword(auth, email, pass).catch((error) => {
-    showLoginMessage('error', 'Login failed: ' + error.message);
-  });
+  api('/api/auth/login', {method:'POST', body: JSON.stringify({email, password: pass})}).then(data => {
+    localStorage.setItem('authToken', data.token); localStorage.setItem('authUser', JSON.stringify(data.user)); initAdmin();
+  }).catch(error => showLoginMessage('error', 'Login failed: ' + error.message));
 });
 
 document.getElementById('forgot-password-link').addEventListener('click', async (e) => {
@@ -1058,14 +1067,13 @@ document.getElementById('forgot-password-link').addEventListener('click', async 
   if (!email) { showLoginMessage('error', 'Enter your admin email above first, then tap "Forgot password".'); return; }
   if (email !== adminEmail) { showLoginMessage('error', 'Access denied. Admin email required.'); return; }
   try {
-    await sendPasswordResetEmail(auth, email);
-    showLoginMessage('success', 'Password reset email sent — check your inbox.');
+    showLoginMessage('error', 'Password reset is not available yet. Please contact support.');
   } catch (err) {
     showLoginMessage('error', 'Could not send reset email: ' + err.message);
   }
 });
 
-logoutBtn.addEventListener('click', () => signOut(auth));
+logoutBtn.addEventListener('click', () => { localStorage.removeItem('authToken'); localStorage.removeItem('authUser'); location.reload(); });
 
 /* ---------- FIRESTORE: HOMEPAGE BANNERS ---------- */
 const bannerForm = document.getElementById('banner-form');
@@ -1091,7 +1099,7 @@ bannerImageFile.addEventListener('change', () => {
   if (!file) return;
   bannerImageFile.disabled = true;
   saveBannerBtn.disabled = true;
-  bannerImageStatus.textContent = 'Uploading banner image…';
+  bannerImageStatus.textContent = 'Uploading banner imageâ€¦';
   bannerImageStatus.className = 'form-hint';
   bannerImageUploadPromise = compressAndResizeImage(file, 1200, 800, 0.80)
       .then(blob => uploadImageToR2(blob, `banner-${Date.now()}.webp`))
@@ -1132,10 +1140,9 @@ function resetBannerForm() {
 
 async function loadBannerIntoForm(id) {
   try {
-    const snapshot = await getDocs(collection(db, "banners"));
-    const bannerDoc = snapshot.docs.find(item => item.id === id);
-    if (!bannerDoc) throw new Error('Banner not found.');
-    const banner = bannerDoc.data();
+    const banners = await api('/api/banners');
+    const banner = (Array.isArray(banners) ? banners : []).find(item => item.id === id);
+    if (!banner) throw new Error('Banner not found.');
     editingBannerId = id;
     bannerImageUrl.value = banner.imageUrl || '';
     bannerObjectPosition.value = Number(String(banner.objectPosition || '50').replace('%', '').trim()) || 50;
@@ -1158,7 +1165,7 @@ async function loadBannerIntoForm(id) {
 function deleteBanner(id) {
   showConfirm('Delete this homepage banner?', async () => {
     try {
-      await deleteDoc(doc(db, "banners", id));
+      await api(`/api/banners?id=${id}`, { method: 'DELETE' });
       if (editingBannerId === id) resetBannerForm();
       showToast('Banner deleted.', 'success');
     } catch (error) {
@@ -1171,7 +1178,7 @@ function deleteBanner(id) {
 bannerForm.addEventListener('submit', async (event) => {
   event.preventDefault();
   saveBannerBtn.disabled = true;
-  bannerFormStatus.textContent = 'Saving banner…';
+  bannerFormStatus.textContent = 'Saving bannerâ€¦';
   bannerFormStatus.className = 'form-hint';
   try {
     await bannerImageUploadPromise;
@@ -1187,9 +1194,9 @@ bannerForm.addEventListener('submit', async (event) => {
     if (!payload.imageUrl) throw new Error('Upload a banner image or provide an image URL.');
     if (!payload.title) throw new Error('Enter a banner title.');
     if (editingBannerId) {
-      await updateDoc(doc(db, "banners", editingBannerId), payload);
+      await api(`/api/banners?id=${editingBannerId}`, { method: 'PUT', body: JSON.stringify(payload) });
     } else {
-      await addDoc(collection(db, "banners"), payload);
+      await api('/api/banners', { method: 'POST', body: JSON.stringify(payload) });
     }
     bannerFormStatus.textContent = editingBannerId ? 'Banner updated successfully.' : 'Banner saved successfully.';
     bannerFormStatus.className = 'form-hint success';
@@ -1207,27 +1214,21 @@ bannerForm.addEventListener('submit', async (event) => {
 cancelBannerEditBtn.addEventListener('click', resetBannerForm);
 
 /* ---------- FIRESTORE: ORDERS ---------- */
-function fetchOrders() {
-  onSnapshot(collection(db, "orders"), (snapshot) => {
-    allOrders = [];
-    snapshot.forEach(d => allOrders.push({ id: d.id, ...d.data() }));
-    allOrders.sort((a, b) => parseDate(b.orderDate).getTime() - parseDate(a.orderDate).getTime());
-    renderOverview();
-    renderOrdersTable();
-    renderHistoryView();
-  }, (error) => {
-    console.error('Orders listener error:', error);
-    showToast('Could not load orders: ' + error.message, 'error');
-  });
+async function fetchOrders() {
+  try {
+    allOrders = await api('/api/orders');
+    allOrders = Array.isArray(allOrders) ? allOrders : [];
+    renderOverview(); renderOrdersTable(); renderHistoryView();
+  } catch (error) { showToast('Could not load orders: ' + error.message, 'error'); }
 }
 
 async function updateOrderStatus(orderId, newStatus, buttonEl, selectEl) {
   const originalText = buttonEl.innerText;
   try {
-    buttonEl.innerText = '…';
+    buttonEl.innerText = 'â€¦';
     buttonEl.disabled = true;
-    await updateDoc(doc(db, "orders", orderId), { status: newStatus });
-    buttonEl.innerText = '✓ Saved';
+    await api(`/api/orders/${orderId}`, {method: 'PATCH', body: JSON.stringify({status: newStatus})});
+    buttonEl.innerText = 'âœ“ Saved';
     selectEl.className = 'status-select ' + statusClass(newStatus);
     showToast('Order status updated to ' + newStatus, 'success');
     setTimeout(() => { buttonEl.innerText = originalText; buttonEl.disabled = false; }, 1600);
@@ -1285,7 +1286,7 @@ function renderOrdersTable() {
 
   const tbody = document.getElementById('orders-table-body');
   if (filtered.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:#888;padding:24px;">${allOrders.length === 0 ? 'No orders yet — they will appear here as customers check out.' : 'No orders match your search or filter.'}</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:#888;padding:24px;">${allOrders.length === 0 ? 'No orders yet â€” they will appear here as customers check out.' : 'No orders match your search or filter.'}</td></tr>`;
   } else {
     tbody.innerHTML = pageItems.map(order => {
       let itemsHtml = '<span style="color:#a89f9a;">No items detailed</span>';
@@ -1451,46 +1452,25 @@ function renderRecentOrders() {
 }
 
 /* ---------- FIRESTORE: PRODUCTS ---------- */
-function fetchProducts() {
-  onSnapshot(collection(db, "products"), (snapshot) => {
-    allProducts = [];
-    snapshot.forEach(d => allProducts.push({ id: d.id, ...d.data() }));
+async function fetchProducts() {
+  try {
+    allProducts = await api('/api/products');
+    allProducts = Array.isArray(allProducts) ? allProducts : [];
     allProducts.sort((a, b) => {
       const aOrder = Number.isFinite(Number(a.displayOrder)) ? Number(a.displayOrder) : Number.MAX_SAFE_INTEGER;
       const bOrder = Number.isFinite(Number(b.displayOrder)) ? Number(b.displayOrder) : Number.MAX_SAFE_INTEGER;
       return aOrder - bOrder || parseDate(b.createdAt).getTime() - parseDate(a.createdAt).getTime();
     });
     if (!productOrderDirty) productOrderDraft = new Map();
-    const productsMissingOrder = allProducts.filter(product => !Number.isFinite(Number(product.displayOrder)));
-    if (productsMissingOrder.length > 0) {
-      const migrationBatch = writeBatch(db);
-      allProducts.forEach((product, index) => {
-        migrationBatch.update(doc(db, "products", product.id), { displayOrder: index + 1 });
-      });
-      migrationBatch.commit().catch(error => {
-        console.error('Display order migration error:', error);
-        showToast('Could not initialize product positions: ' + error.message, 'error');
-      });
-    }
     renderOverview();
     renderProductsTable();
     renderInventoryTable();
-  }, (error) => {
-    console.error('Products listener error:', error);
-    showToast('Could not load products: ' + error.message, 'error');
-  });
+  } catch (error) { showToast('Could not load products: ' + error.message, 'error'); }
 }
 
-function fetchBanners() {
-  onSnapshot(collection(db, "banners"), (snapshot) => {
-    const banners = [];
-    snapshot.forEach(d => banners.push({ id: d.id, ...d.data() }));
-    banners.sort((a, b) => Number(a.order || 0) - Number(b.order || 0));
-    renderBannerList(banners);
-  }, (error) => {
-    console.error('Banners listener error:', error);
-    showToast('Could not load banners: ' + error.message, 'error');
-  });
+async function fetchBanners() {
+  try { const banners = await api('/api/banners'); renderBannerList(Array.isArray(banners) ? banners : []); }
+  catch (error) { showToast('Could not load banners: ' + error.message, 'error'); }
 }
 
 function renderBannerList(banners) {
@@ -1504,7 +1484,7 @@ function renderBannerList(banners) {
       <img src="${escapeHtml(banner.imageUrl || '')}" alt="">
       <div class="banner-admin-meta">
         <div class="banner-admin-title">${escapeHtml(banner.title || 'Untitled banner')}</div>
-        <div class="banner-admin-subtitle">${escapeHtml(banner.subtitle || '')} · Order ${Number(banner.order || 0)}</div>
+        <div class="banner-admin-subtitle">${escapeHtml(banner.subtitle || '')} Â· Order ${Number(banner.order || 0)}</div>
         <a class="banner-admin-link" href="${escapeHtml(banner.link || '#')}" target="_blank" rel="noopener">${escapeHtml(banner.link || '#')}</a>
       </div>
       <div class="banner-admin-actions">
@@ -1533,7 +1513,7 @@ function sizeStockSummary(product) {
       ? Number(product.sizeQuantities[size]) || 0
       : Number(product.quantity) || 0;
     return `${size}: ${qty}`;
-  }).join(' · ');
+  }).join(' Â· ');
 }
 
 function renderProductsTable() {
@@ -1542,7 +1522,7 @@ function renderProductsTable() {
       const pTitle = typeof p.title === 'string' ? p.title : (p.title?.en || '');
       return !q || pTitle.toLowerCase().includes(q);
   });
-  
+
   const totalPages = Math.max(1, Math.ceil(filtered.length / PRODUCTS_PER_PAGE));
   productPage = Math.min(productPage, totalPages);
   const pageItems = filtered.slice((productPage - 1) * PRODUCTS_PER_PAGE, productPage * PRODUCTS_PER_PAGE);
@@ -1555,9 +1535,9 @@ function renderProductsTable() {
       const img = prod.images && prod.images.length > 0 ? prod.images[0] : '';
       const sizesStr = sizeStockSummary(prod);
       const displayTitle = typeof prod.title === 'string' ? prod.title : (prod.title?.en || '');
-      
+
       const hasDiscount = prod.originalPrice && Number(prod.originalPrice) > Number(prod.price);
-      const priceHtml = hasDiscount 
+      const priceHtml = hasDiscount
         ? `<span class="mono" style="color:var(--maroon);font-weight:700;">${money(prod.price)}</span> <del class="mono" style="color:var(--rust);font-size:11px;">${money(prod.originalPrice)}</del>`
         : `<span class="mono" style="color:#C9A14A;font-weight:600;">${money(prod.price)}</span>`;
 
@@ -1632,18 +1612,13 @@ function updateProductOrderDraft(productId, requestedPosition) {
 
 async function saveProductOrder() {
   if (!productOrderDirty) return;
-  const batch = writeBatch(db);
   const changedProducts = allProducts.filter(product => productOrderDraft.has(product.id));
-  changedProducts.forEach(product => {
-    const position = parseInt(productOrderDraft.get(product.id), 10);
-    batch.update(doc(db, "products", product.id), { displayOrder: Number.isInteger(position) && position > 0 ? position : 1 });
-  });
   const saveButton = document.getElementById('save-product-order-btn');
   saveButton.disabled = true;
-  saveButton.textContent = 'Saving order…';
+  saveButton.textContent = 'Saving orderâ€¦';
   try {
     await Promise.race([
-      batch.commit(),
+      Promise.all(changedProducts.map(product => api(`/api/products?id=${product.id}`, { method: 'PUT', body: JSON.stringify({ displayOrder: Number(productOrderDraft.get(product.id)) || 1 }) }))),
       new Promise((_, reject) => setTimeout(() => reject(new Error('Saving order timed out. Please try again.')), 10000))
     ]);
     productOrderDraft = new Map();
@@ -1671,19 +1646,17 @@ document.getElementById('undo-product-order-btn').addEventListener('click', undo
 document.getElementById('sync-legacy-thumbnails-btn').addEventListener('click', async () => {
   const button = document.getElementById('sync-legacy-thumbnails-btn');
   button.disabled = true;
-  button.textContent = 'Syncing thumbnails…';
+  button.textContent = 'Syncing thumbnailsâ€¦';
   try {
-    const snapshot = await getDocs(collection(db, 'products'));
-    const legacy = snapshot.docs.filter(item => {
-      const data = item.data() || {};
+    const products = await api('/api/products');
+    const legacy = (Array.isArray(products) ? products : []).filter(item => {
+      const data = item || {};
       return !data.thumbnail && !data.thumbImage && typeof data.images?.[0] === 'string' && /-detail\.webp(?:$|\?)/i.test(data.images[0]);
     });
     if (legacy.length) {
-      const batch = writeBatch(db);
-      legacy.forEach(item => batch.update(doc(db, 'products', item.id), {
-        thumbnail: item.data().images[0].replace(/-detail\.webp(?=$|\?)/i, '-thumb.webp')
-      }));
-      await batch.commit();
+      await Promise.all(legacy.map(item => api(`/api/products?id=${item.id}`, {
+        method: 'PUT', body: JSON.stringify({ thumbnail: item.images[0].replace(/-detail\.webp(?=$|\?)/i, '-thumb.webp') })
+      })));
     }
     showToast(`${legacy.length} legacy thumbnail${legacy.length === 1 ? '' : 's'} synced.`, 'success');
   } catch (error) {
@@ -1701,7 +1674,7 @@ function handleDeleteProduct(id) {
   const name = prod ? (typeof prod.title === 'string' ? prod.title : prod.title?.en) : 'this product';
   showConfirm(`Delete "${name}" from your store? This cannot be undone.`, async () => {
     try {
-      await deleteDoc(doc(db, "products", id));
+      await api(`/api/products?id=${id}`, { method: 'DELETE' });
       showToast('Product deleted.', 'success');
       if (editingProductId === id) cancelEdit();
     } catch (err) {
@@ -1724,26 +1697,24 @@ async function applyStorewideDiscount() {
 
   showConfirm(`Apply a flat ${percent}% discount to ALL products across the entire store?`, async () => {
     try {
-      const snapshot = await getDocs(collection(db, "products"));
-      const batch = writeBatch(db);
-
-      snapshot.forEach(docSnap => {
-        const data = docSnap.data();
+      const products = await api('/api/products');
+      const updates = [];
+      (Array.isArray(products) ? products : []).forEach(data => {
         const basePrice = (data.originalPrice && Number(data.originalPrice) > Number(data.price))
           ? Number(data.originalPrice)
           : Number(data.price || 0);
 
         if (basePrice > 0) {
           const newSalePrice = Math.round(basePrice * (1 - percent / 100));
-          batch.update(docSnap.ref, {
+          updates.push(api(`/api/products?id=${data.id}`, { method: 'PUT', body: JSON.stringify({
             originalPrice: basePrice,
             price: newSalePrice,
             updatedAt: new Date().toISOString()
-          });
+          }) }));
         }
       });
 
-      await batch.commit();
+      await Promise.all(updates);
 
       // Note: this writes to settings/storefront using the field names the
       // storefront's initPromoBannerAndCountdown() actually reads
@@ -1753,14 +1724,14 @@ async function applyStorewideDiscount() {
       // top banner automatically" part silently never worked.
       const bannerPayload = {
         saleActive: true,
-        bannerText: `FLAT ${percent}% OFF — Limited Time Offer! T&C Apply`,
+        bannerText: `FLAT ${percent}% OFF â€” Limited Time Offer! T&C Apply`,
         bannerBadge: `-${percent}%`,
         saleEndTime: expiryVal ? new Date(expiryVal).toISOString() : null,
         discountPercent: percent,
         updatedAt: new Date().toISOString()
       };
 
-      await setDoc(doc(db, "settings", "storefront"), bannerPayload);
+      await api('/api/settings?id=storefront', {method: 'PUT', body: JSON.stringify({...bannerPayload, id: 'storefront'})});
       showToast(`Applied ${percent}% discount across all store products!`, 'success');
     } catch (err) {
       console.error('Bulk discount error:', err);
@@ -1772,23 +1743,21 @@ async function applyStorewideDiscount() {
 async function resetAllDiscounts() {
   showConfirm('Reset all product prices back to their original regular prices and turn off the promo banner?', async () => {
     try {
-      const snapshot = await getDocs(collection(db, "products"));
-      const batch = writeBatch(db);
-
-      snapshot.forEach(docSnap => {
-        const data = docSnap.data();
+      const products = await api('/api/products');
+      const updates = [];
+      (Array.isArray(products) ? products : []).forEach(data => {
         if (data.originalPrice && Number(data.originalPrice) > 0) {
-          batch.update(docSnap.ref, {
+          updates.push(api(`/api/products?id=${data.id}`, { method: 'PUT', body: JSON.stringify({
             price: Number(data.originalPrice),
             originalPrice: 0,
             updatedAt: new Date().toISOString()
-          });
+          }) }));
         }
       });
 
-      await batch.commit();
+      await Promise.all(updates);
 
-      await setDoc(doc(db, "settings", "storefront"), {
+      await api('/api/settings?id=storefront', {method: 'PUT', body: JSON.stringify({id: 'storefront',
         saleActive: false,
         bannerText: '',
         bannerBadge: '',
@@ -1846,7 +1815,7 @@ function createSizeBlockHTML(label = '', measurementsTextEn = '', measurementsTe
         <button type="button" class="remove-size-btn" title="Remove size">&times;</button>
       </div>
       <textarea class="size-measurements-input en" rows="2" placeholder="EN: Body/Chest: 38&#10;Waist: 34-36">${escapeHtml(measurementsTextEn)}</textarea>
-      <textarea class="size-measurements-input bn" rows="2" placeholder="BN: বডি/চেস্ট: ৩৮&#10;কোমর: ৩৪-৩৬" style="margin-top: 5px;">${escapeHtml(measurementsTextBn)}</textarea>
+      <textarea class="size-measurements-input bn" rows="2" placeholder="BN: à¦¬à¦¡à¦¿/à¦šà§‡à¦¸à§à¦Ÿ: à§©à§®&#10;à¦•à§‹à¦®à¦°: à§©à§ª-à§©à§¬" style="margin-top: 5px;">${escapeHtml(measurementsTextBn)}</textarea>
     </div>`;
 }
 
@@ -1881,7 +1850,7 @@ function collectSizesFromForm() {
     sizesArray.push(label);
     const enText = block.querySelector('.size-measurements-input.en').value.trim();
     const bnText = block.querySelector('.size-measurements-input.bn').value.trim();
-    
+
     sizeMeasurementsMap[label] = {
       en: enText.replace(/\n/g, '<br>'),
       bn: (bnText || enText).replace(/\n/g, '<br>')
@@ -2081,14 +2050,14 @@ async function processProductImages(files) {
   let firstThumbnailUrl = '';
   for (let index = 0; index < files.length; index += 1) {
     const file = files[index];
-    imageUploadStatus.textContent = `Compressing photo ${index + 1} of ${files.length}…`;
+    imageUploadStatus.textContent = `Compressing photo ${index + 1} of ${files.length}â€¦`;
     const thumbBlob = await compressAndResizeImage(file, 400, 533, 0.80);
     const generatedDetailBlob = await compressAndResizeImage(file, 1000, 1333, 0.80);
     const detailBlob = generatedDetailBlob.size > file.size ? file : generatedDetailBlob;
     const baseName = file.name.replace(/\.[^.]+$/, '').replace(/[^a-z0-9_-]+/gi, '-').toLowerCase() || `product-${Date.now()}`;
     const uniqueName = `${baseName}-${Date.now()}-${index}`;
 
-    imageUploadStatus.textContent = `Uploading photo ${index + 1} of ${files.length}…`;
+    imageUploadStatus.textContent = `Uploading photo ${index + 1} of ${files.length}â€¦`;
     const thumbUrl = await uploadImageToR2(thumbBlob, `${uniqueName}-thumb.webp`);
     const detailUrl = await uploadImageToR2(detailBlob, `${uniqueName}-detail.webp`);
     if (!firstThumbnailUrl) firstThumbnailUrl = thumbUrl;
@@ -2103,7 +2072,7 @@ imageFilesInput.addEventListener('change', () => {
 
   imageFilesInput.disabled = true;
   uploadBtn.disabled = true;
-  imageUploadStatus.textContent = `Preparing ${files.length} image${files.length === 1 ? '' : 's'}…`;
+  imageUploadStatus.textContent = `Preparing ${files.length} image${files.length === 1 ? '' : 's'}â€¦`;
   imageUploadStatus.className = 'form-hint';
 
   imageUploadPromise = processProductImages(files)
@@ -2138,34 +2107,34 @@ function loadProductIntoForm(id) {
   const prod = allProducts.find(p => p.id === id);
   if (!prod) return;
   editingProductId = id;
-  
+
   document.getElementById('prod-title-en').value = getSafeStr(prod.title, 'en');
   document.getElementById('prod-title-bn').value = getSafeStr(prod.title, 'bn');
   document.getElementById('prod-category').value = prod.category || 'three-piece';
-  
+
   document.getElementById('prod-price').value = prod.price || '';
   document.getElementById('prod-original-price').value = prod.originalPrice || '';
   document.getElementById('prod-qty').value = prod.quantity || 0;
-  
+
   const colorEntries = getColorEntries(prod.colors);
   document.getElementById('prod-colors-en').value = colorEntries.map(color => color.englishName).join(', ');
   document.getElementById('prod-colors-bn').value = colorEntries.map(color => color.bengaliName).join(', ');
   document.getElementById('prod-colors-hex').value = colorEntries.map(color => color.hex).join(', ');
   const existingVariantStock = prod.variantStock || prod.stockByVariant || {};
-  
+
   document.getElementById('prod-measurements-en').value = getSafeStr(prod.measurementsGuide, 'en');
   document.getElementById('prod-measurements-bn').value = getSafeStr(prod.measurementsGuide, 'bn');
-  
+
   document.getElementById('prod-desc-en').value = getSafeStr(prod.description, 'en');
   document.getElementById('prod-desc-bn').value = getSafeStr(prod.description, 'bn');
-  
+
   document.getElementById('prod-details-en').value = getSafeArr(prod.details, 'en').join('\n');
   document.getElementById('prod-details-bn').value = getSafeArr(prod.details, 'bn').join('\n');
   document.getElementById('prod-materials-en').value = getSafeArr(prod.materials, 'en').join('\n');
   document.getElementById('prod-materials-bn').value = getSafeArr(prod.materials, 'bn').join('\n');
   document.getElementById('prod-care-en').value = getSafeArr(prod.care, 'en').join('\n');
   document.getElementById('prod-care-bn').value = getSafeArr(prod.care, 'bn').join('\n');
-  
+
   document.getElementById('prod-seo').value = Array.isArray(prod.seoKeywords) ? prod.seoKeywords.join(', ') : '';
   document.getElementById('prod-images').value = Array.isArray(prod.images) ? prod.images.join('\n') : '';
   productThumbnailUrl = prod.thumbnail || prod.thumbImage || '';
@@ -2224,7 +2193,7 @@ addProductForm.addEventListener('submit', async (e) => {
   e.preventDefault();
   uploadBtn.disabled = true;
   const isEditing = !!editingProductId;
-  uploadBtn.innerText = isEditing ? 'Saving changes…' : 'Saving product…';
+  uploadBtn.innerText = isEditing ? 'Saving changesâ€¦' : 'Saving productâ€¦';
   uploadStatus.textContent = '';
   uploadStatus.className = '';
 
@@ -2234,11 +2203,11 @@ addProductForm.addEventListener('submit', async (e) => {
       en: document.getElementById('prod-title-en').value.trim(),
       bn: document.getElementById('prod-title-bn').value.trim() || document.getElementById('prod-title-en').value.trim()
     };
-    
+
     const category = document.getElementById('prod-category').value;
     const price = Number(document.getElementById('prod-price').value);
     const originalPrice = Number(document.getElementById('prod-original-price').value) || 0;
-    
+
     const colorNamesEn = document.getElementById('prod-colors-en').value.split(',').map(c => c.trim()).filter(Boolean);
     const colorsBn = document.getElementById('prod-colors-bn').value.split(',').map(c => c.trim()).filter(Boolean);
     const colorHexes = document.getElementById('prod-colors-hex').value.split(',').map(c => c.trim()).filter(Boolean);
@@ -2260,17 +2229,17 @@ addProductForm.addEventListener('submit', async (e) => {
           .reduce((sum, [, value]) => sum + value, 0);
         return result;
       }, {});
-    
+
     const measurementsGuide = {
       en: document.getElementById('prod-measurements-en').value.trim(),
       bn: document.getElementById('prod-measurements-bn').value.trim() || document.getElementById('prod-measurements-en').value.trim()
     };
-    
+
     const desc = {
       en: document.getElementById('prod-desc-en').value.trim(),
       bn: document.getElementById('prod-desc-bn').value.trim() || document.getElementById('prod-desc-en').value.trim()
     };
-    
+
     const detailsEn = document.getElementById('prod-details-en').value.split('\n').map(d => d.trim()).filter(Boolean);
     const detailsBn = document.getElementById('prod-details-bn').value.split('\n').map(d => d.trim()).filter(Boolean);
     const details = {
@@ -2283,7 +2252,7 @@ addProductForm.addEventListener('submit', async (e) => {
     const careBn = document.getElementById('prod-care-bn').value.split('\n').map(v => v.trim()).filter(Boolean);
     const materials = { en: materialsEn, bn: materialsBn.length ? materialsBn : materialsEn };
     const care = { en: careEn, bn: careBn.length ? careBn : careEn };
-    
+
     const seoKeywords = document.getElementById('prod-seo').value.split(',').map(k => k.trim()).filter(Boolean);
     const images = document.getElementById('prod-images').value.split('\n').map(u => u.trim()).filter(Boolean);
 
@@ -2300,18 +2269,12 @@ addProductForm.addEventListener('submit', async (e) => {
 
     if (isEditing) {
       payload.updatedAt = new Date().toISOString();
-      await updateDoc(doc(db, "products", editingProductId), payload);
-      uploadStatus.textContent = '✓ Product updated on the live website!';
+      await api(`/api/products?id=${editingProductId}`, {method: 'PUT', body: JSON.stringify(payload)});
+      uploadStatus.textContent = 'âœ“ Product updated on the live website!';
     } else {
       payload.createdAt = new Date().toISOString();
-      const batch = writeBatch(db);
-      allProducts.forEach((product, index) => {
-        batch.update(doc(db, "products", product.id), { displayOrder: index + 2 });
-      });
-      const newProductRef = doc(collection(db, "products"));
-      batch.set(newProductRef, { ...payload, displayOrder: 1 });
-      await batch.commit();
-      uploadStatus.textContent = '✓ Product uploaded to the live website!';
+      await api('/api/products', { method: 'POST', body: JSON.stringify({ ...payload, displayOrder: 1 }) });
+      uploadStatus.textContent = 'âœ“ Product uploaded to the live website!';
     }
     uploadStatus.className = 'success';
     showToast(isEditing ? 'Product updated.' : 'Product uploaded.', 'success');
@@ -2350,7 +2313,7 @@ function handleDeleteOrder(orderId, onDeleted) {
   const label = order ? `order from ${order.customerName || 'this customer'} (${money(order.totalAmount)})` : 'this order';
   showConfirm(`Delete the ${label}? This cannot be undone.`, async () => {
     try {
-      await deleteDoc(doc(db, "orders", orderId));
+      await api(`/api/orders/${orderId}`, {method: 'DELETE'});
       showToast('Order deleted.', 'success');
       if (typeof onDeleted === 'function') onDeleted();
     } catch (err) {
@@ -2365,7 +2328,7 @@ function handleBulkDeleteOrders(ids, scopeLabel) {
   if (ids.length === 0) return;
   showConfirm(`Delete ${ids.length} order${ids.length === 1 ? '' : 's'}${scopeLabel ? ' from ' + scopeLabel : ''}? This cannot be undone.`, async () => {
     let failed = 0;
-    await Promise.all(ids.map(id => deleteDoc(doc(db, "orders", id)).catch(() => { failed++; })));
+    await Promise.all(ids.map(id => api(`/api/orders/${id}`, { method: 'DELETE' }).catch(() => { failed++; })));
     historySelectedIds.clear();
     if (failed === 0) showToast(`${ids.length} order${ids.length === 1 ? '' : 's'} deleted.`, 'success');
     else showToast(`${ids.length - failed} of ${ids.length} orders deleted. ${failed} failed.`, 'error');
@@ -2422,7 +2385,7 @@ function renderHistoryCalendar() {
   const undatedNote = document.getElementById('history-undated-note');
   if (undatedCount > 0) {
     undatedNote.style.display = 'block';
-    undatedNote.textContent = `${undatedCount} order${undatedCount === 1 ? '' : 's'} have no recorded date and won't show on this calendar — find them in the main Orders tab.`;
+    undatedNote.textContent = `${undatedCount} order${undatedCount === 1 ? '' : 's'} have no recorded date and won't show on this calendar â€” find them in the main Orders tab.`;
   } else {
     undatedNote.style.display = 'none';
   }

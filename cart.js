@@ -1,5 +1,5 @@
 // ==========================================================================
-// MOHOR CLOTHINGS — cart.js
+// MOHOR CLOTHINGS â€” cart.js
 // Cart state, cart UI, dynamic discount savings engine, and the two checkout paths.
 // ==========================================================================
 
@@ -7,7 +7,7 @@ function escapeHtml(value) {
     return String(value ?? '').replace(/[&<>"']/g, (ch) => ({
         '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
     }[ch]));
-} 
+}
 
 function notify(message, type) {
     if (typeof window.showToast === 'function') window.showToast(message, type);
@@ -65,7 +65,55 @@ function getCanonicalPrice(item) {
 }
 
 // Load cart from storage so it survives page reloads / mobile navigation.
-window.cart = JSON.parse(localStorage.getItem('mohor_cart') || '[]');
+function readLocalCart() {
+    try {
+        const value = JSON.parse(localStorage.getItem('mohor_cart') || '[]');
+        return Array.isArray(value) ? value : [];
+    } catch (_) {
+        return [];
+    }
+}
+
+window.cart = readLocalCart();
+
+async function loadCartFromApi() {
+    const token = typeof window.getAuthToken === 'function' ? window.getAuthToken() : null;
+    if (!token) return;
+    try {
+        const response = await fetch('/api/cart', {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        if (!response.ok) return;
+        const data = await response.json();
+        if (Array.isArray(data.items)) {
+            window.cart = data.items;
+            localStorage.setItem('mohor_cart', JSON.stringify(window.cart));
+            window.updateCartUI();
+        }
+    } catch (error) {
+        console.warn('Could not load saved cart:', error);
+    }
+}
+
+let cartSyncTimer = null;
+function syncCartToApi() {
+    const token = typeof window.getAuthToken === 'function' ? window.getAuthToken() : null;
+    if (!token) return;
+    clearTimeout(cartSyncTimer);
+    cartSyncTimer = setTimeout(async () => {
+        try {
+            await fetch('/api/cart', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+                body: JSON.stringify({ items: window.cart || [] })
+            });
+        } catch (error) {
+            console.warn('Could not save cart:', error);
+        }
+    }, 100);
+}
+
+loadCartFromApi();
 
 // Save cart state safely on pagehide instead of unload (BFCache friendly)
 window.addEventListener('pagehide', () => {
@@ -145,6 +193,7 @@ window.addToCart = function(product, size, color) {
     }
 
     window.updateCartUI();
+    syncCartToApi();
     if (cartBadge) { cartBadge.classList.remove('pop'); void cartBadge.offsetWidth; cartBadge.classList.add('pop'); }
 
     if (cartSidebar && cartOverlay) {
@@ -171,11 +220,13 @@ window.changeQty = function(index, delta) {
     window.cart[index].qty += delta;
     if (window.cart[index].qty <= 0) window.cart.splice(index, 1);
     window.updateCartUI();
+    syncCartToApi();
 };
 
 window.removeFromCart = function(index) {
     window.cart.splice(index, 1);
     window.updateCartUI();
+    syncCartToApi();
 };
 
 // Outside Sylhet delivery charge updated to 140 TK (Applied once per order)
@@ -195,10 +246,10 @@ window.updateDeliveryPolicyAndTotal = function() {
     if (zoneSelect && policyDisplay) {
         if (zoneSelect.value === '70' || zoneSelect.value === '80' || zoneSelect.value === 'inside') {
             policyDisplay.style.display = 'block';
-            policyDisplay.innerHTML = tFn('zoneDeliveryInside') || 'Inside Sylhet City: ৳70';
+            policyDisplay.innerHTML = tFn('zoneDeliveryInside') || 'Inside Sylhet City: à§³70';
         } else if (zoneSelect.value === '140' || zoneSelect.value === '130' || zoneSelect.value === '150' || zoneSelect.value === 'outside') {
             policyDisplay.style.display = 'block';
-            policyDisplay.innerHTML = tFn('zoneDeliveryOutside') || 'Outside Sylhet: ৳140';
+            policyDisplay.innerHTML = tFn('zoneDeliveryOutside') || 'Outside Sylhet: à§³140';
         } else {
             policyDisplay.style.display = 'none';
         }
@@ -206,7 +257,7 @@ window.updateDeliveryPolicyAndTotal = function() {
     window.updateCartUI();
 };
 
-// Render Cart Total Savings Indicators ("You save ৳ X on this order!")
+// Render Cart Total Savings Indicators ("You save à§³ X on this order!")
 function renderSavingsIndicators(totalSavings) {
     const savingsTargets = [
         document.getElementById('cartSavings'),
@@ -217,15 +268,15 @@ function renderSavingsIndicators(totalSavings) {
     const isBn = window.currentLang === 'bn';
     const formattedSavings = totalSavings.toLocaleString('en-IN');
     const savingsMsg = isBn
-        ? `আপনি এই অর্ডারে ৳ ${formattedSavings} সাশ্রয় করছেন!`
-        : `You save ৳ ${formattedSavings} on this order!`;
+        ? `à¦†à¦ªà¦¨à¦¿ à¦à¦‡ à¦…à¦°à§à¦¡à¦¾à¦°à§‡ à§³ ${formattedSavings} à¦¸à¦¾à¦¶à§à¦°à¦¯à¦¼ à¦•à¦°à¦›à§‡à¦¨!`
+        : `You save à§³ ${formattedSavings} on this order!`;
 
     savingsTargets.forEach(container => {
         if (!container) return;
         if (totalSavings > 0) {
             container.style.display = 'block';
             container.className = 'cart-savings-indicator';
-            container.innerHTML = `<span class="savings-icon">🎉</span> ${savingsMsg}`;
+            container.innerHTML = `<span class="savings-icon">ðŸŽ‰</span> ${savingsMsg}`;
         } else {
             container.style.display = 'none';
             container.innerHTML = '';
@@ -274,8 +325,8 @@ window.updateCartUI = function() {
             if (item.color) metaParts.push('Color: ' + escapeHtml(item.color));
 
             const priceMarkup = (details.savingsPerUnit > 0)
-                ? `<span class="price-original" style="text-decoration:line-through;color:#888;font-size:0.82em;margin-right:4px;">৳${details.regularPrice * item.qty}</span> ৳${itemTotal}`
-                : `৳${itemTotal}`;
+                ? `<span class="price-original" style="text-decoration:line-through;color:#888;font-size:0.82em;margin-right:4px;">à§³${details.regularPrice * item.qty}</span> à§³${itemTotal}`
+                : `à§³${itemTotal}`;
 
             const row = document.createElement('div');
             row.className = 'cart-item';
@@ -284,7 +335,7 @@ window.updateCartUI = function() {
                     <div class="ci-name">${escapeHtml(item.baseTitle || item.name)}</div>
                     <div class="ci-meta">${metaParts.join(' &middot; ')}</div>
                     <div class="qty-stepper">
-                        <button type="button" aria-label="Decrease quantity" data-action="dec">−</button>
+                        <button type="button" aria-label="Decrease quantity" data-action="dec">âˆ’</button>
                         <span>${item.qty}</span>
                         <button type="button" aria-label="Increase quantity" data-action="inc">+</button>
                     </div>
@@ -345,31 +396,31 @@ function validateCheckoutInputs() {
     const policyAgree = policyElement ? policyElement.checked : true;
 
     if (!nameInput) {
-        notify(window.currentLang === 'en' ? 'Please enter your full name.' : 'অনুগ্রহ করে আপনার পুরো নাম দিন।', 'error');
+        notify(window.currentLang === 'en' ? 'Please enter your full name.' : 'à¦…à¦¨à§à¦—à§à¦°à¦¹ à¦•à¦°à§‡ à¦†à¦ªà¦¨à¦¾à¦° à¦ªà§à¦°à§‹ à¦¨à¦¾à¦® à¦¦à¦¿à¦¨à¥¤', 'error');
         fieldFlash(nameEl); return null;
     }
     if (!phoneInput) {
-        notify(window.currentLang === 'en' ? 'Please enter your mobile number.' : 'অনুগ্রহ করে আপনার মোবাইল নম্বর দিন।', 'error');
+        notify(window.currentLang === 'en' ? 'Please enter your mobile number.' : 'à¦…à¦¨à§à¦—à§à¦°à¦¹ à¦•à¦°à§‡ à¦†à¦ªà¦¨à¦¾à¦° à¦®à§‹à¦¬à¦¾à¦‡à¦² à¦¨à¦®à§à¦¬à¦° à¦¦à¦¿à¦¨à¥¤', 'error');
         fieldFlash(phoneEl); return null;
     }
 
     // Basic Bangladesh mobile number validation (01XXXXXXXXX)
     const bdPhoneRegex = /^01[0-9]{9}$/;
     if (!bdPhoneRegex.test(phoneInput)) {
-        notify(window.currentLang === 'en' ? 'Please enter a valid BD mobile number (01XXXXXXXXX).' : 'সঠিক মোবাইল নম্বর দিন (01XXXXXXXXX)।', 'error');
+        notify(window.currentLang === 'en' ? 'Please enter a valid BD mobile number (01XXXXXXXXX).' : 'à¦¸à¦ à¦¿à¦• à¦®à§‹à¦¬à¦¾à¦‡à¦² à¦¨à¦®à§à¦¬à¦° à¦¦à¦¿à¦¨ (01XXXXXXXXX)à¥¤', 'error');
         fieldFlash(phoneEl); return null;
     }
 
     if (!addressInput) {
-        notify(window.currentLang === 'en' ? 'Please enter your delivery address.' : 'অনুগ্রহ করে আপনার ডেলিভারি ঠিকানা দিন।', 'error');
+        notify(window.currentLang === 'en' ? 'Please enter your delivery address.' : 'à¦…à¦¨à§à¦—à§à¦°à¦¹ à¦•à¦°à§‡ à¦†à¦ªà¦¨à¦¾à¦° à¦¡à§‡à¦²à¦¿à¦­à¦¾à¦°à¦¿ à¦ à¦¿à¦•à¦¾à¦¨à¦¾ à¦¦à¦¿à¦¨à¥¤', 'error');
         fieldFlash(addressEl); return null;
     }
     if (!zoneSelect || !zoneSelect.value) {
-        notify(window.currentLang === 'en' ? 'Please select a delivery zone.' : 'অনুগ্রহ করে ডেলিভারি জোন নির্বাচন করুন।', 'error');
+        notify(window.currentLang === 'en' ? 'Please select a delivery zone.' : 'à¦…à¦¨à§à¦—à§à¦°à¦¹ à¦•à¦°à§‡ à¦¡à§‡à¦²à¦¿à¦­à¦¾à¦°à¦¿ à¦œà§‹à¦¨ à¦¨à¦¿à¦°à§à¦¬à¦¾à¦šà¦¨ à¦•à¦°à§à¦¨à¥¤', 'error');
         fieldFlash(zoneSelect); return null;
     }
     if (policyElement && !policyAgree) {
-        notify(window.currentLang === 'en' ? 'Please agree to the Delivery & Return Policy.' : 'অনুগ্রহ করে ডেলিভারি ও রিটার্ন পলিসিতে সম্মত হোন।', 'error');
+        notify(window.currentLang === 'en' ? 'Please agree to the Delivery & Return Policy.' : 'à¦…à¦¨à§à¦—à§à¦°à¦¹ à¦•à¦°à§‡ à¦¡à§‡à¦²à¦¿à¦­à¦¾à¦°à¦¿ à¦“ à¦°à¦¿à¦Ÿà¦¾à¦°à§à¦¨ à¦ªà¦²à¦¿à¦¸à¦¿à¦¤à§‡ à¦¸à¦®à§à¦®à¦¤ à¦¹à§‹à¦¨à¥¤', 'error');
         return null;
     }
 
@@ -425,24 +476,25 @@ window.checkoutToWhatsApp = function() {
     window.cart.forEach((item, index) => {
         const details = getCanonicalItemDetails(item);
         const itemTotal = details.effectivePrice * Number(item.qty);
-        message += `${index + 1}. ${encodeURIComponent(item.name)} (Size: ${encodeURIComponent(item.size)}) | Qty: ${item.qty} - ৳${itemTotal}%0A`;
+        message += `${index + 1}. ${encodeURIComponent(item.name)} (Size: ${encodeURIComponent(item.size)}) | Qty: ${item.qty} - à§³${itemTotal}%0A`;
     });
-    message += `%0A*Subtotal: ৳${orderData.subtotal}*`;
+    message += `%0A*Subtotal: à§³${orderData.subtotal}*`;
     if (orderData.totalSavings > 0) {
-        message += `%0A*Total Savings: ৳${orderData.totalSavings}*`;
+        message += `%0A*Total Savings: à§³${orderData.totalSavings}*`;
     }
-    message += `%0A*Delivery (${encodeURIComponent(orderData.zoneText)}): ৳${orderData.deliveryFee}*`;
-    message += `%0A*FINAL TOTAL: ৳${orderData.finalTotal}*%0A`;
+    message += `%0A*Delivery (${encodeURIComponent(orderData.zoneText)}): à§³${orderData.deliveryFee}*`;
+    message += `%0A*FINAL TOTAL: à§³${orderData.finalTotal}*%0A`;
     message += `%0A*CUSTOMER DETAILS:*%0AName: ${encodeURIComponent(orderData.name)}%0APhone: ${encodeURIComponent(orderData.phone)}%0AAddress: ${encodeURIComponent(orderData.address)}`;
 
-    // Open WhatsApp first — only clear the cart once we know the redirect fired
+    // Open WhatsApp first â€” only clear the cart once we know the redirect fired
     const win = window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${message}`, '_blank');
     window.cart = [];
     window.updateCartUI();
-    if (!win) notify(window.currentLang === 'en' ? 'Please allow pop-ups to continue to WhatsApp.' : 'হোয়াটসঅ্যাপে যেতে অনুগ্রহ করে পপ-আপের অনুমতি দিন।', 'error');
+    syncCartToApi();
+    if (!win) notify(window.currentLang === 'en' ? 'Please allow pop-ups to continue to WhatsApp.' : 'à¦¹à§‹à¦¯à¦¼à¦¾à¦Ÿà¦¸à¦…à§à¦¯à¦¾à¦ªà§‡ à¦¯à§‡à¦¤à§‡ à¦…à¦¨à§à¦—à§à¦°à¦¹ à¦•à¦°à§‡ à¦ªà¦ª-à¦†à¦ªà§‡à¦° à¦…à¦¨à§à¦®à¦¤à¦¿ à¦¦à¦¿à¦¨à¥¤', 'error');
 };
 
-// Option 2: Direct website order (Firebase)
+// Option 2: Direct website order through the Worker API.
 window.checkoutToAdmin = async function() {
     const orderData = validateCheckoutInputs();
     if (!orderData) return;
@@ -451,21 +503,15 @@ window.checkoutToAdmin = async function() {
     if (confirmBtn) { confirmBtn.classList.add('is-loading'); confirmBtn.disabled = true; }
 
     try {
-        let activeUid = null;
-        let activeEmail = null;
-
-        if (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser) {
-            activeUid = firebase.auth().currentUser.uid;
-            activeEmail = firebase.auth().currentUser.email;
-        } else if (window.currentUser) {
-            activeUid = window.currentUser.uid;
-            activeEmail = window.currentUser.email || null;
-        }
+        const activeUser = typeof window.getAuthUser === 'function' ? window.getAuthUser() : window.currentUser;
+        const activeUid = activeUser?.id || activeUser?.uid || null;
+        const activeEmail = activeUser?.email || null;
 
         // SECURITY: recompute each line item from canonical catalog and force Number types
         const verifiedItems = window.cart.map(item => {
             const details = getCanonicalItemDetails(item);
             return {
+                id: item.id ? String(item.id) : null,
                 name: String(item.name || item.baseTitle || 'Item'),
                 size: String(item.size || 'Standard'),
                 color: String(item.color || 'Default'),
@@ -481,8 +527,6 @@ window.checkoutToAdmin = async function() {
         const verifiedTotalSavings = Number(verifiedItems.reduce((sum, item) => sum + item.savings, 0)) || 0;
         const verifiedTotal = Number(verifiedSubtotal + (orderData.deliveryFee || 0)) || 0;
 
-        const dbInstance = window.db || (typeof firebase !== 'undefined' && firebase.firestore ? firebase.firestore() : null);
-
         const newOrder = {
             userId: activeUid,
             userEmail: activeEmail,
@@ -495,16 +539,17 @@ window.checkoutToAdmin = async function() {
             totalSavings: verifiedTotalSavings,
             totalAmount: verifiedTotal,
             items: verifiedItems,
-            orderDate: typeof firebase !== 'undefined' && firebase.firestore && firebase.firestore.FieldValue ? firebase.firestore.FieldValue.serverTimestamp() : new Date().toISOString(),
             status: 'pending'
         };
-
-        let docRef = null;
-        if (dbInstance) {
-            docRef = await dbInstance.collection('orders').add(newOrder);
-        } else {
-            throw new Error("Firestore database instance is not available.");
-        }
+        const token = typeof window.getAuthToken === 'function' ? window.getAuthToken() : null;
+        const response = await fetch('/api/orders', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+            body: JSON.stringify(newOrder)
+        });
+        const result = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(result.error || `Order request failed (${response.status})`);
+        const docRef = { id: result.id };
 
         const purchaseContentIds = window.cart.map(item => String(item.id ?? item.name));
 
@@ -516,7 +561,7 @@ window.checkoutToAdmin = async function() {
         }
 
         // Track the completed purchase once, right here at the moment the
-        // order is actually confirmed written — this is the single source of
+        // order is actually confirmed written â€” this is the single source of
         // truth for the Purchase conversion event (the standalone order
         // success page intentionally stays lightweight and doesn't re-fire it).
         if (typeof window.trackMetaEvent === 'function') {
@@ -529,10 +574,11 @@ window.checkoutToAdmin = async function() {
             });
         }
 
-        notify(window.currentLang === 'en' ? 'Order placed successfully! We will contact you soon.' : 'আপনার অর্ডারটি সফলভাবে সম্পন্ন হয়েছে! আমরা শীঘ্রই যোগাযোগ করব।', 'success');
+        notify(window.currentLang === 'en' ? 'Order placed successfully! We will contact you soon.' : 'à¦†à¦ªà¦¨à¦¾à¦° à¦…à¦°à§à¦¡à¦¾à¦°à¦Ÿà¦¿ à¦¸à¦«à¦²à¦­à¦¾à¦¬à§‡ à¦¸à¦®à§à¦ªà¦¨à§à¦¨ à¦¹à¦¯à¦¼à§‡à¦›à§‡! à¦†à¦®à¦°à¦¾ à¦¶à§€à¦˜à§à¦°à¦‡ à¦¯à§‹à¦—à¦¾à¦¯à§‹à¦— à¦•à¦°à¦¬à¥¤', 'success');
 
         window.cart = [];
         window.updateCartUI();
+        syncCartToApi();
         window.closeCartSidebar();
         resetCheckoutFormsIfGuest(!activeUid);
 
@@ -542,7 +588,7 @@ window.checkoutToAdmin = async function() {
         window.location.href = `/order-success/?orderId=${docRef.id}`;
     } catch (error) {
         console.error('Error saving order: ', error);
-        notify(window.currentLang === 'en' ? 'There was an error placing your order. Please try WhatsApp instead.' : 'অর্ডার প্লেস করতে সমস্যা হয়েছে। অনুগ্রহ করে হোয়াটসঅ্যাপে চেষ্টা করুন।', 'error');
+        notify(window.currentLang === 'en' ? 'There was an error placing your order. Please try WhatsApp instead.' : 'à¦…à¦°à§à¦¡à¦¾à¦° à¦ªà§à¦²à§‡à¦¸ à¦•à¦°à¦¤à§‡ à¦¸à¦®à¦¸à§à¦¯à¦¾ à¦¹à¦¯à¦¼à§‡à¦›à§‡à¥¤ à¦…à¦¨à§à¦—à§à¦°à¦¹ à¦•à¦°à§‡ à¦¹à§‹à¦¯à¦¼à¦¾à¦Ÿà¦¸à¦…à§à¦¯à¦¾à¦ªà§‡ à¦šà§‡à¦·à§à¦Ÿà¦¾ à¦•à¦°à§à¦¨à¥¤', 'error');
     } finally {
         if (confirmBtn) { confirmBtn.classList.remove('is-loading'); confirmBtn.disabled = false; }
     }

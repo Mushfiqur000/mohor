@@ -1,457 +1,137 @@
-// ==========================================================================
-// MOHOR CLOTHINGS — auth.js
-// Firebase Auth (compat) + customer profile / order history & savings engine.
-// ==========================================================================
+// MOHOR CLOTHINGS â€” API authentication and customer account UI.
 
+const AUTH_TOKEN_KEY = 'authToken';
+const AUTH_USER_KEY = 'authUser';
 window.currentUser = null;
-
-// Safe lazy proxies for db and auth to prevent Firebase initialization timing errors
-const db = new Proxy({}, {
-    get(target, prop) {
-        const realDb = window.db || (typeof firebase !== 'undefined' && firebase.apps && firebase.apps.length ? firebase.firestore() : null);
-        if (!realDb) return function() {};
-        const val = realDb[prop];
-        return typeof val === 'function' ? val.bind(realDb) : val;
-    }
-});
-
-const auth = new Proxy({}, {
-    get(target, prop) {
-        const realAuth = (typeof firebase !== 'undefined' && firebase.apps && firebase.apps.length ? firebase.auth() : null);
-        if (!realAuth) return function() {};
-        const val = realAuth[prop];
-        return typeof val === 'function' ? val.bind(realAuth) : val;
-    }
-});
 
 function notify(message, type) {
     if (typeof window.showToast === 'function') window.showToast(message, type);
     else alert(message);
 }
-function tr(key) { return (typeof window.t === 'function') ? window.t(key) : key; }
-
-function setBtnLoading(evtOrBtn, isLoading) {
-    let btn = null;
-    if (evtOrBtn) {
-        if (evtOrBtn.tagName || evtOrBtn.nodeType) {
-            btn = evtOrBtn;
-        } else if (evtOrBtn.currentTarget) {
-            btn = evtOrBtn.currentTarget;
-        } else if (evtOrBtn.target && typeof evtOrBtn.target.closest === 'function') {
-            btn = evtOrBtn.target.closest('button, input[type="submit"]');
-        }
-    }
-    if (!btn) return;
-    btn.classList.toggle('is-loading', isLoading);
-    btn.disabled = isLoading;
+function tr(key) { return typeof window.t === 'function' ? window.t(key) : key; }
+function setBtnLoading(evtOrBtn, loading) {
+    const btn = evtOrBtn && (evtOrBtn.tagName ? evtOrBtn : evtOrBtn.currentTarget || evtOrBtn.target?.closest?.('button'));
+    if (btn) { btn.classList.toggle('is-loading', loading); btn.disabled = loading; }
 }
+function getAuthToken() { return localStorage.getItem(AUTH_TOKEN_KEY); }
+function getAuthUser() {
+    try { return JSON.parse(localStorage.getItem(AUTH_USER_KEY) || 'null'); } catch (_) { return null; }
+}
+function isLoggedIn() { return !!getAuthToken(); }
+function setAuth(token, user) {
+    if (token) localStorage.setItem(AUTH_TOKEN_KEY, token);
+    if (user) localStorage.setItem(AUTH_USER_KEY, JSON.stringify(user));
+    window.currentUser = user || null;
+}
+function logout() {
+    localStorage.removeItem(AUTH_TOKEN_KEY);
+    localStorage.removeItem(AUTH_USER_KEY);
+    window.currentUser = null;
+    updateAuthUI(null);
+}
+window.getAuthToken = getAuthToken;
+window.getAuthUser = getAuthUser;
+window.isLoggedIn = isLoggedIn;
+window.logout = logout;
 
-// --- Account sidebar open/close ---
-const accountOverlay = document.getElementById('accountOverlay');
-const accountSidebar = document.getElementById('accountSidebar');
-const openAccountBtn = document.getElementById('openAccountBtn');
-const closeAccountBtn = document.getElementById('closeAccountBtn');
-
-window.closeAccountSidebar = function() {
-    if (accountSidebar) accountSidebar.classList.remove('active');
-    if (accountOverlay) accountOverlay.classList.remove('active');
-};
-window.openAccountSidebar = function() {
-    if (accountSidebar) accountSidebar.classList.add('active');
-    if (accountOverlay) accountOverlay.classList.add('active');
-};
-
-// Global click delegation so any #openAccountBtn on any page triggers the sidebar
-document.addEventListener('click', (e) => {
-    const btn = e.target.closest('#openAccountBtn, .open-account-btn');
-    if (btn) {
-        e.preventDefault();
-        window.openAccountSidebar();
-    }
-});
-
-if (closeAccountBtn) closeAccountBtn.addEventListener('click', window.closeAccountSidebar);
-if (accountOverlay) accountOverlay.addEventListener('click', window.closeAccountSidebar);
-
-// --- Auth view switching (Login / Signup / Forgot Password) ---
-window.showAuthView = function(viewName) {
-    const loginCont = document.getElementById('loginFormContainer');
-    const signupCont = document.getElementById('signupFormContainer');
-    const forgotCont = document.getElementById('forgotPasswordContainer');
-
-    if (loginCont) loginCont.style.display = (viewName === 'login') ? 'block' : 'none';
-    if (signupCont) signupCont.style.display = (viewName === 'signup') ? 'block' : 'none';
-    if (forgotCont) forgotCont.style.display = (viewName === 'forgot') ? 'block' : 'none';
-};
-
-// --- Toggle between Login / Signup views inside the Account sidebar ---
-window.toggleAuthMode = function() {
-    const loginCont = document.getElementById('loginFormContainer');
-    const signupCont = document.getElementById('signupFormContainer');
-    if (!loginCont || !signupCont) return;
-    const showingLogin = loginCont.style.display !== 'none';
-    window.showAuthView(showingLogin ? 'signup' : 'login');
-};
-
-// --- Canonical user profile injector into forms across the site ---
+async function api(path, options = {}) {
+    const headers = { ...(options.body ? { 'Content-Type': 'application/json' } : {}), ...(options.headers || {}) };
+    const token = getAuthToken();
+    if (token) headers.Authorization = `Bearer ${token}`;
+    const response = await fetch(path, { ...options, headers });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(data.error || `Request failed (${response.status})`);
+    return data;
+}
 function applyUserDataToForms(data) {
     if (!data) return;
-    const name = data.customerName || data.name || data.fullName || (window.currentUser && window.currentUser.displayName) || '';
+    const name = data.customerName || data.name || data.fullName || window.currentUser?.displayName || '';
     const phone = data.phone || data.customerPhone || data.phoneNumber || data.mobile || '';
     const address = data.address || data.deliveryAddress || data.fullAddress || '';
-
-    const setVal = (id, val) => { const el = document.getElementById(id); if (el && val) el.value = val; };
-    const fillIfEmpty = (id, val) => { const el = document.getElementById(id); if (el && val && !el.value) el.value = val; };
-
-    // Profile tab always mirrors the saved profile.
-    setVal('profileName', name);
-    setVal('profilePhone', phone);
-    setVal('profileAddress', address);
-
-    // Checkout convenience fields: only prefill if empty
-    fillIfEmpty('custName', name); fillIfEmpty('checkoutName', name);
-    fillIfEmpty('custPhone', phone); fillIfEmpty('checkoutPhone', phone);
-    fillIfEmpty('deliveryAddress', address); fillIfEmpty('checkoutAddress', address);
+    const set = (id, value, onlyEmpty) => {
+        const el = document.getElementById(id);
+        if (el && value && (!onlyEmpty || !el.value)) el.value = value;
+    };
+    set('profileName', name, false); set('profilePhone', phone, false); set('profileAddress', address, false);
+    ['custName', 'checkoutName'].forEach(id => set(id, name, true));
+    ['custPhone', 'checkoutPhone'].forEach(id => set(id, phone, true));
+    ['deliveryAddress', 'checkoutAddress'].forEach(id => set(id, address, true));
 }
 window.applyUserDataToForms = applyUserDataToForms;
 
-async function loadUserData(uid) {
-    try {
-        const userDoc = await db.collection('users').doc(uid).get();
-        if (userDoc.exists) applyUserDataToForms(userDoc.data());
-    } catch (e) { console.error('Error loading user profile data:', e); }
-}
-
-async function loadUserOrders(uid) {
+async function loadUserOrders() {
     const container = document.getElementById('userOrderHistoryContainer');
-    if (!container) return;
-    container.innerHTML = `<p class="order-history-loading">${tr('accLoadingOrders') || 'Loading orders…'}</p>`;
-
-    // Resolve current user info if available
-    const current = window.currentUser || (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser) || null;
-    const email = current && current.email ? current.email : null;
-
+    if (!container || !isLoggedIn()) return;
+    container.innerHTML = `<p class="order-history-loading">${tr('accLoadingOrders') || 'Loading ordersâ€¦'}</p>`;
     try {
-        let querySnapshot = null;
-
-        // 1) Prefer querying by userId
-        if (uid) {
-            try {
-                querySnapshot = await db.collection('orders').where('userId', '==', uid).orderBy('orderDate', 'desc').get();
-            } catch (indexErr) {
-                querySnapshot = await db.collection('orders').where('userId', '==', uid).get();
-            }
-        }
-
-        // 2) Fallback to matching by user email
-        if ((!querySnapshot || querySnapshot.empty) && email) {
-            try {
-                querySnapshot = await db.collection('orders').where('userEmail', '==', email).orderBy('orderDate', 'desc').get();
-            } catch (indexErr) {
-                querySnapshot = await db.collection('orders').where('userEmail', '==', email).get();
-            }
-        }
-
-        // 3) Fallback to phone stored on profile
-        if ((!querySnapshot || querySnapshot.empty) && current) {
-            const userDoc = await db.collection('users').doc(current.uid).get();
-            const phone = userDoc.exists ? (userDoc.data().phone || userDoc.data().customerPhone || null) : null;
-            if (phone) {
-                try {
-                    querySnapshot = await db.collection('orders').where('customerPhone', '==', phone).orderBy('orderDate', 'desc').get();
-                } catch (indexErr) {
-                    querySnapshot = await db.collection('orders').where('customerPhone', '==', phone).get();
-                }
-            }
-        }
-
-        if (!querySnapshot || querySnapshot.empty) {
-            container.innerHTML = `<p class="order-history-empty" style="color:var(--ink-muted, #888); font-size:0.9rem;">${tr('accNoOrders') || 'No past orders found.'}</p>`;
-            return;
-        }
-
-        const rows = [];
-        querySnapshot.forEach((doc) => {
-            const order = doc.data();
-            let orderDate = order.orderDate || order.createdAt || null;
-            let actualDate = null;
-            if (orderDate && typeof orderDate.toDate === 'function') actualDate = orderDate.toDate();
-            else if (orderDate) actualDate = new Date(orderDate);
-            else actualDate = new Date();
-
-            const formattedDate = actualDate.toLocaleDateString();
-            const formattedTime = actualDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            const status = order.status ? String(order.status) : 'Pending';
-            
-            const custName = order.customerName || order.custName || order.name || '';
-            const custPhone = order.customerPhone || order.custPhone || order.phone || '';
-            const address = order.deliveryAddress || order.address || '';
-            const items = order.items || [];
-
-            // Calculate or extract total savings
-            let totalSavings = Number(order.totalSavings) || 0;
-            if (!totalSavings && Array.isArray(items)) {
-                totalSavings = items.reduce((sum, it) => {
-                    const reg = Number(it.regularPrice) || Number(it.price) || 0;
-                    const eff = Number(it.price) || Number(it.salePrice) || reg;
-                    return sum + (Math.max(0, reg - eff) * (Number(it.qty || it.quantity) || 1));
-                }, 0);
-            }
-
-            rows.push({
-                id: doc.id,
-                total: Number(order.totalAmount) || 0,
-                totalSavings,
-                status,
-                date: formattedDate,
-                time: formattedTime,
-                items,
-                raw: actualDate.getTime(),
-                customerName: custName,
-                customerPhone: custPhone,
-                deliveryAddress: address
-            });
+        const data = await api('/api/orders');
+        const rows = (Array.isArray(data) ? data : data.orders || []).map(order => {
+            const date = new Date(order.orderDate || order.createdAt || Date.now());
+            const items = Array.isArray(order.items) ? order.items : [];
+            const savings = Number(order.totalSavings) || items.reduce((sum, item) =>
+                sum + Math.max(0, Number(item.regularPrice || item.price) - Number(item.price || 0)) * Number(item.qty || 1), 0);
+            return { ...order, date: date.toLocaleDateString(), time: date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), items, savings };
         });
-        rows.sort((a, b) => (a.raw < b.raw ? 1 : -1));
-
-        const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
-        
-        container.innerHTML = rows.map(r => {
-            const statusClass = 'status-' + r.status.toLowerCase().replace(/\s+/g, '');
-            return `
-            <div class="order-history-item">
-                <div class="oh-header">
-                    <div>
-                        <div class="oh-id">Order ID: <a href="/order/?id=${esc(r.id)}">${esc(r.id)}</a></div>
-                        <div class="oh-date">${esc(r.date)} • ${esc(r.time)}</div>
-                        ${r.customerName ? `<div class="oh-customer"><strong>Customer:</strong> ${esc(r.customerName)}</div>` : ''}
-                        ${r.deliveryAddress ? `<div class="oh-address"><strong>Address:</strong> ${esc(r.deliveryAddress)}</div>` : ''}
-                    </div>
-                    <div class="oh-right">
-                        <div class="oh-total">৳${r.total}</div>
-                        <div class="oh-status status-pill ${statusClass}" style="margin-top:6px;">${esc(r.status)}</div>
-                    </div>
-                </div>
-
-                ${r.totalSavings > 0 ? `<div class="oh-savings">🎉 You saved ৳${esc(r.totalSavings)} on this order!</div>` : ''}
-
-                <div class="oh-actions">
-                    <a class="btn btn-outline btn-sm" href="/order/?id=${esc(r.id)}" style="text-decoration:none; padding:6px 14px; font-size:12px;">View Details</a>
-                    <button type="button" class="btn btn-ghost btn-sm" style="padding:6px 14px; font-size:12px;" onclick="(function(btn){ const items=btn.closest('.order-history-item').querySelector('.oh-items'); if(items) items.style.display = (items.style.display === 'none' || !items.style.display) ? 'block' : 'none'; })(this)">Toggle items</button>
-                </div>
-
-                <div class="oh-items">
-                    ${r.items.map(it => {
-                        const qty = Number(it.qty || it.quantity) || 1;
-                        const price = Number(it.price || it.salePrice) || 0;
-                        const regPrice = Number(it.regularPrice) || price;
-                        const hasDiscount = regPrice > price;
-
-                        return `
-                        <div class="oh-item-row">
-                            <div>
-                                <strong>${esc(it.name || it.title || 'Item')}</strong>
-                                ${it.size || it.variant ? `<span class="oh-item-meta">(${esc(it.size || it.variant)})</span>` : ''}
-                                ${it.color ? `<span class="oh-item-meta">&middot; ${esc(it.color)}</span>` : ''}
-                            </div>
-                            <div>
-                                ${hasDiscount ? `<span class="oh-item-strike">৳${esc(regPrice * qty)}</span>` : ''}
-                                qty: ${esc(qty)} — ৳${esc(price * qty)}
-                            </div>
-                        </div>`;
-                    }).join('')}
-                </div>
-            </div>`;
-        }).join('');
-    } catch (e) {
-        console.error('Error loading order history:', e);
-        container.innerHTML = `<p class="order-history-empty" style="color:#e06650; font-size:0.9rem;">Could not load past orders.</p>`;
-    }
+        if (!rows.length) { container.innerHTML = `<p class="order-history-empty">${tr('accNoOrders') || 'No past orders found.'}</p>`; return; }
+        const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
+        container.innerHTML = rows.map(r => `<div class="order-history-item">
+            <div class="oh-header"><div><div class="oh-id">Order ID: <a href="/order/?id=${esc(r.id)}">${esc(r.id)}</a></div>
+            <div class="oh-date">${esc(r.date)} â€¢ ${esc(r.time)}</div><div class="oh-address">${esc(r.deliveryAddress || '')}</div></div>
+            <div class="oh-right"><div class="oh-total">à§³${Number(r.totalAmount || 0)}</div><div class="oh-status status-pill">${esc(r.status || 'Pending')}</div></div></div>
+            ${r.savings > 0 ? `<div class="oh-savings">ðŸŽ‰ You saved à§³${r.savings} on this order!</div>` : ''}
+            <div class="oh-actions"><a class="btn btn-outline btn-sm" href="/order/?id=${esc(r.id)}">View Details</a></div>
+        </div>`).join('');
+    } catch (error) { container.innerHTML = `<p class="order-history-empty">Could not load past orders.</p>`; }
 }
 window.loadUserOrders = loadUserOrders;
 
-function initAuthStateListener() {
-    if (typeof firebase !== 'undefined' && firebase.apps && firebase.apps.length) {
-        firebase.auth().onAuthStateChanged(async (user) => {
-            window.currentUser = user;
-            const authView = document.getElementById('authView');
-            const profileView = document.getElementById('profileView');
-
-            if (user) {
-                if (authView) authView.style.display = 'none';
-                if (profileView) profileView.style.display = 'block';
-                const emailDisplay = document.getElementById('userProfileEmail');
-                if (emailDisplay) emailDisplay.innerText = user.email;
-                const avatarInitial = document.getElementById('profileAvatarInitial');
-                if (avatarInitial) avatarInitial.innerText = (user.displayName || user.email || '?').trim().charAt(0).toUpperCase();
-
-                await loadUserData(user.uid);
-                await loadUserOrders(user.uid);
-            } else {
-                if (authView) authView.style.display = 'block';
-                if (profileView) profileView.style.display = 'none';
-            }
-        });
-    } else {
-        setTimeout(initAuthStateListener, 50);
+function updateAuthUI(user) {
+    window.currentUser = user;
+    const authView = document.getElementById('authView'), profileView = document.getElementById('profileView');
+    if (authView) authView.style.display = user ? 'none' : 'block';
+    if (profileView) profileView.style.display = user ? 'block' : 'none';
+    if (user) {
+        const email = document.getElementById('userProfileEmail'); if (email) email.innerText = user.email || '';
+        const avatar = document.getElementById('profileAvatarInitial'); if (avatar) avatar.innerText = (user.displayName || user.email || '?')[0].toUpperCase();
+        applyUserDataToForms(user); loadUserOrders();
     }
 }
-initAuthStateListener();
+window.showAuthView = function(view) {
+    ['login', 'signup', 'forgot'].forEach(name => { const el = document.getElementById(name + (name === 'login' ? 'FormContainer' : name === 'signup' ? 'FormContainer' : 'PasswordContainer')); if (el) el.style.display = name === view ? 'block' : 'none'; });
+};
+window.toggleAuthMode = function() { window.showAuthView(document.getElementById('loginFormContainer')?.style.display !== 'none' ? 'signup' : 'login'); };
+window.closeAccountSidebar = function() { document.getElementById('accountSidebar')?.classList.remove('active'); document.getElementById('accountOverlay')?.classList.remove('active'); };
+window.openAccountSidebar = function() { document.getElementById('accountSidebar')?.classList.add('active'); document.getElementById('accountOverlay')?.classList.add('active'); };
+document.addEventListener('click', e => { if (e.target.closest('#openAccountBtn, .open-account-btn')) { e.preventDefault(); window.openAccountSidebar(); } });
 
 window.handleSignup = async function(evt) {
-    const btnTarget = evt ? (evt.currentTarget || (evt.target && evt.target.closest ? evt.target.closest('button') : null)) : null;
-    const nameInput = document.getElementById('signupName');
-    const emailInput = document.getElementById('signupEmail');
-    const passInput = document.getElementById('signupPassword');
-
-    const name = nameInput ? nameInput.value.trim() : '';
-    const email = emailInput ? emailInput.value.trim() : '';
-    const password = passInput ? passInput.value.trim() : '';
-
-    if (!email || !password) { notify(window.currentLang === 'en' ? 'Please enter email and password.' : 'অনুগ্রহ করে ইমেইল ও পাসওয়ার্ড দিন।', 'error'); return; }
-
-    setBtnLoading(btnTarget, true);
-    try {
-        const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-        if (name) await userCredential.user.updateProfile({ displayName: name });
-
-        await db.collection('users').doc(userCredential.user.uid).set({
-            name: name, customerName: name, email: email, createdAt: new Date().toISOString()
-        });
-
-        notify(window.currentLang === 'en' ? 'Account created successfully!' : 'অ্যাকাউন্ট সফলভাবে তৈরি হয়েছে!', 'success');
-    } catch (error) {
-        notify((window.currentLang === 'en' ? 'Signup failed: ' : 'সাইন আপ ব্যর্থ হয়েছে: ') + error.message, 'error');
-    } finally {
-        setBtnLoading(btnTarget, false);
-    }
+    const name = document.getElementById('signupName')?.value.trim() || '', email = document.getElementById('signupEmail')?.value.trim() || '', password = document.getElementById('signupPassword')?.value.trim() || '';
+    if (!email || !password) return notify('Please enter email and password.', 'error');
+    setBtnLoading(evt, true);
+    try { const data = await api('/api/auth/register', { method: 'POST', body: JSON.stringify({ name, email, password }) }); setAuth(data.token, data.user); updateAuthUI(data.user); notify('Account created successfully!', 'success'); }
+    catch (e) { notify('Signup failed: ' + e.message, 'error'); } finally { setBtnLoading(evt, false); }
 };
-
 window.handleLogin = async function(evt) {
-    const btnTarget = evt ? (evt.currentTarget || (evt.target && evt.target.closest ? evt.target.closest('button') : null)) : null;
-    const emailInput = document.getElementById('loginEmail');
-    const passInput = document.getElementById('loginPassword');
-    const email = emailInput ? emailInput.value.trim() : '';
-    const password = passInput ? passInput.value.trim() : '';
-
-    if (!email || !password) { notify(window.currentLang === 'en' ? 'Please enter email and password.' : 'অনুগ্রহ করে ইমেইল ও পাসওয়ার্ড দিন।', 'error'); return; }
-
-    setBtnLoading(btnTarget, true);
-    try {
-        await auth.signInWithEmailAndPassword(email, password);
-        notify(window.currentLang === 'en' ? 'Logged in successfully!' : 'সফলভাবে লগইন হয়েছে!', 'success');
-    } catch (error) {
-        notify((window.currentLang === 'en' ? 'Login failed: ' : 'লগইন ব্যর্থ হয়েছে: ') + error.message, 'error');
-    } finally {
-        setBtnLoading(btnTarget, false);
-    }
+    const email = document.getElementById('loginEmail')?.value.trim() || '', password = document.getElementById('loginPassword')?.value.trim() || '';
+    if (!email || !password) return notify('Please enter email and password.', 'error');
+    setBtnLoading(evt, true);
+    try { const data = await api('/api/auth/login', { method: 'POST', body: JSON.stringify({ email, password }) }); setAuth(data.token, data.user); updateAuthUI(data.user); notify('Logged in successfully!', 'success'); }
+    catch (e) { notify('Login failed: ' + e.message, 'error'); } finally { setBtnLoading(evt, false); }
 };
-
-window.handleLogout = async function(evt) {
-    const btnTarget = evt ? (evt.currentTarget || (evt.target && evt.target.closest ? evt.target.closest('button') : null)) : null;
-    setBtnLoading(btnTarget, true);
-    try {
-        await auth.signOut();
-        notify(window.currentLang === 'en' ? 'Logged out successfully.' : 'সফলভাবে লগ আউট হয়েছে।', 'success');
-    } catch (error) {
-        notify((window.currentLang === 'en' ? 'Logout error: ' : 'লগ আউট এরর: ') + error.message, 'error');
-    } finally {
-        setBtnLoading(btnTarget, false);
-    }
-};
-
+window.handleLogout = function(evt) { setBtnLoading(evt, true); logout(); notify('Logged out successfully.', 'success'); setBtnLoading(evt, false); };
 window.saveUserProfile = async function(evt) {
-    const btnTarget = evt ? (evt.currentTarget || (evt.target && evt.target.closest ? evt.target.closest('button') : null)) : null;
-    if (!window.currentUser) { notify(window.currentLang === 'en' ? 'You must be logged in to save an address.' : 'ঠিকানা সেভ করতে অবশ্যই লগইন থাকতে হবে।', 'error'); return; }
-
-    const nameInput = document.getElementById('profileName');
-    const phoneInput = document.getElementById('profilePhone');
-    const addressInput = document.getElementById('profileAddress');
-
-    const nameToSave = nameInput ? nameInput.value.trim() : '';
-    const phone = phoneInput ? phoneInput.value.trim() : '';
-    const address = addressInput ? addressInput.value.trim() : '';
-
-    setBtnLoading(btnTarget, true);
-    try {
-        let updatePayload = { phone, address };
-        if (nameToSave) { updatePayload.name = nameToSave; updatePayload.customerName = nameToSave; }
-
-        await db.collection('users').doc(window.currentUser.uid).set(updatePayload, { merge: true });
-        notify(window.currentLang === 'en' ? 'Profile saved successfully!' : 'প্রোফাইল সফলভাবে সেভ হয়েছে!', 'success');
-    } catch (error) {
-        notify((window.currentLang === 'en' ? 'Error saving profile: ' : 'প্রোফাইল সেভ করতে সমস্যা: ') + error.message, 'error');
-    } finally {
-        setBtnLoading(btnTarget, false);
-    }
+    if (!isLoggedIn()) return notify('You must be logged in to save an address.', 'error');
+    const payload = { name: document.getElementById('profileName')?.value.trim() || '', phone: document.getElementById('profilePhone')?.value.trim() || '', address: document.getElementById('profileAddress')?.value.trim() || '' };
+    setBtnLoading(evt, true);
+    try { const user = await api('/api/auth/me', { method: 'PUT', body: JSON.stringify(payload) }); setAuth(getAuthToken(), user); applyUserDataToForms(user); notify('Profile saved successfully!', 'success'); }
+    catch (e) { notify('Error saving profile: ' + e.message, 'error'); } finally { setBtnLoading(evt, false); }
 };
+window.togglePasswordVisibility = function(id, btn) { const input = document.getElementById(id); if (input) { input.type = input.type === 'password' ? 'text' : 'password'; if (btn) btn.textContent = input.type === 'password' ? 'ðŸ‘ï¸' : 'ðŸ™ˆ'; } };
+window.handleForgotPassword = function() { notify('Password reset is not available yet. Please contact support.', 'error'); };
 
-// --- Password Visibility Toggle Handler ---
-window.togglePasswordVisibility = function(inputId, btn) {
-    const passwordInput = document.getElementById(inputId);
-    if (!passwordInput) return;
-
-    if (passwordInput.type === 'password') {
-        passwordInput.type = 'text';
-        btn.textContent = '🙈';
-    } else {
-        passwordInput.type = 'password';
-        btn.textContent = '👁️';
-    }
-};
-
-// --- Password Reset Handler ---
-window.handleForgotPassword = async function(evt) {
-    if (evt) evt.preventDefault();
-
-    const btnTarget = evt ? (evt.currentTarget || (evt.target && evt.target.closest ? evt.target.closest('button') : null)) : null;
-    const resetEmailInput = document.getElementById('resetEmail');
-    const loginEmailInput = document.getElementById('loginEmail');
-    const email = (resetEmailInput && resetEmailInput.value.trim()) || (loginEmailInput && loginEmailInput.value.trim()) || '';
-    const isBengali = (window.currentLang === 'bn');
-
-    if (!email) {
-        notify(isBengali ? 'অনুগ্রহ করে ইমেইল এড্রেসটি দিন।' : 'Please enter your email address.', 'error');
-        return;
-    }
-
-    setBtnLoading(btnTarget, true);
-    try {
-        await auth.sendPasswordResetEmail(email);
-        notify(isBengali ? 'পাসওয়ার্ড রিসেট লিঙ্ক সফলভাবে পাঠানো হয়েছে!' : 'Password reset link sent successfully!', 'success');
-
-        const resetBtn = btnTarget || document.querySelector('#forgotPasswordContainer .btn');
-        if (resetBtn) {
-            const label = resetBtn.querySelector('.btn-label');
-            if (label) label.textContent = isBengali ? 'লিঙ্ক সফলভাবে পাঠানো হয়েছে!' : 'Link Sent Successfully!';
-        }
-
-        const successNotice = document.getElementById('forgotSuccessNotice');
-        if (successNotice) {
-            successNotice.style.display = 'block';
-            successNotice.innerHTML = `
-                <strong style="color:#C9A14A; display:block; margin-bottom:6px;">
-                    📧 ${isBengali ? 'ইমেইল পাঠানো হয়েছে:' : 'Reset Link Sent to'} ${email}
-                </strong>
-                <p style="margin:0 0 8px 0; font-size:0.82rem;">
-                    ${isBengali ? 'নতুন পাসওয়ার্ড তৈরি করতে ইমেলের ভেতরের লিঙ্কে ক্লিক বা কপি করুন।' : 'Check your email inbox and click or copy the reset link inside.'}
-                </p>
-                <div style="background:rgba(0,0,0,0.3); padding:10px 12px; border-radius:6px; font-size:0.78rem; line-height:1.5;">
-                    <strong style="color:#e06650; display:block; margin-bottom:4px;">
-                        ⚠️ ${isBengali ? 'ইমেইল পাচ্ছেন না? স্প্যাম ফোল্ডার চেক করুন:' : 'Can\'t find the email? Check Spam Folder:'}
-                    </strong>
-                    <ul style="margin:4px 0 0 16px; padding:0; color:#ccc;">
-                        <li>${isBengali ? 'গুগল মেইল (Gmail) এর <strong>Spam / Junk</strong> অথবা <strong>Promotions</strong> ট্যাব চেক করুন।' : 'Check your Gmail <strong>Spam / Junk</strong> or <strong>Promotions</strong> tab.'}</li>
-                        <li>${isBengali ? 'প্রেরকের ইমেইল থাকবে: <code>noreply@mohor-app.firebaseapp.com</code>' : 'Sender address: <code>noreply@mohor-app.firebaseapp.com</code>'}</li>
-                        <li>${isBengali ? 'ভবিষ্যতে মেসেজ সরাসরি ইনবক্সে পেতে ইমেইলটি খুলে <strong>"Report as Not Spam"</strong> এ ক্লিক করুন।' : 'Click <strong>"Report as Not Spam"</strong> so future emails land in your main inbox.'}</li>
-                        <li>${isBengali ? 'এরপর লিঙ্কে ক্লিক করে নতুন পাসওয়ার্ড সেট করুন।' : 'Copy or click the reset link to create your new password.'}</li>
-                    </ul>
-                </div>
-            `;
-        }
-    } catch (error) {
-        notify((isBengali ? 'রিসেট ব্যর্থ হয়েছে: ' : 'Reset failed: ') + error.message, 'error');
-    } finally {
-        setBtnLoading(btnTarget, false);
-    }
-};
+(async function initAuth() {
+    const token = getAuthToken();
+    if (!token) return updateAuthUI(null);
+    try { const user = await api('/api/auth/me'); setAuth(token, user); updateAuthUI(user); }
+    catch (_) { logout(); }
+})();

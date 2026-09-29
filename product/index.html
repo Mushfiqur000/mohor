@@ -280,7 +280,17 @@ src="https://www.facebook.com/tr?id=920711640501746&ev=PageView&noscript=1"
                     const response = await fetch(`/api/products?id=${encodeURIComponent(String(productId))}`);
                     if (response.status === 404) return null;
                     if (!response.ok) throw new Error(`Product request failed (${response.status})`);
-                    return await response.json();
+                    const product = await response.json();
+                    const parse = (value, fallback) => {
+                        if (typeof value !== 'string') return value ?? fallback;
+                        try { return JSON.parse(value); } catch (_) { return value; }
+                    };
+                    ['images', 'sizes', 'colors', 'details', 'materials', 'care', 'sizeMeasurements', 'sizeQuantities', 'variantStock'].forEach(key => {
+                        if (key in product) product[key] = parse(product[key], []);
+                    });
+                    product.title = parse(product.title, 'Dress');
+                    product.description = parse(product.description, '');
+                    return product;
                 } catch (error) {
                     console.error('Error loading product:', error);
                     return null;
