@@ -937,7 +937,7 @@ function statusClass(status) {
   if (s === 'placed' || s === 'new') return 'status-pending';
   return 'status-' + (known.includes(s) ? s : 'pending');
 }
-function money(n) { return 'à§³' + Number(n || 0).toLocaleString(); }
+function money(n) { return '৳' + Number(n || 0).toLocaleString(); }
 
 function showToast(message, type = 'success') {
   const container = document.getElementById('toast-container');
@@ -1026,8 +1026,9 @@ function showLoginMessage(kind, text) {
 
 async function initAdmin() {
   try {
-    const user = await api('/api/auth/me');
-    if (user && (user.email === adminEmail || user.admin)) {
+    const response = await api('/api/auth/me');
+    const user = response.user || response;
+    if (user && (user.email === adminEmail || user.admin || user.role === 'admin')) {
     loginSection.style.display = 'none';
     mainDashboard.style.display = 'block';
     document.getElementById('user-email').innerText = user.email;
@@ -1227,7 +1228,7 @@ async function updateOrderStatus(orderId, newStatus, buttonEl, selectEl) {
   try {
     buttonEl.innerText = 'â€¦';
     buttonEl.disabled = true;
-    await api(`/api/orders/${orderId}`, {method: 'PATCH', body: JSON.stringify({status: newStatus})});
+    await api('/api/orders', {method: 'PUT', body: JSON.stringify({id: orderId, status: newStatus})});
     buttonEl.innerText = 'âœ“ Saved';
     selectEl.className = 'status-select ' + statusClass(newStatus);
     showToast('Order status updated to ' + newStatus, 'success');
@@ -2313,7 +2314,7 @@ function handleDeleteOrder(orderId, onDeleted) {
   const label = order ? `order from ${order.customerName || 'this customer'} (${money(order.totalAmount)})` : 'this order';
   showConfirm(`Delete the ${label}? This cannot be undone.`, async () => {
     try {
-      await api(`/api/orders/${orderId}`, {method: 'DELETE'});
+      await api('/api/orders', {method: 'DELETE', body: JSON.stringify({id: orderId})});
       showToast('Order deleted.', 'success');
       if (typeof onDeleted === 'function') onDeleted();
     } catch (err) {
@@ -2328,7 +2329,7 @@ function handleBulkDeleteOrders(ids, scopeLabel) {
   if (ids.length === 0) return;
   showConfirm(`Delete ${ids.length} order${ids.length === 1 ? '' : 's'}${scopeLabel ? ' from ' + scopeLabel : ''}? This cannot be undone.`, async () => {
     let failed = 0;
-    await Promise.all(ids.map(id => api(`/api/orders/${id}`, { method: 'DELETE' }).catch(() => { failed++; })));
+    await Promise.all(ids.map(id => api('/api/orders', { method: 'DELETE', body: JSON.stringify({id}) }).catch(() => { failed++; })));
     historySelectedIds.clear();
     if (failed === 0) showToast(`${ids.length} order${ids.length === 1 ? '' : 's'} deleted.`, 'success');
     else showToast(`${ids.length - failed} of ${ids.length} orders deleted. ${failed} failed.`, 'error');

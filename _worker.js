@@ -122,6 +122,23 @@ export default {
       return payload;
     }
 
+    async function getUserProfile(userId) {
+      return env.DB.prepare('SELECT * FROM users WHERE id = ? LIMIT 1').bind(userId).first();
+    }
+
+    function normalizeOrder(row) {
+      const parsed = parseJsonFields(row);
+      return {
+        ...parsed,
+        customerName: parsed.customerName ?? parsed.customer_name ?? '',
+        customerPhone: parsed.customerPhone ?? parsed.customer_phone ?? '',
+        deliveryAddress: parsed.deliveryAddress ?? parsed.delivery_address ?? '',
+        totalAmount: parsed.totalAmount ?? parsed.total_amount ?? 0,
+        orderDate: parsed.orderDate ?? parsed.order_date ?? parsed.created_at ?? null,
+        items: Array.isArray(parsed.items) ? parsed.items : [],
+      };
+    }
+
     // Send Telegram Order Alert
     async function notifyTelegram(order) {
       if (!env.TELEGRAM_BOT_TOKEN || !env.TELEGRAM_CHAT_ID) return;
@@ -226,9 +243,7 @@ export default {
     if (url.pathname === '/api/auth/me' && request.method === 'GET') {
       const user = await getAuthUser(request);
       if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
-      const profile = await env.DB.prepare(
-        'SELECT id, email, name, phone, address, role FROM users WHERE id = ? LIMIT 1'
-      ).bind(user.id).first();
+      const profile = await getUserProfile(user.id);
       return Response.json({ user: profile || user });
     }
 
@@ -237,12 +252,17 @@ export default {
       if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
       try {
         const { name, phone, address } = await request.json();
-        await env.DB.prepare(
-          'UPDATE users SET name = ?, phone = ?, address = ? WHERE id = ?'
-        ).bind(name || '', phone || '', address || '', user.id).run();
-        const updated = await env.DB.prepare(
-          'SELECT id, email, name, phone, address, role FROM users WHERE id = ? LIMIT 1'
-        ).bind(user.id).first();
+        const columns = await env.DB.prepare('PRAGMA table_info(users)').all();
+        const available = new Set((columns.results || []).map(column => column.name));
+        const updates = [];
+        const values = [];
+        if (available.has('name')) { updates.push('name = ?'); values.push(name || ''); }
+        if (available.has('customerName')) { updates.push('customerName = ?'); values.push(name || ''); }
+        if (available.has('phone')) { updates.push('phone = ?'); values.push(phone || ''); }
+        const addressColumn = available.has('address') ? 'address' : available.has('delivery_address') ? 'delivery_address' : null;
+        if (addressColumn) { updates.push(`${addressColumn} = ?`); values.push(address || ''); }
+        if (updates.length) await env.DB.prepare(`UPDATE users SET ${updates.join(', ')} WHERE id = ?`).bind(...values, user.id).run();
+        const updated = await getUserProfile(user.id);
         return Response.json({ user: updated || { ...user, name, phone, address } });
       } catch (e) {
         return Response.json({ error: e.message }, { status: 500 });
@@ -260,15 +280,16 @@ export default {
             .bind(user.id)
             .first();
           const cart = row ? JSON.parse(row.cart_data) : [];
-          return Response.json({ cart });
+          return Response.json({ cart, items: cart });
         } catch (e) {
-          return Response.json({ cart: [] });
+          return Response.json({ cart: [], items: [] });
         }
       }
 
       if (request.method === 'POST') {
         try {
-          const { cart } = await request.json();
+          const body = await request.json();
+          const cart = Array.isArray(body.cart) ? body.cart : body.items;
           const cartStr = JSON.stringify(cart || []);
 
           await env.DB.prepare(
@@ -342,23 +363,17 @@ export default {
       if (request.method === 'PUT') {
         try {
           const data = await request.json();
+          data.id = data.id || url.searchParams.get('id');
           if (!data.id) return Response.json({ error: 'Product ID required' }, { status: 400 });
-
+          const allowed = ['title', 'description', 'price', 'category', 'images', 'sizes', 'colors', 'displayOrder', 'thumbnail', 'originalPrice', 'quantity', 'regularPrice', 'salePrice'];
+          const columns = allowed.filter(column => Object.prototype.hasOwnProperty.call(data, column));
+          if (!columns.length) return Response.json({ success: true });
+          const values = columns.map(column => ['title', 'description', 'images', 'sizes', 'colors'].includes(column)
+            ? stringifyForDb(data[column])
+            : data[column]);
           await env.DB.prepare(
-            `UPDATE products SET title = ?, description = ?, price = ?, category = ?, images = ?, sizes = ?, colors = ?, displayOrder = ? WHERE id = ?`
-          )
-            .bind(
-              stringifyForDb(data.title),
-              stringifyForDb(data.description),
-              Number(data.price) || 0,
-              data.category || '',
-              stringifyForDb(data.images),
-              stringifyForDb(data.sizes),
-              stringifyForDb(data.colors),
-              Number(data.displayOrder) || 0,
-              data.id
-            )
-            .run();
+            `UPDATE products SET ${columns.map(column => `"${column}" = ?`).join(', ')} WHERE id = ?`
+          ).bind(...values, data.id).run();
 
           return Response.json({ success: true });
         } catch (e) {
@@ -379,6 +394,23 @@ export default {
 
     // --- BANNERS ROUTES ---
     if (url.pathname === '/api/banners') {
+      if (request.method === 'PUT') {
+        try {
+          const data = await request.json();
+          if (!data.id) return Response.json({ error: 'Banner ID required' }, { status: 400 });
+          const columns = ['title', 'subtitle', 'imageUrl', 'link', 'buttonText', 'order', 'objectPosition', 'active']
+            .filter(column => Object.prototype.hasOwnProperty.call(data, column));
+          if (columns.length) {
+            await env.DB.prepare(
+              `UPDATE banners SET ${columns.map(column => `"${column}" = ?`).join(', ')} WHERE id = ?`
+            ).bind(...columns.map(column => data[column]), data.id).run();
+          }
+          return Response.json({ success: true });
+        } catch (e) {
+          return Response.json({ error: e.message }, { status: 500 });
+        }
+      }
+
       if (request.method === 'GET') {
         try {
           const { results } = await env.DB.prepare('SELECT * FROM banners').all();
@@ -406,6 +438,7 @@ export default {
         } catch (e) {
           return Response.json({ error: e.message }, { status: 500 });
         }
+
       }
 
       if (request.method === 'DELETE') {
@@ -430,7 +463,7 @@ export default {
         }
       }
 
-      if (request.method === 'POST') {
+      if (request.method === 'POST' || request.method === 'PUT') {
         const user = await getAuthUser(request);
         if (!user || user.role !== 'admin') {
           return Response.json({ error: 'Forbidden: Admin access required' }, { status: 403 });
@@ -438,14 +471,24 @@ export default {
 
         try {
           const body = await request.json();
-          const dataStr = stringifyForDb(body);
-
-          await env.DB.prepare(
-            `INSERT INTO settings (id, data, updated_at) VALUES ('store_settings', ?, CURRENT_TIMESTAMP)
-             ON CONFLICT(id) DO UPDATE SET data = excluded.data, updated_at = CURRENT_TIMESTAMP`
-          )
-            .bind(dataStr)
-            .run();
+          const columnsInfo = await env.DB.prepare('PRAGMA table_info(settings)').all();
+          const available = new Set((columnsInfo.results || []).map(column => column.name));
+          const id = body.id || url.searchParams.get('id') || 'storefront';
+          const updates = Object.keys(body).filter(column => column !== 'id' && available.has(column));
+          if (available.has('data') && !updates.length) {
+            updates.push('data');
+            body.data = body;
+          }
+          if (available.has('id')) {
+            if (updates.length) {
+              const values = updates.map(column => stringifyForDb(body[column]));
+              await env.DB.prepare(
+                `INSERT INTO settings (id, ${updates.map(column => `"${column}"`).join(', ')})
+                 VALUES (?, ${updates.map(() => '?').join(', ')})
+                 ON CONFLICT(id) DO UPDATE SET ${updates.map(column => `"${column}" = excluded."${column}"`).join(', ')}`
+              ).bind(id, ...values).run();
+            }
+          }
 
           return Response.json({ success: true });
         } catch (e) {
@@ -513,14 +556,14 @@ export default {
         try {
           if (user.role === 'admin') {
             const { results } = await env.DB.prepare('SELECT * FROM orders ORDER BY created_at DESC').all();
-            return Response.json((results || []).map(parseJsonFields));
+            return Response.json((results || []).map(normalizeOrder));
           } else {
             const { results } = await env.DB.prepare(
               'SELECT * FROM orders WHERE user_id = ? OR user_email = ? ORDER BY created_at DESC'
             )
               .bind(user.id, user.email)
               .all();
-            return Response.json((results || []).map(parseJsonFields));
+            return Response.json((results || []).map(normalizeOrder));
           }
         } catch (e) {
           return Response.json({ error: e.message }, { status: 500 });

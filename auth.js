@@ -47,7 +47,7 @@ function applyUserDataToForms(data) {
     if (!data) return;
     const name = data.customerName || data.name || data.fullName || window.currentUser?.displayName || '';
     const phone = data.phone || data.customerPhone || data.phoneNumber || data.mobile || '';
-    const address = data.address || data.deliveryAddress || data.fullAddress || '';
+    const address = data.address || data.deliveryAddress || data.delivery_address || data.fullAddress || '';
     const set = (id, value, onlyEmpty) => {
         const el = document.getElementById(id);
         if (el && value && (!onlyEmpty || !el.value)) el.value = value;
@@ -76,9 +76,9 @@ async function loadUserOrders() {
         const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
         container.innerHTML = rows.map(r => `<div class="order-history-item">
             <div class="oh-header"><div><div class="oh-id">Order ID: <a href="/order/?id=${esc(r.id)}">${esc(r.id)}</a></div>
-            <div class="oh-date">${esc(r.date)} â€¢ ${esc(r.time)}</div><div class="oh-address">${esc(r.deliveryAddress || '')}</div></div>
-            <div class="oh-right"><div class="oh-total">à§³${Number(r.totalAmount || 0)}</div><div class="oh-status status-pill">${esc(r.status || 'Pending')}</div></div></div>
-            ${r.savings > 0 ? `<div class="oh-savings">ðŸŽ‰ You saved à§³${r.savings} on this order!</div>` : ''}
+            <div class="oh-date">${esc(r.date)} &bull; ${esc(r.time)}</div><div class="oh-address">${esc(r.deliveryAddress || r.delivery_address || '')}</div></div>
+            <div class="oh-right"><div class="oh-total">৳${Number(r.totalAmount || 0)}</div><div class="oh-status status-pill">${esc(r.status || 'Pending')}</div></div></div>
+            ${r.savings > 0 ? `<div class="oh-savings">🎉 You saved ৳${r.savings} on this order!</div>` : ''}
             <div class="oh-actions"><a class="btn btn-outline btn-sm" href="/order/?id=${esc(r.id)}">View Details</a></div>
         </div>`).join('');
     } catch (error) { container.innerHTML = `<p class="order-history-empty">Could not load past orders.</p>`; }

@@ -85,8 +85,9 @@ async function loadCartFromApi() {
         });
         if (!response.ok) return;
         const data = await response.json();
-        if (Array.isArray(data.items)) {
-            window.cart = data.items;
+        const savedCart = Array.isArray(data.items) ? data.items : data.cart;
+        if (Array.isArray(savedCart)) {
+            window.cart = savedCart;
             localStorage.setItem('mohor_cart', JSON.stringify(window.cart));
             window.updateCartUI();
         }
@@ -246,10 +247,10 @@ window.updateDeliveryPolicyAndTotal = function() {
     if (zoneSelect && policyDisplay) {
         if (zoneSelect.value === '70' || zoneSelect.value === '80' || zoneSelect.value === 'inside') {
             policyDisplay.style.display = 'block';
-            policyDisplay.innerHTML = tFn('zoneDeliveryInside') || 'Inside Sylhet City: à§³70';
+            policyDisplay.innerHTML = tFn('zoneDeliveryInside') || 'Inside Sylhet City: ৳70';
         } else if (zoneSelect.value === '140' || zoneSelect.value === '130' || zoneSelect.value === '150' || zoneSelect.value === 'outside') {
             policyDisplay.style.display = 'block';
-            policyDisplay.innerHTML = tFn('zoneDeliveryOutside') || 'Outside Sylhet: à§³140';
+            policyDisplay.innerHTML = tFn('zoneDeliveryOutside') || 'Outside Sylhet: ৳140';
         } else {
             policyDisplay.style.display = 'none';
         }
@@ -268,15 +269,15 @@ function renderSavingsIndicators(totalSavings) {
     const isBn = window.currentLang === 'bn';
     const formattedSavings = totalSavings.toLocaleString('en-IN');
     const savingsMsg = isBn
-        ? `à¦†à¦ªà¦¨à¦¿ à¦à¦‡ à¦…à¦°à§à¦¡à¦¾à¦°à§‡ à§³ ${formattedSavings} à¦¸à¦¾à¦¶à§à¦°à¦¯à¦¼ à¦•à¦°à¦›à§‡à¦¨!`
-        : `You save à§³ ${formattedSavings} on this order!`;
+        ? `You saved ৳${formattedSavings} on this order!`
+        : `You save ৳${formattedSavings} on this order!`;
 
     savingsTargets.forEach(container => {
         if (!container) return;
         if (totalSavings > 0) {
             container.style.display = 'block';
             container.className = 'cart-savings-indicator';
-            container.innerHTML = `<span class="savings-icon">ðŸŽ‰</span> ${savingsMsg}`;
+            container.innerHTML = `<span class="savings-icon">🎉</span> ${savingsMsg}`;
         } else {
             container.style.display = 'none';
             container.innerHTML = '';

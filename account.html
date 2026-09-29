@@ -68,9 +68,10 @@
       document.getElementById('profileNameHeading').textContent = name || 'My account';
       document.getElementById('profileEmail').textContent = profile.email || '';
       document.getElementById('profilePhoneText').textContent = profile.phone || '';
-      document.getElementById('profileAddressText').textContent = profile.address || '';
+      const address = profile.address || profile.delivery_address || profile.deliveryAddress || '';
+      document.getElementById('profileAddressText').textContent = address;
       document.getElementById('avatar').textContent = (name || profile.email || 'M').charAt(0).toUpperCase();
-      nameInput.value = name; phoneInput.value = profile.phone || ''; addressInput.value = profile.address || '';
+      nameInput.value = name; phoneInput.value = profile.phone || ''; addressInput.value = address;
     };
     const nameInput = document.getElementById('name'), phoneInput = document.getElementById('phone'), addressInput = document.getElementById('address');
     setProfile(user);
