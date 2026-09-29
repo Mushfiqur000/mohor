@@ -226,7 +226,27 @@ export default {
     if (url.pathname === '/api/auth/me' && request.method === 'GET') {
       const user = await getAuthUser(request);
       if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
-      return Response.json({ user });
+      const profile = await env.DB.prepare(
+        'SELECT id, email, name, phone, address, role FROM users WHERE id = ? LIMIT 1'
+      ).bind(user.id).first();
+      return Response.json({ user: profile || user });
+    }
+
+    if (url.pathname === '/api/auth/me' && request.method === 'PUT') {
+      const user = await getAuthUser(request);
+      if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
+      try {
+        const { name, phone, address } = await request.json();
+        await env.DB.prepare(
+          'UPDATE users SET name = ?, phone = ?, address = ? WHERE id = ?'
+        ).bind(name || '', phone || '', address || '', user.id).run();
+        const updated = await env.DB.prepare(
+          'SELECT id, email, name, phone, address, role FROM users WHERE id = ? LIMIT 1'
+        ).bind(user.id).first();
+        return Response.json({ user: updated || { ...user, name, phone, address } });
+      } catch (e) {
+        return Response.json({ error: e.message }, { status: 500 });
+      }
     }
 
     // --- CART SYNCHRONIZATION ROUTES ---

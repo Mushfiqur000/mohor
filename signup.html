@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Log in | Mohor Clothings</title>
+  <title>Sign up | Mohor Clothings</title>
   <link rel="icon" href="assets/favicon-32.png">
   <link rel="stylesheet" href="style.css?v=29">
   <style>
@@ -16,41 +16,46 @@
     .auth-panel input { width:100%; box-sizing:border-box; }
     .auth-error { min-height:20px; color:var(--rust); font-size:.85rem; }
     .auth-panel a { color:var(--maroon); font-weight:600; }
-    @media (max-width:480px) { .auth-panel { padding:28px 22px; } }
   </style>
 </head>
 <body>
   <main class="standalone-auth">
     <section class="auth-panel">
       <a href="/" aria-label="Mohor home"><img src="assets/logo-ink.png" alt="Mohor Clothings" width="150"></a>
-      <h1>Welcome back</h1>
-      <p>Log in to manage your account and orders.</p>
-      <form id="loginForm">
+      <h1>Create your account</h1>
+      <p>Save your details for a faster checkout.</p>
+      <form id="signupForm">
+        <label for="name">Full Name</label>
+        <input class="input" id="name" autocomplete="name" required>
+        <label for="phone">Phone Number</label>
+        <input class="input" id="phone" type="tel" autocomplete="tel" required>
         <label for="email">Email</label>
         <input class="input" id="email" type="email" autocomplete="email" required>
         <label for="password">Password</label>
-        <input class="input" id="password" type="password" autocomplete="current-password" required>
+        <input class="input" id="password" type="password" autocomplete="new-password" minlength="6" required>
         <p class="auth-error" id="error" role="alert"></p>
-        <button class="btn btn-dark btn-block" type="submit">Log in</button>
+        <button class="btn btn-dark btn-block" type="submit">Sign up</button>
       </form>
-      <p>Don't have an account? <a href="/signup.html">Sign up</a></p>
+      <p>Already have an account? <a href="/login.html">Log in</a></p>
     </section>
   </main>
   <script>
-    document.getElementById('loginForm').addEventListener('submit', async event => {
+    document.getElementById('signupForm').addEventListener('submit', async event => {
       event.preventDefault();
       const error = document.getElementById('error');
+      const nameInput = document.getElementById('name');
+      const phoneInput = document.getElementById('phone');
       const emailInput = document.getElementById('email');
       const passwordInput = document.getElementById('password');
       error.textContent = '';
       try {
-        const response = await fetch('/api/auth/login', {
+        const response = await fetch('/api/auth/register', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email: emailInput.value.trim(), password: passwordInput.value })
+          body: JSON.stringify({ name: nameInput.value.trim(), phone: phoneInput.value.trim(), email: emailInput.value.trim(), password: passwordInput.value })
         });
         const data = await response.json();
-        if (!response.ok) throw new Error(data.error || 'Unable to log in.');
+        if (!response.ok) throw new Error(data.error || 'Unable to create your account.');
         localStorage.setItem('authToken', data.token);
         localStorage.setItem('authUser', JSON.stringify(data.user));
         window.location.href = '/account.html';

@@ -288,15 +288,18 @@ document.addEventListener('DOMContentLoaded', () => {
     // Theme toggle: manual switch between light/dark. Stores pref in localStorage.
     const themeToggleBtn = document.getElementById('themeToggleBtn');
     function applyTheme(theme) {
+        const themeIcon = theme === 'dark'
+            ? '<span aria-hidden="true">&#9728;</span>'
+            : '<span aria-hidden="true">&#9790;</span>';
         if (!theme || theme === 'system') {
             document.documentElement.removeAttribute('data-theme');
             localStorage.removeItem('mohor_theme');
-            if (themeToggleBtn) themeToggleBtn.innerText = 'ðŸŒ—';
+            if (themeToggleBtn) themeToggleBtn.innerHTML = themeIcon;
             return;
         }
         document.documentElement.setAttribute('data-theme', theme);
         localStorage.setItem('mohor_theme', theme);
-        if (themeToggleBtn) themeToggleBtn.innerText = (theme === 'dark') ? 'ðŸŒ™' : 'â˜€ï¸';
+        if (themeToggleBtn) themeToggleBtn.innerHTML = themeIcon;
     }
 
     // Initialize theme from storage or system

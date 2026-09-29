@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>My account | Mohor Clothings</title>
+  <link rel="icon" href="assets/favicon-32.png">
+  <link rel="stylesheet" href="style.css?v=29">
+  <style>
+    .account-page { min-height:100vh; padding:44px 16px; background:var(--muslin); }
+    .account-shell { max-width:980px; margin:auto; }
+    .account-top { display:flex; align-items:center; justify-content:space-between; gap:20px; margin-bottom:28px; }
+    .account-top a { color:var(--maroon); }
+    .account-grid { display:grid; grid-template-columns:minmax(260px,.8fr) minmax(0,1.2fr); gap:22px; }
+    .account-card { padding:28px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg); box-shadow:var(--shadow-sm); }
+    .account-card h2 { margin-top:0; }
+    .avatar { width:64px; height:64px; display:grid; place-items:center; border-radius:50%; background:var(--maroon); color:#fff; font:600 1.7rem var(--font-display); }
+    .profile-meta { margin:16px 0 24px; color:var(--ink-muted); line-height:1.8; }
+    .profile-meta strong { color:var(--ink); }
+    .account-card label { display:block; margin:12px 0 6px; color:var(--ink-muted); font-size:.82rem; }
+    .account-card input { width:100%; box-sizing:border-box; }
+    .order-list { display:grid; gap:12px; }
+    .order-card { padding:16px; border:1px solid var(--border); border-radius:var(--radius-md); }
+    .order-head { display:flex; justify-content:space-between; gap:12px; }
+    .status { padding:4px 9px; border-radius:99px; background:var(--brass-soft); color:var(--ink); font-size:.75rem; }
+    .order-items { margin:10px 0 0; padding-left:18px; color:var(--ink-muted); font-size:.88rem; }
+    .account-error { color:var(--rust); }
+    @media (max-width:760px) { .account-grid { grid-template-columns:1fr; } .account-top { align-items:flex-start; flex-direction:column; } }
+  </style>
+</head>
+<body>
+  <main class="account-page">
+    <div class="account-shell">
+      <header class="account-top">
+        <a href="/"><img src="assets/logo-ink.png" alt="Mohor Clothings" width="150"></a>
+        <a href="/wishlist/">Wishlist</a>
+      </header>
+      <div id="pageError" class="account-error" role="alert"></div>
+      <div class="account-grid">
+        <section class="account-card">
+          <div class="avatar" id="avatar">M</div>
+          <h1 id="profileNameHeading">My account</h1>
+          <div class="profile-meta"><div><strong>Email:</strong> <span id="profileEmail"></span></div><div><strong>Phone:</strong> <span id="profilePhoneText"></span></div><div><strong>Address:</strong> <span id="profileAddressText"></span></div></div>
+          <h2>Update Profile</h2>
+          <form id="profileForm">
+            <label for="name">Name</label><input class="input" id="name" required>
+            <label for="phone">Phone</label><input class="input" id="phone" type="tel">
+            <label for="address">Default delivery address</label><input class="input" id="address">
+            <button class="btn btn-dark btn-block" type="submit">Update Profile</button>
+          </form>
+        </section>
+        <section class="account-card">
+          <h2>My Order History</h2>
+          <div id="orders" class="order-list"><p>Loading orders...</p></div>
+        </section>
+      </div>
+      <button class="btn btn-outline" id="logout" style="margin-top:22px;">Log Out</button>
+    </div>
+  </main>
+  <script>
+    const token = localStorage.getItem('authToken');
+    if (!token) window.location.replace('/login.html');
+    const authHeaders = () => ({ Authorization: `Bearer ${token}` });
+    const user = (() => { try { return JSON.parse(localStorage.getItem('authUser') || '{}'); } catch (_) { return {}; } })();
+    const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
+    const setProfile = profile => {
+      const name = profile.name || profile.customerName || '';
+      document.getElementById('profileNameHeading').textContent = name || 'My account';
+      document.getElementById('profileEmail').textContent = profile.email || '';
+      document.getElementById('profilePhoneText').textContent = profile.phone || '';
+      document.getElementById('profileAddressText').textContent = profile.address || '';
+      document.getElementById('avatar').textContent = (name || profile.email || 'M').charAt(0).toUpperCase();
+      nameInput.value = name; phoneInput.value = profile.phone || ''; addressInput.value = profile.address || '';
+    };
+    const nameInput = document.getElementById('name'), phoneInput = document.getElementById('phone'), addressInput = document.getElementById('address');
+    setProfile(user);
+    (async () => {
+      try {
+        const [meResponse, ordersResponse] = await Promise.all([fetch('/api/auth/me', { headers: authHeaders() }), fetch('/api/orders', { headers: authHeaders() })]);
+        if (!meResponse.ok) throw new Error('Your session has expired.');
+        const me = await meResponse.json();
+        setProfile(me.user || me);
+        const payload = await ordersResponse.json();
+        const orders = Array.isArray(payload) ? payload : (payload.orders || []);
+        document.getElementById('orders').innerHTML = orders.length ? orders.map(order => {
+          const items = Array.isArray(order.items) ? order.items : [];
+          return `<article class="order-card"><div class="order-head"><strong>${esc(order.id)}</strong><span class="status">${esc(order.status || 'Pending')}</span></div><small>${esc(new Date(order.created_at || order.order_date || Date.now()).toLocaleString())}</small><ul class="order-items">${items.map(item => `<li>${esc(item.name || item.title || 'Item')} × ${esc(item.qty || item.quantity || 1)}</li>`).join('')}</ul><strong>Total: ৳${esc(order.total_amount || order.totalAmount || 0)}</strong></article>`;
+        }).join('') : '<p>No orders yet.</p>';
+      } catch (exception) { document.getElementById('pageError').textContent = exception.message; }
+    })();
+    document.getElementById('profileForm').addEventListener('submit', async event => {
+      event.preventDefault();
+      const response = await fetch('/api/auth/me', { method:'PUT', headers:{ 'Content-Type':'application/json', ...authHeaders() }, body:JSON.stringify({ name:nameInput.value.trim(), phone:phoneInput.value.trim(), address:addressInput.value.trim() }) });
+      const data = await response.json();
+      if (!response.ok) { document.getElementById('pageError').textContent = data.error || 'Could not update profile.'; return; }
+      localStorage.setItem('authUser', JSON.stringify(data.user || data)); setProfile(data.user || data);
+    });
+    document.getElementById('logout').addEventListener('click', () => { localStorage.removeItem('authToken'); localStorage.removeItem('authUser'); window.location.href = '/login.html'; });
+  </script>
+</body>
+</html>
