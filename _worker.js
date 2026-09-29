@@ -175,7 +175,7 @@ export default {
 *Order ID:* \`${order.id}\`
 *Customer:* ${order.customer_name} (${order.customer_phone})
 *Address:* ${order.delivery_address}
-*Total Amount:* ${String.fromCharCode(0x09F3)}${order.total_amount}
+*Total Amount:* ৳${order.total_amount}
 *Status:* ${order.status}`;
 
       try {
