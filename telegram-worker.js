@@ -41,7 +41,7 @@ function escapeHtml(value) {
 function buildMessage(order) {
   const items = Array.isArray(order.items) && order.items.length
     ? order.items.map((item) => (
-      `• ${escapeHtml(item.name || 'Item')} (x${Number(item.qty) || 1}) - ৳${Number(item.price) || 0}`
+      `• ${escapeHtml(item.name || 'Item')} (x${Number(item.qty) || 1}) - \u09F3${Number(item.price) || 0}`
     )).join('\n')
     : 'No items detailed';
 
@@ -55,8 +55,8 @@ function buildMessage(order) {
     '<b>Order Items:</b>',
     items,
     '',
-    `Subtotal: ৳${Number(order.subtotal) || 0}`,
-    `Total: ৳${Number(order.totalAmount) || 0}`,
+    `Subtotal: \u09F3${Number(order.subtotal) || 0}`,
+    `Total: \u09F3${Number(order.totalAmount) || 0}`,
     `Order ID: ${escapeHtml(order.id || 'N/A')}`
   ].join('\n');
 }
