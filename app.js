@@ -23,9 +23,10 @@ window.uiTranslations = {
         filterBtn: "Filters", closeFilters: "Close",
         sortDefault: "Sort by: Featured", sortLowHigh: "Price: Low to High", sortHighLow: "Price: High to Low",
         catTitle: "Category", catKurti: "Kurti", catThreePiece: "Three Piece", catKhadi: "Khadi", catFormal: "Formal Wear", catOnSale: "🔥 On Sale",
-        priceTitle: "Price", price1: "Under ৳1500", price2: "৳1500 – ৳2500", price3: "Above ৳2500",
+        priceTitle: "Price", price1: "Under \u09F31500", price2: "\u09F31500 – \u09F32500", price3: "Above \u09F32500",
         clearFilters: "Clear all",
         noProducts: "No pieces match your filters just yet. Try clearing a few and searching again.",
+        wishlistExplore: "Explore the collection",
         searchPlaceholder: "Search the collection…",
         sizeSelect: "Select Size", sizeWarning: "Please select a size", colorSelect: "Select Color", colorWarning: "Please select a color",
         descTitle: "Description", detailsTitle: "The Details",
@@ -43,7 +44,7 @@ window.uiTranslations = {
         checkoutName: "Full Name *", checkoutPhone: "Mobile Number *", checkoutAddress: "Complete Address *",
         deliveryAddressLabel: "Delivery Address *",
         policyAgreeText: "I agree to the", policyLink: "Delivery & Return Policy",
-        selectDeliveryZone: "Select Delivery Zone *", zoneInside: "Inside Sylhet (৳70)", zoneOutside: "Outside Sylhet (৳140)",
+        selectDeliveryZone: "Select Delivery Zone *", zoneInside: "Inside Sylhet (\u09F370)", zoneOutside: "Outside Sylhet (\u09F3140)",
         zoneDeliveryInside: "Inside Sylhet: estimated delivery in 1–3 business days. Our team will confirm by phone before dispatch.",
         zoneDeliveryOutside: "Outside Sylhet: estimated delivery in 3–5 business days via courier. Our team will confirm by phone before dispatch.",
         aboutEyebrow: "Est. in Sylhet",
@@ -67,7 +68,7 @@ window.uiTranslations = {
         policyPageTitle: "Delivery & Return Policy",
         policyEyebrow: "Please read before ordering",
         policy1Title: "Delivery Information",
-        policy1Text: "We deliver nationwide across Bangladesh. Delivery inside Sylhet costs ৳70 and usually takes 1–3 business days. Delivery outside Sylhet costs ৳140 and usually takes 3–5 business days. The applicable charge is shown at checkout.",
+        policy1Text: "We deliver nationwide across Bangladesh. Delivery inside Sylhet costs \u09F370 and usually takes 1–3 business days. Delivery outside Sylhet costs \u09F3140 and usually takes 3–5 business days. The applicable charge is shown at checkout.",
         policy2Title: "Order Confirmation",
         policy2Text: "Once you place an order via WhatsApp or the website, our team verifies product availability and sends you a confirmation message along with the final bill, including delivery charges, before processing.",
         policy3Title: "Return & Exchange Policy",
@@ -92,9 +93,10 @@ window.uiTranslations = {
         filterBtn: "ফিল্টার", closeFilters: "বন্ধ করুন",
         sortDefault: "সাজান: ফিচার্ড", sortLowHigh: "দাম: কম থেকে বেশি", sortHighLow: "দাম: বেশি থেকে কম",
         catTitle: "ক্যাটাগরি", catKurti: "কুর্তি", catThreePiece: "থ্রি-পিস", catKhadi: "খাদি", catFormal: "ফরমাল ওয়্যার", catOnSale: "🔥 ছাড়ের পণ্য",
-        priceTitle: "মূল্য", price1: "৳১৫০০ এর নিচে", price2: "৳১৫০০ – ৳২৫০০", price3: "৳২৫০০ এর উপরে",
+        priceTitle: "মূল্য", price1: "\u09F3১৫০০ এর নিচে", price2: "\u09F3১৫০০ – \u09F3২৫০০", price3: "\u09F3২৫০০ এর উপরে",
         clearFilters: "সব মুছুন",
         noProducts: "আপনার ফিল্টারের সাথে মিলছে এমন কিছু পাওয়া যায়নি। কিছু ফিল্টার মুছে আবার চেষ্টা করুন।",
+        wishlistExplore: "কালেকশন দেখুন",
         searchPlaceholder: "কালেকশনে খুঁজুন…",
         sizeSelect: "সাইজ নির্বাচন করুন", sizeWarning: "অনুগ্রহ করে একটি সাইজ নির্বাচন করুন", colorSelect: "রং নির্বাচন করুন", colorWarning: "অনুগ্রহ করে একটি রং নির্বাচন করুন",
         descTitle: "বিবরণ", detailsTitle: "বিস্তারিত",
@@ -112,7 +114,7 @@ window.uiTranslations = {
         checkoutName: "পুরো নাম *", checkoutPhone: "মোবাইল নম্বর *", checkoutAddress: "সম্পূর্ণ ঠিকানা *",
         deliveryAddressLabel: "ডেলিভারি ঠিকানা *",
         policyAgreeText: "আমি সম্মত", policyLink: "ডেলিভারি ও রিটার্ন পলিসিতে",
-        selectDeliveryZone: "ডেলিভারি জোন নির্বাচন করুন *", zoneInside: "সিলেটের ভিতরে (৳৭০)", zoneOutside: "সিলেটের বাইরে (৳১৪০)",
+        selectDeliveryZone: "ডেলিভারি জোন নির্বাচন করুন *", zoneInside: "সিলেটের ভিতরে (\u09F3৭০)", zoneOutside: "সিলেটের বাইরে (\u09F3১৪০)",
         zoneDeliveryInside: "সিলেটের ভিতরে: আনুমানিক ডেলিভারি সময় ১–৩ কর্মদিবস। পাঠানোর আগে আমাদের টিম ফোনে নিশ্চিত করবে।",
         zoneDeliveryOutside: "সিলেটের বাইরে: কুরিয়ারে আনুমানিক ডেলিভারি সময় ৩–৫ কর্মদিবস। পাঠানোর আগে আমাদের টিম ফোনে নিশ্চিত করবে।",
         aboutEyebrow: "সিলেটে প্রতিষ্ঠিত",
@@ -136,7 +138,7 @@ window.uiTranslations = {
         policyPageTitle: "ডেলিভারি ও রিটার্ন পলিসি",
         policyEyebrow: "অর্ডারের আগে পড়ুন",
         policy1Title: "ডেলিভারি তথ্য",
-        policy1Text: "আমরা সারা বাংলাদেশে ডেলিভারি দিয়ে থাকি। সিলেটের ভিতরে ডেলিভারি চার্জ ৳৭০ এবং সাধারণত ১–৩ কর্মদিবস সময় লাগে। সিলেটের বাইরে ডেলিভারি চার্জ ৳১৪০ এবং সাধারণত ৩–৫ কর্মদিবস সময় লাগে। প্রযোজ্য চার্জ চেকআউটে দেখানো হবে।",
+        policy1Text: "আমরা সারা বাংলাদেশে ডেলিভারি দিয়ে থাকি। সিলেটের ভিতরে ডেলিভারি চার্জ \u09F3৭০ এবং সাধারণত ১–৩ কর্মদিবস সময় লাগে। সিলেটের বাইরে ডেলিভারি চার্জ \u09F3১৪০ এবং সাধারণত ৩–৫ কর্মদিবস সময় লাগে। প্রযোজ্য চার্জ চেকআউটে দেখানো হবে।",
         policy2Title: "অর্ডার কনফার্মেশন",
         policy2Text: "হোয়াটসঅ্যাপ বা ওয়েবসাইটের মাধ্যমে অর্ডার করার পর, আমাদের টিম পণ্যের প্রাপ্যতা যাচাই করে এবং প্রসেসিং এর আগে ডেলিভারি চার্জসহ চূড়ান্ত বিল ও একটি কনফার্মেশন মেসেজ পাঠায়।",
         policy3Title: "রিটার্ন ও এক্সচেঞ্জ পলিসি",
@@ -408,7 +410,7 @@ window.sendTelegramNotification = async function(orderData) {
     const endpoint = configuredEndpoint || 'https://mohor-telegram.2022731073.workers.dev';
 
     const itemsText = Array.isArray(orderData.items)
-        ? orderData.items.map(item => `• ${item.name || item.title || 'Item'} (x${item.qty}) - ৳${item.price}`).join('\n')
+        ? orderData.items.map(item => `• ${item.name || item.title || 'Item'} (x${item.qty}) - \u09F3${item.price}`).join('\n')
         : 'No items detailed';
 
     const message = `
@@ -421,8 +423,8 @@ window.sendTelegramNotification = async function(orderData) {
 <b>Order Items:</b>
 ${itemsText}
 
-💵 <b>Subtotal:</b> ৳${orderData.subtotal || 0}
-💰 <b>Total Amount:</b> ৳${orderData.totalAmount || 0}
+💵 <b>Subtotal:</b> \u09F3${orderData.subtotal || 0}
+💰 <b>Total Amount:</b> \u09F3${orderData.totalAmount || 0}
 📌 <b>Status:</b> ${orderData.status || 'pending'}
     `;
 
@@ -619,7 +621,7 @@ window.updateCartSavingsSummary = function() {
         });
 
         if (totalSavings > 0) {
-            amountSpan.innerText = `৳ ${totalSavings.toLocaleString()}`;
+            amountSpan.innerText = `\u09F3 ${totalSavings.toLocaleString()}`;
             banner.style.display = 'block';
         } else {
             banner.style.display = 'none';
@@ -903,7 +905,8 @@ function renderProducts(productsToRender) {
 
     productGrid.innerHTML = '';
     if (!productsToRender || productsToRender.length === 0) {
-        productGrid.innerHTML = `<p class="no-products">${t('noProducts')}</p>`;
+        productGrid.setAttribute('aria-live', 'polite');
+        productGrid.innerHTML = `<p class="no-products" role="status">${t('noProducts')}</p>`;
         return;
     }
 
@@ -931,8 +934,8 @@ function renderProducts(productsToRender) {
 
         // FEATURE 1: Strikethrough Pricing HTML
         const priceDisplayHtml = pricing.isOnSale
-            ? `<div class="card-price"><span class="sale-price">৳ ${pricing.price}</span> <del class="old-price">৳ ${pricing.regularPrice}</del> <span class="card-discount">-${pricing.discountPercent}%</span></div>`
-            : `<div class="card-price">৳ ${pricing.price}</div>`;
+            ? `<div class="card-price"><span class="sale-price">\u09F3 ${pricing.price}</span> <del class="old-price">\u09F3 ${pricing.regularPrice}</del> <span class="card-discount">-${pricing.discountPercent}%</span></div>`
+            : `<div class="card-price">\u09F3 ${pricing.price}</div>`;
 
         // FEATURE 2: In-Card Image Slideshow HTML
         let mediaContentHtml = '';
@@ -976,6 +979,10 @@ function renderProducts(productsToRender) {
                 <div class="card-media">
                     ${saleBadgeHtml}
                     ${stockBadgeHtml}
+                    <button type="button" class="wishlist-toggle" data-wishlist-id="${String(product.id)}" aria-label="${window.isWishlisted(product.id) ? 'Remove from wishlist' : 'Add to wishlist'}" aria-pressed="${window.isWishlisted(product.id)}">
+                        <span aria-hidden="true">${window.isWishlisted(product.id) ? '♥' : '♡'}</span>
+                        <span>${window.isWishlisted(product.id) ? 'Saved' : 'Wishlist'}</span>
+                    </button>
                     <span class="card-cat">${displayCategory}</span>
                     <a class="card-media-link" href="${productUrl}" aria-label="${displayTitle}">${mediaContentHtml}</a>
                 </div>
@@ -1200,8 +1207,8 @@ function renderRelatedProducts(currentProduct) {
             <div class="rel-card-info">
                 <div class="rel-card-title">${getText(relProduct.title)}</div>
                 <div class="rel-card-price">
-                    <span class="rel-price">৳ ${pricing.price}</span>
-                    ${pricing.isOnSale ? `<del class="rel-old-price">৳ ${pricing.regularPrice}</del>` : ''}
+                    <span class="rel-price">\u09F3 ${pricing.price}</span>
+                    ${pricing.isOnSale ? `<del class="rel-old-price">\u09F3 ${pricing.regularPrice}</del>` : ''}
                 </div>
             </div>
         `;
@@ -1285,7 +1292,7 @@ function openProductModal(product) {
 
     // FEATURE 1: Modal Price & Badges
     document.getElementById('modalTitle').innerText = getText(product.title);
-    document.getElementById('modalPrice').innerText = `৳ ${pricing.price}`;
+    document.getElementById('modalPrice').innerText = `\u09F3 ${pricing.price}`;
     const modalColorSummary = document.getElementById('modalColorSummary');
     if (modalColorSummary) {
         let summaryColors = product.colors;
@@ -1302,7 +1309,7 @@ function openProductModal(product) {
     const discountBadgeEl = document.getElementById('modalDiscountBadge');
 
     if (pricing.isOnSale) {
-        if (origPriceEl) { origPriceEl.innerText = `৳ ${pricing.regularPrice}`; origPriceEl.style.display = 'inline-block'; }
+        if (origPriceEl) { origPriceEl.innerText = `\u09F3 ${pricing.regularPrice}`; origPriceEl.style.display = 'inline-block'; }
         if (savingsTagEl) { savingsTagEl.innerText = `-${pricing.discountPercent}% OFF`; savingsTagEl.style.display = 'inline-block'; }
         if (discountBadgeEl) { discountBadgeEl.innerText = `-${pricing.discountPercent}% OFF`; discountBadgeEl.style.display = 'inline-block'; }
     } else {
@@ -1479,7 +1486,19 @@ document.addEventListener('DOMContentLoaded', () => {
         const accountSidebar = document.getElementById('accountSidebar');
         if (accountSidebar && accountSidebar.classList.contains('active') && typeof window.closeAccountSidebar === 'function') window.closeAccountSidebar();
         const filters = document.getElementById('sidebar');
-        if (filters && filters.classList.contains('active')) filters.classList.remove('active');
+        if (filters && filters.classList.contains('active')) {
+            filters.classList.remove('active');
+            document.getElementById('filtersOverlay')?.classList.remove('active');
+            document.getElementById('mobileFilterBtn')?.setAttribute('aria-expanded', 'false');
+            document.body.classList.remove('drawer-open');
+        }
+        const menu = document.getElementById('navLinks');
+        const menuToggle = document.getElementById('menuToggle');
+        if (menu?.classList.contains('active')) {
+            menu.classList.remove('active');
+            menuToggle?.setAttribute('aria-expanded', 'false');
+            document.body.classList.remove('menu-open');
+        }
     });
 
     const modalAddToCartBtn = document.getElementById('modalAddToCartBtn');
@@ -1577,18 +1596,33 @@ document.addEventListener('DOMContentLoaded', () => {
     const menuToggle = document.getElementById('menuToggle');
     const navLinks = document.getElementById('navLinks');
     if (menuToggle && navLinks) {
+        const closeMenu = () => {
+            navLinks.classList.remove('active');
+            menuToggle.setAttribute('aria-expanded', 'false');
+            document.body.classList.remove('menu-open');
+        };
         menuToggle.addEventListener('click', () => {
             const isActive = navLinks.classList.toggle('active');
             menuToggle.setAttribute('aria-expanded', String(isActive));
+            document.body.classList.toggle('menu-open', isActive);
         });
+        navLinks.querySelectorAll('a').forEach(link => link.addEventListener('click', closeMenu));
     }
 
     const sidebar = document.getElementById('sidebar');
     const filtersOverlay = document.getElementById('filtersOverlay');
     const mobileFilterBtn = document.getElementById('mobileFilterBtn');
     const closeFiltersBtn = document.getElementById('closeFiltersBtn');
-    const openFilters = () => { if (sidebar) sidebar.classList.add('active'); if (filtersOverlay) filtersOverlay.classList.add('active'); };
-    const closeFilters = () => { if (sidebar) sidebar.classList.remove('active'); if (filtersOverlay) filtersOverlay.classList.remove('active'); };
+    const openFilters = () => {
+        if (sidebar) sidebar.classList.add('active');
+        if (filtersOverlay) filtersOverlay.classList.add('active');
+        document.body.classList.add('drawer-open');
+    };
+    const closeFilters = () => {
+        if (sidebar) sidebar.classList.remove('active');
+        if (filtersOverlay) filtersOverlay.classList.remove('active');
+        document.body.classList.remove('drawer-open');
+    };
     if (mobileFilterBtn) mobileFilterBtn.addEventListener('click', openFilters);
     if (mobileFilterBtn) mobileFilterBtn.addEventListener('click', () => mobileFilterBtn.setAttribute('aria-expanded', 'true'));
     if (closeFiltersBtn) closeFiltersBtn.addEventListener('click', () => {

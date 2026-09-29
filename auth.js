@@ -77,11 +77,14 @@ async function loadUserOrders() {
         container.innerHTML = rows.map(r => `<div class="order-history-item">
             <div class="oh-header"><div><div class="oh-id">Order ID: <a href="/order/?id=${esc(r.id)}">${esc(r.id)}</a></div>
             <div class="oh-date">${esc(r.date)} &bull; ${esc(r.time)}</div><div class="oh-address">${esc(r.deliveryAddress || r.delivery_address || '')}</div></div>
-            <div class="oh-right"><div class="oh-total">৳${Number(r.totalAmount || 0)}</div><div class="oh-status status-pill">${esc(r.status || 'Pending')}</div></div></div>
-            ${r.savings > 0 ? `<div class="oh-savings">🎉 You saved ৳${r.savings} on this order!</div>` : ''}
+            <div class="oh-right"><div class="oh-total">\u09F3${Number(r.totalAmount || 0)}</div><div class="oh-status status-pill">${esc(r.status || 'Pending')}</div></div></div>
+            ${r.savings > 0 ? `<div class="oh-savings">🎉 You saved \u09F3${r.savings} on this order!</div>` : ''}
             <div class="oh-actions"><a class="btn btn-outline btn-sm" href="/order/?id=${esc(r.id)}">View Details</a></div>
         </div>`).join('');
-    } catch (error) { container.innerHTML = `<p class="order-history-empty">Could not load past orders.</p>`; }
+    } catch (error) {
+        console.error('Unable to load past orders:', error);
+        container.innerHTML = `<p class="order-history-empty">${tr('accNoOrders') || 'We could not load your orders right now. Please try again.'}</p>`;
+    }
 }
 window.loadUserOrders = loadUserOrders;
 
@@ -100,8 +103,16 @@ window.showAuthView = function(view) {
     ['login', 'signup', 'forgot'].forEach(name => { const el = document.getElementById(name + (name === 'login' ? 'FormContainer' : name === 'signup' ? 'FormContainer' : 'PasswordContainer')); if (el) el.style.display = name === view ? 'block' : 'none'; });
 };
 window.toggleAuthMode = function() { window.showAuthView(document.getElementById('loginFormContainer')?.style.display !== 'none' ? 'signup' : 'login'); };
-window.closeAccountSidebar = function() { document.getElementById('accountSidebar')?.classList.remove('active'); document.getElementById('accountOverlay')?.classList.remove('active'); };
-window.openAccountSidebar = function() { document.getElementById('accountSidebar')?.classList.add('active'); document.getElementById('accountOverlay')?.classList.add('active'); };
+window.closeAccountSidebar = function() {
+    document.getElementById('accountSidebar')?.classList.remove('active');
+    document.getElementById('accountOverlay')?.classList.remove('active');
+    document.body.classList.remove('drawer-open');
+};
+window.openAccountSidebar = function() {
+    document.getElementById('accountSidebar')?.classList.add('active');
+    document.getElementById('accountOverlay')?.classList.add('active');
+    document.body.classList.add('drawer-open');
+};
 document.addEventListener('click', e => {
     if (e.target.closest('#openAccountBtn, .open-account-btn')) {
         e.preventDefault();

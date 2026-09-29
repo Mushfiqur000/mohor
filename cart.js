@@ -133,10 +133,12 @@ const cartBadge = document.getElementById('cartBadge');
 window.closeCartSidebar = function() {
     if (cartSidebar) cartSidebar.classList.remove('active');
     if (cartOverlay) cartOverlay.classList.remove('active');
+    document.body.classList.remove('drawer-open');
 };
 window.openCartSidebar = function() {
     if (cartSidebar) cartSidebar.classList.add('active');
     if (cartOverlay) cartOverlay.classList.add('active');
+    document.body.classList.add('drawer-open');
 };
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -247,10 +249,10 @@ window.updateDeliveryPolicyAndTotal = function() {
     if (zoneSelect && policyDisplay) {
         if (zoneSelect.value === '70' || zoneSelect.value === '80' || zoneSelect.value === 'inside') {
             policyDisplay.style.display = 'block';
-            policyDisplay.innerHTML = tFn('zoneDeliveryInside') || 'Inside Sylhet City: ৳70';
+            policyDisplay.innerHTML = tFn('zoneDeliveryInside') || 'Inside Sylhet City: \u09F370';
         } else if (zoneSelect.value === '140' || zoneSelect.value === '130' || zoneSelect.value === '150' || zoneSelect.value === 'outside') {
             policyDisplay.style.display = 'block';
-            policyDisplay.innerHTML = tFn('zoneDeliveryOutside') || 'Outside Sylhet: ৳140';
+            policyDisplay.innerHTML = tFn('zoneDeliveryOutside') || 'Outside Sylhet: \u09F3140';
         } else {
             policyDisplay.style.display = 'none';
         }
@@ -258,7 +260,7 @@ window.updateDeliveryPolicyAndTotal = function() {
     window.updateCartUI();
 };
 
-// Render Cart Total Savings Indicators ("You save ৳ X on this order!")
+// Render Cart Total Savings Indicators ("You save \u09F3 X on this order!")
 function renderSavingsIndicators(totalSavings) {
     const savingsTargets = [
         document.getElementById('cartSavings'),
@@ -269,8 +271,8 @@ function renderSavingsIndicators(totalSavings) {
     const isBn = window.currentLang === 'bn';
     const formattedSavings = totalSavings.toLocaleString('en-IN');
     const savingsMsg = isBn
-        ? `You saved ৳${formattedSavings} on this order!`
-        : `You save ৳${formattedSavings} on this order!`;
+        ? `You saved \u09F3${formattedSavings} on this order!`
+        : `You save \u09F3${formattedSavings} on this order!`;
 
     savingsTargets.forEach(container => {
         if (!container) return;
@@ -326,8 +328,8 @@ window.updateCartUI = function() {
             if (item.color) metaParts.push('Color: ' + escapeHtml(item.color));
 
             const priceMarkup = (details.savingsPerUnit > 0)
-                ? `<span class="price-original" style="text-decoration:line-through;color:#888;font-size:0.82em;margin-right:4px;">৳${details.regularPrice * item.qty}</span> ৳${itemTotal}`
-                : `৳${itemTotal}`;
+                ? `<span class="price-original" style="text-decoration:line-through;color:#888;font-size:0.82em;margin-right:4px;">\u09F3${details.regularPrice * item.qty}</span> \u09F3${itemTotal}`
+                : `\u09F3${itemTotal}`;
 
             const row = document.createElement('div');
             row.className = 'cart-item';
@@ -477,14 +479,14 @@ window.checkoutToWhatsApp = function() {
     window.cart.forEach((item, index) => {
         const details = getCanonicalItemDetails(item);
         const itemTotal = details.effectivePrice * Number(item.qty);
-        message += `${index + 1}. ${encodeURIComponent(item.name)} (Size: ${encodeURIComponent(item.size)}) | Qty: ${item.qty} - ৳${itemTotal}%0A`;
+        message += `${index + 1}. ${encodeURIComponent(item.name)} (Size: ${encodeURIComponent(item.size)}) | Qty: ${item.qty} - \u09F3${itemTotal}%0A`;
     });
-    message += `%0A*Subtotal: ৳${orderData.subtotal}*`;
+    message += `%0A*Subtotal: \u09F3${orderData.subtotal}*`;
     if (orderData.totalSavings > 0) {
-        message += `%0A*Total Savings: ৳${orderData.totalSavings}*`;
+        message += `%0A*Total Savings: \u09F3${orderData.totalSavings}*`;
     }
-    message += `%0A*Delivery (${encodeURIComponent(orderData.zoneText)}): ৳${orderData.deliveryFee}*`;
-    message += `%0A*FINAL TOTAL: ৳${orderData.finalTotal}*%0A`;
+    message += `%0A*Delivery (${encodeURIComponent(orderData.zoneText)}): \u09F3${orderData.deliveryFee}*`;
+    message += `%0A*FINAL TOTAL: \u09F3${orderData.finalTotal}*%0A`;
     message += `%0A*CUSTOMER DETAILS:*%0AName: ${encodeURIComponent(orderData.name)}%0APhone: ${encodeURIComponent(orderData.phone)}%0AAddress: ${encodeURIComponent(orderData.address)}`;
 
     // Open WhatsApp first — only clear the cart once we know the redirect fired

@@ -227,8 +227,8 @@ window.renderRelatedProducts = function(currentProduct, targetContainerId = 'rel
             </button>`
             : '';
         const priceDisplayHtml = pricing.isOnSale
-            ? `<div class="card-price"><span class="sale-price">৳ ${pricing.price}</span> <del class="old-price">৳ ${pricing.regularPrice}</del> <span class="card-discount">-${pricing.discountPercent}%</span></div>`
-            : `<div class="card-price">৳ ${pricing.price}</div>`;
+            ? `<div class="card-price"><span class="sale-price">\u09F3 ${pricing.price}</span> <del class="old-price">\u09F3 ${pricing.regularPrice}</del> <span class="card-discount">-${pricing.discountPercent}%</span></div>`
+            : `<div class="card-price">\u09F3 ${pricing.price}</div>`;
 
         return `
             <div class="product-card" data-id="${prod.id}">
