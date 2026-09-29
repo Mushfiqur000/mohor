@@ -1,6 +1,21 @@
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
+    const corsHeaders = {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET,HEAD,POST,PUT,DELETE,OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      'Access-Control-Max-Age': '86400',
+    };
+    const json = (body, init = {}) => {
+      const headers = new Headers(init.headers || {});
+      Object.entries(corsHeaders).forEach(([name, value]) => headers.set(name, value));
+      return Response.json(body, { ...init, headers });
+    };
+
+    if (request.method === 'OPTIONS' && url.pathname.startsWith('/api/')) {
+      return new Response(null, { status: 204, headers: corsHeaders });
+    }
 
     // ==========================================
     // HELPER FUNCTIONS
@@ -182,12 +197,12 @@ export default {
       try {
         const { email, password, name, phone } = await request.json();
         if (!email || !password) {
-          return Response.json({ error: 'Email and password required' }, { status: 400 });
+          return json({ error: 'Email and password required' }, { status: 400 });
         }
 
         const existing = await env.DB.prepare('SELECT id FROM users WHERE email = ?').bind(email).first();
         if (existing) {
-          return Response.json({ error: 'Email already registered' }, { status: 400 });
+          return json({ error: 'Email already registered' }, { status: 400 });
         }
 
         const userId = 'usr_' + crypto.randomUUID();
@@ -203,9 +218,9 @@ export default {
         const userObj = { id: userId, email, name: name || '', phone: phone || '', role };
         const token = await createJWT(userObj, env.JWT_SECRET);
 
-        return Response.json({ token, user: userObj });
+        return json({ token, user: userObj });
       } catch (e) {
-        return Response.json({ error: e.message }, { status: 500 });
+        return json({ error: e.message }, { status: 500 });
       }
     }
 
@@ -213,12 +228,12 @@ export default {
       try {
         const { email, password } = await request.json();
         if (!email || !password) {
-          return Response.json({ error: 'Email and password required' }, { status: 400 });
+          return json({ error: 'Email and password required' }, { status: 400 });
         }
 
         const user = await env.DB.prepare('SELECT * FROM users WHERE email = ?').bind(email).first();
         if (!user) {
-          return Response.json({ error: 'Invalid email or password' }, { status: 401 });
+          return json({ error: 'Invalid email or password' }, { status: 401 });
         }
 
         const hashedInput = await hashPassword(password);
@@ -227,7 +242,7 @@ export default {
           user.password_hash === 'admin_placeholder_hash' || user.password_hash === hashedInput;
 
         if (!isPasswordValid) {
-          return Response.json({ error: 'Invalid email or password' }, { status: 401 });
+          return json({ error: 'Invalid email or password' }, { status: 401 });
         }
 
         const role = email === 'mushfiqurrahman2222@gmail.com' ? 'admin' : user.role || 'customer';
@@ -242,22 +257,22 @@ export default {
         const userObj = { id: user.id, email: user.email, name: user.name, phone: user.phone, role };
         const token = await createJWT(userObj, env.JWT_SECRET);
 
-        return Response.json({ token, user: userObj });
+        return json({ token, user: userObj });
       } catch (e) {
-        return Response.json({ error: e.message }, { status: 500 });
+        return json({ error: e.message }, { status: 500 });
       }
     }
 
     if (url.pathname === '/api/auth/me' && request.method === 'GET') {
       const user = await getAuthUser(request);
-      if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
+      if (!user) return json({ error: 'Unauthorized' }, { status: 401 });
       const profile = await getUserProfile(user.id);
-      return Response.json({ user: profile || user });
+      return json({ user: profile || user });
     }
 
     if (url.pathname === '/api/auth/me' && request.method === 'PUT') {
       const user = await getAuthUser(request);
-      if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
+      if (!user) return json({ error: 'Unauthorized' }, { status: 401 });
       try {
         const { name, phone, address } = await request.json();
         const columns = await env.DB.prepare('PRAGMA table_info(users)').all();
@@ -271,16 +286,16 @@ export default {
         if (addressColumn) { updates.push(`${addressColumn} = ?`); values.push(address || ''); }
         if (updates.length) await env.DB.prepare(`UPDATE users SET ${updates.join(', ')} WHERE id = ?`).bind(...values, user.id).run();
         const updated = await getUserProfile(user.id);
-        return Response.json({ user: updated || { ...user, name, phone, address } });
+        return json({ user: updated || { ...user, name, phone, address } });
       } catch (e) {
-        return Response.json({ error: e.message }, { status: 500 });
+        return json({ error: e.message }, { status: 500 });
       }
     }
 
     // --- CART SYNCHRONIZATION ROUTES ---
     if (url.pathname === '/api/cart') {
       const user = await getAuthUser(request);
-      if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
+      if (!user) return json({ error: 'Unauthorized' }, { status: 401 });
 
       if (request.method === 'GET') {
         try {
@@ -288,9 +303,9 @@ export default {
             .bind(user.id)
             .first();
           const cart = row ? JSON.parse(row.cart_data) : [];
-          return Response.json({ cart, items: cart });
+          return json({ cart, items: cart });
         } catch (e) {
-          return Response.json({ cart: [], items: [] });
+          return json({ cart: [], items: [] });
         }
       }
 
@@ -308,9 +323,9 @@ export default {
             .bind(user.id, cartStr)
             .run();
 
-          return Response.json({ success: true });
+          return json({ success: true });
         } catch (e) {
-          return Response.json({ error: e.message }, { status: 500 });
+          return json({ error: e.message }, { status: 500 });
         }
       }
     }
@@ -324,20 +339,20 @@ export default {
             const product = await env.DB.prepare('SELECT * FROM products WHERE id = ? LIMIT 1')
               .bind(id)
               .first();
-            if (!product) return Response.json({ error: 'Product not found' }, { status: 404 });
-            return Response.json(parseJsonFields(product));
+            if (!product) return json({ error: 'Product not found' }, { status: 404 });
+            return json(parseJsonFields(product));
           }
           const { results } = await env.DB.prepare('SELECT * FROM products ORDER BY displayOrder ASC').all();
-          return Response.json((results || []).map(parseJsonFields));
+          return json((results || []).map(parseJsonFields));
         } catch (e) {
-          return Response.json({ error: e.message }, { status: 500 });
+          return json({ error: e.message }, { status: 500 });
         }
       }
 
       // Admin CRUD Operations
       const user = await getAuthUser(request);
       if (!user || user.role !== 'admin') {
-        return Response.json({ error: 'Forbidden: Admin access required' }, { status: 403 });
+        return json({ error: 'Forbidden: Admin access required' }, { status: 403 });
       }
 
       if (request.method === 'POST') {
@@ -362,9 +377,9 @@ export default {
             )
             .run();
 
-          return Response.json({ success: true, id: prodId });
+          return json({ success: true, id: prodId });
         } catch (e) {
-          return Response.json({ error: e.message }, { status: 500 });
+          return json({ error: e.message }, { status: 500 });
         }
       }
 
@@ -372,10 +387,10 @@ export default {
         try {
           const data = await request.json();
           data.id = data.id || url.searchParams.get('id');
-          if (!data.id) return Response.json({ error: 'Product ID required' }, { status: 400 });
+          if (!data.id) return json({ error: 'Product ID required' }, { status: 400 });
           const allowed = ['title', 'description', 'price', 'category', 'images', 'sizes', 'colors', 'displayOrder', 'thumbnail', 'originalPrice', 'quantity', 'regularPrice', 'salePrice'];
           const columns = allowed.filter(column => Object.prototype.hasOwnProperty.call(data, column));
-          if (!columns.length) return Response.json({ success: true });
+          if (!columns.length) return json({ success: true });
           const values = columns.map(column => ['title', 'description', 'images', 'sizes', 'colors'].includes(column)
             ? stringifyForDb(data[column])
             : data[column]);
@@ -383,9 +398,9 @@ export default {
             `UPDATE products SET ${columns.map(column => `"${column}" = ?`).join(', ')} WHERE id = ?`
           ).bind(...values, data.id).run();
 
-          return Response.json({ success: true });
+          return json({ success: true });
         } catch (e) {
-          return Response.json({ error: e.message }, { status: 500 });
+          return json({ error: e.message }, { status: 500 });
         }
       }
 
@@ -393,9 +408,9 @@ export default {
         try {
           const id = url.searchParams.get('id') || (await request.json()).id;
           await env.DB.prepare('DELETE FROM products WHERE id = ?').bind(id).run();
-          return Response.json({ success: true });
+          return json({ success: true });
         } catch (e) {
-          return Response.json({ error: e.message }, { status: 500 });
+          return json({ error: e.message }, { status: 500 });
         }
       }
     }
@@ -405,7 +420,7 @@ export default {
       if (request.method === 'PUT') {
         try {
           const data = await request.json();
-          if (!data.id) return Response.json({ error: 'Banner ID required' }, { status: 400 });
+          if (!data.id) return json({ error: 'Banner ID required' }, { status: 400 });
           const columns = ['title', 'subtitle', 'imageUrl', 'link', 'buttonText', 'order', 'objectPosition', 'active']
             .filter(column => Object.prototype.hasOwnProperty.call(data, column));
           if (columns.length) {
@@ -413,24 +428,24 @@ export default {
               `UPDATE banners SET ${columns.map(column => `"${column}" = ?`).join(', ')} WHERE id = ?`
             ).bind(...columns.map(column => data[column]), data.id).run();
           }
-          return Response.json({ success: true });
+          return json({ success: true });
         } catch (e) {
-          return Response.json({ error: e.message }, { status: 500 });
+          return json({ error: e.message }, { status: 500 });
         }
       }
 
       if (request.method === 'GET') {
         try {
           const { results } = await env.DB.prepare('SELECT * FROM banners').all();
-          return Response.json((results || []).map(parseJsonFields));
+          return json((results || []).map(parseJsonFields));
         } catch (e) {
-          return Response.json({ error: e.message }, { status: 500 });
+          return json({ error: e.message }, { status: 500 });
         }
       }
 
       const user = await getAuthUser(request);
       if (!user || user.role !== 'admin') {
-        return Response.json({ error: 'Forbidden: Admin access required' }, { status: 403 });
+        return json({ error: 'Forbidden: Admin access required' }, { status: 403 });
       }
 
       if (request.method === 'POST') {
@@ -442,9 +457,9 @@ export default {
             .bind(banId, data.title || '', data.imageUrl || '', data.link || '', data.active ?? 1)
             .run();
 
-          return Response.json({ success: true, id: banId });
+          return json({ success: true, id: banId });
         } catch (e) {
-          return Response.json({ error: e.message }, { status: 500 });
+          return json({ error: e.message }, { status: 500 });
         }
 
       }
@@ -453,9 +468,9 @@ export default {
         try {
           const id = url.searchParams.get('id') || (await request.json()).id;
           await env.DB.prepare('DELETE FROM banners WHERE id = ?').bind(id).run();
-          return Response.json({ success: true });
+          return json({ success: true });
         } catch (e) {
-          return Response.json({ error: e.message }, { status: 500 });
+          return json({ error: e.message }, { status: 500 });
         }
       }
     }
@@ -465,16 +480,16 @@ export default {
       if (request.method === 'GET') {
         try {
           const { results } = await env.DB.prepare('SELECT * FROM settings').all();
-          return Response.json(parseJsonFields(results[0] || {}));
+          return json(parseJsonFields(results[0] || {}));
         } catch (e) {
-          return Response.json({ error: e.message }, { status: 500 });
+          return json({ error: e.message }, { status: 500 });
         }
       }
 
       if (request.method === 'POST' || request.method === 'PUT') {
         const user = await getAuthUser(request);
         if (!user || user.role !== 'admin') {
-          return Response.json({ error: 'Forbidden: Admin access required' }, { status: 403 });
+          return json({ error: 'Forbidden: Admin access required' }, { status: 403 });
         }
 
         try {
@@ -498,9 +513,9 @@ export default {
             }
           }
 
-          return Response.json({ success: true });
+          return json({ success: true });
         } catch (e) {
-          return Response.json({ error: e.message }, { status: 500 });
+          return json({ error: e.message }, { status: 500 });
         }
       }
     }
@@ -550,47 +565,47 @@ export default {
           // Fire Telegram Order Notification
           await notifyTelegram(newOrder);
 
-          return Response.json({ success: true, orderId: newOrder.id });
+          return json({ success: true, orderId: newOrder.id });
         } catch (e) {
-          return Response.json({ error: e.message }, { status: 500 });
+          return json({ error: e.message }, { status: 500 });
         }
       }
 
       // Read Order History
       if (request.method === 'GET') {
         const user = await getAuthUser(request);
-        if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
+        if (!user) return json({ error: 'Unauthorized' }, { status: 401 });
 
         try {
           if (user.role === 'admin') {
             const { results } = await env.DB.prepare('SELECT * FROM orders').all();
-            return Response.json(sortOrders((results || []).map(normalizeOrder)));
+            return json(sortOrders((results || []).map(normalizeOrder)));
           } else {
             const { results } = await env.DB.prepare(
               'SELECT * FROM orders WHERE user_id = ? OR user_email = ?'
             )
               .bind(user.id, user.email)
               .all();
-            return Response.json(sortOrders((results || []).map(normalizeOrder)));
+            return json(sortOrders((results || []).map(normalizeOrder)));
           }
         } catch (e) {
-          return Response.json({ error: e.message }, { status: 500 });
+          return json({ error: e.message }, { status: 500 });
         }
       }
 
       // Admin Order Actions (Status update / Delete)
       const user = await getAuthUser(request);
       if (!user || user.role !== 'admin') {
-        return Response.json({ error: 'Forbidden: Admin access required' }, { status: 403 });
+        return json({ error: 'Forbidden: Admin access required' }, { status: 403 });
       }
 
       if (request.method === 'PUT') {
         try {
           const { id, status } = await request.json();
           await env.DB.prepare('UPDATE orders SET status = ? WHERE id = ?').bind(status, id).run();
-          return Response.json({ success: true });
+          return json({ success: true });
         } catch (e) {
-          return Response.json({ error: e.message }, { status: 500 });
+          return json({ error: e.message }, { status: 500 });
         }
       }
 
@@ -598,11 +613,15 @@ export default {
         try {
           const id = url.searchParams.get('id') || (await request.json()).id;
           await env.DB.prepare('DELETE FROM orders WHERE id = ?').bind(id).run();
-          return Response.json({ success: true });
+          return json({ success: true });
         } catch (e) {
-          return Response.json({ error: e.message }, { status: 500 });
+          return json({ error: e.message }, { status: 500 });
         }
       }
+    }
+
+    if (url.pathname === '/favicon.ico') {
+      return Response.redirect(`${url.origin}/assets/favicon-32.png`, 302);
     }
 
     // --- STATIC ASSET FALLBACK ---
