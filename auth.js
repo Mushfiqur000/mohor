@@ -22,6 +22,7 @@ function setAuth(token, user) {
     if (token) localStorage.setItem(AUTH_TOKEN_KEY, token);
     if (user) localStorage.setItem(AUTH_USER_KEY, JSON.stringify(user));
     window.currentUser = user || null;
+    window.dispatchEvent(new CustomEvent('mohor-auth-ready'));
 }
 function logout() {
     localStorage.removeItem(AUTH_TOKEN_KEY);
