@@ -78,22 +78,30 @@ window.cart = readLocalCart();
 
 async function loadCartFromApi() {
     const token = typeof window.getAuthToken === 'function' ? window.getAuthToken() : null;
-    if (!token) return;
+    if (!token) return false;
     try {
         const response = await fetch('/api/cart', {
             headers: { Authorization: `Bearer ${token}` }
         });
-        if (!response.ok) return;
+        if (!response.ok) return false;
         const data = await response.json();
         const savedCart = Array.isArray(data.items) ? data.items : data.cart;
         if (Array.isArray(savedCart)) {
-            window.cart = savedCart;
+            // Do not let an empty account cart erase items added locally
+            // before deferred authentication finishes initializing.
+            if (savedCart.length > 0 || window.cart.length === 0) {
+                window.cart = savedCart;
+            } else {
+                syncCartToApi();
+            }
             localStorage.setItem('mohor_cart', JSON.stringify(window.cart));
             window.updateCartUI();
+            return true;
         }
     } catch (error) {
         console.warn('Could not load saved cart:', error);
     }
+    return false;
 }
 
 let cartSyncTimer = null;
@@ -114,7 +122,11 @@ function syncCartToApi() {
     }, 100);
 }
 
+window.loadCartFromApi = loadCartFromApi;
 loadCartFromApi();
+
+// auth.js is loaded after the first render, so retry account sync when it is ready.
+window.addEventListener('mohor-auth-ready', loadCartFromApi);
 
 // Save cart state safely on pagehide instead of unload (BFCache friendly)
 window.addEventListener('pagehide', () => {
@@ -308,7 +320,7 @@ window.updateCartUI = function() {
             const csBtn = document.getElementById('continueShoppingBtn');
             if (csBtn) csBtn.addEventListener('click', () => {
                 window.closeCartSidebar();
-                if (!window.location.pathname.endsWith('/') && window.location.pathname !== '/') window.location.href = '/';
+                if (window.location.pathname !== '/') window.location.href = '/';
             });
         }
     } else {
