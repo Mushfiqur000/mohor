@@ -7,14 +7,23 @@ export default {
       'Access-Control-Allow-Headers': 'Content-Type, Authorization',
       'Access-Control-Max-Age': '86400',
     };
+    const applySecurityHeaders = response => {
+      const secured = new Response(response.body, response);
+      secured.headers.set('X-Frame-Options', 'DENY');
+      secured.headers.set('X-Content-Type-Options', 'nosniff');
+      secured.headers.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+      secured.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+      secured.headers.set('Cross-Origin-Opener-Policy', 'same-origin');
+      return secured;
+    };
     const json = (body, init = {}) => {
       const headers = new Headers(init.headers || {});
       Object.entries(corsHeaders).forEach(([name, value]) => headers.set(name, value));
-      return Response.json(body, { ...init, headers });
+      return applySecurityHeaders(Response.json(body, { ...init, headers }));
     };
 
     if (request.method === 'OPTIONS' && url.pathname.startsWith('/api/')) {
-      return new Response(null, { status: 204, headers: corsHeaders });
+      return applySecurityHeaders(new Response(null, { status: 204, headers: corsHeaders }));
     }
 
     // ==========================================
@@ -643,10 +652,10 @@ export default {
     }
 
     if (url.pathname === '/favicon.ico') {
-      return Response.redirect(`${url.origin}/assets/favicon-32.png`, 302);
+      return applySecurityHeaders(Response.redirect(`${url.origin}/assets/favicon-32.png`, 302));
     }
 
     // --- STATIC ASSET FALLBACK ---
-    return env.ASSETS.fetch(request);
+    return applySecurityHeaders(await env.ASSETS.fetch(request));
   },
 };

@@ -271,11 +271,17 @@ window.loadHomepageBanners = async function() {
 
 document.addEventListener('DOMContentLoaded', () => {
     const loadBanners = () => window.loadHomepageBanners();
-    if ('requestIdleCallback' in window) {
-        requestIdleCallback(loadBanners, { timeout: 2500 });
-    } else {
-        window.setTimeout(loadBanners, 1200);
-    }
+    // Keep the bundled responsive WebP as the initial LCP image. Dynamic
+    // banners may replace it only after the first page load has completed.
+    const deferBanners = () => {
+        if ('requestIdleCallback' in window) {
+            requestIdleCallback(loadBanners, { timeout: 3000 });
+        } else {
+            window.setTimeout(loadBanners, 3000);
+        }
+    };
+    if (document.readyState === 'complete') deferBanners();
+    else window.addEventListener('load', deferBanners, { once: true });
     const langToggleBtn = document.getElementById('langToggleBtn');
     if (langToggleBtn) {
         langToggleBtn.addEventListener('click', () => {
