@@ -12,7 +12,7 @@ if (typeof window.productsData !== 'undefined') {
 }
 
 // --- LANGUAGE STATE ---
-window.currentLang = localStorage.getItem('mohor_lang') || 'en';
+window.currentLang = localStorage.getItem('lang') || localStorage.getItem('mohor_lang') || 'en';
 document.documentElement.lang = window.currentLang;
 
 window.uiTranslations = {
@@ -198,6 +198,31 @@ function updateUIText() {
 }
 window.updateUIText = updateUIText;
 
+function setLanguage(language) {
+    const value = language === 'bn' || language === 'বাংলা' ? 'bn' : 'en';
+    window.currentLang = value;
+    localStorage.setItem('lang', value);
+    localStorage.setItem('mohor_lang', value);
+    document.documentElement.lang = value;
+    updateUIText();
+    window.dispatchEvent(new Event('languageChanged'));
+    return value;
+}
+window.setLanguage = setLanguage;
+
+function setTheme(theme) {
+    const value = ['light', 'dark', 'system'].includes(theme) ? theme : 'system';
+    localStorage.setItem('theme', value);
+    localStorage.setItem('mohor_theme', value);
+    const root = document.documentElement;
+    const dark = value === 'dark' || (value === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    root.classList.toggle('dark', dark);
+    root.setAttribute('data-theme', dark ? 'dark' : 'light');
+    window.dispatchEvent(new CustomEvent('themeChanged', { detail: { theme: value, dark } }));
+    return value;
+}
+window.setTheme = setTheme;
+
 // Homepage banner carousel. The bundled hero remains in the markup as a
 // graceful fallback when D1 is unavailable or has no banner records.
 window.loadHomepageBanners = async function() {
@@ -270,6 +295,21 @@ window.loadHomepageBanners = async function() {
 };
 
 document.addEventListener('DOMContentLoaded', () => {
+    const notificationBell = document.getElementById('storeNotificationBell');
+    const notificationCount = document.getElementById('storeNotificationCount');
+    const authToken = localStorage.getItem('authToken');
+    if (notificationBell && authToken) {
+        fetch('/api/notifications', { headers: { Authorization: `Bearer ${authToken}` } })
+            .then(response => response.ok ? response.json() : null)
+            .then(data => {
+                const unread = (data?.notifications || []).filter(item => !Number(item.is_read)).length;
+                if (notificationCount) {
+                    notificationCount.textContent = unread;
+                    notificationCount.hidden = unread === 0;
+                }
+            })
+            .catch(() => {});
+    }
     const loadBanners = () => window.loadHomepageBanners();
     // Keep the bundled responsive WebP as the initial LCP image. Dynamic
     // banners may replace it only after the first page load has completed.
@@ -285,11 +325,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const langToggleBtn = document.getElementById('langToggleBtn');
     if (langToggleBtn) {
         langToggleBtn.addEventListener('click', () => {
-            window.currentLang = (window.currentLang === 'en') ? 'bn' : 'en';
-            localStorage.setItem('mohor_lang', window.currentLang);
-            document.documentElement.lang = window.currentLang;
-            updateUIText();
-            window.dispatchEvent(new Event('languageChanged'));
+            setLanguage(window.currentLang === 'en' ? 'bn' : 'en');
         });
     }
 
@@ -300,23 +336,21 @@ document.addEventListener('DOMContentLoaded', () => {
             ? '<span aria-hidden="true">&#9728;</span>'
             : '<span aria-hidden="true">&#9790;</span>';
         if (!theme || theme === 'system') {
-            document.documentElement.removeAttribute('data-theme');
-            localStorage.removeItem('mohor_theme');
+            setTheme('system');
             if (themeToggleBtn) themeToggleBtn.innerHTML = themeIcon;
             return;
         }
-        document.documentElement.setAttribute('data-theme', theme);
-        localStorage.setItem('mohor_theme', theme);
+        setTheme(theme);
         if (themeToggleBtn) themeToggleBtn.innerHTML = themeIcon;
     }
 
     // Initialize theme from storage or system
-    const savedTheme = localStorage.getItem('mohor_theme') || 'system';
+    const savedTheme = localStorage.getItem('theme') || localStorage.getItem('mohor_theme') || 'system';
     applyTheme(savedTheme);
 
     if (themeToggleBtn) {
         themeToggleBtn.addEventListener('click', () => {
-            const cur = localStorage.getItem('mohor_theme') || 'system';
+            const cur = localStorage.getItem('theme') || localStorage.getItem('mohor_theme') || 'system';
             let next = 'dark';
             if (cur === 'system') next = 'dark';
             else if (cur === 'dark') next = 'light';

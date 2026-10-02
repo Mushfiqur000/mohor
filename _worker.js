@@ -157,6 +157,21 @@ export default {
       return new Set((results || []).map(column => column.name));
     }
 
+    async function ensureNotificationsTable() {
+      await env.DB.prepare(`CREATE TABLE IF NOT EXISTS notifications (
+        id TEXT PRIMARY KEY, user_id TEXT NOT NULL, title TEXT NOT NULL,
+        message TEXT NOT NULL, type TEXT DEFAULT 'system', link TEXT DEFAULT '',
+        is_read INTEGER DEFAULT 0, created_at TEXT DEFAULT CURRENT_TIMESTAMP
+      )`).run();
+    }
+
+    async function createNotification({ userId, title, message, type = 'system', link = '' }) {
+      await ensureNotificationsTable();
+      await env.DB.prepare(
+        'INSERT INTO notifications (id, user_id, title, message, type, link, is_read) VALUES (?, ?, ?, ?, ?, ?, 0)'
+      ).bind('ntf_' + crypto.randomUUID(), userId, title, message, type, link).run();
+    }
+
     function publicUser(profile, fallback = {}) {
       return {
         id: profile?.id || fallback.id,
@@ -371,6 +386,68 @@ export default {
           await env.DB.prepare('UPDATE users SET status = ? WHERE id = ?').bind('deleted', user.id).run();
         } else {
           await env.DB.prepare('DELETE FROM users WHERE id = ?').bind(user.id).run();
+        }
+
+        if (url.pathname === '/api/notifications') {
+          const user = await getAuthUser(request);
+          if (!user) return json({ error: 'Unauthorized' }, { status: 401 });
+          try {
+            await ensureNotificationsTable();
+            const { results } = await env.DB.prepare(
+              'SELECT * FROM notifications WHERE user_id = ? OR user_id = ? ORDER BY created_at DESC'
+            ).bind(user.id, 'ALL').all();
+            return json({ notifications: results || [] });
+          } catch (e) {
+            return json({ error: e.message }, { status: 500 });
+          }
+        }
+
+        if (url.pathname === '/api/notifications/mark-read' && request.method === 'POST') {
+          const user = await getAuthUser(request);
+          if (!user) return json({ error: 'Unauthorized' }, { status: 401 });
+          try {
+            await ensureNotificationsTable();
+            const body = await request.json();
+            if (body.markAll) {
+              await env.DB.prepare('UPDATE notifications SET is_read = 1 WHERE user_id = ? OR user_id = ?')
+                .bind(user.id, 'ALL').run();
+            } else if (body.notificationId) {
+              await env.DB.prepare('UPDATE notifications SET is_read = 1 WHERE id = ? AND (user_id = ? OR user_id = ?)')
+                .bind(body.notificationId, user.id, 'ALL').run();
+            } else return json({ error: 'notificationId or markAll is required' }, { status: 400 });
+            return json({ success: true });
+          } catch (e) {
+            return json({ error: e.message }, { status: 500 });
+          }
+        }
+
+        if (url.pathname === '/api/admin/notifications') {
+          const admin = await getAuthUser(request);
+          if (!admin || admin.role !== 'admin') return json({ error: 'Forbidden' }, { status: 403 });
+          try {
+            await ensureNotificationsTable();
+            if (request.method === 'GET') {
+              const { results } = await env.DB.prepare('SELECT * FROM notifications ORDER BY created_at DESC LIMIT 200').all();
+              return json({ notifications: results || [] });
+            }
+            if (request.method === 'POST') {
+              const body = await request.json();
+              const title = typeof body.title === 'string' ? body.title.trim() : '';
+              const message = typeof body.message === 'string' ? body.message.trim() : '';
+              if (!title || !message) return json({ error: 'Title and message are required' }, { status: 400 });
+              let target = body.targetUserId || 'ALL';
+              if (target !== 'ALL' && target.includes('@')) {
+                const recipient = await env.DB.prepare('SELECT id FROM users WHERE email = ? LIMIT 1').bind(target).first();
+                if (!recipient) return json({ error: 'Customer email was not found' }, { status: 404 });
+                target = recipient.id;
+              }
+              await createNotification({ userId: target, title, message, type: body.type, link: body.link });
+              return json({ success: true });
+            }
+            return json({ error: 'Method not allowed' }, { status: 405 });
+          } catch (e) {
+            return json({ error: e.message }, { status: 500 });
+          }
         }
         return json({ success: true, logout: true });
       } catch (e) {
@@ -607,7 +684,7 @@ export default {
     }
 
     // --- ORDERS ROUTES ---
-    if (url.pathname === '/api/orders') {
+    if (url.pathname === '/api/orders' || url.pathname === '/api/admin/orders') {
       if (request.method === 'GET') {
         const authUser = await getAuthUser(request);
         if (!authUser) return json({ error: 'Unauthorized' }, { status: 401 });
@@ -696,6 +773,13 @@ export default {
         try {
           const { id, status } = await request.json();
           await env.DB.prepare('UPDATE orders SET status = ? WHERE id = ?').bind(status, id).run();
+          const order = await env.DB.prepare('SELECT * FROM orders WHERE id = ? OR order_id = ? LIMIT 1').bind(id, id).first();
+          if (order && (order.user_id || order.user_email)) {
+            const recipient = order.user_id || order.user_email;
+            const labels = { Shipped: ['Order Shipped', 'Your order is on its way.'], Completed: ['Order Delivered', 'Your order has been delivered.'], Cancelled: ['Order Cancelled', 'Your order has been cancelled.'] };
+            const notice = labels[status] || ['Order Status Updated', `Your order status is now ${status}.`];
+            await createNotification({ userId: recipient, title: notice[0], message: `${notice[1]} (${id})`, type: 'order', link: `/order/?id=${encodeURIComponent(id)}` });
+          }
           return json({ success: true });
         } catch (e) {
           return json({ error: e.message }, { status: 500 });

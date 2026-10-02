@@ -4,6 +4,39 @@
   const $ = id => document.getElementById(id);
   const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
   const headers = () => ({ Authorization: `Bearer ${localStorage.getItem('authToken')}` });
+  const applyTheme = value => {
+    const theme = ['light', 'dark', 'system'].includes(value) ? value : 'system';
+    if (typeof window.setTheme === 'function') window.setTheme(theme);
+    else {
+      localStorage.setItem('theme', theme);
+      localStorage.setItem('mohor_theme', theme);
+      const dark = theme === 'dark' || (theme === 'system' && matchMedia('(prefers-color-scheme: dark)').matches);
+      document.documentElement.classList.toggle('dark', dark);
+      document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+    }
+  };
+  const applyLanguage = value => {
+    const lang = value === 'bn' ? 'bn' : 'en';
+    if (typeof window.setLanguage === 'function') window.setLanguage(lang);
+    else {
+      window.currentLang = lang;
+      localStorage.setItem('lang', lang);
+      localStorage.setItem('mohor_lang', lang);
+      document.documentElement.lang = lang;
+      if (window.i18n && typeof window.i18n.updatePage === 'function') window.i18n.updatePage();
+      if (typeof window.updateUIText === 'function') window.updateUIText();
+    }
+    const text = lang === 'bn'
+      ? ['প্রোফাইল তথ্য', 'ঠিকানা বই', 'আমার অর্ডার', 'বার্তা', 'পছন্দ ও নিরাপত্তা', 'সহায়তা ও নীতিমালা']
+      : ['Profile Information', 'Address Book', 'My Orders', 'Messages', 'Preferences & Settings', 'Help & Policies'];
+    document.querySelectorAll('.tabs button').forEach((button, index) => {
+      const badge = button.querySelector('#notificationBadge');
+      button.textContent = text[index] || button.textContent;
+      if (badge) button.appendChild(badge);
+    });
+    const title = document.querySelector('#notificationsPanel h2');
+    if (title) title.textContent = lang === 'bn' ? 'বার্তা ও নোটিফিকেশন' : 'Messages & Notifications';
+  };
   const api = async (path, options = {}) => {
     const response = await fetch(path, { ...options, headers: { ...headers(), ...(options.body ? { 'Content-Type': 'application/json' } : {}) } });
     const data = await response.json().catch(() => ({}));
@@ -12,6 +45,7 @@
   };
   let profile = {};
   let orders = [];
+  let notifications = [];
 
   function message(text, error = false) {
     $('accountMessage').textContent = text;
@@ -47,12 +81,23 @@
     $('modalContent').innerHTML = `<h2>Order ${esc(order.id || order.order_id)}</h2><p><strong>Status:</strong> ${esc(order.status || 'Pending')}</p><ul>${items.map(item => `<li>${esc(item.name || item.title || 'Item')} × ${esc(item.qty || item.quantity || 1)}${item.size ? ` · Size ${esc(item.size)}` : ''}${item.color ? ` · ${esc(item.color)}` : ''}</li>`).join('')}</ul><p><strong>Shipping address:</strong><br>${esc(order.deliveryAddress || order.delivery_address || '')}</p><p><strong>Total:</strong> ৳${esc(Number(order.totalAmount || order.total_amount || 0).toLocaleString('en-BD'))}</p>`;
     $('orderModal').hidden = false;
   }
+  function renderNotifications() {
+    const unread = notifications.filter(item => !Number(item.is_read)).length;
+    const badge = $('notificationBadge');
+    if (badge) { badge.textContent = unread; badge.hidden = unread === 0; }
+    $('notifications').innerHTML = notifications.length ? notifications.map(item => `<article class="notification-card ${Number(item.is_read) ? '' : 'unread'}"><span class="notification-icon">${item.type === 'order' ? '📦' : item.type === 'promo' ? '✦' : '◌'}</span><div><strong>${esc(item.title)}</strong><p>${esc(item.message)}</p><small>${esc(new Date(item.created_at).toLocaleString())}</small></div>${item.link ? `<a class="btn btn-outline" href="${esc(item.link)}">View</a>` : ''}</article>`).join('') : '<p>No messages yet.</p>';
+  }
+  async function loadNotifications() {
+    try { const data = await api('/api/notifications'); notifications = data.notifications || []; renderNotifications(); }
+    catch (error) { $('notifications').innerHTML = `<p class="error">${esc(error.message)}</p>`; }
+  }
   async function load() {
     try {
       const [me, orderData] = await Promise.all([api('/api/auth/me'), api('/api/orders')]);
       setProfile(me.user || me);
       orders = Array.isArray(orderData) ? orderData : orderData.orders || [];
       renderOrders();
+      await loadNotifications();
     } catch (error) { message(error.message, true); }
   }
   document.addEventListener('DOMContentLoaded', () => {
@@ -85,7 +130,16 @@
     $('closeModal').addEventListener('click', () => { $('orderModal').hidden = true; });
     const theme = localStorage.getItem('mohorTheme') || 'system';
     $('theme').value = theme;
-    $('theme').addEventListener('change', event => localStorage.setItem('mohorTheme', event.target.value));
+    $('theme').addEventListener('change', event => applyTheme(event.target.value));
+    const language = localStorage.getItem('lang') || localStorage.getItem('mohor_lang') || 'en';
+    if ($('language')) $('language').value = language;
+    if ($('language')) $('language').addEventListener('change', event => applyLanguage(event.target.value));
+    applyTheme(theme);
+    applyLanguage(language);
+    $('markAllNotifications').addEventListener('click', async () => {
+      await api('/api/notifications/mark-read', { method:'POST', body:JSON.stringify({ markAll:true }) });
+      notifications.forEach(item => { item.is_read = 1; }); renderNotifications();
+    });
     load();
   });
 })();
