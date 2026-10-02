@@ -628,4 +628,23 @@ document.addEventListener('DOMContentLoaded', () => {
     if (zoneSelect) zoneSelect.addEventListener('change', window.updateDeliveryPolicyAndTotal);
 
     window.updateCartUI();
+
+    // Keep checkout convenient for signed-in customers without overwriting
+    // anything they have already entered during this page visit.
+    const token = typeof window.getAuthToken === 'function' ? window.getAuthToken() : localStorage.getItem('authToken');
+    if (token) {
+        fetch('/api/auth/me', { headers: { Authorization: `Bearer ${token}` } })
+            .then(response => response.ok ? response.json() : null)
+            .then(data => {
+                const user = data && (data.user || data);
+                if (!user) return;
+                const address = user.address || user.deliveryAddress || user.delivery_address || '';
+                [['checkoutName', user.name], ['checkoutPhone', user.phone], ['checkoutAddress', address]].forEach(([id, value]) => {
+                    const field = document.getElementById(id);
+                    if (field && value && !field.value) field.value = value;
+                });
+                localStorage.setItem('authUser', JSON.stringify(user));
+            })
+            .catch(error => console.warn('Could not pre-fill checkout profile:', error));
+    }
 });

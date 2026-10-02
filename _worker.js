@@ -143,6 +143,8 @@ export default {
         payload.role = 'admin';
       }
 
+      const profile = await getUserProfile(payload.id);
+      if (!profile || String(profile.status || '').toLowerCase() === 'deleted') return null;
       return payload;
     }
 
@@ -153,6 +155,18 @@ export default {
     async function getTableColumns(tableName) {
       const { results } = await env.DB.prepare(`PRAGMA table_info("${tableName}")`).all();
       return new Set((results || []).map(column => column.name));
+    }
+
+    function publicUser(profile, fallback = {}) {
+      return {
+        id: profile?.id || fallback.id,
+        name: profile?.name || profile?.customerName || '',
+        email: profile?.email || fallback.email || '',
+        phone: profile?.phone || '',
+        gender: profile?.gender || '',
+        dob: profile?.dob || '',
+        address: profile?.address || profile?.delivery_address || '',
+      };
     }
 
     function normalizeOrder(row) {
@@ -281,26 +295,84 @@ export default {
       const user = await getAuthUser(request);
       if (!user) return json({ error: 'Unauthorized' }, { status: 401 });
       const profile = await getUserProfile(user.id);
-      return json({ user: profile || user });
+      if (!profile) return json({ error: 'Unauthorized' }, { status: 401 });
+      return json({ user: publicUser(profile, user) });
     }
 
     if (url.pathname === '/api/auth/me' && request.method === 'PUT') {
       const user = await getAuthUser(request);
       if (!user) return json({ error: 'Unauthorized' }, { status: 401 });
       try {
-        const { name, phone, address } = await request.json();
-        const columns = await env.DB.prepare('PRAGMA table_info(users)').all();
-        const available = new Set((columns.results || []).map(column => column.name));
+        const body = await request.json();
+        const name = typeof body.name === 'string' ? body.name.trim() : '';
+        const phone = typeof body.phone === 'string' ? body.phone.trim() : '';
+        const gender = typeof body.gender === 'string' ? body.gender.trim() : '';
+        const dob = typeof body.dob === 'string' ? body.dob.trim() : '';
+        const address = typeof body.address === 'string' ? body.address.trim() : '';
+        if (!name || name.length > 100) return json({ error: 'A valid name is required' }, { status: 400 });
+        if (phone.length > 30 || (gender && !['Female', 'Male', 'Other'].includes(gender))) {
+          return json({ error: 'Please check the profile details' }, { status: 400 });
+        }
+        if (dob && (!/^\d{4}-\d{2}-\d{2}$/.test(dob) || Number.isNaN(Date.parse(dob)))) {
+          return json({ error: 'Please enter a valid date of birth' }, { status: 400 });
+        }
+        if (address.length > 1000) return json({ error: 'Address is too long' }, { status: 400 });
+        const available = await getTableColumns('users');
+        for (const [column, type] of [['gender', 'TEXT'], ['dob', 'TEXT'], ['address', 'TEXT']]) {
+          if (!available.has(column)) {
+            await env.DB.prepare(`ALTER TABLE users ADD COLUMN ${column} ${type}`).run();
+            available.add(column);
+          }
+        }
         const updates = [];
         const values = [];
         if (available.has('name')) { updates.push('name = ?'); values.push(name || ''); }
         if (available.has('customerName')) { updates.push('customerName = ?'); values.push(name || ''); }
         if (available.has('phone')) { updates.push('phone = ?'); values.push(phone || ''); }
+        if (available.has('gender')) { updates.push('gender = ?'); values.push(gender); }
+        if (available.has('dob')) { updates.push('dob = ?'); values.push(dob); }
         const addressColumn = available.has('address') ? 'address' : available.has('delivery_address') ? 'delivery_address' : null;
         if (addressColumn) { updates.push(`${addressColumn} = ?`); values.push(address || ''); }
         if (updates.length) await env.DB.prepare(`UPDATE users SET ${updates.join(', ')} WHERE id = ?`).bind(...values, user.id).run();
         const updated = await getUserProfile(user.id);
-        return json({ user: updated || { ...user, name, phone, address } });
+        return json({ user: publicUser(updated || { ...user, name, phone, gender, dob, address }, user) });
+      } catch (e) {
+        return json({ error: e.message }, { status: 500 });
+      }
+    }
+
+    if (url.pathname === '/api/auth/change-password' && request.method === 'POST') {
+      const user = await getAuthUser(request);
+      if (!user) return json({ error: 'Unauthorized' }, { status: 401 });
+      try {
+        const { currentPassword, newPassword } = await request.json();
+        if (typeof currentPassword !== 'string' || typeof newPassword !== 'string' || newPassword.length < 8) {
+          return json({ error: 'New password must be at least 8 characters' }, { status: 400 });
+        }
+        const profile = await getUserProfile(user.id);
+        const currentHash = await hashPassword(currentPassword);
+        if (!profile || profile.password_hash !== currentHash) {
+          return json({ error: 'Current password is incorrect' }, { status: 400 });
+        }
+        await env.DB.prepare('UPDATE users SET password_hash = ? WHERE id = ?')
+          .bind(await hashPassword(newPassword), user.id).run();
+        return json({ success: true });
+      } catch (e) {
+        return json({ error: e.message }, { status: 500 });
+      }
+    }
+
+    if (url.pathname === '/api/auth/delete-account' && request.method === 'DELETE') {
+      const user = await getAuthUser(request);
+      if (!user) return json({ error: 'Unauthorized' }, { status: 401 });
+      try {
+        const available = await getTableColumns('users');
+        if (available.has('status')) {
+          await env.DB.prepare('UPDATE users SET status = ? WHERE id = ?').bind('deleted', user.id).run();
+        } else {
+          await env.DB.prepare('DELETE FROM users WHERE id = ?').bind(user.id).run();
+        }
+        return json({ success: true, logout: true });
       } catch (e) {
         return json({ error: e.message }, { status: 500 });
       }
@@ -536,6 +608,30 @@ export default {
 
     // --- ORDERS ROUTES ---
     if (url.pathname === '/api/orders') {
+      if (request.method === 'GET') {
+        const authUser = await getAuthUser(request);
+        if (!authUser) return json({ error: 'Unauthorized' }, { status: 401 });
+        try {
+          const available = await getTableColumns('orders');
+          if (authUser.role === 'admin') {
+            const { results } = await env.DB.prepare('SELECT * FROM orders').all();
+            return json({ orders: sortOrders((results || []).map(normalizeOrder)) });
+          }
+          const filters = [];
+          const values = [];
+          if (available.has('user_id')) { filters.push('user_id = ?'); values.push(authUser.id); }
+          else if (available.has('userId')) { filters.push('userId = ?'); values.push(authUser.id); }
+          if (available.has('user_email')) { filters.push('user_email = ?'); values.push(authUser.email); }
+          else if (available.has('userEmail')) { filters.push('userEmail = ?'); values.push(authUser.email); }
+          if (!filters.length) return json({ orders: [] });
+          const { results } = await env.DB.prepare(
+            `SELECT * FROM orders WHERE ${filters.join(' OR ')}`
+          ).bind(...values).all();
+          return json({ orders: sortOrders((results || []).map(normalizeOrder)) });
+        } catch (e) {
+          return json({ error: e.message }, { status: 500 });
+        }
+      }
       if (request.method === 'POST') {
         try {
           const data = await request.json();
@@ -585,40 +681,6 @@ export default {
           await notifyTelegram(newOrder);
 
           return json({ success: true, id: newOrder.id, orderId: newOrder.id });
-        } catch (e) {
-          return json({ error: e.message }, { status: 500 });
-        }
-      }
-
-      // Read Order History
-      if (request.method === 'GET') {
-        const user = await getAuthUser(request);
-        if (!user) return json({ error: 'Unauthorized' }, { status: 401 });
-
-        try {
-          const available = await getTableColumns('orders');
-          const userIdColumn = available.has('user_id') ? 'user_id' : available.has('userId') ? 'userId' : null;
-          const userEmailColumn = available.has('user_email') ? 'user_email' : available.has('userEmail') ? 'userEmail' : null;
-          if (user.role === 'admin') {
-            const { results } = await env.DB.prepare('SELECT * FROM orders').all();
-            return json(sortOrders((results || []).map(normalizeOrder)));
-          } else {
-            const predicates = [];
-            const bindings = [];
-            if (userIdColumn) {
-              predicates.push(`"${userIdColumn}" = ?`);
-              bindings.push(user.id);
-            }
-            if (userEmailColumn) {
-              predicates.push(`"${userEmailColumn}" = ?`);
-              bindings.push(user.email);
-            }
-            if (!predicates.length) return json([]);
-            const { results } = await env.DB.prepare(
-              `SELECT * FROM orders WHERE ${predicates.join(' OR ')}`
-            ).bind(...bindings).all();
-            return json(sortOrders((results || []).map(normalizeOrder)));
-          }
         } catch (e) {
           return json({ error: e.message }, { status: 500 });
         }
