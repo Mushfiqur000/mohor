@@ -64,6 +64,30 @@ window.uiTranslations = {
         accPhonePlaceholder: "Default Phone", accAddressPlaceholder: "Default Delivery Address",
         accSaveProfileBtn: "Save Profile", accOrderHistory: "My Order History",
         accLoadingOrders: "Loading orders…", accNoOrders: "No order history found yet.",
+        accountPageTitle: "Account Hub | Mohor Clothings", wishlist: "Wishlist", brandAlt: "Mohor Clothings", size: "Size",
+        myAccount: "My Account", profileInformation: "Profile Information", addressBook: "Address Book",
+        myOrders: "My Orders", messagesNav: "Messages", preferencesSecurity: "Preferences & Security", helpPolicies: "Help & Policies",
+        logOut: "Log Out", personalInformation: "Personal Information", emailVerified: "Email (verified)",
+        fullName: "Full Name", gender: "Gender", select: "Select", female: "Female", male: "Male", other: "Other",
+        mobilePhone: "Mobile Phone Number", dobOptional: "Date of Birth (optional)", defaultDeliveryAddress: "Default Delivery Address",
+        saveProfile: "Save Profile", addressBookDescription: "Your default address is saved with your profile and automatically used at checkout.",
+        defaultDeliveryAddressDetail: "Default Delivery Address (street, thana, district/zone)", saveAddress: "Save Address",
+        loadingOrders: "Loading orders…", noOrdersYet: "No orders yet.", messagesNotifications: "Messages & Notifications",
+        markAllAsRead: "Mark all as read", loadingMessages: "Loading messages…", noMessagesYet: "No messages yet.",
+        preferencesSecurityTitle: "Preferences & Security", theme: "Theme", light: "Light ☀️", dark: "Dark 🌙",
+        systemDefault: "System Default 💻", language: "Language", english: "English", bangla: "Bangla",
+        changePassword: "Change Password", currentPassword: "Current Password", newPassword8: "New Password (8+ characters)",
+        confirmPassword: "Confirm Password", changePasswordBtn: "Change Password", dangerZone: "Danger Zone", deleteMyAccount: "Delete My Account",
+        dangerDescription: "Deleting your account signs you out and removes your customer account. This action cannot be undone.",
+        helpPoliciesTitle: "Help & Policies", whatsappSupport: "WhatsApp Support: +880 1330-113027",
+        exchangePolicy: "Exchange Policy", shippingInformation: "Shipping Information", termsConditions: "Terms & Conditions", close: "Close",
+        cancel: "Cancel", confirmDelete: "Delete Account", confirmDeleteTitle: "Delete your account?",
+        confirmDeleteText: "This permanently deletes your customer account. You will be signed out immediately.",
+        order: "Order", status: "Status", shippingAddress: "Shipping address", total: "Total", viewDetails: "View Details", view: "View",
+        itemsCount: "{count} item(s)", passwordsDoNotMatch: "Passwords do not match.", profileSaved: "Profile saved successfully.",
+        passwordChanged: "Password changed successfully.", notificationsMarkedRead: "All notifications marked as read.",
+        requestFailed: "Request failed", myAccountFallback: "My Account", pending: "Pending", processing: "Processing", shipped: "Shipped",
+        completed: "Completed", delivered: "Delivered", cancelled: "Cancelled", errorLoadingMessages: "Unable to load messages right now."
 
         policyPageTitle: "Delivery & Return Policy",
         policyEyebrow: "Please read before ordering",
@@ -134,6 +158,30 @@ window.uiTranslations = {
         accPhonePlaceholder: "ডিফল্ট ফোন নম্বর", accAddressPlaceholder: "ডিফল্ট ডেলিভারি ঠিকানা",
         accSaveProfileBtn: "প্রোফাইল সেভ করুন", accOrderHistory: "আমার অর্ডার হিস্ট্রি",
         accLoadingOrders: "অর্ডার লোড হচ্ছে…", accNoOrders: "কোনো অর্ডার হিস্ট্রি পাওয়া যায়নি।",
+        accountPageTitle: "অ্যাকাউন্ট হাব | মোহর ক্লথিংস", wishlist: "উইশলিস্ট", brandAlt: "মোহর ক্লথিংস", size: "সাইজ",
+        myAccount: "আমার অ্যাকাউন্ট", profileInformation: "প্রোফাইল তথ্য", addressBook: "ঠিকানা বই",
+        myOrders: "আমার অর্ডার", messagesNav: "বার্তা", preferencesSecurity: "পছন্দ ও নিরাপত্তা", helpPolicies: "সহায়তা ও নীতিমালা",
+        logOut: "লগ আউট", personalInformation: "ব্যক্তিগত তথ্য", emailVerified: "ইমেইল (ভেরিফায়েড)",
+        fullName: "পুরো নাম", gender: "লিঙ্গ", select: "নির্বাচন করুন", female: "নারী", male: "পুরুষ", other: "অন্যান্য",
+        mobilePhone: "মোবাইল ফোন নম্বর", dobOptional: "জন্মতারিখ (ঐচ্ছিক)", defaultDeliveryAddress: "ডিফল্ট ডেলিভারি ঠিকানা",
+        saveProfile: "প্রোফাইল সেভ করুন", addressBookDescription: "আপনার ডিফল্ট ঠিকানা প্রোফাইলে সংরক্ষিত থাকে এবং চেকআউটে স্বয়ংক্রিয়ভাবে ব্যবহার হয়।",
+        defaultDeliveryAddressDetail: "ডিফল্ট ডেলিভারি ঠিকানা (রাস্তা, থানা, জেলা/জোন)", saveAddress: "ঠিকানা সেভ করুন",
+        loadingOrders: "অর্ডার লোড হচ্ছে…", noOrdersYet: "এখনও কোনো অর্ডার নেই।", messagesNotifications: "বার্তা ও নোটিফিকেশন",
+        markAllAsRead: "সব পড়া হয়েছে হিসেবে চিহ্নিত করুন", loadingMessages: "বার্তা লোড হচ্ছে…", noMessagesYet: "এখনও কোনো বার্তা নেই।",
+        preferencesSecurityTitle: "পছন্দ ও নিরাপত্তা", theme: "থিম", light: "লাইট (হালকা)", dark: "ডার্ক (গাঢ়)",
+        systemDefault: "ডিভাইস অনুযায়ী", language: "ভাষা", english: "ইংরেজি", bangla: "বাংলা",
+        changePassword: "পাসওয়ার্ড পরিবর্তন করুন", currentPassword: "বর্তমান পাসওয়ার্ড", newPassword8: "নতুন পাসওয়ার্ড (৮+ অক্ষর)",
+        confirmPassword: "নতুন পাসওয়ার্ড নিশ্চিত করুন", changePasswordBtn: "পাসওয়ার্ড পরিবর্তন করুন", dangerZone: "সতর্কতা অঞ্চল", deleteMyAccount: "অ্যাকাউন্ট মুছে ফেলুন",
+        dangerDescription: "অ্যাকাউন্ট মুছে ফেললে আপনি লগ আউট হয়ে যাবেন এবং আপনার কাস্টমার অ্যাকাউন্ট সরিয়ে দেওয়া হবে। এই কাজটি আর ফিরিয়ে নেওয়া যাবে না।",
+        helpPoliciesTitle: "সহায়তা ও নীতিমালা", whatsappSupport: "হোয়াটসঅ্যাপ সাপোর্ট: +৮৮০ ১৩৩০-১১৩০২৭",
+        exchangePolicy: "এক্সচেঞ্জ পলিসি", shippingInformation: "শিপিং তথ্য", termsConditions: "শর্তাবলি", close: "বন্ধ করুন", cancel: "বাতিল",
+        confirmDelete: "অ্যাকাউন্ট মুছে ফেলুন", confirmDeleteTitle: "অ্যাকাউন্ট মুছে ফেলবেন?",
+        confirmDeleteText: "এটি আপনার কাস্টমার অ্যাকাউন্ট স্থায়ীভাবে মুছে দেবে। আপনাকে সঙ্গে সঙ্গে লগ আউট করা হবে।",
+        order: "অর্ডার", status: "স্ট্যাটাস", shippingAddress: "শিপিং ঠিকানা", total: "মোট", viewDetails: "বিস্তারিত দেখুন", view: "দেখুন",
+        itemsCount: "{count}টি পণ্য", passwordsDoNotMatch: "পাসওয়ার্ড দুটি মিলছে না।", profileSaved: "প্রোফাইল সফলভাবে সেভ হয়েছে।",
+        passwordChanged: "পাসওয়ার্ড সফলভাবে পরিবর্তন হয়েছে।", notificationsMarkedRead: "সব নোটিফিকেশন পড়া হয়েছে হিসেবে চিহ্নিত করা হয়েছে।",
+        requestFailed: "অনুরোধ ব্যর্থ হয়েছে", myAccountFallback: "আমার অ্যাকাউন্ট", pending: "পেন্ডিং", processing: "প্রসেসিং", shipped: "শিপড",
+        completed: "সম্পন্ন", delivered: "ডেলিভারড", cancelled: "বাতিল", errorLoadingMessages: "এই মুহূর্তে বার্তা লোড করা যাচ্ছে না।"
 
         policyPageTitle: "ডেলিভারি ও রিটার্ন পলিসি",
         policyEyebrow: "অর্ডারের আগে পড়ুন",
@@ -185,6 +233,12 @@ function updateUIText() {
         const val = window.uiTranslations[window.currentLang] && window.uiTranslations[window.currentLang][key];
         if (val) el.placeholder = val;
     });
+    document.querySelectorAll('[data-i18n-alt]').forEach(el => {
+        const key = el.getAttribute('data-i18n-alt');
+        const val = window.uiTranslations[window.currentLang] && window.uiTranslations[window.currentLang][key];
+        if (val) el.setAttribute('alt', val);
+    });
+
     document.querySelectorAll('[data-i18n-aria]').forEach(el => {
         const key = el.getAttribute('data-i18n-aria');
         const val = window.uiTranslations[window.currentLang] && window.uiTranslations[window.currentLang][key];
@@ -197,6 +251,7 @@ function updateUIText() {
     if (typeof window.updateCartSavingsSummary === "function") window.updateCartSavingsSummary();
 }
 window.updateUIText = updateUIText;
+window.i18n = window.i18n || { updatePage: updateUIText, t };
 
 function setLanguage(language) {
     const value = language === 'bn' || language === 'বাংলা' ? 'bn' : 'en';
@@ -204,7 +259,8 @@ function setLanguage(language) {
     localStorage.setItem('lang', value);
     localStorage.setItem('mohor_lang', value);
     document.documentElement.lang = value;
-    updateUIText();
+    if (window.i18n && typeof window.i18n.updatePage === 'function') window.i18n.updatePage();
+    else updateUIText();
     window.dispatchEvent(new Event('languageChanged'));
     return value;
 }
