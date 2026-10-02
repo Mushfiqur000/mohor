@@ -1818,3 +1818,52 @@ body {
   .account-panel-head .account-btn { align-self:flex-start; }
   .account-danger-btn { width:100%; }
 }
+
+
+/* ==========================================================================
+   Customer account drawer — premium quick-account hub
+   ========================================================================== */
+.account-side-header { align-items:flex-start; }
+.account-side-kicker { display:block; color:var(--ink-faint); font-family:var(--font-mono); font-size:.62rem; font-weight:600; letter-spacing:.14em; line-height:1.3; }
+.account-side-header h3 { margin-top:3px; }
+.account-auth-welcome { padding:4px 0 18px; }
+.account-auth-mark { width:54px; height:54px; display:grid; place-items:center; margin-bottom:16px; border-radius:50%; background:var(--maroon-soft); color:var(--maroon); }
+.account-auth-mark svg { width:26px; height:26px; fill:none; stroke:currentColor; stroke-width:1.5; }
+.account-auth-welcome h4 { margin:5px 0 8px; font-family:var(--font-display); font-size:1.45rem; line-height:1.15; color:var(--ink); }
+.account-auth-welcome p { margin:0; color:var(--ink-muted); font-size:.84rem; line-height:1.6; }
+.account-auth-switch { display:grid; grid-template-columns:1fr 1fr; gap:6px; padding:4px; margin:2px 0 22px; border:1px solid var(--border); border-radius:8px; background:var(--muslin); }
+.account-auth-switch-btn { min-height:40px; border:0; border-radius:6px; background:transparent; color:var(--ink-muted); font:inherit; font-size:.76rem; font-weight:700; cursor:pointer; }
+.account-auth-switch-btn.is-active { background:var(--surface); color:var(--maroon); box-shadow:var(--shadow-sm); }
+.account-input-label { display:block; margin:0 0 7px; color:var(--ink); font-size:.76rem; font-weight:650; }
+.account-form-row { display:flex; justify-content:flex-end; margin-top:-4px; margin-bottom:12px; }
+.account-primary-action { min-height:46px; }
+.account-form-title { margin:0 0 8px; font-size:1.1rem; color:var(--ink); }
+.account-form-description { margin:0 0 16px; color:var(--ink-muted); font-size:.83rem; line-height:1.55; }
+.account-reset-notice { margin-top:14px; padding:12px; border:1px solid var(--brass); border-radius:7px; background:var(--brass-soft); color:var(--ink); font-size:.8rem; }
+.account-user-hero { display:flex; align-items:center; gap:13px; padding:4px 0 18px; }
+.account-profile-avatar { flex:0 0 auto; width:58px; height:58px; margin:0; }
+.account-user-copy { min-width:0; display:grid; gap:2px; }
+.account-user-copy strong { overflow:hidden; text-overflow:ellipsis; color:var(--ink); font-size:1.08rem; line-height:1.25; }
+.account-user-copy span:last-child { overflow:hidden; text-overflow:ellipsis; color:var(--ink-muted); font-size:.78rem; }
+.account-profile-card { padding:16px; margin-bottom:18px; border:1px solid var(--border); border-radius:10px; background:var(--surface); }
+.account-profile-card-head { display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:16px; }
+.account-profile-card-head h4 { margin:3px 0 0; color:var(--ink); font-family:var(--font-display); font-size:1.12rem; }
+.account-profile-status { padding:4px 8px; border-radius:999px; background:var(--sage-soft); color:var(--sage-dark); font-size:.64rem; font-weight:700; }
+.account-save-profile { min-height:44px; }
+.account-quick-nav { display:grid; gap:8px; margin:0 0 22px; }
+.account-quick-link { display:flex; align-items:center; gap:11px; padding:12px; border:1px solid var(--border); border-radius:8px; background:var(--surface); color:var(--ink); text-decoration:none; }
+.account-quick-link:hover { border-color:var(--maroon); background:var(--maroon-soft); }
+.account-quick-icon { width:30px; height:30px; display:grid; place-items:center; border-radius:7px; background:var(--maroon-soft); color:var(--maroon); flex:0 0 auto; font-size:.95rem; }
+.account-quick-link strong { display:block; font-size:.8rem; line-height:1.3; color:var(--ink); }
+.account-quick-link small { display:block; margin-top:2px; color:var(--ink-muted); font-size:.68rem; line-height:1.3; }
+.account-logout-action { margin-top:18px; color:var(--ink-muted); }
+.account-logout-action:hover { color:var(--maroon); }
+.dark .account-auth-welcome h4,.dark .account-input-label,.dark .account-form-title,.dark .account-user-copy strong,.dark .account-profile-card-head h4,.dark .account-quick-link,.dark .account-quick-link strong { color:#F5F1EC; }
+.dark .account-auth-welcome p,.dark .account-form-description,.dark .account-user-copy span:last-child,.dark .account-quick-link small { color:#C9C0BA; }
+.dark .account-auth-switch { background:#211C19; border-color:#3A343A; }
+.dark .account-auth-switch-btn { color:#C9C0BA; }
+.dark .account-auth-switch-btn.is-active { background:#181619; color:#F5F1EC; }
+.dark .account-profile-card,.dark .account-quick-link { background:#181619; border-color:#28242A; }
+.dark .account-quick-link:hover { background:rgba(243,231,232,.1); border-color:#6B5E63; }
+.dark .account-quick-icon { background:rgba(243,231,232,.1); color:#D8B978; }
+.dark .account-profile-status { background:rgba(60,122,86,.18); color:#72D99D; }

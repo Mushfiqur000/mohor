@@ -91,34 +91,76 @@ window.loadUserOrders = loadUserOrders;
 
 function updateAuthUI(user) {
     window.currentUser = user;
-    const authView = document.getElementById('authView'), profileView = document.getElementById('profileView');
-    if (authView) authView.style.display = user ? 'none' : 'block';
-    if (profileView) profileView.style.display = user ? 'block' : 'none';
+    const authView = document.getElementById('authView');
+    const profileView = document.getElementById('profileView');
+    if (authView) {
+        authView.hidden = !!user;
+        authView.setAttribute('aria-hidden', String(!!user));
+    }
+    if (profileView) {
+        profileView.hidden = !user;
+        profileView.setAttribute('aria-hidden', String(!user));
+    }
+    const accountButton = document.getElementById('openAccountBtn');
+    if (accountButton) accountButton.setAttribute('data-authenticated', user ? 'true' : 'false');
     if (user) {
-        const email = document.getElementById('userProfileEmail'); if (email) email.innerText = user.email || '';
-        const avatar = document.getElementById('profileAvatarInitial'); if (avatar) avatar.innerText = (user.displayName || user.email || '?')[0].toUpperCase();
-        applyUserDataToForms(user); loadUserOrders();
+        const name = user.displayName || user.name || user.customerName || user.fullName || user.email || 'Mohor Customer';
+        const email = document.getElementById('userProfileEmail');
+        const displayName = document.getElementById('profileDisplayName');
+        const avatar = document.getElementById('profileAvatarInitial');
+        if (email) email.innerText = user.email || '';
+        if (displayName) displayName.innerText = name;
+        if (avatar) avatar.innerText = name.charAt(0).toUpperCase();
+        applyUserDataToForms(user);
+        loadUserOrders();
     }
 }
+
 window.showAuthView = function(view) {
-    ['login', 'signup', 'forgot'].forEach(name => { const el = document.getElementById(name + (name === 'login' ? 'FormContainer' : name === 'signup' ? 'FormContainer' : 'PasswordContainer')); if (el) el.style.display = name === view ? 'block' : 'none'; });
+    const ids = { login: 'loginFormContainer', signup: 'signupFormContainer', forgot: 'forgotPasswordContainer' };
+    Object.entries(ids).forEach(([name, id]) => {
+        const el = document.getElementById(id);
+        if (el) el.hidden = name !== view;
+    });
+    document.querySelectorAll('.account-auth-switch-btn').forEach(btn => {
+        const active = btn.dataset.authView === view;
+        btn.classList.toggle('is-active', active);
+        btn.setAttribute('aria-selected', String(active));
+    });
 };
 window.toggleAuthMode = function() { window.showAuthView(document.getElementById('loginFormContainer')?.style.display !== 'none' ? 'signup' : 'login'); };
 window.closeAccountSidebar = function() {
     document.getElementById('accountSidebar')?.classList.remove('active');
     document.getElementById('accountOverlay')?.classList.remove('active');
+    document.getElementById('accountSidebar')?.setAttribute('aria-hidden', 'true');
+    document.getElementById('openAccountBtn')?.setAttribute('aria-expanded', 'false');
     document.body.classList.remove('drawer-open');
 };
 window.openAccountSidebar = function() {
-    document.getElementById('accountSidebar')?.classList.add('active');
+    const sidebar = document.getElementById('accountSidebar');
+    if (!sidebar) return;
+    sidebar.classList.add('active');
     document.getElementById('accountOverlay')?.classList.add('active');
+    sidebar.setAttribute('aria-hidden', 'false');
+    document.getElementById('openAccountBtn')?.setAttribute('aria-expanded', 'true');
     document.body.classList.add('drawer-open');
+    if (!isLoggedIn()) window.showAuthView('login');
+    window.setTimeout(() => document.getElementById('closeAccountBtn')?.focus(), 0);
 };
 document.addEventListener('click', e => {
-    if (e.target.closest('#openAccountBtn, .open-account-btn')) {
+    const accountTrigger = e.target.closest('#openAccountBtn, .open-account-btn');
+    if (accountTrigger) {
         e.preventDefault();
         window.openAccountSidebar();
-    } else if (e.target.closest('#closeAccountBtn, #accountOverlay')) {
+        return;
+    }
+    const shortcut = e.target.closest('[data-auth-view]');
+    if (shortcut) {
+        e.preventDefault();
+        window.showAuthView(shortcut.dataset.authView);
+        return;
+    }
+    if (e.target.closest('#closeAccountBtn, #accountOverlay')) {
         e.preventDefault();
         window.closeAccountSidebar();
     }
@@ -138,19 +180,11 @@ window.handleLogin = async function(evt) {
     try { const data = await api('/api/auth/login', { method: 'POST', body: JSON.stringify({ email, password }) }); setAuth(data.token, data.user); updateAuthUI(data.user); notify('Logged in successfully!', 'success'); }
     catch (e) { notify('Login failed: ' + e.message, 'error'); } finally { setBtnLoading(evt, false); }
 };
-window.handleLogout = function(evt) { setBtnLoading(evt, true); logout(); notify('Logged out successfully.', 'success'); setBtnLoading(evt, false); };
-window.saveUserProfile = async function(evt) {
-    if (!isLoggedIn()) return notify('You must be logged in to save an address.', 'error');
-    const payload = { name: document.getElementById('profileName')?.value.trim() || '', phone: document.getElementById('profilePhone')?.value.trim() || '', address: document.getElementById('profileAddress')?.value.trim() || '' };
+window.handleLogout = function(evt) {
     setBtnLoading(evt, true);
-    try {
-        const response = await api('/api/auth/me', { method: 'PUT', body: JSON.stringify(payload) });
-        const user = response.user || response;
-        setAuth(getAuthToken(), user);
-        applyUserDataToForms(user);
-        notify('Profile saved successfully!', 'success');
-    }
-    catch (e) { notify('Error saving profile: ' + e.message, 'error'); } finally { setBtnLoading(evt, false); }
+    logout();
+    notify(tr('accLoggedOutSuccess') || 'Logged out successfully.', 'success');
+    window.setTimeout(() => setBtnLoading(evt, false), 250);
 };
 window.togglePasswordVisibility = function(id, btn) { const input = document.getElementById(id); if (input) { input.type = input.type === 'password' ? 'text' : 'password'; if (btn) btn.textContent = input.type === 'password' ? '👁️' : '🙈'; } };
 window.handleForgotPassword = function() { notify('Password reset is not available yet. Please contact support.', 'error'); };

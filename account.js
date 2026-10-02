@@ -247,6 +247,12 @@
 
     const language=localStorage.getItem('lang')||localStorage.getItem('mohor_lang')||'en';
     $('language').value=language==='bn'?'bn':'en';
+    const requestedTab=new URLSearchParams(window.location.search).get('tab');
+    const tabMap={profile:'#profilePanel',address:'#addressPanel',orders:'#ordersPanel',notifications:'#notificationsPanel',settings:'#settingsPanel',help:'#helpPanel'};
+    if(requestedTab&&tabMap[requestedTab]){
+      const requestedButton=document.querySelector('[data-tab="'+tabMap[requestedTab]+'"]');
+      if(requestedButton) requestedButton.click();
+    }
     $('language').addEventListener('change',event=>applyLanguage(event.target.value));
 
     window.addEventListener('languageChanged',()=>{renderOrders();renderNotifications();});
