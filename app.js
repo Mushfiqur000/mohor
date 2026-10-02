@@ -96,7 +96,7 @@ window.uiTranslations = {
         itemsCount: "{count} item(s)", passwordsDoNotMatch: "Passwords do not match.", profileSaved: "Profile saved successfully.",
         passwordChanged: "Password changed successfully.", notificationsMarkedRead: "All notifications marked as read.",
         requestFailed: "Request failed", myAccountFallback: "My Account", pending: "Pending", processing: "Processing", shipped: "Shipped",
-        completed: "Completed", delivered: "Delivered", cancelled: "Cancelled", errorLoadingMessages: "Unable to load messages right now."
+        completed: "Completed", delivered: "Delivered", cancelled: "Cancelled", errorLoadingMessages: "Unable to load messages right now.",
 
         policyPageTitle: "Delivery & Return Policy",
         policyEyebrow: "Please read before ordering",
@@ -199,7 +199,7 @@ window.uiTranslations = {
         itemsCount: "{count}টি পণ্য", passwordsDoNotMatch: "পাসওয়ার্ড দুটি মিলছে না।", profileSaved: "প্রোফাইল সফলভাবে সেভ হয়েছে।",
         passwordChanged: "পাসওয়ার্ড সফলভাবে পরিবর্তন হয়েছে।", notificationsMarkedRead: "সব নোটিফিকেশন পড়া হয়েছে হিসেবে চিহ্নিত করা হয়েছে।",
         requestFailed: "অনুরোধ ব্যর্থ হয়েছে", myAccountFallback: "আমার অ্যাকাউন্ট", pending: "পেন্ডিং", processing: "প্রসেসিং", shipped: "শিপড",
-        completed: "সম্পন্ন", delivered: "ডেলিভারড", cancelled: "বাতিল", errorLoadingMessages: "এই মুহূর্তে বার্তা লোড করা যাচ্ছে না।"
+        completed: "সম্পন্ন", delivered: "ডেলিভারড", cancelled: "বাতিল", errorLoadingMessages: "এই মুহূর্তে বার্তা লোড করা যাচ্ছে না।",
 
         policyPageTitle: "ডেলিভারি ও রিটার্ন পলিসি",
         policyEyebrow: "অর্ডারের আগে পড়ুন",
