@@ -176,51 +176,6 @@ export default {
       ).bind('ntf_' + crypto.randomUUID(), userId, title, message, type, link).run();
     }
 
-    function smsPhone(value) {
-      const digits = String(value || '').replace(/[^\d+]/g, '');
-      if (digits.startsWith('+')) return digits;
-      if (digits.startsWith('880')) return `+${digits}`;
-      if (digits.startsWith('0')) return `+88${digits}`;
-      return digits;
-    }
-
-    async function sendCustomerSms(phone, message) {
-      const to = smsPhone(phone);
-      if (!to || to.length < 10) return;
-      // Configure a provider through SMS_API_URL and SMS_API_KEY. The provider
-      // receives the same small JSON contract regardless of gateway vendor.
-      if (!env.SMS_API_URL) {
-        console.warn('SMS_API_URL is not configured; customer SMS skipped');
-        return;
-      }
-      try {
-        const response = await fetch(env.SMS_API_URL, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            ...(env.SMS_API_KEY ? { Authorization: `Bearer ${env.SMS_API_KEY}` } : {}),
-          },
-          body: JSON.stringify({ to, message, sender: env.SMS_SENDER || 'MOHOR' }),
-        });
-        if (!response.ok) console.error('Customer SMS provider rejected the message:', response.status);
-      } catch (error) {
-        console.error('Customer SMS delivery error:', error);
-      }
-    }
-
-    function orderStatusMessage(status, orderId) {
-      const id = orderId || 'unknown';
-      const normalizedStatus = String(status || '').trim().toLowerCase();
-      const messages = {
-        pending: `Your MOHOR order #${id} has been received and is currently under review.`,
-        confirmed: `Thank you! Your MOHOR order #${id} is confirmed and is currently being prepared for delivery.`,
-        shipped: `Great news! Your MOHOR order #${id} has been handed over to the courier and is on its way to you.`,
-        completed: `Your MOHOR order #${id} has been successfully delivered—thank you for choosing MOHOR!`,
-        cancelled: `Your MOHOR order #${id} has been cancelled; please reach out to our support team if you have any questions.`,
-      };
-      return messages[normalizedStatus] || `Your MOHOR order #${id} status is now ${status}.`;
-    }
-
     function publicUser(profile, fallback = {}) {
       return {
         id: profile?.id || fallback.id,
@@ -277,6 +232,24 @@ export default {
         });
       } catch (e) {
         console.error('Telegram alert error:', e);
+      }
+    }
+
+    async function notifyCustomerSms(order, message) {
+      if (!env.TWILIO_ACCOUNT_SID || !env.TWILIO_AUTH_TOKEN || !env.TWILIO_FROM_NUMBER || !order.customer_phone) return;
+      const rawPhone = String(order.customer_phone).replace(/[^\d+]/g, '');
+      const phone = rawPhone.startsWith('01') ? `+880${rawPhone.slice(1)}` : rawPhone;
+      if (!/^\+\d{8,15}$/.test(phone)) return;
+      const body = new URLSearchParams({ To: phone, From: env.TWILIO_FROM_NUMBER, Body: message });
+      const credentials = btoa(`${env.TWILIO_ACCOUNT_SID}:${env.TWILIO_AUTH_TOKEN}`);
+      try {
+        await fetch(`https://api.twilio.com/2010-04-01/Accounts/${env.TWILIO_ACCOUNT_SID}/Messages.json`, {
+          method: 'POST',
+          headers: { Authorization: `Basic ${credentials}`, 'Content-Type': 'application/x-www-form-urlencoded' },
+          body,
+        });
+      } catch (e) {
+        console.error('Customer SMS alert error:', e);
       }
     }
 
@@ -449,8 +422,8 @@ export default {
       try {
         await ensureNotificationsTable();
         const { results = [] } = await env.DB.prepare(
-          'SELECT * FROM notifications WHERE user_id = ? OR user_id = ? ORDER BY created_at DESC'
-        ).bind(user.id, 'ALL').all();
+          'SELECT * FROM notifications WHERE user_id = ? OR user_id = ? OR user_id = ? ORDER BY created_at DESC'
+        ).bind(user.id, user.email, 'ALL').all();
         return json({ notifications: Array.isArray(results) ? results : [] }, { status: 200 });
       } catch (e) {
         return json({ notifications: [] }, { status: 200 });
@@ -464,11 +437,11 @@ export default {
         await ensureNotificationsTable();
         const body = await request.json();
         if (body.markAll) {
-          await env.DB.prepare('UPDATE notifications SET is_read = 1 WHERE user_id = ? OR user_id = ?')
-            .bind(user.id, 'ALL').run();
+          await env.DB.prepare('UPDATE notifications SET is_read = 1 WHERE user_id = ? OR user_id = ? OR user_id = ?')
+            .bind(user.id, user.email, 'ALL').run();
         } else if (body.notificationId) {
-          await env.DB.prepare('UPDATE notifications SET is_read = 1 WHERE id = ? AND (user_id = ? OR user_id = ?)')
-            .bind(body.notificationId, user.id, 'ALL').run();
+          await env.DB.prepare('UPDATE notifications SET is_read = 1 WHERE id = ? AND (user_id = ? OR user_id = ? OR user_id = ?)')
+            .bind(body.notificationId, user.id, user.email, 'ALL').run();
         } else {
           return json({ error: 'notificationId or markAll is required' }, { status: 400 });
         }
@@ -806,9 +779,20 @@ export default {
             `INSERT INTO orders (${columns.map(column => `"${column}"`).join(', ')}) VALUES (${placeholders})`
           ).bind(...selected.map(([, value]) => value)).run();
 
+          const notificationRecipient = newOrder.user_id || newOrder.user_email;
+          if (notificationRecipient) {
+            await createNotification({
+              userId: notificationRecipient,
+              title: 'Order received',
+              message: `Pending: Your MOHOR order #${newOrder.id} has been received and is currently under review.`,
+              type: 'order',
+              link: `/order/?id=${encodeURIComponent(newOrder.id)}`,
+            });
+          }
+          await notifyCustomerSms(newOrder, `Pending: Your MOHOR order #${newOrder.id} has been received and is currently under review.`);
+
           // Fire Telegram Order Notification
           await notifyTelegram(newOrder);
-          await sendCustomerSms(newOrder.customer_phone, orderStatusMessage('Pending', newOrder.id));
 
           return json({ success: true, id: newOrder.id, orderId: newOrder.id });
         } catch (e) {
@@ -825,15 +809,22 @@ export default {
       if (request.method === 'PUT') {
         try {
           const { id, status } = await request.json();
-          const order = await env.DB.prepare('SELECT * FROM orders WHERE id = ? OR order_id = ? LIMIT 1').bind(id, id).first();
           await env.DB.prepare('UPDATE orders SET status = ? WHERE id = ?').bind(status, id).run();
+          const order = await env.DB.prepare('SELECT * FROM orders WHERE id = ? OR order_id = ? LIMIT 1').bind(id, id).first();
           if (order && (order.user_id || order.user_email)) {
             const recipient = order.user_id || order.user_email;
-            const labels = { Confirmed: ['Order Confirmed', 'Your order is being prepared.'], Shipped: ['Order Shipped', 'Your order is on its way.'], Completed: ['Order Delivered', 'Your order has been delivered.'], Cancelled: ['Order Cancelled', 'Your order has been cancelled.'] };
-            const notice = labels[status] || ['Order Status Updated', `Your order status is now ${status}.`];
-            await createNotification({ userId: recipient, title: notice[0], message: `${notice[1]} (${id})`, type: 'order', link: `/order/?id=${encodeURIComponent(id)}` });
+            const labels = {
+              Confirmed: ['Order confirmed', `Confirmed: Thank you! Your MOHOR order #${id} is confirmed and is currently being prepared for delivery.`],
+              Shipped: ['Order shipped', `Shipped: Great news! Your MOHOR order #${id} has been handed over to the courier and is on its way to you.`],
+              Completed: ['Order delivered', `Completed: Your MOHOR order #${id} has been successfully delivered—thank you for choosing MOHOR!`],
+              Cancelled: ['Order cancelled', `Cancelled: Your MOHOR order #${id} has been cancelled; please reach out to our support team if you have any questions.`],
+            };
+            const normalizedStatus = String(status || '').toLowerCase();
+            const statusKey = normalizedStatus.charAt(0).toUpperCase() + normalizedStatus.slice(1);
+            const notice = labels[statusKey] || ['Order status updated', `Your MOHOR order #${id} is now ${status}.`];
+            await createNotification({ userId: recipient, title: notice[0], message: notice[1], type: 'order', link: `/order/?id=${encodeURIComponent(id)}` });
+            await notifyCustomerSms(normalizeOrder(order), notice[1]);
           }
-          if (order) await sendCustomerSms(order.customer_phone || order.customerPhone || order.phone, orderStatusMessage(status, order.id || order.order_id || id));
           return json({ success: true });
         } catch (e) {
           return json({ error: e.message }, { status: 500 });
