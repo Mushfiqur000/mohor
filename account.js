@@ -57,8 +57,10 @@
   }
   document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('[data-tab]').forEach(button => button.addEventListener('click', () => {
-      document.querySelectorAll('[data-tab], .panel').forEach(el => el.classList.remove('active'));
-      button.classList.add('active'); $(`${button.dataset.tab}`).classList.add('active');
+      document.querySelectorAll('[data-tab], .account-hub .panel').forEach(el => el.classList.remove('active'));
+      button.classList.add('active');
+      const panel = document.querySelector(button.dataset.tab);
+      if (panel) panel.classList.add('active');
     }));
     $('profileForm').addEventListener('submit', async event => {
       event.preventDefault();
