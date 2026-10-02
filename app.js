@@ -296,6 +296,7 @@ function setTheme(theme) {
     return value;
 }
 window.setTheme = setTheme;
+setTheme(localStorage.getItem('theme') || localStorage.getItem('mohor_theme') || 'system');
 
 // Homepage banner carousel. The bundled hero remains in the markup as a
 // graceful fallback when D1 is unavailable or has no banner records.
@@ -1256,6 +1257,7 @@ function updateProducts() {
 window.updateProducts = updateProducts;
 
 document.addEventListener('DOMContentLoaded', () => {
+    setLanguage(localStorage.getItem('lang') || localStorage.getItem('mohor_lang') || 'en');
     document.querySelectorAll('.filter-checkbox').forEach(cb => cb.addEventListener('change', updateProducts));
     ['customPriceMin', 'customPriceMax'].forEach(id => {
         const input = document.getElementById(id);
@@ -1276,6 +1278,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (document.getElementById('productGrid')) {
         renderSkeletonGrid(8);
+        window.loadStoreProducts();
     }
 
     initPromoBannerAndCountdown();
