@@ -1561,6 +1561,55 @@ body {
 .card-actions { position: static; }
 .card-color-swatch { width: 12px; height: 12px; }
 
+/* Product cards use an icon control, never a full-width wishlist pill. Keep
+   this selector scoped to the media layer so it cannot cover the card. */
+.product-card .card-media > .wishlist-toggle {
+  position: absolute !important;
+  inset: 10px 10px auto auto;
+  z-index: 20;
+  display: grid !important;
+  place-items: center;
+  width: 40px !important;
+  min-width: 40px !important;
+  max-width: 40px !important;
+  height: 40px !important;
+  min-height: 40px !important;
+  max-height: 40px !important;
+  padding: 0 !important;
+  border: 1px solid rgba(116, 28, 36, .28) !important;
+  border-radius: 50% !important;
+  background: rgba(250, 247, 242, .96) !important;
+  color: var(--maroon) !important;
+  box-shadow: 0 3px 12px rgba(33, 28, 25, .18);
+  font-size: 1.35rem;
+  line-height: 1;
+  overflow: visible;
+}
+.product-card .card-media > .wishlist-toggle:hover,
+.product-card .card-media > .wishlist-toggle:focus-visible,
+.product-card .card-media > .wishlist-toggle.is-active {
+  background: var(--maroon) !important;
+  border-color: var(--maroon) !important;
+  color: #fff !important;
+  transform: scale(1.05);
+}
+.product-card .card-media > .wishlist-toggle span:first-child {
+  display: block;
+  line-height: 1;
+}
+@media (max-width: 640px) {
+  .product-card .card-media > .wishlist-toggle {
+    inset: 8px 8px auto auto;
+    width: 36px !important;
+    min-width: 36px !important;
+    max-width: 36px !important;
+    height: 36px !important;
+    min-height: 36px !important;
+    max-height: 36px !important;
+    font-size: 1.2rem;
+  }
+}
+
 .checkout-container { max-width: 1060px; display: grid; grid-template-columns: minmax(0, 1.08fr) minmax(340px, .92fr); gap: 24px; align-items: start; }
 .checkout-card { border-radius: 10px; box-shadow: none; }
 .checkout-card:nth-child(2) { position: sticky; top: 92px; }
