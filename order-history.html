@@ -16,7 +16,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Work+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+Bengali:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=30">
+  <link rel="stylesheet" href="style.css?v=34">
 <noscript><img height="1" width="1" style="display:none"
 src="https://www.facebook.com/tr?id=920711640501746&ev=PageView&noscript=1"
 /></noscript>
@@ -268,16 +268,22 @@ src="https://www.facebook.com/tr?id=920711640501746&ev=PageView&noscript=1"
       if (!container) return;
 
       try {
-        const snap = await db.collection('orders').where('userId', '==', uid).orderBy('orderDate', 'desc').get();
-        if (snap.empty) {
+        const token = localStorage.getItem('authToken');
+        const response = await fetch('/api/orders', { headers: { Authorization: `Bearer ${token}` } });
+        const payload = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(payload.error || 'Could not load orders');
+        const orders = Array.isArray(payload) ? payload : (payload.orders || []);
+        if (!orders.length) {
           container.innerHTML = '<p class="order-history-empty" style="text-align:center; padding:40px 0;">No order history found. Start shopping to place your first order!</p>';
           return;
         }
 
         let html = '';
-        snap.forEach(doc => {
-          const o = doc.data();
-          const date = o.orderDate ? (o.orderDate.toDate ? o.orderDate.toDate().toLocaleDateString() : new Date(o.orderDate).toLocaleDateString()) : '—';
+        orders.forEach(o => {
+          const orderId = o.id || o.order_id || '';
+          const parsedDate = o.orderDate || o.order_date || o.created_at;
+          const dateValue = parsedDate ? new Date(parsedDate) : null;
+          const date = dateValue && !Number.isNaN(dateValue.getTime()) ? dateValue.toLocaleDateString() : '—';
           const status = o.status || 'Pending';
           const statusClass = 'status-' + status.toLowerCase().replace(/\s+/g, '');
           const total = o.totalAmount || 0;
@@ -296,7 +302,7 @@ src="https://www.facebook.com/tr?id=920711640501746&ev=PageView&noscript=1"
             <div class="order-card-detail">
               <div class="ocd-header">
                 <div>
-                  <span class="ocd-eyebrow">Order #${esc(doc.id.slice(0, 8))}</span>
+                  <span class="ocd-eyebrow">Order #${esc(orderId.slice(0, 8))}</span>
                   <div class="ocd-date">${esc(date)}</div>
                 </div>
                 <div>
@@ -330,7 +336,7 @@ src="https://www.facebook.com/tr?id=920711640501746&ev=PageView&noscript=1"
                   <span class="ocd-total-label">Total: </span>
                   <strong class="ocd-total">৳${esc(total)}</strong>
                 </div>
-                <a href="/order/?id=${doc.id}" class="btn btn-outline btn-sm" style="padding:6px 14px; font-size:12px; text-decoration:none; display:inline-block;">View Details &rarr;</a>
+                <a href="/order/?id=${encodeURIComponent(orderId)}" class="btn btn-outline btn-sm" style="padding:6px 14px; font-size:12px; text-decoration:none; display:inline-block;">View Details &rarr;</a>
               </div>
             </div>
           `;

@@ -449,6 +449,20 @@ select.input {
   .menu-toggle { display: flex; }
   .icon-btn-label { display: none; }
 }
+@media (max-width: 640px) {
+  .site-header .nav { gap: 8px; padding-inline: 14px; }
+  .site-header .brand-logo { max-width: 112px; }
+  .site-header .nav-actions { gap: 2px; min-width: 0; }
+  .site-header .nav-actions > .lang-btn,
+  .site-header .nav-actions > #themeToggleBtn { display: none; }
+  .site-header .nav-actions > .icon-btn { padding: 8px 6px; }
+  .site-header .nav-actions > .menu-toggle {
+    display: flex; flex: 0 0 38px; width: 38px; height: 38px; margin-left: 2px;
+    border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--parchment);
+    position: relative; z-index: 4;
+  }
+  .site-header .menu-toggle span { width: 21px; height: 2px; background: var(--ink); }
+}
 
 /* ==========================================================================
    Hero (homepage)

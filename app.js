@@ -383,7 +383,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const notificationCount = document.getElementById('storeNotificationCount');
     const authToken = localStorage.getItem('authToken');
     if (notificationBell && authToken) {
-        fetch('/api/notifications', { headers: { Authorization: `Bearer ${authToken}` } })
+        fetch('/api/notifications', { headers: { Authorization: 'Bearer ' + authToken } })
             .then(response => response.ok ? response.json() : null)
             .then(data => {
                 const unread = (data?.notifications || []).filter(item => !Number(item.is_read)).length;

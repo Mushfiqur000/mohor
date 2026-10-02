@@ -210,6 +210,9 @@ export default {
       const parsed = parseJsonFields(row);
       return {
         ...parsed,
+        id: parsed.id ?? parsed.order_id ?? '',
+        user_id: parsed.user_id ?? parsed.userId ?? null,
+        user_email: parsed.user_email ?? parsed.userEmail ?? null,
         customerName: parsed.customerName ?? parsed.customer_name ?? '',
         customerPhone: parsed.customerPhone ?? parsed.customer_phone ?? '',
         deliveryAddress: parsed.deliveryAddress ?? parsed.delivery_address ?? '',
@@ -831,10 +834,14 @@ export default {
       if (request.method === 'PUT') {
         try {
           const { id, status } = await request.json();
-          await env.DB.prepare('UPDATE orders SET status = ? WHERE id = ?').bind(status, id).run();
-          const order = await env.DB.prepare('SELECT * FROM orders WHERE id = ? OR order_id = ? LIMIT 1').bind(id, id).first();
-          if (order && (order.user_id || order.user_email)) {
-            const recipient = order.user_id || order.user_email;
+          const orderColumns = await getTableColumns('orders');
+          const orderIdColumn = orderColumns.has('id') ? 'id' : (orderColumns.has('order_id') ? 'order_id' : null);
+          if (!orderIdColumn) throw new Error('The orders table has no order identifier column');
+          await env.DB.prepare(`UPDATE orders SET status = ? WHERE "${orderIdColumn}" = ?`).bind(status, id).run();
+          const order = await env.DB.prepare(`SELECT * FROM orders WHERE "${orderIdColumn}" = ? LIMIT 1`).bind(id).first();
+          const normalizedOrder = order ? normalizeOrder(order) : null;
+          if (normalizedOrder && (normalizedOrder.user_id || normalizedOrder.user_email)) {
+            const recipient = normalizedOrder.user_id || normalizedOrder.user_email;
             const labels = {
               Confirmed: ['Order confirmed', `Confirmed: Thank you! Your MOHOR order #${id} is confirmed and is currently being prepared for delivery.`],
               Shipped: ['Order shipped', `Shipped: Great news! Your MOHOR order #${id} has been handed over to the courier and is on its way to you.`],
@@ -845,7 +852,7 @@ export default {
             const statusKey = normalizedStatus.charAt(0).toUpperCase() + normalizedStatus.slice(1);
             const notice = labels[statusKey] || ['Order status updated', `Your MOHOR order #${id} is now ${status}.`];
             await createNotification({ userId: recipient, title: notice[0], message: notice[1], type: 'order', link: `/order/?id=${encodeURIComponent(id)}` });
-            await notifyCustomerSms(normalizeOrder(order), notice[1]);
+            await notifyCustomerSms(normalizedOrder, notice[1]);
           }
           return json({ success: true });
         } catch (e) {

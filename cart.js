@@ -81,7 +81,7 @@ async function loadCartFromApi() {
     if (!token) return false;
     try {
         const response = await fetch('/api/cart', {
-            headers: { Authorization: `Bearer ${token}` }
+            headers: { Authorization: 'Bearer ' + token }
         });
         if (!response.ok) return false;
         const data = await response.json();
@@ -113,7 +113,7 @@ function syncCartToApi() {
         try {
             await fetch('/api/cart', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+                headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: 'Bearer ' + token } : {}) },
                 body: JSON.stringify({ items: window.cart || [] })
             });
         } catch (error) {
@@ -559,7 +559,7 @@ window.checkoutToAdmin = async function() {
         const token = typeof window.getAuthToken === 'function' ? window.getAuthToken() : null;
         const response = await fetch('/api/orders', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+            headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
             body: JSON.stringify(newOrder)
         });
         const result = await response.json().catch(() => ({}));
@@ -633,7 +633,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // anything they have already entered during this page visit.
     const token = typeof window.getAuthToken === 'function' ? window.getAuthToken() : localStorage.getItem('authToken');
     if (token) {
-        fetch('/api/auth/me', { headers: { Authorization: `Bearer ${token}` } })
+        fetch('/api/auth/me', { headers: { Authorization: 'Bearer ' + token } })
             .then(response => response.ok ? response.json() : null)
             .then(data => {
                 const user = data && (data.user || data);
