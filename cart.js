@@ -74,6 +74,10 @@ function readLocalCart() {
     }
 }
 
+function hasLocalCartSnapshot() {
+    return localStorage.getItem('mohor_cart') !== null;
+}
+
 window.cart = readLocalCart();
 
 async function loadCartFromApi() {
@@ -87,12 +91,12 @@ async function loadCartFromApi() {
         const data = await response.json();
         const savedCart = Array.isArray(data.items) ? data.items : data.cart;
         if (Array.isArray(savedCart)) {
-            // Do not let an empty account cart erase items added locally
-            // before deferred authentication finishes initializing.
-            if (savedCart.length > 0 || window.cart.length === 0) {
-                window.cart = savedCart;
-            } else {
+            // A local snapshot is authoritative. In particular, an intentionally
+            // emptied cart must not be replaced by an older server snapshot.
+            if (hasLocalCartSnapshot()) {
                 syncCartToApi();
+            } else {
+                window.cart = savedCart;
             }
             localStorage.setItem('mohor_cart', JSON.stringify(window.cart));
             window.updateCartUI();
@@ -109,17 +113,29 @@ function syncCartToApi() {
     const token = typeof window.getAuthToken === 'function' ? window.getAuthToken() : null;
     if (!token) return;
     clearTimeout(cartSyncTimer);
+    const snapshot = JSON.stringify(window.cart || []);
     cartSyncTimer = setTimeout(async () => {
         try {
             await fetch('/api/cart', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: 'Bearer ' + token } : {}) },
-                body: JSON.stringify({ items: window.cart || [] })
+                body: JSON.stringify({ items: JSON.parse(snapshot) })
             });
         } catch (error) {
             console.warn('Could not save cart:', error);
         }
     }, 100);
+}
+
+function flushCartToApi() {
+    const token = typeof window.getAuthToken === 'function' ? window.getAuthToken() : null;
+    if (!token) return;
+    fetch('/api/cart', {
+        method: 'POST',
+        keepalive: true,
+        headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
+        body: JSON.stringify({ items: window.cart || [] })
+    }).catch(() => {});
 }
 
 window.loadCartFromApi = loadCartFromApi;
@@ -132,6 +148,8 @@ window.addEventListener('mohor-auth-ready', loadCartFromApi);
 window.addEventListener('pagehide', () => {
     try {
         localStorage.setItem('mohor_cart', JSON.stringify(window.cart || []));
+        clearTimeout(cartSyncTimer);
+        flushCartToApi();
     } catch (e) {
         console.error('Error saving cart on pagehide:', e);
     }
