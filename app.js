@@ -280,6 +280,7 @@ function setLanguage(language) {
     if (window.i18n && typeof window.i18n.updatePage === 'function') window.i18n.updatePage();
     else updateUIText();
     window.dispatchEvent(new Event('languageChanged'));
+    localStorage.setItem('mohor_preferences_updated_at', String(Date.now()));
     return value;
 }
 window.setLanguage = setLanguage;
@@ -293,10 +294,18 @@ function setTheme(theme) {
     root.classList.toggle('dark', dark);
     root.setAttribute('data-theme', dark ? 'dark' : 'light');
     window.dispatchEvent(new CustomEvent('themeChanged', { detail: { theme: value, dark } }));
+    localStorage.setItem('mohor_preferences_updated_at', String(Date.now()));
     return value;
 }
 window.setTheme = setTheme;
 setTheme(localStorage.getItem('theme') || localStorage.getItem('mohor_theme') || 'system');
+window.addEventListener('storage', event => {
+    if (event.key === 'theme' || event.key === 'mohor_theme') {
+        setTheme(event.newValue || 'system');
+    } else if (event.key === 'lang' || event.key === 'mohor_lang') {
+        setLanguage(event.newValue || 'en');
+    }
+});
 
 // Homepage banner carousel. The bundled hero remains in the markup as a
 // graceful fallback when D1 is unavailable or has no banner records.
