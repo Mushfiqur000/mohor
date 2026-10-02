@@ -1775,6 +1775,8 @@ body {
 .account-nav-btn:hover { background:var(--maroon-soft); color:var(--maroon); }
 .account-nav-btn.active { background:var(--maroon-soft); color:var(--maroon); }
 .account-nav-btn .account-badge { margin-left:auto; }
+.account-nav-icon { display:inline-grid; place-items:center; flex:0 0 20px; color:currentColor; }
+.account-nav-icon svg { width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round; }
 .account-badge { min-width:22px; height:22px; display:inline-grid; place-items:center; padding:0 6px; border-radius:999px; background:var(--maroon); color:#fff; font-size:.72rem; font-weight:700; }
 .account-content { min-width:0; }
 .account-panel { display:none; padding:28px; box-shadow:var(--shadow-sm); }
@@ -1847,15 +1849,31 @@ body {
 .dark .account-danger-card h3 { color:#E79A9A; }
 .dark .notification-card { border-color:#3A343A; background:#181619; }
 .dark .notification-card.unread { background:#211C19; }
+/* Account Hub is a document page, not the storefront's fixed account drawer. */
+.account-hub .account-sidebar {
+  position: sticky; top: 24px; right: auto; bottom: auto; width: auto; height: auto;
+  min-height: 0; max-height: none; display: block; box-shadow: var(--shadow-sm);
+  border-left: 1px solid var(--border);
+}
+html[data-theme='dark'] .account-brand img,
+html[data-theme='dark'] .account-wishlist,
+html[data-theme='dark'] .account-modal-close {
+  filter: brightness(0) invert(1);
+}
+html[data-theme='dark'] .account-brand img { filter: brightness(0) invert(1); }
+html[data-theme='dark'] .account-modal-close { color: #f3efe9; }
+html[data-theme='dark'] .account-btn-outline { color: #f3efe9; border-color: #6b6468; }
+html[data-theme='dark'] .brand-logo .logo-dark { display:none; }
+html[data-theme='dark'] .brand-logo .logo-light { display:block; }
 @media (max-width:760px) {
   .account-hub .account-shell { width:min(100% - 24px,680px); padding-top:20px; }
   .account-layout { grid-template-columns:1fr; }
-  .account-hub .account-sidebar { position:sticky; top:0; z-index:10; padding:16px; }
-  .account-hub .account-nav { grid-template-columns:repeat(2,minmax(0,1fr)); gap:4px; margin-top:16px; }
-  .account-hub .account-nav-btn { min-height:42px; padding:8px 9px; font-size:.78rem; }
-  .account-hub .account-logout { margin-top:12px; }
+  .account-hub .account-sidebar { position:sticky; top:8px; z-index:10; padding:14px; }
+  .account-hub .account-nav { grid-template-columns:repeat(2,minmax(0,1fr)); gap:3px; margin-top:12px; }
+  .account-hub .account-nav-btn { min-height:40px; padding:7px 8px; font-size:.76rem; }
+  .account-hub .account-logout { margin-top:10px; }
   .account-grid { grid-template-columns:1fr; }
-  .account-panel { padding:20px; }
+  .account-panel { padding:18px; }
   .account-panel-head,.account-danger-card { align-items:stretch; flex-direction:column; }
   .account-panel-head .account-btn { align-self:flex-start; }
   .account-danger-btn { width:100%; }
