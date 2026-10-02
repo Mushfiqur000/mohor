@@ -116,7 +116,7 @@
       '<span class="notification-icon" aria-hidden="true">'+(item.type==='order'?'📦':item.type==='promo'?'✦':'◌')+'</span>'+
       '<div><strong>'+esc(item.title)+'</strong><p>'+esc(item.message)+'</p>'+
       '<small>'+esc(new Date(item.created_at).toLocaleString(window.currentLang==='bn'?'bn-BD':'en-BD'))+'</small></div>'+
-      (item.link?'<a class="account-btn account-btn-outline" href="'+esc(item.link)+'">'+esc(t('view','View'))+'</a>':'')+
+      (item.link?'<a class="account-btn account-btn-outline" data-notification-id="'+esc(item.id)+'" href="'+esc(item.link)+'">'+esc(t('view','View'))+'</a>':'<button class="account-btn account-btn-outline" data-notification-id="'+esc(item.id)+'" type="button">'+esc(t('markRead','Mark read'))+'</button>')+
       '</article>'
     ).join(''):'<p class="account-muted">'+esc(t('noMessagesYet','No messages yet.'))+'</p>';
   }
