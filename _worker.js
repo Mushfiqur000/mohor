@@ -35,6 +35,23 @@ export default {
     // ==========================================
 
     // Parse stringified JSON fields from D1 into native objects/arrays
+    function repairMojibake(value) {
+      if (typeof value === 'string') {
+        if (!/[ÃÂàâ]/.test(value)) return value;
+        try {
+          const bytes = Uint8Array.from(value, character => character.charCodeAt(0) & 0xff);
+          return new TextDecoder('utf-8', { fatal: true }).decode(bytes);
+        } catch (_) {
+          return value;
+        }
+      }
+      if (Array.isArray(value)) return value.map(repairMojibake);
+      if (value && typeof value === 'object') {
+        return Object.fromEntries(Object.entries(value).map(([key, item]) => [key, repairMojibake(item)]));
+      }
+      return value;
+    }
+
     function parseJsonFields(obj) {
       if (!obj) return obj;
       const parsed = { ...obj };
@@ -51,6 +68,7 @@ export default {
               // keep as string if parse fails
             }
           }
+          parsed[key] = repairMojibake(parsed[key]);
         }
       }
       return parsed;

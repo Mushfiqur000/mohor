@@ -204,6 +204,19 @@ button, input, select, textarea { font-family: inherit; }
 }
 .toolbar input[type="text"] { min-width: 210px; flex: 1; }
 .toolbar input:focus, .toolbar select:focus, .toolbar input[type="datetime-local"]:focus { outline: none; border-color: var(--brass); background: var(--surface); box-shadow: 0 0 0 3px var(--brass-soft); }
+#notification-form { display: grid; gap: 14px; max-width: 820px; }
+#notification-form .toolbar { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); margin: 0; }
+#notification-form input, #notification-form select, #notification-form textarea {
+  width: 100%; min-height: 44px; border: 1px solid var(--border); border-radius: 6px;
+  padding: 11px 13px; color: var(--ink); background: var(--surface); font-size: 14px;
+}
+#notification-form textarea { min-height: 130px; resize: vertical; }
+#notification-form input:focus, #notification-form select:focus, #notification-form textarea:focus {
+  outline: none; border-color: var(--brass); box-shadow: 0 0 0 3px var(--brass-soft);
+}
+#notification-form button { justify-self: start; min-height: 44px; padding: 0 22px; }
+#notification-form .form-hint { min-height: 20px; margin: 0; }
+@media (max-width: 640px) { #notification-form .toolbar { grid-template-columns: 1fr; } }
 
 .table-scroll { overflow-x: auto; }
 table { width: 100%; border-collapse: collapse; min-width: 760px; }
@@ -855,7 +868,7 @@ tbody tr:hover { background: rgba(245,241,236,0.6); }
 <!-- ============================================================
      FIREBASE + APP LOGIC
      ============================================================ -->
-<script src="admin.js"></script><script type="module">
+<script src="admin.js?v=2"></script><script type="module">
 /* ---------- D1 ADMIN API ---------- */
 const adminEmail = "mushfiqurrahman2222@gmail.com";
 const api = async (path, options = {}) => {
@@ -898,15 +911,24 @@ function parseDate(dateVal) {
 }
 
 /* ---------- TRANSLATION HELPERS ---------- */
+function repairMojibake(value) {
+  const text = String(value ?? '');
+  if (!/[ÃÂàâ]/.test(text)) return text;
+  try {
+    return decodeURIComponent(escape(text));
+  } catch (_) {
+    return text;
+  }
+}
 function getSafeStr(field, lang) {
   if (!field) return '';
-  if (typeof field === 'string') return lang === 'en' ? field : '';
-  return field[lang] || '';
+  if (typeof field === 'string') return lang === 'en' ? repairMojibake(field) : '';
+  return repairMojibake(field[lang] || '');
 }
 function getSafeArr(field, lang) {
   if (!field) return [];
-  if (Array.isArray(field)) return lang === 'en' ? field : [];
-  return field[lang] || [];
+  if (Array.isArray(field)) return lang === 'en' ? field.map(repairMojibake) : [];
+  return Array.isArray(field[lang]) ? field[lang].map(repairMojibake) : [];
 }
 
 /* ---------- SMALL HELPERS ---------- */
@@ -938,7 +960,7 @@ function statusClass(status) {
   if (s === 'placed' || s === 'new') return 'status-pending';
   return 'status-' + (known.includes(s) ? s : 'pending');
 }
-function money(n) { return '&#2547;' + Number(n || 0).toLocaleString(); }
+function money(n) { return '\u09F3' + Number(n || 0).toLocaleString(); }
 
 function showToast(message, type = 'success') {
   const container = document.getElementById('toast-container');
@@ -1223,8 +1245,8 @@ cancelBannerEditBtn.addEventListener('click', resetBannerForm);
 /* ---------- FIRESTORE: ORDERS ---------- */
 async function fetchOrders() {
   try {
-    allOrders = await api('/api/orders');
-    allOrders = Array.isArray(allOrders) ? allOrders : [];
+    const response = await api('/api/orders');
+    allOrders = Array.isArray(response) ? response : (Array.isArray(response.orders) ? response.orders : []);
     renderOverview(); renderOrdersTable(); renderHistoryView();
   } catch (error) { showToast('Could not load orders: ' + error.message, 'error'); }
 }
@@ -1526,7 +1548,7 @@ function sizeStockSummary(product) {
 function renderProductsTable() {
   const q = productSearch.trim().toLowerCase();
   const filtered = allProducts.filter(p => {
-      const pTitle = typeof p.title === 'string' ? p.title : (p.title?.en || '');
+      const pTitle = repairMojibake(typeof p.title === 'string' ? p.title : (p.title?.en || ''));
       return !q || pTitle.toLowerCase().includes(q);
   });
 
@@ -1541,7 +1563,7 @@ function renderProductsTable() {
     tbody.innerHTML = pageItems.map(prod => {
       const img = prod.images && prod.images.length > 0 ? prod.images[0] : '';
       const sizesStr = sizeStockSummary(prod);
-      const displayTitle = typeof prod.title === 'string' ? prod.title : (prod.title?.en || '');
+      const displayTitle = repairMojibake(typeof prod.title === 'string' ? prod.title : (prod.title?.en || ''));
 
       const hasDiscount = prod.originalPrice && Number(prod.originalPrice) > Number(prod.price);
       const priceHtml = hasDiscount
