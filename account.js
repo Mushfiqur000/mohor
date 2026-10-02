@@ -107,7 +107,6 @@
     $('orderModal').hidden=false;
     $('closeModal').focus();
   }
-
   function renderNotifications(){
     const unread=notifications.filter(item=>!Number(item.is_read)).length;
     const badge=$('notificationBadge');
@@ -227,7 +226,6 @@
         closeDeleteModal();
       }
     });
-
     $('logout').addEventListener('click',()=>{
       localStorage.removeItem('authToken');localStorage.removeItem('authUser');
       window.location.href='/login.html';
@@ -247,7 +245,8 @@
 
     const language=localStorage.getItem('lang')||localStorage.getItem('mohor_lang')||'en';
     $('language').value=language==='bn'?'bn':'en';
-    const requestedTab=new URLSearchParams(window.location.search).get('tab');
+    const requestedTab=new URLSearchParams(window.location.search).get('tab') ||
+      (window.location.hash === '#notifications' ? 'notifications' : '');
     const tabMap={profile:'#profilePanel',address:'#addressPanel',orders:'#ordersPanel',notifications:'#notificationsPanel',settings:'#settingsPanel',help:'#helpPanel'};
     if(requestedTab&&tabMap[requestedTab]){
       const requestedButton=document.querySelector('[data-tab="'+tabMap[requestedTab]+'"]');
@@ -267,6 +266,18 @@
       }catch(error){message(error.message,true);}
     });
 
+    $('notifications').addEventListener('click',async event=>{
+      const link=event.target.closest('[data-notification-id]');
+      if(!link) return;
+      if(link.tagName==='A') event.preventDefault();
+      try{
+        await api('/api/notifications/mark-read',{method:'POST',body:JSON.stringify({notificationId:link.dataset.notificationId})});
+        const item=notifications.find(notification=>notification.id===link.dataset.notificationId);
+        if(item) item.is_read=1;
+        renderNotifications();
+        if(link.tagName==='A') window.location.href=link.href;
+      }catch(error){message(error.message,true);}
+    });
     load();
   });
 })();
