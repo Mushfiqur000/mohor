@@ -122,6 +122,15 @@ After deploying it, set its two Worker secrets and define the deployed URL as
 checkout waits for this request before redirecting, so successful orders are
 not silently lost during navigation.
 
+Customer order SMS is sent server-side by `_worker.js` through the configured
+`SMS_API_URL`. The endpoint receives a `POST` JSON body in this shape:
+`{ "to": "+8801XXXXXXXXX", "message": "...", "sender": "MOHOR" }`. If
+`SMS_API_KEY` is set, it is sent as a Bearer token; `SMS_SENDER` overrides the
+sender name. Configure these as Cloudflare Worker secrets/variables. SMS
+failure never cancels an order, but is logged server-side. Pending SMS is sent
+for both signed-in and guest checkouts; later status SMS is sent when an admin
+changes the order to Confirmed, Shipped, Completed, or Cancelled.
+
 ## Deployment
 
 Push to the branch configured for GitHub Pages. The `CNAME` file points the

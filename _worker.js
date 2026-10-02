@@ -176,6 +176,51 @@ export default {
       ).bind('ntf_' + crypto.randomUUID(), userId, title, message, type, link).run();
     }
 
+    function smsPhone(value) {
+      const digits = String(value || '').replace(/[^\d+]/g, '');
+      if (digits.startsWith('+')) return digits;
+      if (digits.startsWith('880')) return `+${digits}`;
+      if (digits.startsWith('0')) return `+88${digits}`;
+      return digits;
+    }
+
+    async function sendCustomerSms(phone, message) {
+      const to = smsPhone(phone);
+      if (!to || to.length < 10) return;
+      // Configure a provider through SMS_API_URL and SMS_API_KEY. The provider
+      // receives the same small JSON contract regardless of gateway vendor.
+      if (!env.SMS_API_URL) {
+        console.warn('SMS_API_URL is not configured; customer SMS skipped');
+        return;
+      }
+      try {
+        const response = await fetch(env.SMS_API_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(env.SMS_API_KEY ? { Authorization: `Bearer ${env.SMS_API_KEY}` } : {}),
+          },
+          body: JSON.stringify({ to, message, sender: env.SMS_SENDER || 'MOHOR' }),
+        });
+        if (!response.ok) console.error('Customer SMS provider rejected the message:', response.status);
+      } catch (error) {
+        console.error('Customer SMS delivery error:', error);
+      }
+    }
+
+    function orderStatusMessage(status, orderId) {
+      const id = orderId || 'unknown';
+      const normalizedStatus = String(status || '').trim().toLowerCase();
+      const messages = {
+        pending: `Your MOHOR order #${id} has been received and is currently under review.`,
+        confirmed: `Thank you! Your MOHOR order #${id} is confirmed and is currently being prepared for delivery.`,
+        shipped: `Great news! Your MOHOR order #${id} has been handed over to the courier and is on its way to you.`,
+        completed: `Your MOHOR order #${id} has been successfully delivered—thank you for choosing MOHOR!`,
+        cancelled: `Your MOHOR order #${id} has been cancelled; please reach out to our support team if you have any questions.`,
+      };
+      return messages[normalizedStatus] || `Your MOHOR order #${id} status is now ${status}.`;
+    }
+
     function publicUser(profile, fallback = {}) {
       return {
         id: profile?.id || fallback.id,
@@ -763,6 +808,7 @@ export default {
 
           // Fire Telegram Order Notification
           await notifyTelegram(newOrder);
+          await sendCustomerSms(newOrder.customer_phone, orderStatusMessage('Pending', newOrder.id));
 
           return json({ success: true, id: newOrder.id, orderId: newOrder.id });
         } catch (e) {
@@ -779,14 +825,15 @@ export default {
       if (request.method === 'PUT') {
         try {
           const { id, status } = await request.json();
-          await env.DB.prepare('UPDATE orders SET status = ? WHERE id = ?').bind(status, id).run();
           const order = await env.DB.prepare('SELECT * FROM orders WHERE id = ? OR order_id = ? LIMIT 1').bind(id, id).first();
+          await env.DB.prepare('UPDATE orders SET status = ? WHERE id = ?').bind(status, id).run();
           if (order && (order.user_id || order.user_email)) {
             const recipient = order.user_id || order.user_email;
-            const labels = { Shipped: ['Order Shipped', 'Your order is on its way.'], Completed: ['Order Delivered', 'Your order has been delivered.'], Cancelled: ['Order Cancelled', 'Your order has been cancelled.'] };
+            const labels = { Confirmed: ['Order Confirmed', 'Your order is being prepared.'], Shipped: ['Order Shipped', 'Your order is on its way.'], Completed: ['Order Delivered', 'Your order has been delivered.'], Cancelled: ['Order Cancelled', 'Your order has been cancelled.'] };
             const notice = labels[status] || ['Order Status Updated', `Your order status is now ${status}.`];
             await createNotification({ userId: recipient, title: notice[0], message: `${notice[1]} (${id})`, type: 'order', link: `/order/?id=${encodeURIComponent(id)}` });
           }
+          if (order) await sendCustomerSms(order.customer_phone || order.customerPhone || order.phone, orderStatusMessage(status, order.id || order.order_id || id));
           return json({ success: true });
         } catch (e) {
           return json({ error: e.message }, { status: 500 });
