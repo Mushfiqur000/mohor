@@ -530,7 +530,11 @@ export default {
             if (!product) return json({ error: 'Product not found' }, { status: 404 });
             return json(parseJsonFields(product));
           }
-          const { results } = await env.DB.prepare('SELECT * FROM products ORDER BY displayOrder ASC').all();
+          const productColumns = await getTableColumns('products');
+          const orderColumn = productColumns.has('displayOrder')
+            ? 'displayOrder'
+            : productColumns.has('display_order') ? 'display_order' : 'id';
+          const { results } = await env.DB.prepare(`SELECT * FROM products ORDER BY "${orderColumn}" ASC`).all();
           return json((results || []).map(parseJsonFields));
         } catch (e) {
           return json({ error: e.message }, { status: 500 });

@@ -853,7 +853,8 @@ window.loadStoreProducts = function() {
         try {
             const response = await fetch('/api/products');
             if (!response.ok) throw new Error(`Product request failed (${response.status})`);
-            const rows = await response.json();
+            const payload = await response.json();
+            const rows = Array.isArray(payload) ? payload : (Array.isArray(payload.products) ? payload.products : []);
             const dynamicProducts = sortProductsForDisplay(
                 (Array.isArray(rows) ? rows : []).map(row => normalizeProductSnapshot({
                     id: row.id,
