@@ -28,16 +28,16 @@ disclosure.
 
 ## Scope notes
 
-- The Firebase config (API key, project ID) visible in the client code is
-  expected to be public for a Firebase web app — it is **not** a secret.
-  Actual data access is controlled by Firestore Security Rules configured
-  in the Firebase console, which are outside this repository.
+- The Cloudflare config (API key, project ID) visible in the client code is
+  expected to be public for a Cloudflare web app — it is **not** a secret.
+  Actual data access is controlled by Cloudflare API Security Rules configured
+  in the Cloudflare console, which are outside this repository.
 - Order pricing is re-verified against the live product catalog before
   being saved (see `getCanonicalPrice` in `cart.js`) as a client-side
   mitigation against a tampered cart total. A determined attacker could
-  still call the Firestore SDK directly, bypassing this file entirely — the
-  authoritative guard belongs in Firestore Security Rules or a Cloud
+  still call the Cloudflare API SDK directly, bypassing this file entirely — the
+  authoritative guard belongs in Cloudflare API Security Rules or a Cloud
   Function validating each order write server-side.
 - `admin.html` is intentionally not linked from the public site; access
-  should still be restricted via Firebase Auth + Firestore rules, not
+  should still be restricted via Cloudflare Auth + Cloudflare API rules, not
   obscurity alone.

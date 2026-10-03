@@ -15,11 +15,11 @@ function notify(message, type) {
 }
 
 // SECURITY & DISCOUNT ENGINE: look up canonical item pricing & discount specs
-// from the product catalog (Firestore if loaded, else static fallback).
+// from the product catalog (Cloudflare API if loaded, else static fallback).
 // Recomputes regular price vs sale price to prevent client-side tampering via devtools.
 function getCanonicalItemDetails(item) {
-    const catalog = (Array.isArray(window.firestoreProducts) && window.firestoreProducts.length > 0)
-        ? window.firestoreProducts
+    const catalog = (Array.isArray(window.apiProducts) && window.apiProducts.length > 0)
+        ? window.apiProducts
         : (window.productsData || []);
 
     let match = null;
@@ -242,8 +242,8 @@ window.changeQty = function(index, delta) {
     if (!window.cart[index]) return;
     if (delta > 0 && typeof window.getProductSizeQuantity === 'function') {
         const item = window.cart[index];
-        const catalog = (Array.isArray(window.firestoreProducts) && window.firestoreProducts.length > 0)
-            ? window.firestoreProducts : (window.productsData || []);
+        const catalog = (Array.isArray(window.apiProducts) && window.apiProducts.length > 0)
+            ? window.apiProducts : (window.productsData || []);
         const product = catalog.find(p => String(p.id) === String(item.id));
         if (product && item.qty >= window.getProductSizeQuantity(product, item.size, item.color)) {
             notify('The selected size has no more stock available.', 'error');
@@ -586,7 +586,7 @@ window.checkoutToAdmin = async function() {
 
         const purchaseContentIds = window.cart.map(item => String(item.id ?? item.name));
 
-        // Notify the store owner in the background after Firestore confirms the order.
+        // Notify the store owner in the background after Cloudflare API confirms the order.
         if (typeof window.sendTelegramNotification === 'function') {
             window.sendTelegramNotification({ ...newOrder, id: docRef.id })
                 .then(sent => { if (!sent) console.warn('Order saved, but Telegram notification was not delivered.'); })

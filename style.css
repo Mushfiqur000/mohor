@@ -1990,3 +1990,70 @@ html[data-theme='dark'] .brand-logo .logo-light { display:block; }
 .dark .account-quick-link:hover { background:rgba(243,231,232,.1); border-color:#6B5E63; }
 .dark .account-quick-icon { background:rgba(243,231,232,.1); color:#D8B978; }
 .dark .account-profile-status { background:rgba(60,122,86,.18); color:#72D99D; }
+
+/* ==========================================================================
+   Mobile performance and interaction pass
+   ========================================================================== */
+:root {
+  color-scheme: light;
+  scrollbar-gutter: stable;
+}
+:root[data-theme='dark'] { color-scheme: dark; }
+
+html { -webkit-text-size-adjust: 100%; }
+body { min-width: 320px; }
+button, a, input, select, textarea { touch-action: manipulation; }
+button, .btn, .icon-btn, .lang-btn, .menu-toggle, .nav-links a,
+.wishlist-toggle, .qty-stepper button, .remove-item, .close-filters,
+.side-close, .gallery-arrow, .opt-btn { min-height: 44px; }
+.icon-btn svg, .nav-social svg { pointer-events: none; }
+
+/* Keep large sections out of layout/paint work until they approach the
+   viewport. Explicit intrinsic sizes prevent scroll-position jumps. */
+.assurance, .categories, .site-footer, .related-products-section,
+.policy-content, .about-content, .checkout-container { content-visibility: auto; contain-intrinsic-size: 1px 420px; }
+.product-card { contain: layout paint style; }
+.product-card .card-media img { content-visibility: auto; }
+
+@media (max-width: 760px) {
+  .container { padding-inline: clamp(16px, 4.5vw, 24px); }
+  .site-header { backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+  .nav { min-height: 64px; height: 64px; }
+  .nav-actions { gap: 2px; }
+  .nav-actions > .icon-btn,
+  .nav-actions > .lang-btn,
+  .nav-actions > .menu-toggle { min-width: 44px; min-height: 44px; }
+  .nav-links a { min-height: 52px; display: flex; align-items: center; }
+  .shop-section { padding-block: 48px 72px; }
+  .shop-toolbar { gap: 10px; margin-bottom: 24px; }
+  .search-wrap { flex-basis: 100%; }
+  .sort-wrap { display: flex; flex: 1; min-width: 0; }
+  .sort-wrap select { min-width: 0; flex: 1; }
+  .view-controls { display: none; }
+  .mobile-filter-btn { margin-left: 0; min-height: 46px; }
+  .product-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px 10px; }
+  .product-card .card-body { padding: 11px 11px 13px; gap: 6px; }
+  .product-card .card-title { font-size: .84rem; }
+  .product-card .card-price { font-size: .82rem; }
+  .product-card .card-cat { top: 8px; right: 8px; max-width: 48%; overflow: hidden; text-overflow: ellipsis; }
+  .wishlist-toggle { min-height: 40px; padding: 7px 9px; }
+  .card-colors { overflow: hidden; white-space: nowrap; }
+  .card-color-option:nth-child(n+3) { display: none; }
+  .checkout-card, .account-panel { border-radius: var(--radius-md); }
+}
+
+@media (max-width: 420px) {
+  .site-header .nav { padding-inline: 10px; }
+  .site-header .brand-logo { max-width: 102px; flex-basis: 102px; }
+  .site-header .brand-logo img { max-width: 102px; }
+  .site-header .nav-actions > .icon-btn,
+  .site-header .nav-actions > .lang-btn,
+  .site-header .nav-actions > .menu-toggle { min-width: 40px; width: 40px; }
+  .product-grid { gap: 18px 8px; }
+  .product-card .card-body { padding-inline: 9px; }
+}
+
+@media (prefers-reduced-motion: reduce), (update: slow) {
+  .hero-media img { animation: none; }
+  .site-header, .cart-sidebar, .account-sidebar, .filters { transition: none; }
+}
