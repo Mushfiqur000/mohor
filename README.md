@@ -134,3 +134,4 @@ UI strings live in `window.uiTranslations` in `app.js`; product content
 (title, description, etc.) can be a `{ en, bn }` object in
 Cloudflare API/`products.js` or a plain string.
 <!-- pages: rebuild trigger -->
+<!-- Build Status Sync v39.1 -->
