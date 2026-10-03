@@ -848,7 +848,7 @@ window.loadStoreProducts = function() {
         // Serve the cached catalog immediately so the grid never has to sit on
         // a skeleton while a page that already fetched this data recently
         // waits on the network again.
-        window.firestoreProducts = sortProductsForDisplay(cached.products);
+        window.apiProducts = sortProductsForDisplay(cached.products);
         window._catalogPending = false;
     }
 
@@ -872,7 +872,7 @@ window.loadStoreProducts = function() {
                 }))
             );
             if (dynamicProducts.length > 0) {
-                window.firestoreProducts = dynamicProducts;
+                window.apiProducts = dynamicProducts;
                 writeProductsCache(dynamicProducts);
             }
         } catch (err) {
@@ -892,7 +892,7 @@ window.loadStoreProduct = async function(productId) {
     if (!productId) return null;
 
     await window.loadStoreProducts();
-    const catalog = Array.isArray(window.firestoreProducts) ? window.firestoreProducts : [];
+    const catalog = Array.isArray(window.apiProducts) ? window.apiProducts : [];
     const fromCatalog = catalog.find(product => String(product.id) === String(productId));
     if (fromCatalog) return fromCatalog;
 
@@ -1077,7 +1077,7 @@ function renderProducts(productsToRender) {
                 </div>
             `;
         } else {
-            mediaContentHtml = `<img ${catalogImageAttributes(productCoverImage(product), `${displayTitle} - Mohor Clothings Mohor Dress`, productIndex < 2 ? 'eager' : 'lazy')} ${productIndex === 0 ? 'fetchpriority="high"' : ''}>`;
+            mediaContentHtml = `<img ${catalogImageAttributes(productCoverImage(product), `${displayTitle} - Mohor Clothings Mohor Dress`, productIndex === 0 ? 'eager' : 'lazy')} ${productIndex === 0 ? 'fetchpriority="high"' : ''}>`;
         }
 
         if (viewMode === 'list') {
@@ -1185,7 +1185,7 @@ function initViewControls() {
 const origUpdateProducts = updateProducts;
 window.updateProducts = function() {
     origUpdateProducts();
-    window._lastRenderedProducts = (Array.isArray(window.firestoreProducts) && window.firestoreProducts.length>0) ? window.firestoreProducts : (window.productsData || []);
+    window._lastRenderedProducts = (Array.isArray(window.apiProducts) && window.apiProducts.length>0) ? window.apiProducts : (window.productsData || []);
 };
 
 document.addEventListener('DOMContentLoaded', () => { initViewControls(); });
@@ -1199,8 +1199,8 @@ function updateProducts() {
         return;
     }
 
-    let sourceData = (Array.isArray(window.firestoreProducts) && window.firestoreProducts.length > 0)
-        ? window.firestoreProducts
+    let sourceData = (Array.isArray(window.apiProducts) && window.apiProducts.length > 0)
+        ? window.apiProducts
         : (window.productsData || []);
 
     const sortSelect = document.getElementById('sortSelect');
@@ -1302,8 +1302,8 @@ function renderRelatedProducts(currentProduct) {
     if (!container) return;
 
     container.innerHTML = '';
-    let sourceData = (Array.isArray(window.firestoreProducts) && window.firestoreProducts.length > 0)
-        ? window.firestoreProducts
+    let sourceData = (Array.isArray(window.apiProducts) && window.apiProducts.length > 0)
+        ? window.apiProducts
         : (window.productsData || []);
 
     const allOtherProducts = sourceData.filter(p => String(p.id) !== String(currentProduct.id));
