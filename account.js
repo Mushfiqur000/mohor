@@ -135,6 +135,20 @@
   function openDeleteModal(){ $('deleteModal').hidden=false; $('cancelDeleteModal').focus(); }
   function closeDeleteModal(){ $('deleteModal').hidden=true; }
 
+  function activateTab(button){
+    document.querySelectorAll('[data-tab], .account-hub .account-panel').forEach(el=>el.classList.remove('active'));
+    button.classList.add('active');
+    const panel=document.querySelector(button.dataset.tab);
+    if(panel) panel.classList.add('active');
+  }
+
+  function activateRequestedTab(){
+    const requested=new URLSearchParams(window.location.search).get('tab')||window.location.hash.slice(1);
+    const panelId=requested?(requested.endsWith('Panel')?requested:requested+'Panel'):'';
+    const button=panelId&&document.querySelector('[data-tab="#'+CSS.escape(panelId)+'"]');
+    if(button) activateTab(button);
+  }
+
   async function deleteAccount(){
     const button=$('confirmDeleteModal');
     button.disabled=true;
@@ -159,12 +173,8 @@
   }
 
   document.addEventListener('DOMContentLoaded',()=>{
-    document.querySelectorAll('[data-tab]').forEach(button=>button.addEventListener('click',()=>{
-      document.querySelectorAll('[data-tab], .account-hub .account-panel').forEach(el=>el.classList.remove('active'));
-      button.classList.add('active');
-      const panel=document.querySelector(button.dataset.tab);
-      if(panel) panel.classList.add('active');
-    }));
+    document.querySelectorAll('[data-tab]').forEach(button=>button.addEventListener('click',()=>activateTab(button)));
+    activateRequestedTab();
 
     $('profileForm').addEventListener('submit',async event=>{
       event.preventDefault();

@@ -434,6 +434,7 @@ select.input {
 .menu-toggle[aria-expanded="true"] span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
 .menu-toggle[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
 .menu-toggle[aria-expanded="true"] span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+.mobile-drawer-controls { display: none; }
 
 @media (max-width: 900px) {
   .nav-links {
@@ -477,6 +478,42 @@ select.input {
   .site-header .menu-toggle span { width: 21px; height: 2px; background: var(--ink); }
 }
 
+@media (max-width: 768px) {
+  .site-header .nav-actions > .lang-btn,
+  .site-header .nav-actions > #themeToggleBtn,
+  .site-header .nav-actions > #openAccountBtn,
+  .site-header .nav-actions > .notification-bell { display: none; }
+  .site-header .nav-actions > #openCartBtn { display: flex; }
+  .site-header .nav { gap: 10px; }
+  .site-header .brand-logo { margin-right: auto; }
+  .mobile-drawer-controls {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 6px;
+    width: 100%;
+    padding: 12px 6%;
+    border-bottom: 1px solid var(--border);
+    background: var(--muslin);
+  }
+  .drawer-control {
+    min-height: 58px;
+    display: grid;
+    place-items: center;
+    gap: 4px;
+    padding: 6px 3px;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    background: var(--surface);
+    color: var(--ink);
+    font: inherit;
+    font-size: .66rem;
+    text-align: center;
+    text-decoration: none;
+  }
+  .drawer-control:hover { border-color: var(--brass); color: var(--maroon); }
+  .drawer-control svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.6; }
+}
+
 /* ==========================================================================
    Hero (homepage)
    ========================================================================== */
@@ -485,6 +522,8 @@ select.input {
 .hero-media img { width: 100%; height: 100%; object-fit: cover; object-position: center center; animation: kenBurns 22s ease-in-out infinite alternate; }
 .hero-scrim { position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(23,17,15,0.05) 60%, var(--muslin) 100%); pointer-events: none; }
 .hero-copy { position: absolute; z-index: 2; left: 9%; top: 50%; transform: translateY(-50%); max-width: 560px; color: #fff; text-shadow: 0 2px 20px rgba(0,0,0,.35); }
+.hero-banner-content, .hero-title, .hero-btn { position: relative; z-index: 10; }
+.hero-copy, .hero-copy h1, .hero-copy .hero-cta { position: relative; z-index: 10; }
 .hero-eyebrow { font-family: var(--font-mono); font-size: 10px; letter-spacing: 3px; margin: 0 0 14px; }
 .hero-copy h1 { color: #fff; font-family: var(--font-display); font-size: clamp(38px, 6vw, 82px); line-height: .98; margin: 0 0 13px; font-weight: 600; }
 .hero-copy p:not(.hero-eyebrow) { font-family: var(--font-display); font-size: clamp(18px, 2.4vw, 29px); margin: 0 0 25px; }
@@ -493,6 +532,9 @@ select.input {
 .hero-dots { position: absolute; z-index: 3; right: 8%; bottom: 28px; display: flex; gap: 8px; }
 .hero-dots button { width: 8px; height: 8px; padding: 0; border: 1px solid #fff; border-radius: 50%; background: transparent; cursor: pointer; opacity: .75; }
 .hero-dots button.active { background: #fff; opacity: 1; }
+.hero-dots, .hero-banner-dots, .banner-nav { z-index: 1; }
+.hero-dots { pointer-events: none; }
+.hero-dots button { pointer-events: auto; }
 .hero-media.banner-ready img { animation: kenBurns 22s ease-in-out infinite alternate; transition: opacity .35s ease; }
 .hero-scroll-cue {
   position: absolute; bottom: 22px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column;
@@ -1119,7 +1161,7 @@ html.card-sliders-hover-only { --card-slider-auto-mode: hover; }
    Floating WhatsApp button
    ========================================================================== */
 .fab-whatsapp {
-  position: fixed; bottom: 24px; left: 24px; z-index: 900; width: 56px; height: 56px; border-radius: 50%;
+  position: fixed; bottom: 20px; right: 20px; left: auto; z-index: 99; width: 56px; height: 56px; border-radius: 50%;
   background: var(--whatsapp); display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow-lg);
   animation: pulseRing 2.6s ease-out 1.4s 3; transition: transform var(--dur) var(--ease);
 }
@@ -1824,7 +1866,7 @@ body {
 .account-layout { display:grid; grid-template-columns:250px minmax(0,1fr); gap:24px; align-items:start; }
 .account-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; color:var(--ink); }
 .account-hub .account-sidebar { position:sticky; top:24px; padding:24px; }
-.account-avatar { width:62px; height:62px; display:grid; place-items:center; border-radius:50%; background:var(--maroon); color:#fff; font-size:1.45rem; font-weight:700; }
+.account-avatar { width:62px; height:62px; display:grid; place-items:center; border-radius:50%; background:#741C24; border:1px solid #B58A4A; color:#fff; font-size:1.45rem; font-weight:700; }
 .account-profile-heading { margin:16px 0 0; color:var(--ink); font-size:1.15rem; line-height:1.3; }
 .account-nav { display:grid; gap:5px; margin-top:22px; }
 .account-nav-btn { width:100%; min-height:44px; display:flex; align-items:center; gap:9px; text-align:left; padding:10px 12px; border:1px solid transparent; border-radius:8px; background:transparent; color:var(--ink); font:inherit; font-weight:600; line-height:1.35; cursor:pointer; transition:background .18s ease,color .18s ease,border-color .18s ease; }
@@ -1834,6 +1876,7 @@ body {
 .account-nav-icon { display:inline-grid; place-items:center; flex:0 0 20px; color:currentColor; }
 .account-nav-icon svg { width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round; }
 .account-badge { min-width:22px; height:22px; display:inline-grid; place-items:center; padding:0 6px; border-radius:999px; background:var(--maroon); color:#fff; font-size:.72rem; font-weight:700; }
+.account-nav-btn[data-tab="#notificationsPanel"] .account-badge { background:#B58A4A; color:#26150a; }
 .account-content { min-width:0; }
 .account-panel { display:none; padding:28px; box-shadow:var(--shadow-sm); }
 .account-panel.active { display:block; }
@@ -1856,6 +1899,8 @@ body {
 .account-btn-outline { background:transparent; border-color:#741C24; color:#741C24; }
 .account-btn-outline:hover { background:#741C24; color:#fff; }
 .account-logout { width:100%; margin-top:22px; }
+.account-logout { border-color:rgba(168,50,50,.38); color:#8F2929; }
+.account-logout:hover { background:rgba(168,50,50,.1); border-color:#A83232; color:#8F2929; }
 .account-message { min-height:22px; margin:8px 0 18px; font-weight:600; }
 .account-message.success { color:#287444; }
 .account-message.error { color:#A52B2B; }
@@ -1892,9 +1937,10 @@ body {
 .account-confirm-card h2 { margin-bottom:10px; }
 .account-confirm-actions { display:flex; justify-content:center; gap:10px; margin-top:22px; }
 .dark .account-nav-btn { color:#F5F1EC; }
-.dark .account-nav-btn.active { background:rgba(243,231,232,.1); color:#F5F1EC; }
+.dark .account-nav-btn.active { background:#741C24; border-color:#B58A4A; color:#fff; box-shadow:inset 0 0 14px rgba(181,138,74,.2); }
 .dark .account-card { background:#181619; border:1px solid #28242A; color:#F5F1EC; }
 .dark input,.dark select,.dark textarea { background:#211C19; color:#F5F1EC; border-color:#3A343A; }
+.dark .account-field input:focus,.dark .account-field select:focus,.dark .account-field textarea:focus { border-color:#B58A4A; box-shadow:0 0 0 3px rgba(181,138,74,.3); }
 .dark .account-panel h2,.dark .account-panel h3,.dark .account-field label { color:#F5F1EC; }
 .dark .account-panel p,.dark .account-muted,.dark .notification-card p,.dark .notification-card small { color:#C9C0BA; }
 .dark .account-btn-outline { color:#F5F1EC; border-color:#6B5E63; background:transparent; }
@@ -1905,6 +1951,8 @@ body {
 .dark .account-danger-card h3 { color:#E79A9A; }
 .dark .notification-card { border-color:#3A343A; background:#181619; }
 .dark .notification-card.unread { background:#211C19; }
+.dark .account-logout { color:#E7A2A2; border-color:rgba(231,162,162,.48); }
+.dark .account-logout:hover { background:rgba(168,50,50,.18); border-color:#C45A5A; color:#fff; }
 /* Account Hub is a document page, not the storefront's fixed account drawer. */
 .account-hub .account-sidebar {
   position: sticky; top: 24px; right: auto; bottom: auto; width: auto; height: auto;
@@ -1925,8 +1973,11 @@ html[data-theme='dark'] .brand-logo .logo-light { display:block; }
   .account-hub .account-shell { width:min(100% - 24px,680px); padding-top:20px; }
   .account-layout { grid-template-columns:1fr; }
   .account-hub .account-sidebar { position:sticky; top:8px; z-index:10; padding:14px; }
-  .account-hub .account-nav { grid-template-columns:repeat(2,minmax(0,1fr)); gap:3px; margin-top:12px; }
-  .account-hub .account-nav-btn { min-height:40px; padding:7px 8px; font-size:.76rem; }
+  .account-hub .account-nav { display:flex; overflow-x:auto; gap:8px; margin:14px -14px -14px; padding:0 14px 14px; scrollbar-width:none; }
+  .account-hub .account-nav::-webkit-scrollbar { display:none; }
+  .account-hub .account-nav-btn { flex:0 0 auto; width:auto; min-height:44px; padding:8px 12px; font-size:.76rem; white-space:nowrap; color:#F5F1EC; background:rgba(255,255,255,.05); border:1px solid rgba(216,206,195,.15); }
+  .account-hub .account-nav-btn.active { background:#741C24; border-color:#B58A4A; color:#fff; box-shadow:inset 0 0 14px rgba(181,138,74,.2); }
+  .account-hub .account-nav-icon svg { width:17px; height:17px; }
   .account-hub .account-logout { margin-top:10px; }
   .account-grid { grid-template-columns:1fr; }
   .account-panel { padding:18px; }

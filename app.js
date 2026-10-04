@@ -407,14 +407,16 @@ document.addEventListener('DOMContentLoaded', () => {
     if (document.readyState === 'complete') deferBanners();
     else window.addEventListener('load', deferBanners, { once: true });
     const langToggleBtn = document.getElementById('langToggleBtn');
-    if (langToggleBtn) {
-        langToggleBtn.addEventListener('click', () => {
+    const drawerLangToggleBtn = document.getElementById('drawerLangToggleBtn');
+    const toggleLanguage = () => {
             setLanguage(window.currentLang === 'en' ? 'bn' : 'en');
-        });
-    }
+    };
+    if (langToggleBtn) langToggleBtn.addEventListener('click', toggleLanguage);
+    if (drawerLangToggleBtn) drawerLangToggleBtn.addEventListener('click', toggleLanguage);
 
     // Theme toggle: manual switch between light/dark. Stores pref in localStorage.
     const themeToggleBtn = document.getElementById('themeToggleBtn');
+    const drawerThemeToggleBtn = document.getElementById('drawerThemeToggleBtn');
     function applyTheme(theme) {
         const themeIcon = theme === 'dark'
             ? '<span aria-hidden="true">&#9728;</span>'
@@ -432,16 +434,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const savedTheme = localStorage.getItem('theme') || localStorage.getItem('mohor_theme') || 'system';
     applyTheme(savedTheme);
 
-    if (themeToggleBtn) {
-        themeToggleBtn.addEventListener('click', () => {
+    const toggleTheme = () => {
             const cur = localStorage.getItem('theme') || localStorage.getItem('mohor_theme') || 'system';
             let next = 'dark';
             if (cur === 'system') next = 'dark';
             else if (cur === 'dark') next = 'light';
             else if (cur === 'light') next = 'system';
             applyTheme(next);
-        });
-    }
+    };
+    if (themeToggleBtn) themeToggleBtn.addEventListener('click', toggleTheme);
+    if (drawerThemeToggleBtn) drawerThemeToggleBtn.addEventListener('click', toggleTheme);
 });
 
 // ==========================================================================
