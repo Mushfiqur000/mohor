@@ -50,6 +50,9 @@ window.uiTranslations = {
         aboutEyebrow: "Est. in Sylhet",
         aboutTitle: "About Mohor Clothings",
         aboutText: "Welcome to Mohor Clothings, your premier destination for handcrafted luxury fashion in Bangladesh. From our breathable, premium soft cotton Three-Piece ensembles to our elegantly tailored Kurtis and authentic Khadi wear, every piece is designed with the modern woman in mind. Whether you are stepping into a university classroom, leading a corporate meeting, or celebrating a festive occasion, our collections offer the perfect fit. Proudly serving Sylhet and customers nationwide, we are dedicated to bringing you high-quality embroidery and timeless designs that empower your everyday wardrobe.",
+        "hero.eyebrow": "MOHOR CLOTHINGS", "hero.headline": "Timeless style, thoughtfully chosen.",
+        "hero.subtitle": "Handmade in Sylhet, in small batches — delivered anywhere in Bangladesh.",
+        "hero.shop_cta": "SHOP THE COLLECTION", "hero.story_cta": "OUR STORY",
         pillar1Title: "Handcrafted Detail", pillar1Text: "High-quality embroidery and finishing worked by hand into every piece.",
         pillar2Title: "Premium Fabric", pillar2Text: "Breathable, premium soft cotton and authentic khadi chosen for comfort.",
         pillar3Title: "Nationwide Delivery", pillar3Text: "Proudly serving Sylhet and shipping to customers all across Bangladesh.",
@@ -153,6 +156,9 @@ window.uiTranslations = {
         aboutEyebrow: "সিলেটে প্রতিষ্ঠিত",
         aboutTitle: "মোহর ক্লথিংস সম্পর্কে",
         aboutText: "মোহর ক্লথিংসে আপনাকে স্বাগতম — বাংলাদেশে হাতে তৈরি বিলাসবহুল ফ্যাশনের জন্য আপনার প্রধান গন্তব্য। আমাদের নিঃশ্বাসযোগ্য, প্রিমিয়াম সফট কটন থ্রি-পিস থেকে শুরু করে মার্জিতভাবে তৈরি কুর্তি এবং প্রকৃত খাদি পোশাক — প্রতিটি পিস আধুনিক নারীর কথা মাথায় রেখে ডিজাইন করা হয়েছে। আপনি বিশ্ববিদ্যালয়ের ক্লাসে যান, কর্পোরেট মিটিং পরিচালনা করুন বা উৎসব উদযাপন করুন — আমাদের কালেকশনে রয়েছে উপযুক্ত পোশাক। সিলেট ও সারা দেশের গ্রাহকদের সেবা দিতে পেরে আমরা গর্বিত, এবং উচ্চমানের এমব্রয়ডারি ও কালজয়ী ডিজাইন আপনার নিত্যদিনের পোশাকে যোগ করতে আমরা প্রতিশ্রুতিবদ্ধ।",
+        "hero.eyebrow": "মোহর ক্লথিংস", "hero.headline": "ভেবেচিন্তে বেছে নেওয়া চিরন্তন স্টাইল।",
+        "hero.subtitle": "সিলেটে হাতে তৈরি, ছোট ব্যাচে — বাংলাদেশের যেকোনো প্রান্তে পৌঁছে দিই।",
+        "hero.shop_cta": "কালেকশন দেখুন", "hero.story_cta": "আমাদের গল্প",
         pillar1Title: "হস্তনির্মিত বিবরণ", pillar1Text: "প্রতিটি পিসে হাতে করা উচ্চমানের এমব্রয়ডারি ও ফিনিশিং।",
         pillar2Title: "প্রিমিয়াম ফেব্রিক", pillar2Text: "আরামের জন্য বেছে নেওয়া নিঃশ্বাসযোগ্য প্রিমিয়াম সফট কটন ও প্রকৃত খাদি।",
         pillar3Title: "সারাদেশে ডেলিভারি", pillar3Text: "সিলেট ও সারা বাংলাদেশের গ্রাহকদের কাছে গর্বের সাথে পৌঁছে দিচ্ছি।",
@@ -407,16 +413,13 @@ document.addEventListener('DOMContentLoaded', () => {
     if (document.readyState === 'complete') deferBanners();
     else window.addEventListener('load', deferBanners, { once: true });
     const langToggleBtn = document.getElementById('langToggleBtn');
-    const drawerLangToggleBtn = document.getElementById('drawerLangToggleBtn');
     const toggleLanguage = () => {
             setLanguage(window.currentLang === 'en' ? 'bn' : 'en');
     };
     if (langToggleBtn) langToggleBtn.addEventListener('click', toggleLanguage);
-    if (drawerLangToggleBtn) drawerLangToggleBtn.addEventListener('click', toggleLanguage);
 
     // Theme toggle: manual switch between light/dark. Stores pref in localStorage.
     const themeToggleBtn = document.getElementById('themeToggleBtn');
-    const drawerThemeToggleBtn = document.getElementById('drawerThemeToggleBtn');
     function applyTheme(theme) {
         const themeIcon = theme === 'dark'
             ? '<span aria-hidden="true">&#9728;</span>'
@@ -443,7 +446,6 @@ document.addEventListener('DOMContentLoaded', () => {
             applyTheme(next);
     };
     if (themeToggleBtn) themeToggleBtn.addEventListener('click', toggleTheme);
-    if (drawerThemeToggleBtn) drawerThemeToggleBtn.addEventListener('click', toggleTheme);
 });
 
 // ==========================================================================

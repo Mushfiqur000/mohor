@@ -693,6 +693,70 @@
   .home .hero-media img { animation: none; }
 }
 
+/* Final editorial layout overrides. Keep the image open and let the content
+   sit in a readable, centered stage without competing controls or frames. */
+.home .hero-media {
+  min-height: 85vh;
+  max-height: none;
+  aspect-ratio: auto;
+}
+.home .hero-media img { height: 100%; object-fit: cover; }
+.home .hero-media::after { display: none; }
+.home .hero-scrim {
+  background: linear-gradient(180deg, rgba(33,28,25,.08) 18%, rgba(33,28,25,.62) 100%);
+}
+.home .hero-media.banner-ready .hero-scrim {
+  background: linear-gradient(180deg, rgba(33,28,25,.08) 18%, rgba(33,28,25,.64) 100%);
+}
+.home .hero-copy {
+  left: 50%;
+  right: auto;
+  top: 50%;
+  bottom: auto;
+  width: min(90%, 760px);
+  max-width: 760px;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  text-shadow: 0 2px 18px rgba(33,28,25,.5);
+}
+.home .hero-eyebrow { color: #B49A62; justify-content: center; }
+.home .hero-copy h1 { color: #FAF7F2; font-size: clamp(2.2rem, 5.2vw, 5rem); }
+.home .hero-copy p:not(.hero-eyebrow) { max-width: 48ch; margin-inline: auto; color: #FAF7F2; }
+.home .hero-copy .hero-actions { justify-content: center; }
+.home .hero-btn {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 1;
+  visibility: visible;
+  z-index: 25;
+  margin-top: 16px;
+}
+.home .hero-copy .hero-cta { background: #741C24; color: #FAF7F2; }
+.home .hero-copy .hero-cta:hover { background: #5d151c; color: #FAF7F2; }
+.home .hero-copy .hero-cta-secondary {
+  border-color: rgba(250,247,242,.72);
+  color: #FAF7F2;
+}
+.home .hero-copy .hero-cta-secondary:hover { background: rgba(250,247,242,.14); color: #FAF7F2; }
+.home .hero-dots, .home .hero-banner-dots, .home .banner-nav { display: none !important; }
+.home .assurance-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.home .product-card .card-media { aspect-ratio: 3 / 4; }
+
+@media (max-width: 760px) {
+  .home .hero-media { height: 70svh; min-height: 460px; }
+  .home .hero-copy { left: 50%; right: auto; top: 50%; bottom: auto; width: 90%; transform: translate(-50%, -50%); }
+  .home .hero-copy h1 { font-size: clamp(2rem, 9vw, 3.3rem); }
+  .home .hero-copy p:not(.hero-eyebrow) { font-size: .95rem; }
+  .home .hero-copy .hero-actions { width: 100%; }
+  .home .hero-copy .hero-btn { flex: 1 1 auto; padding-inline: 14px; }
+  .home .assurance-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .home .assurance-item { padding: 16px 8px; }
+  .home .assurance-item strong { font-size: .7rem; }
+  .home .assurance-item span { font-size: .62rem; }
+}
+
 /* --------------------------------------------------------------------------
    6. Assurance strip
    -------------------------------------------------------------------------- */
