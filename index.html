@@ -51,8 +51,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+Bengali:wght@400;600;700&family=Work+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=40">
-    <link rel="stylesheet" href="home.css?v=40">
+    <link rel="stylesheet" href="style.css?v=41">
+    <link rel="stylesheet" href="home.css?v=41">
 
     <!-- The banner is the largest paint on this page; fetch it alongside the CSS. -->
     <link rel="preload" as="image" href="assets/banner-1280.webp"
@@ -77,6 +77,12 @@
     </div>
 
     <header class="site-header" id="siteHeader">
+        <div class="mobile-utility-strip" aria-label="Quick controls">
+            <button type="button" id="langToggleBtn" class="lang-btn" aria-label="Switch language">E<span class="lang-sep">/</span>বাংলা</button>
+            <button type="button" id="themeToggleBtn" class="icon-btn" aria-label="Toggle theme">&#9790;</button>
+            <button type="button" id="openAccountBtn" class="icon-btn" aria-label="Account"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8-6 8 6"/></svg><span class="icon-btn-label" data-i18n="navAccount">Account</span></button>
+            <a href="/account/#notifications" class="icon-btn notification-bell" id="storeNotificationBell" aria-label="Messages and notifications"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg><span class="cart-badge" id="storeNotificationCount" hidden>0</span></a>
+        </div>
         <nav class="nav container" aria-label="Primary">
             <a href="./" class="brand-logo" aria-label="Mohor Clothings — Home">
                 <!-- Provide both logo variants and show/hide via CSS depending on theme -->
@@ -85,7 +91,7 @@
             </a>
 
             <div class="nav-links" id="navLinks">
-                <div class="mobile-drawer-controls" id="mobileDrawer" aria-label="Mobile account controls">
+                <div class="mobile-drawer-controls" id="mobileDrawer" aria-label="Mobile account controls" hidden>
                     <button type="button" id="drawerLangToggleBtn" class="drawer-control" aria-label="Switch language">
                         <span aria-hidden="true">E / বাং</span><span data-i18n="language">Language</span>
                     </button>
@@ -114,13 +120,13 @@
             </div>
 
             <div class="nav-actions">
-                <button type="button" id="langToggleBtn" class="lang-btn" aria-label="Switch language">E<span class="lang-sep">/</span>বাং</button>
-                <button type="button" id="themeToggleBtn" class="icon-btn" aria-label="Toggle theme">&#9790;</button>
-                <button type="button" id="openAccountBtn" class="icon-btn" aria-label="Account">
+                <button type="button" id="legacyLangToggleBtn" class="lang-btn" aria-label="Switch language">E<span class="lang-sep">/</span>বাং</button>
+                <button type="button" id="legacyThemeToggleBtn" class="icon-btn" aria-label="Toggle theme">&#9790;</button>
+                <button type="button" id="legacyOpenAccountBtn" class="icon-btn" aria-label="Account">
                     <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>
                     <span class="icon-btn-label" data-i18n="navAccount">Account</span>
                 </button>
-                <a href="/account/#notifications" class="icon-btn notification-bell" id="storeNotificationBell" aria-label="Messages and notifications">
+                <a href="/account/#notifications" class="icon-btn notification-bell" id="legacyStoreNotificationBell" aria-label="Messages and notifications">
                     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg><span class="cart-badge" id="storeNotificationCount" hidden>0</span>
                 </a>
                 <button type="button" id="openCartBtn" class="icon-btn" aria-label="Cart">
@@ -150,11 +156,11 @@
             <!-- Copy for live Cloudflare API banners only. The bundled fallback
                  banner already carries its own lockup, so nothing is drawn
                  over it — see the hero bar below instead. -->
-            <div class="hero-copy" id="heroBannerCopy" hidden>
+            <div class="hero-copy hero-banner-content" id="heroBannerCopy">
                 <p class="hero-eyebrow">MOHOR CLOTHINGS</p>
-                <h1 id="heroBannerTitle"></h1>
-                <p id="heroBannerSubtitle"></p>
-                <a id="heroBannerButton" class="hero-cta" href="#shop">SHOP NOW</a>
+                <h1 id="heroBannerTitle">New Collection</h1>
+                <p id="heroBannerSubtitle">Fresh Styles Just Dropped</p>
+                <a id="heroBannerButton" class="hero-cta hero-btn" href="#shop">SHOP NOW</a>
             </div>
 
             <div class="hero-dots" id="heroBannerDots" aria-label="Homepage banners"></div>
@@ -595,14 +601,14 @@
         </div>
     </footer>
 
-    <script defer data-cfasync="false" src="products.js?v=40"></script>
+    <script defer data-cfasync="false" src="products.js?v=41"></script>
         <script>
         window.MOHOR_TELEGRAM_ENDPOINT = "https://mohor-telegram.2022731073.workers.dev";
     </script>
-    <script defer data-cfasync="false" src="app.js?v=40"></script>
-    <script defer data-cfasync="false" src="cart.js?v=40"></script>
+    <script defer data-cfasync="false" src="app.js?v=41"></script>
+    <script defer data-cfasync="false" src="cart.js?v=41"></script>
 
-    <script defer data-cfasync="false" src="auth.js?v=40"></script>
+    <script defer data-cfasync="false" src="auth.js?v=41"></script>
 
     <!-- Meta Pixel Code (loaded after the first render) -->
     <script>

@@ -22,15 +22,15 @@
 // cached copies are dropped rather than lingering forever.
 // ==========================================================================
 
-const CACHE_VERSION = 'v40';
+const CACHE_VERSION = 'v41';
 const CACHE_NAME = `mohor-static-${CACHE_VERSION}`;
 
 const PRECACHE_URLS = [
-  '/style.css?v=40',
-  '/home.css?v=40',
-  '/products.js?v=40',
-  '/app.js?v=40',
-  '/cart.js?v=40',
+  '/style.css?v=41',
+  '/home.css?v=41',
+  '/products.js?v=41',
+  '/app.js?v=41',
+  '/cart.js?v=41',
   '/assets/logo-ink.png',
   '/assets/logo-white.png',
   '/assets/favicon-32.png',
