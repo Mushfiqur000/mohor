@@ -350,7 +350,7 @@
 .home .hero-scrim { background: none; }
 
 .home .hero-media.banner-ready .hero-scrim {
-  background: linear-gradient(180deg, rgba(20, 12, 10, 0.38) 0%, rgba(20, 12, 10, 0.7) 58%, rgba(20, 12, 10, 0.86) 100%);
+  background: linear-gradient(100deg, rgba(20, 12, 10, 0.78) 0%, rgba(20, 12, 10, 0.42) 38%, rgba(20, 12, 10, 0.05) 68%);
 }
 
 /* The signature detail: a brass hairline frame, like a woven selvedge. */
@@ -364,18 +364,12 @@
 }
 
 .home .hero-copy {
-  left: 50%;
-  right: auto;
-  top: 50%;
-  width: 90%;
+  left: clamp(24px, 8vw, 92px);
+  right: clamp(24px, 8vw, 92px);
   max-width: 620px;
-  transform: translate(-50%, -50%);
-  text-align: center;
   text-shadow: 0 2px 28px rgba(0, 0, 0, 0.45);
-  z-index: 10;
+  z-index: 3;
 }
-.home .hero-banner-content, .home .hero-title, .home .hero-btn { position: relative; z-index: 10; }
-.home .hero-copy, .home .hero-copy h1, .home .hero-copy .hero-cta { z-index: 10; }
 
 .home .hero-eyebrow {
   font-family: var(--font-mono);
@@ -386,7 +380,6 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  justify-content: center;
 }
 
 .home .hero-eyebrow::after {
@@ -413,7 +406,6 @@
   color: rgba(255, 255, 255, 0.9);
   margin: 0 0 26px;
 }
-.home .hero-btn { display:inline-flex; opacity:1; visibility:visible; z-index:25; margin-top:16px; min-height:44px; align-items:center; justify-content:center; }
 
 /* Hero bar: the call to action sits under the artwork instead of on top of
    it, so nothing competes with the brand lockup in the image. */
@@ -498,7 +490,7 @@
   right: auto;
   left: clamp(22px, 5vw, 44px);
   bottom: 30px;
-  display:none !important;
+  z-index: 4;
   gap: 7px;
 }
 
@@ -510,7 +502,6 @@
   background: rgba(255, 255, 255, 0.45);
   opacity: 1;
   cursor: pointer;
-  pointer-events: auto;
   transition: background var(--dur) var(--ease), width var(--dur) var(--ease);
 }
 
@@ -556,7 +547,7 @@
 
 @media (max-width: 600px) {
   .home .container { padding-inline: 18px; }
-  .home .hero-media { aspect-ratio:auto; height:70vh; min-height:460px; max-height:none; }
+  .home .hero-media { aspect-ratio: 3 / 2; }
   .home .hero-media::after { inset: 12px; }
   .home .hero-scroll-cue { display: none; }
   .home .hero-dots { left: 18px; bottom: 22px; }
@@ -564,10 +555,9 @@
   .home .hero-bar-copy { font-size: 1.02rem; }
   .home .hero-actions { width: 100%; }
   .home .hero-cta, .home .hero-cta-secondary { flex: 1 1 auto; justify-content: center; padding: 14px 18px; font-size: 0.72rem; }
-  .home .hero-copy { left:50%; right:auto; top:50%; width:90%; transform:translate(-50%, -50%); text-align:center; }
+  .home .hero-copy { left: 20px; right: 20px; }
   .home .hero-copy h1 { font-size: clamp(1.6rem, 7vw, 2.2rem); }
   .home .hero-copy p:not(.hero-eyebrow) { font-size: 0.9rem; margin-bottom: 18px; }
-  .home .hero-btn { display:inline-flex; opacity:1; visibility:visible; margin-top:16px; }
   .home .categories { padding-top: 52px; }
   .home .categories-head { margin-bottom: 18px; }
   .home .categories-head h2 { font-size: 1.7rem; }
@@ -691,70 +681,6 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .home .hero-media img { animation: none; }
-}
-
-/* Final editorial layout overrides. Keep the image open and let the content
-   sit in a readable, centered stage without competing controls or frames. */
-.home .hero-media {
-  min-height: 85vh;
-  max-height: none;
-  aspect-ratio: auto;
-}
-.home .hero-media img { height: 100%; object-fit: cover; }
-.home .hero-media::after { display: none; }
-.home .hero-scrim {
-  background: linear-gradient(180deg, rgba(33,28,25,.08) 18%, rgba(33,28,25,.62) 100%);
-}
-.home .hero-media.banner-ready .hero-scrim {
-  background: linear-gradient(180deg, rgba(33,28,25,.08) 18%, rgba(33,28,25,.64) 100%);
-}
-.home .hero-copy {
-  left: 50%;
-  right: auto;
-  top: 50%;
-  bottom: auto;
-  width: min(90%, 760px);
-  max-width: 760px;
-  transform: translate(-50%, -50%);
-  text-align: center;
-  text-shadow: 0 2px 18px rgba(33,28,25,.5);
-}
-.home .hero-eyebrow { color: #B49A62; justify-content: center; }
-.home .hero-copy h1 { color: #FAF7F2; font-size: clamp(2.2rem, 5.2vw, 5rem); }
-.home .hero-copy p:not(.hero-eyebrow) { max-width: 48ch; margin-inline: auto; color: #FAF7F2; }
-.home .hero-copy .hero-actions { justify-content: center; }
-.home .hero-btn {
-  min-height: 44px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 1;
-  visibility: visible;
-  z-index: 25;
-  margin-top: 16px;
-}
-.home .hero-copy .hero-cta { background: #741C24; color: #FAF7F2; }
-.home .hero-copy .hero-cta:hover { background: #5d151c; color: #FAF7F2; }
-.home .hero-copy .hero-cta-secondary {
-  border-color: rgba(250,247,242,.72);
-  color: #FAF7F2;
-}
-.home .hero-copy .hero-cta-secondary:hover { background: rgba(250,247,242,.14); color: #FAF7F2; }
-.home .hero-dots, .home .hero-banner-dots, .home .banner-nav { display: none !important; }
-.home .assurance-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-.home .product-card .card-media { aspect-ratio: 3 / 4; }
-
-@media (max-width: 760px) {
-  .home .hero-media { height: 70svh; min-height: 460px; }
-  .home .hero-copy { left: 50%; right: auto; top: 50%; bottom: auto; width: 90%; transform: translate(-50%, -50%); }
-  .home .hero-copy h1 { font-size: clamp(2rem, 9vw, 3.3rem); }
-  .home .hero-copy p:not(.hero-eyebrow) { font-size: .95rem; }
-  .home .hero-copy .hero-actions { width: 100%; }
-  .home .hero-copy .hero-btn { flex: 1 1 auto; padding-inline: 14px; }
-  .home .assurance-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .home .assurance-item { padding: 16px 8px; }
-  .home .assurance-item strong { font-size: .7rem; }
-  .home .assurance-item span { font-size: .62rem; }
 }
 
 /* --------------------------------------------------------------------------
@@ -1513,11 +1439,6 @@
    13. Drawers, WhatsApp button, small shared bits
    -------------------------------------------------------------------------- */
 .home .fab-whatsapp {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  left: auto;
-  z-index: 99;
   box-shadow: 0 14px 34px -12px rgba(37, 211, 102, 0.6);
   transition: transform var(--dur) var(--ease-out-back), box-shadow var(--dur) var(--ease);
 }

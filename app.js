@@ -50,9 +50,6 @@ window.uiTranslations = {
         aboutEyebrow: "Est. in Sylhet",
         aboutTitle: "About Mohor Clothings",
         aboutText: "Welcome to Mohor Clothings, your premier destination for handcrafted luxury fashion in Bangladesh. From our breathable, premium soft cotton Three-Piece ensembles to our elegantly tailored Kurtis and authentic Khadi wear, every piece is designed with the modern woman in mind. Whether you are stepping into a university classroom, leading a corporate meeting, or celebrating a festive occasion, our collections offer the perfect fit. Proudly serving Sylhet and customers nationwide, we are dedicated to bringing you high-quality embroidery and timeless designs that empower your everyday wardrobe.",
-        "hero.eyebrow": "MOHOR CLOTHINGS", "hero.headline": "Timeless style, thoughtfully chosen.",
-        "hero.subtitle": "Handmade in Sylhet, in small batches — delivered anywhere in Bangladesh.",
-        "hero.shop_cta": "SHOP THE COLLECTION", "hero.story_cta": "OUR STORY",
         pillar1Title: "Handcrafted Detail", pillar1Text: "High-quality embroidery and finishing worked by hand into every piece.",
         pillar2Title: "Premium Fabric", pillar2Text: "Breathable, premium soft cotton and authentic khadi chosen for comfort.",
         pillar3Title: "Nationwide Delivery", pillar3Text: "Proudly serving Sylhet and shipping to customers all across Bangladesh.",
@@ -156,9 +153,6 @@ window.uiTranslations = {
         aboutEyebrow: "সিলেটে প্রতিষ্ঠিত",
         aboutTitle: "মোহর ক্লথিংস সম্পর্কে",
         aboutText: "মোহর ক্লথিংসে আপনাকে স্বাগতম — বাংলাদেশে হাতে তৈরি বিলাসবহুল ফ্যাশনের জন্য আপনার প্রধান গন্তব্য। আমাদের নিঃশ্বাসযোগ্য, প্রিমিয়াম সফট কটন থ্রি-পিস থেকে শুরু করে মার্জিতভাবে তৈরি কুর্তি এবং প্রকৃত খাদি পোশাক — প্রতিটি পিস আধুনিক নারীর কথা মাথায় রেখে ডিজাইন করা হয়েছে। আপনি বিশ্ববিদ্যালয়ের ক্লাসে যান, কর্পোরেট মিটিং পরিচালনা করুন বা উৎসব উদযাপন করুন — আমাদের কালেকশনে রয়েছে উপযুক্ত পোশাক। সিলেট ও সারা দেশের গ্রাহকদের সেবা দিতে পেরে আমরা গর্বিত, এবং উচ্চমানের এমব্রয়ডারি ও কালজয়ী ডিজাইন আপনার নিত্যদিনের পোশাকে যোগ করতে আমরা প্রতিশ্রুতিবদ্ধ।",
-        "hero.eyebrow": "মোহর ক্লথিংস", "hero.headline": "ভেবেচিন্তে বেছে নেওয়া চিরন্তন স্টাইল।",
-        "hero.subtitle": "সিলেটে হাতে তৈরি, ছোট ব্যাচে — বাংলাদেশের যেকোনো প্রান্তে পৌঁছে দিই।",
-        "hero.shop_cta": "কালেকশন দেখুন", "hero.story_cta": "আমাদের গল্প",
         pillar1Title: "হস্তনির্মিত বিবরণ", pillar1Text: "প্রতিটি পিসে হাতে করা উচ্চমানের এমব্রয়ডারি ও ফিনিশিং।",
         pillar2Title: "প্রিমিয়াম ফেব্রিক", pillar2Text: "আরামের জন্য বেছে নেওয়া নিঃশ্বাসযোগ্য প্রিমিয়াম সফট কটন ও প্রকৃত খাদি।",
         pillar3Title: "সারাদেশে ডেলিভারি", pillar3Text: "সিলেট ও সারা বাংলাদেশের গ্রাহকদের কাছে গর্বের সাথে পৌঁছে দিচ্ছি।",
@@ -413,10 +407,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (document.readyState === 'complete') deferBanners();
     else window.addEventListener('load', deferBanners, { once: true });
     const langToggleBtn = document.getElementById('langToggleBtn');
-    const toggleLanguage = () => {
+    if (langToggleBtn) {
+        langToggleBtn.addEventListener('click', () => {
             setLanguage(window.currentLang === 'en' ? 'bn' : 'en');
-    };
-    if (langToggleBtn) langToggleBtn.addEventListener('click', toggleLanguage);
+        });
+    }
 
     // Theme toggle: manual switch between light/dark. Stores pref in localStorage.
     const themeToggleBtn = document.getElementById('themeToggleBtn');
@@ -437,15 +432,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const savedTheme = localStorage.getItem('theme') || localStorage.getItem('mohor_theme') || 'system';
     applyTheme(savedTheme);
 
-    const toggleTheme = () => {
+    if (themeToggleBtn) {
+        themeToggleBtn.addEventListener('click', () => {
             const cur = localStorage.getItem('theme') || localStorage.getItem('mohor_theme') || 'system';
             let next = 'dark';
             if (cur === 'system') next = 'dark';
             else if (cur === 'dark') next = 'light';
             else if (cur === 'light') next = 'system';
             applyTheme(next);
-    };
-    if (themeToggleBtn) themeToggleBtn.addEventListener('click', toggleTheme);
+        });
+    }
 });
 
 // ==========================================================================
@@ -852,7 +848,7 @@ window.loadStoreProducts = function() {
         // Serve the cached catalog immediately so the grid never has to sit on
         // a skeleton while a page that already fetched this data recently
         // waits on the network again.
-        window.apiProducts = sortProductsForDisplay(cached.products);
+        window.firestoreProducts = sortProductsForDisplay(cached.products);
         window._catalogPending = false;
     }
 
@@ -876,7 +872,7 @@ window.loadStoreProducts = function() {
                 }))
             );
             if (dynamicProducts.length > 0) {
-                window.apiProducts = dynamicProducts;
+                window.firestoreProducts = dynamicProducts;
                 writeProductsCache(dynamicProducts);
             }
         } catch (err) {
@@ -896,7 +892,7 @@ window.loadStoreProduct = async function(productId) {
     if (!productId) return null;
 
     await window.loadStoreProducts();
-    const catalog = Array.isArray(window.apiProducts) ? window.apiProducts : [];
+    const catalog = Array.isArray(window.firestoreProducts) ? window.firestoreProducts : [];
     const fromCatalog = catalog.find(product => String(product.id) === String(productId));
     if (fromCatalog) return fromCatalog;
 
@@ -1081,7 +1077,7 @@ function renderProducts(productsToRender) {
                 </div>
             `;
         } else {
-            mediaContentHtml = `<img ${catalogImageAttributes(productCoverImage(product), `${displayTitle} - Mohor Clothings Mohor Dress`, productIndex === 0 ? 'eager' : 'lazy')} ${productIndex === 0 ? 'fetchpriority="high"' : ''}>`;
+            mediaContentHtml = `<img ${catalogImageAttributes(productCoverImage(product), `${displayTitle} - Mohor Clothings Mohor Dress`, productIndex < 2 ? 'eager' : 'lazy')} ${productIndex === 0 ? 'fetchpriority="high"' : ''}>`;
         }
 
         if (viewMode === 'list') {
@@ -1189,7 +1185,7 @@ function initViewControls() {
 const origUpdateProducts = updateProducts;
 window.updateProducts = function() {
     origUpdateProducts();
-    window._lastRenderedProducts = (Array.isArray(window.apiProducts) && window.apiProducts.length>0) ? window.apiProducts : (window.productsData || []);
+    window._lastRenderedProducts = (Array.isArray(window.firestoreProducts) && window.firestoreProducts.length>0) ? window.firestoreProducts : (window.productsData || []);
 };
 
 document.addEventListener('DOMContentLoaded', () => { initViewControls(); });
@@ -1203,8 +1199,8 @@ function updateProducts() {
         return;
     }
 
-    let sourceData = (Array.isArray(window.apiProducts) && window.apiProducts.length > 0)
-        ? window.apiProducts
+    let sourceData = (Array.isArray(window.firestoreProducts) && window.firestoreProducts.length > 0)
+        ? window.firestoreProducts
         : (window.productsData || []);
 
     const sortSelect = document.getElementById('sortSelect');
@@ -1306,8 +1302,8 @@ function renderRelatedProducts(currentProduct) {
     if (!container) return;
 
     container.innerHTML = '';
-    let sourceData = (Array.isArray(window.apiProducts) && window.apiProducts.length > 0)
-        ? window.apiProducts
+    let sourceData = (Array.isArray(window.firestoreProducts) && window.firestoreProducts.length > 0)
+        ? window.firestoreProducts
         : (window.productsData || []);
 
     const allOtherProducts = sourceData.filter(p => String(p.id) !== String(currentProduct.id));

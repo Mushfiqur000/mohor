@@ -4,8 +4,8 @@ Storefront and admin dashboard for **Mohor Clothings** — handcrafted three-pie
 sets, kurtis, and khadi wear, based in Sylhet, Bangladesh. Live at
 [mohor.me](https://mohor.me).
 
-A static, framework-free site (HTML/CSS/vanilla JS) backed by Cloudflare
-(Workers + D1 API), deployed on GitHub Pages via the `CNAME` file. No build
+A static, framework-free site (HTML/CSS/vanilla JS) backed by Firebase
+(Firestore + Auth), deployed on GitHub Pages via the `CNAME` file. No build
 step — every file is served as-is.
 
 ## Structure
@@ -19,7 +19,7 @@ cart.html           Standalone checkout page
 login.html          Standalone login / signup page
 order.html          Single order detail / receipt view
 order-history.html  A signed-in customer's past orders
-order-success.html  Post-checkout confirmation (lightweight, no Cloudflare)
+order-success.html  Post-checkout confirmation (lightweight, no Firebase)
 wishlist.html       Saved items (device-local, via localStorage)
 admin.html          Admin dashboard (orders, products, inventory, stock,
                     storewide discounts, CSV export) — not linked from the
@@ -39,8 +39,8 @@ app.js          i18n (EN/BN), product catalog loading + rendering, cart/
                 tracking helper (trackMetaEvent)
 cart.js         Cart state, stock-aware add-to-cart, pricing verification,
                 WhatsApp + website checkout, order creation
-auth.js         Cloudflare Auth, saved profile, order history
-products.js     Static fallback product catalog (used only if Cloudflare API is
+auth.js         Firebase Auth, saved profile, order history
+products.js     Static fallback product catalog (used only if Firestore is
                 empty/unreachable) + the "related products" renderer
 wishlist.js     Wishlist page orchestrator (reuses app.js's renderProducts)
 sw.js           Service worker: cache-first for static assets, network-first
@@ -64,19 +64,34 @@ python3 -m http.server 8080
 
 then open `http://localhost:8080`.
 
-## Cloudflare
+## Firebase
 
-The storefront talks directly to the same-origin Cloudflare Worker API. The
-D1-backed endpoints serve products and banners, while Worker JWT endpoints
-handle registration, login, profiles, carts, orders, and notifications.
-Authentication only loads the local `auth.js` module after first render; there
-are no third-party database scripts or client-side database SDKs in the
-storefront.
+The storefront uses the Firebase **compat** SDK (loaded from the
+`gstatic.com` CDN) for:
+
+- **Firestore** — `products` collection (live catalog, managed from
+  `admin.html`), `orders` collection (placed from the storefront), and a
+  `settings/storefront` document driving the storewide sale banner.
+- **Auth** — email/password accounts, used to save a customer's name, phone
+  and address for faster repeat checkout, and to show their order history.
+
+Auth is loaded automatically shortly after each page settles (via
+`requestIdleCallback`, off the critical rendering path) rather than eagerly,
+except on `login.html` where it's the page's whole purpose, and `product.html`
+and `order-success.html`, which never need it at all.
+
+`admin.html` is a separate app and uses the **modular** Firebase SDK with its
+own auth/session handling — it does not share code with the storefront pages.
+
+The Firebase config object (API key, project ID, etc.) is intentionally
+public in the client code — this is normal for Firebase web apps. Actual
+access control is enforced through **Firestore Security Rules**, configured
+in the Firebase console, not in this repository.
 
 Order totals are recomputed from the live catalog before being saved (see
 `getCanonicalItemDetails` in `cart.js`), so a tampered client-side price can't
 be submitted directly. This is a client-side mitigation only — for a hard
-guarantee, validate totals again in Cloudflare API Security Rules or a Cloud
+guarantee, validate totals again in Firestore Security Rules or a Cloud
 Function. The same is true of per-size stock checks: they prevent obviously
 over-limit adds in the UI, but nothing server-side stops two customers from
 racing for the last unit — a Cloud Function or transaction would be needed
@@ -88,7 +103,7 @@ to close that gap completely.
 with a calendar/chart view, products, per-colour/per-size stock, storewide
 discounts, CSV export) for managing the store day-to-day. It isn't linked
 from the public nav — bookmark `/admin.html` directly, and sign in with a
-Cloudflare Auth account that your Cloudflare API rules grant admin access to.
+Firebase Auth account that your Firestore rules grant admin access to.
 
 ## Security note
 
@@ -132,6 +147,5 @@ The storefront supports English and Bengali via a client-side toggle
 (top-right of the nav), persisted in `localStorage` under `mohor_lang`. All
 UI strings live in `window.uiTranslations` in `app.js`; product content
 (title, description, etc.) can be a `{ en, bn }` object in
-Cloudflare API/`products.js` or a plain string.
+Firestore/`products.js` or a plain string.
 <!-- pages: rebuild trigger -->
-<!-- Build Status Sync v39.1 -->

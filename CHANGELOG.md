@@ -38,7 +38,7 @@ with something new.
   page's LCP element — switched to eager + `fetchpriority="high"`.
 - **`order.html`** permanently forced a dark theme regardless of the site's
   theme toggle, used a different font pairing than every other page, and
-  had an incomplete Cloudflare config (missing `storageBucket` /
+  had an incomplete Firebase config (missing `storageBucket` /
   `messagingSenderId` / `appId`). Rebuilt to match the shared design system.
 - **`about.html` and `policy.html`'s header logo never adapted for dark
   mode** (only `index.html`, `login.html`, `order.html`, and
@@ -71,7 +71,7 @@ with something new.
 ## Performance
 
 - **Script loading**: every page now defers `style.css`'s dependent scripts
-  (Cloudflare SDKs, `products.js`, `app.js`, `cart.js`) instead of blocking
+  (Firebase SDKs, `products.js`, `app.js`, `cart.js`) instead of blocking
   the parser, matching the pattern `index.html` had already pioneered.
 - **Auth loads off the critical path** on every page via
   `requestIdleCallback` (not gated behind a click a signed-in customer
@@ -82,7 +82,7 @@ with something new.
 - **Product catalog & promo-banner caching**: both are now cached in
   `sessionStorage` for a few minutes (stale-while-revalidate), so
   navigating between pages in the same session doesn't re-fetch the same
-  Cloudflare API data on every load.
+  Firestore data on every load.
 - **New service worker (`sw.js`)**: cache-first for static assets,
   network-first for HTML pages. GitHub Pages doesn't allow custom
   `Cache-Control` headers, so this is the main lever available for

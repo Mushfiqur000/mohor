@@ -1,7 +1,7 @@
 // ==========================================================================
 // MOHOR CLOTHINGS — products.js
 // Static fallback product catalog & recommendation engine helpers.
-// Used only when Cloudflare API is empty/unreachable. Keep structure compatible
+// Used only when Firestore is empty/unreachable. Keep structure compatible
 // with documents created from the Admin dashboard.
 // ==========================================================================
 
@@ -19,7 +19,7 @@ window.productsData = [
     sizes: ["S", "M", "L"],
     sizeQuantities: { S: 2, M: 4, L: 5 },
     sizeMeasurements: { M: { en: "Bust: 36in, Waist: 30in", bn: "বুক: 36in, কোমর: 30in" } },
-    description: { en: "A sample fallback product used when the catalog API is unavailable.", bn: "ক্যাটালগ API অনুপলভ্য হলে ব্যবহারের জন্য নমুনা পণ্য।" },
+    description: { en: "A sample fallback product used when Firestore is unavailable.", bn: "ফায়ারস্টোর অনুপলভ্য হলে ব্যবহারের জন্য নমুনা পণ্য।" },
     details: ["Hand-finished embroidery", "Machine-wash gentle"]
   },
   {
@@ -163,8 +163,8 @@ if (Array.isArray(window.productsData)) {
 window.getRelatedProducts = function(currentProduct, limit = 4) {
     if (!currentProduct) return [];
     
-    const catalog = (Array.isArray(window.apiProducts) && window.apiProducts.length > 0)
-        ? window.apiProducts
+    const catalog = (Array.isArray(window.firestoreProducts) && window.firestoreProducts.length > 0)
+        ? window.firestoreProducts
         : (window.productsData || []);
 
     if (!Array.isArray(catalog) || catalog.length === 0) return [];

@@ -23,7 +23,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Work+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+Bengali:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=42">
+    <link rel="stylesheet" href="style.css?v=30">
 <noscript><img height="1" width="1" style="display:none"
 src="https://www.facebook.com/tr?id=920711640501746&ev=PageView&noscript=1"
 /></noscript>
@@ -288,12 +288,35 @@ src="https://www.facebook.com/tr?id=920711640501746&ev=PageView&noscript=1"
         </div>
     </footer>
 
-    <script defer src="products.js?v=42"></script>
+    <!-- Firebase CDN SDKs -->
+    <!-- Firebase CDN SDKs -->
+    <script defer src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const firebaseConfig = {
+                apiKey: "AIzaSyALxypXDkF9QexbD_wE7-ADALIdj5vd-rY",
+                authDomain: "mohor-app.firebaseapp.com",
+                projectId: "mohor-app",
+                storageBucket: "mohor-app.firebasestorage.app",
+                messagingSenderId: "989000457004",
+                appId: "1:989000457004:web:5679b256e20d94e27daa89"
+            };
+            if (typeof firebase !== 'undefined' && !firebase.apps.length) {
+                firebase.initializeApp(firebaseConfig);
+            }
+            if (typeof firebase !== 'undefined') {
+                window.db = firebase.firestore();
+            }
+        });
+    </script>
+
+    <script defer src="products.js?v=30"></script>
         <script>
         window.MOHOR_TELEGRAM_ENDPOINT = "https://mohor-telegram.2022731073.workers.dev";
     </script>
-    <script defer src="app.js?v=42"></script>
-    <script defer src="cart.js?v=42"></script>
+    <script defer src="app.js?v=30"></script>
+    <script defer src="cart.js?v=33"></script>
 
     <script>
         (() => {
@@ -308,7 +331,8 @@ src="https://www.facebook.com/tr?id=920711640501746&ev=PageView&noscript=1"
             });
             window.loadMohorAuth = () => {
                 if (!authPromise) {
-                    authPromise = loadScript('auth.js?v=42', 'module');
+                    authPromise = loadScript('https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js')
+                        .then(() => loadScript('auth.js?v=30', 'module'));
                 }
                 return authPromise;
             };

@@ -4,8 +4,8 @@
     const empty = document.getElementById('wishlistEmpty');
     if (!grid || !empty) return;
     const ids = window.getWishlistIds ? window.getWishlistIds() : [];
-    const catalog = (Array.isArray(window.apiProducts) && window.apiProducts.length)
-      ? window.apiProducts
+    const catalog = (Array.isArray(window.firestoreProducts) && window.firestoreProducts.length)
+      ? window.firestoreProducts
       : (window.productsData || []);
     const saved = catalog.filter(product => ids.includes(String(product.id)));
     empty.hidden = saved.length > 0;

@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title data-i18n="accountPageTitle">Account Hub | Mohor Clothings</title>
-  <link rel="stylesheet" href="style.css?v=42">
+  <link rel="stylesheet" href="style.css?v=37">
 </head>
 <body class="account-hub">
   <main class="account-shell">
@@ -22,12 +22,12 @@
         <div class="account-avatar" id="avatar" aria-hidden="true">M</div>
         <h1 id="profileHeading" class="account-profile-heading" data-i18n="myAccount">My Account</h1>
         <nav class="account-nav" aria-label="Account">
-          <button type="button" class="account-nav-btn active" data-tab="#profilePanel"><span class="account-nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg></span><span data-i18n="profileInformation">Profile Information</span></button>
-          <button type="button" class="account-nav-btn" data-tab="#addressPanel"><span class="account-nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0z"/><circle cx="12" cy="10" r="2.5"/></svg></span><span data-i18n="addressBook">Address Book</span></button>
-          <button type="button" class="account-nav-btn" data-tab="#ordersPanel"><span class="account-nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 8h12l1 13H5L6 8z"/><path d="M9 8a3 3 0 0 1 6 0"/></svg></span><span data-i18n="myOrders">My Orders</span></button>
+          <button type="button" class="account-nav-btn active" data-tab="#profilePanel"><span data-i18n="profileInformation">Profile Information</span></button>
+          <button type="button" class="account-nav-btn" data-tab="#addressPanel"><span data-i18n="addressBook">Address Book</span></button>
+          <button type="button" class="account-nav-btn" data-tab="#ordersPanel"><span data-i18n="myOrders">My Orders</span></button>
           <button type="button" class="account-nav-btn" data-tab="#notificationsPanel"><span class="account-nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg></span><span data-i18n="messagesNav">Messages</span><span id="notificationBadge" class="account-badge" hidden>0</span></button>
-          <button type="button" class="account-nav-btn" data-tab="#settingsPanel"><span class="account-nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3l7 3v5c0 4.3-2.9 8.1-7 9.2C7.9 19.1 5 15.3 5 11V6z"/><path d="M9.5 12l1.6 1.6 3.5-3.5"/></svg></span><span data-i18n="preferencesSecurity">Preferences &amp; Security</span></button>
-          <button type="button" class="account-nav-btn" data-tab="#helpPanel"><span class="account-nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg></span><span data-i18n="helpPolicies">Help &amp; Policies</span></button>
+          <button type="button" class="account-nav-btn" data-tab="#settingsPanel"><span data-i18n="preferencesSecurity">Preferences &amp; Security</span></button>
+          <button type="button" class="account-nav-btn" data-tab="#helpPanel"><span data-i18n="helpPolicies">Help &amp; Policies</span></button>
         </nav>
         <button type="button" id="logout" class="account-btn account-btn-outline account-logout" data-i18n="logOut">Log Out</button>
       </aside>
@@ -172,7 +172,7 @@
     </div>
   </div>
 
-  <script defer src="app.js?v=42"></script>
-  <script defer src="account.js?v=42"></script>
+  <script src="app.js"></script>
+  <script src="account.js"></script>
 </body>
 </html>

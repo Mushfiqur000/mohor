@@ -12,7 +12,7 @@
 //   - HTML pages are network-first with a cache fallback: a visitor always
 //     gets the latest shell when online, but the page still loads from
 //     cache if the network is slow or unavailable.
-//   - Cloudflare/Cloudflare API, the Meta pixel/CAPI worker, Google Fonts, and any
+//   - Firebase/Firestore, the Meta pixel/CAPI worker, Google Fonts, and any
 //     other cross-origin request are left completely alone and always go
 //     straight to the network — caching those could serve stale product
 //     data, break auth, or interfere with tracking.
@@ -22,15 +22,15 @@
 // cached copies are dropped rather than lingering forever.
 // ==========================================================================
 
-const CACHE_VERSION = 'v42';
+const CACHE_VERSION = 'v31';
 const CACHE_NAME = `mohor-static-${CACHE_VERSION}`;
 
 const PRECACHE_URLS = [
-  '/style.css?v=42',
-  '/home.css?v=42',
-  '/products.js?v=42',
-  '/app.js?v=42',
-  '/cart.js?v=42',
+  '/style.css?v=30',
+  '/home.css?v=30',
+  '/products.js?v=30',
+  '/app.js?v=30',
+  '/cart.js?v=31',
   '/assets/logo-ink.png',
   '/assets/logo-white.png',
   '/assets/favicon-32.png',
@@ -78,7 +78,7 @@ self.addEventListener('fetch', (event) => {
 
   const url = new URL(request.url);
 
-  // Never touch cross-origin requests (Cloudflare, Cloudflare API, the Meta pixel
+  // Never touch cross-origin requests (Firebase, Firestore, the Meta pixel
   // and its CAPI worker, Google Fonts, WhatsApp, etc.) — always network.
   if (url.origin !== self.location.origin) return;
 
