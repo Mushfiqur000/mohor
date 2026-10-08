@@ -387,13 +387,16 @@ dialog.sheet.is-open::backdrop { opacity: 1; }
 
 .card { position: relative; display: flex; flex-direction: column; min-width: 0; }
 .card-media { position: relative; display: block; aspect-ratio: 3 / 4; overflow: hidden; border-radius: var(--radius); background: var(--paper-2); }
-.card-media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: opacity 0.4s, transform 0.8s var(--ease); }
-.card-alt { opacity: 0; }
-@media (hover: hover) {
-  .card:hover .card-alt { opacity: 1; }
-  .card:hover .card-media img:first-child { transform: scale(1.03); }
-}
-.card.is-soldout .card-media img { filter: grayscale(0.5); opacity: 0.75; }
+.card-media-link, .card-slides { display: block; width: 100%; height: 100%; }
+.card-slides { position: relative; }
+.card-media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.45s var(--ease), transform 0.8s var(--ease); }
+.card-media img.is-active { opacity: 1; }
+.card-media img.is-active { transform: scale(1.01); }
+.card-slider-dots { position: absolute; z-index: 2; left: 0; right: 0; bottom: 10px; display: flex; justify-content: center; gap: 5px; pointer-events: none; }
+.card-slider-dot { width: 7px; height: 7px; padding: 0; border: 1px solid rgb(255 255 255 / 0.8); border-radius: 50%; background: rgb(255 255 255 / 0.45); pointer-events: auto; }
+.card-slider-dot.is-active { background: var(--paper); transform: scale(1.2); }
+.card.is-soldout .card-media img { filter: grayscale(0.5); }
+.card.is-soldout .card-media img.is-active { opacity: 0.75; }
 .card-badges { position: absolute; left: 8px; top: 8px; display: flex; flex-direction: column; align-items: flex-start; gap: 4px; }
 .card-wish {
   position: absolute; right: 6px; top: 6px; display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%;
