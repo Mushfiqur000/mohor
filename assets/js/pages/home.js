@@ -2,7 +2,7 @@
 // trust row, sale strip, categories, featured + new arrivals, story, help.
 
 import { boot, CONTACT } from '/assets/js/core/layout.js';
-import { html, mount, $, safeUrl, responsiveImageUrl, responsiveImageSrcset, prefersReducedMotion } from '/assets/js/core/dom.js';
+import { html, mount, $, safeUrl, prefersReducedMotion } from '/assets/js/core/dom.js';
 import { t, extend, onLangChange, localized } from '/assets/js/core/i18n.js';
 import { api } from '/assets/js/core/api.js';
 import { loadProducts, loadSettings, pricing, inStock, imageOf, CATEGORIES } from '/assets/js/core/catalog.js';
@@ -76,9 +76,7 @@ function renderHero() {
   if (!src) return;
   // Drop the bundled srcset so the browser can't keep picking a fallback candidate.
   img.removeAttribute('srcset'); img.removeAttribute('sizes');
-  img.src = responsiveImageUrl(src, 1280);
-  img.srcset = responsiveImageSrcset(src, [800, 1280, 1920]);
-  img.sizes = '100vw';
+  img.src = src;
   img.alt = localized(b.title) || 'Mohor Clothings collection';
   img.style.objectPosition = /^\d{1,3}% \d{1,3}%$/.test(b.objectPosition || '') ? b.objectPosition : '50% 50%';
   const label = localized(b.buttonText) || t('shopNow');
@@ -227,16 +225,9 @@ function reveal() {
 
 renderIntro();
 renderCategories();
+loadBanners();
+loadSettings().then(s => { settings = s || {}; renderSale(); });
+loadCatalog();
 reveal();
-
-const deferHomepageWork = window.requestIdleCallback
-  ? (fn => window.requestIdleCallback(fn, { timeout: 2000 }))
-  : (fn => setTimeout(fn, 250));
-
-deferHomepageWork(() => {
-  loadBanners();
-  loadSettings().then(s => { settings = s || {}; renderSale(); });
-  loadCatalog();
-});
 
 onLangChange(() => { renderIntro(); renderHero(); renderCategories(); renderSale(); if (products.length) renderProducts(); });
