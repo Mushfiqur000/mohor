@@ -30,6 +30,11 @@
 .acc-head .display { margin-block: var(--s2); }
 .acc-avatar { flex: none; display: grid; place-items: center; width: 64px; height: 64px; border-radius: 50%; background: var(--maroon); color: var(--on-accent); font: 400 1.5rem/1 var(--font-display); border: 3px solid var(--brass-tint); }
 .acc-admin { margin-top: var(--s3); }
+.acc-notice { display: flex; align-items: center; gap: var(--s3); width: 100%; margin: var(--s4) 0; padding: var(--s3) var(--s4); text-align: left; color: var(--ink); background: var(--maroon-tint); border: 1px solid color-mix(in srgb, var(--maroon) 25%, transparent); border-radius: var(--radius); }
+.acc-notice > .icon { color: var(--maroon); flex: none; }
+.acc-notice span:nth-child(2) { display: grid; gap: 2px; flex: 1; }
+.acc-notice small { color: var(--ink-2); }
+.acc-notice-arrow { color: var(--maroon); font-size: var(--text-sm); }
 .acc-nav { position: sticky; top: var(--header-h); z-index: 5; padding-block: var(--s2); background: var(--paper); margin-bottom: var(--s4); }
 .acc-grid { display: grid; gap: var(--s4); padding-bottom: var(--s8); }
 .acc-grid > .panel { scroll-margin-top: calc(var(--header-h) + 64px); }

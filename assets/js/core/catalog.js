@@ -110,7 +110,7 @@ export const totalStock = p => {
 // ---- Display helpers ------------------------------------------------------
 
 export const titleOf = p => localized(p?.title) || 'Untitled';
-export const imageOf = (p, index = 0) => (index === 0 && p?.thumbnail) || p?.images?.[index] || p?.images?.[0] || '/assets/image-placeholder.svg';
+export const imageOf = (p, index = 0) => p?.images?.[index] || (index === 0 && p?.thumbnail) || p?.images?.[0] || p?.thumbnail || '/assets/image-placeholder.svg';
 export const productUrl = p => `/product?id=${encodeURIComponent(p.id)}`;
 
 export const CATEGORIES = [

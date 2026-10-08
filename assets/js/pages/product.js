@@ -57,7 +57,12 @@ const sel = { color: '', size: '', qty: 1, image: 0 };
 
 const plain = value => String(value ?? '').replace(/<br\s*\/?>/gi, '\n').replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim();
 const listOf = value => (Array.isArray(value) ? value : (localized(value) || value?.en || [])).filter(x => typeof x === 'string' && x.trim());
-const images = () => (product.images?.length ? product.images : [product.thumbnail || PLACEHOLDER]).map(src => safeUrl(src, PLACEHOLDER));
+const images = () => {
+  const list = Array.isArray(product.images) && product.images.length ? [...product.images] : [];
+  if (!list.length && product.thumbnail) list.push(product.thumbnail);
+  if (!list.length) list.push(PLACEHOLDER);
+  return list.map(src => safeUrl(src, PLACEHOLDER));
+};
 const sizes = () => (product.sizes?.length ? product.sizes : ['Standard']);
 const hasSizeChoice = () => !(sizes().length === 1 && sizes()[0] === 'Standard');
 const available = () => (sel.size ? stockFor(product, sel.size, sel.color) : 0);
@@ -213,6 +218,8 @@ function syncIndicators() {
 
 function bindGallery() {
   const track = $('#pdp-track');
+  if (!track) return;
+  track.scrollLeft = 0;
   let raf = 0;
   track.addEventListener('scroll', () => {
     cancelAnimationFrame(raf);
@@ -222,6 +229,16 @@ function bindGallery() {
     if (e.key === 'ArrowRight') { e.preventDefault(); scrollToImage(sel.image + 1); }
     if (e.key === 'ArrowLeft') { e.preventDefault(); scrollToImage(sel.image - 1); }
   });
+  let startX = null;
+  track.addEventListener('touchstart', e => {
+    startX = e.touches.length === 1 ? e.touches[0].clientX : null;
+  }, { passive: true });
+  track.addEventListener('touchend', e => {
+    if (startX === null || images().length < 2) return;
+    const delta = e.changedTouches[0].clientX - startX;
+    startX = null;
+    if (Math.abs(delta) > 45) scrollToImage(sel.image + (delta < 0 ? 1 : -1));
+  }, { passive: true });
   $$('img', root).forEach(img => img.addEventListener('error', () => { if (!img.src.endsWith(PLACEHOLDER)) img.src = PLACEHOLDER; }, { once: true }));
 }
 
