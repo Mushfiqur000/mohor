@@ -51,7 +51,7 @@ export function productCard(p, { eager = false } = {}) {
 /** Wires wishlist + quick-add buttons inside a grid. `getProducts` returns the current list. */
 export function bindCards(root, getProducts) {
   const sliders = new WeakMap();
-  const setupSlider = card => {
+  const setupSlider = (card, cardIndex = 0) => {
     if (sliders.has(card)) return;
     const track = card.querySelector('.card-slides');
     const slides = [...card.querySelectorAll('[data-slide]')];
@@ -59,6 +59,9 @@ export function bindCards(root, getProducts) {
     if (!track || slides.length < 2) return;
     let index = 0;
     let startX = null;
+    let startTimer = 0;
+    let slideTimer = 0;
+    let visible = true;
     const show = next => {
       index = (next + slides.length) % slides.length;
       slides.forEach((slide, i) => slide.classList.toggle('is-active', i === index));
@@ -67,20 +70,73 @@ export function bindCards(root, getProducts) {
         dot.setAttribute('aria-current', String(i === index));
       });
     };
-    const timer = window.setInterval(() => show(index + 1), 5000);
+    const stop = () => {
+      window.clearTimeout(startTimer);
+      window.clearInterval(slideTimer);
+      startTimer = 0;
+      slideTimer = 0;
+    };
+    const start = () => {
+      stop();
+      if (!visible || document.hidden) return;
+      // Stagger cards so a product grid does not animate as one large block.
+      const delay = 5000 + ((cardIndex % 4) * 1500);
+      startTimer = window.setTimeout(() => {
+        if (!visible || document.hidden) return;
+        show(index + 1);
+        slideTimer = window.setInterval(() => show(index + 1), 5000);
+      }, delay);
+    };
     track.addEventListener('touchstart', e => { startX = e.touches.length === 1 ? e.touches[0].clientX : null; }, { passive: true });
     track.addEventListener('touchend', e => {
       if (startX === null) return;
       const delta = e.changedTouches[0].clientX - startX;
       startX = null;
-      if (Math.abs(delta) > 40) show(index + (delta < 0 ? 1 : -1));
+      if (Math.abs(delta) > 40) {
+        show(index + (delta < 0 ? 1 : -1));
+        start();
+      }
     }, { passive: true });
-    dots.forEach(dot => dot.addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); show(Number(dot.dataset.sliderDot)); }));
-    sliders.set(card, timer);
+    dots.forEach(dot => dot.addEventListener('click', e => {
+      e.preventDefault();
+      e.stopPropagation();
+      show(Number(dot.dataset.sliderDot));
+      start();
+    }));
+    sliders.set(card, {
+      stop,
+      start,
+      setVisible(value) {
+        visible = value;
+        if (visible) start();
+        else stop();
+      },
+    });
+    start();
   };
-  const observe = new MutationObserver(() => root.querySelectorAll('[data-card-slider]').forEach(setupSlider));
+  const visibility = 'IntersectionObserver' in window ? new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      const slider = sliders.get(entry.target);
+      if (!slider) return;
+      slider.setVisible(entry.isIntersecting);
+    });
+  }, { threshold: 0.15 }) : null;
+  const observe = new MutationObserver(() => root.querySelectorAll('[data-card-slider]').forEach((card, i) => {
+    setupSlider(card, i);
+    visibility?.observe(card);
+  }));
   observe.observe(root, { childList: true, subtree: true });
-  root.querySelectorAll('[data-card-slider]').forEach(setupSlider);
+  root.querySelectorAll('[data-card-slider]').forEach((card, i) => {
+    setupSlider(card, i);
+    visibility?.observe(card);
+  });
+  document.addEventListener('visibilitychange', () => {
+    root.querySelectorAll('[data-card-slider]').forEach(card => {
+      const slider = sliders.get(card);
+      if (document.hidden) slider?.stop();
+      else slider?.start();
+    });
+  });
   on(root, 'click', '[data-wish]', (e, btn) => {
     e.preventDefault();
     const on = wish.toggle(btn.dataset.wish);
