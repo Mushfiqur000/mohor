@@ -4,8 +4,6 @@
    assets/css/pages/*.css and only use the tokens defined here.
    ========================================================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..700&family=Hind+Siliguri:wght@400;500;600&family=Work+Sans:wght@400;500;600&display=swap');
-
 :root {
   /* Palette — ivory paper, maroon ink, brass hardware */
   --paper: #faf6f0;
@@ -13,13 +11,14 @@
   --card: #fffdf9;
   --ink: #1f1915;
   --ink-2: #4a3f38;
-  --muted: #84776c;
+  --muted: #6d5f55;
   --line: #e6dccf;
   --line-strong: #d4c6b4;
   --maroon: #6b1e2e;
   --maroon-2: #8a2a3d;
   --maroon-tint: #f4e6e4;
   --brass: #a8834c;
+  --brass-text: #73521f;
   --brass-tint: #f1e7d6;
   --success: #2f6b4f;
   --danger: #b3261e;
@@ -57,16 +56,16 @@
 /* One dark theme: follows the system unless the visitor picked one. */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) {
-    --paper: #16110f; --paper-2: #1f1916; --card: #221b18; --ink: #f3ebe1; --ink-2: #d6cabd; --muted: #a39484;
+    --paper: #16110f; --paper-2: #1f1916; --card: #221b18; --ink: #f3ebe1; --ink-2: #d6cabd; --muted: #b0a194;
     --line: #362c27; --line-strong: #4a3d36; --maroon: #d98a97; --maroon-2: #e8a3ae; --maroon-tint: #3a2126;
-    --brass: #d0ac74; --brass-tint: #33281b; --on-accent: #1a1210; --overlay: rgb(0 0 0 / 0.6);
+    --brass: #d0ac74; --brass-text: #e2c085; --brass-tint: #33281b; --on-accent: #1a1210; --overlay: rgb(0 0 0 / 0.6);
     --shadow-2: 0 10px 40px rgb(0 0 0 / 0.5); color-scheme: dark;
   }
 }
 :root[data-theme='dark'] {
-  --paper: #16110f; --paper-2: #1f1916; --card: #221b18; --ink: #f3ebe1; --ink-2: #d6cabd; --muted: #a39484;
+  --paper: #16110f; --paper-2: #1f1916; --card: #221b18; --ink: #f3ebe1; --ink-2: #d6cabd; --muted: #b0a194;
   --line: #362c27; --line-strong: #4a3d36; --maroon: #d98a97; --maroon-2: #e8a3ae; --maroon-tint: #3a2126;
-  --brass: #d0ac74; --brass-tint: #33281b; --on-accent: #1a1210; --overlay: rgb(0 0 0 / 0.6);
+  --brass: #d0ac74; --brass-text: #e2c085; --brass-tint: #33281b; --on-accent: #1a1210; --overlay: rgb(0 0 0 / 0.6);
   --shadow-2: 0 10px 40px rgb(0 0 0 / 0.5); color-scheme: dark;
 }
 
@@ -109,7 +108,7 @@ ul { margin: 0; padding: 0; list-style: none; }
 .skip { position: fixed; left: 8px; top: -60px; z-index: 100; padding: 10px 14px; background: var(--ink); color: var(--paper); border-radius: var(--radius-sm); }
 .skip:focus { top: 8px; }
 
-.eyebrow { font: 600 var(--text-xs)/1 var(--font-body); letter-spacing: 0.16em; text-transform: uppercase; color: var(--brass); }
+.eyebrow { font: 600 var(--text-xs)/1 var(--font-body); letter-spacing: 0.16em; text-transform: uppercase; color: var(--brass-text); }
 :lang(bn) .eyebrow { letter-spacing: 0.02em; font-size: var(--text-sm); }
 .display { font-family: var(--font-display); font-size: var(--text-3xl); font-weight: 400; line-height: 1.02; letter-spacing: -0.025em; }
 .display em { font-style: italic; color: var(--maroon); font-weight: 300; }

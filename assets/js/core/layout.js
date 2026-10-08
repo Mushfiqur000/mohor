@@ -11,7 +11,7 @@ import { initAuth, session } from './auth.js';
 import * as bag from './cart.js';
 import { wishlist } from './wishlist.js';
 import { loadProducts, loadSettings, matches, titleOf, imageOf, productUrl, pricing, categoryLabel, CATEGORIES } from './catalog.js';
-import { track } from './analytics.js';
+import { track, trackPageView } from './analytics.js';
 
 export const CONTACT = {
   whatsapp: '8801330113027',
@@ -320,7 +320,7 @@ export async function boot({ page, chrome = true }) {
   if ('serviceWorker' in navigator && location.protocol === 'https:') {
     addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(() => {}));
   }
-  track('PageView');
+  trackPageView();
   const user = await initAuth();
   if (user) bag.syncOnLoad();
   return user;
