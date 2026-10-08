@@ -11,7 +11,7 @@ import { icon, skeletonCards, emptyState } from '/assets/js/core/ui.js';
 
 extend({
   en: {
-    homeEyebrow: 'Est. in Sylhet', homeTitleA: 'Stitched by hand,', homeTitleB: 'worn with pride.',
+    homeEyebrow: 'Est. in Sylhet', homeTitleA: 'Hand-finished in Sylhet,', homeTitleB: 'made with pride.',
     homeLede: 'Handmade in Sylhet, in small batches — delivered anywhere in Bangladesh.',
     homeShopCta: 'Shop the collection', homeStoryCta: 'Our story', shopNow: 'Shop now', bannerN: 'Show banner {n}',
     trustDelivery: 'Delivery across Bangladesh', trustDeliveryText: '৳70 inside Sylhet City, ৳140 outside',
@@ -32,7 +32,7 @@ extend({
     noProducts: 'New pieces are on their way', noProductsText: 'Check back soon, or message us on WhatsApp.',
   },
   bn: {
-    homeEyebrow: 'সিলেটে প্রতিষ্ঠিত', homeTitleA: 'হাতে সেলাই,', homeTitleB: 'গর্বে পরা।',
+    homeEyebrow: 'সিলেটে প্রতিষ্ঠিত', homeTitleA: 'সিলেটে হাতে তৈরি,', homeTitleB: 'গর্বের সঙ্গে পরুন।',
     homeLede: 'সিলেটে হাতে তৈরি, অল্প অল্প করে — বাংলাদেশের যেকোনো জায়গায় ডেলিভারি।',
     homeShopCta: 'কালেকশন দেখুন', homeStoryCta: 'আমাদের গল্প', shopNow: 'এখনই কিনুন', bannerN: 'ব্যানার {n} দেখুন',
     trustDelivery: 'সারা বাংলাদেশে ডেলিভারি', trustDeliveryText: 'সিলেট সিটিতে ৳৭০, বাইরে ৳১৪০',

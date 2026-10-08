@@ -5,7 +5,7 @@
 .pdp-gallery { position: relative; margin-inline: calc(var(--gutter) * -1); }
 @media (min-width: 900px) { .pdp-gallery { margin-inline: 0; position: sticky; top: calc(var(--header-h) + var(--s4)); display: grid; grid-template-columns: 80px minmax(0, 1fr); gap: var(--s3); } }
 .pdp-skel-media { aspect-ratio: 4 / 5; }
-.pdp-track { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; background: var(--paper-2); outline-offset: -2px; }
+.pdp-track { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; overscroll-behavior-x: contain; touch-action: pan-y; scrollbar-width: none; background: var(--paper-2); outline-offset: -2px; }
 .pdp-track::-webkit-scrollbar { display: none; }
 @media (min-width: 900px) { .pdp-track { grid-column: 2; border-radius: var(--radius); } }
 .pdp-slide { flex: 0 0 100%; scroll-snap-align: start; cursor: zoom-in; padding: 0; }

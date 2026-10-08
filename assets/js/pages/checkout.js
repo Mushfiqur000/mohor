@@ -16,6 +16,7 @@ extend({
     coInside: 'Inside Sylhet City', coOutside: 'Outside Sylhet', coNote: 'Note for us (optional)', coNotePh: 'Preferred call time, gift wrap…',
     coSignedAs: 'Signed in as {name}', coGuest: 'Checking out as a guest.', coSignInFaster: 'Sign in for faster checkout & order history',
     coSummary: 'Your order', coDelivery: 'Delivery', coDiscount: 'Discount', coTotal: 'Total', coFree: 'Free',
+    coDecrease: 'Decrease quantity', coIncrease: 'Increase quantity',
     coPolicy: 'I agree to the', coPolicyLink: 'delivery & return policy', coPolicyNote: 'Exchanges within 24 hours of delivery. Cash on delivery.',
     coPlace: 'Place order', coPlacing: 'Placing order…', coOr: 'or', coWhatsapp: 'Order via WhatsApp',
     coPay: 'Payment: Cash on delivery — pay the rider when it arrives.',
@@ -34,6 +35,7 @@ extend({
     coInside: 'সিলেট সিটির ভেতরে', coOutside: 'সিলেটের বাইরে', coNote: 'আমাদের জন্য নোট (ঐচ্ছিক)', coNotePh: 'কল করার সুবিধাজনক সময়, গিফট র‍্যাপ…',
     coSignedAs: '{name} হিসেবে সাইন ইন', coGuest: 'গেস্ট হিসেবে চেকআউট করছেন।', coSignInFaster: 'দ্রুত চেকআউট ও অর্ডার হিস্টোরির জন্য সাইন ইন করুন',
     coSummary: 'আপনার অর্ডার', coDelivery: 'ডেলিভারি', coDiscount: 'ছাড়', coTotal: 'মোট', coFree: 'ফ্রি',
+    coDecrease: 'পরিমাণ কমান', coIncrease: 'পরিমাণ বাড়ান',
     coPolicy: 'আমি সম্মত', coPolicyLink: 'ডেলিভারি ও রিটার্ন পলিসিতে', coPolicyNote: 'ডেলিভারির ২৪ ঘণ্টার মধ্যে এক্সচেঞ্জ। ক্যাশ অন ডেলিভারি।',
     coPlace: 'অর্ডার করুন', coPlacing: 'অর্ডার হচ্ছে…', coOr: 'অথবা', coWhatsapp: 'হোয়াটসঅ্যাপে অর্ডার করুন',
     coPay: 'পেমেন্ট: ক্যাশ অন ডেলিভারি — পার্সেল পেয়ে রাইডারকে দিন।',
@@ -114,9 +116,14 @@ function renderSummary() {
   if (!quoteData) { mount(el, html`<h2 class="panel-title">${t('coSummary')}</h2><div class="skeleton skeleton-line"></div><div class="skeleton skeleton-line short"></div><p class="sr-only">${t('coCheckingPrices')}</p>`); return; }
   const q = quoteData;
   mount(el, html`<h2 class="panel-title">${t('coSummary')}</h2>
-    <ul class="checkout-items">${q.items.map(i => html`<li>
+    <ul class="checkout-items">${q.items.map(i => html`<li data-checkout-line="${i.id}" data-size="${i.size}" data-color="${i.color}">
       <img src="${safeUrl(i.image, '/assets/image-placeholder.svg')}" alt="" width="48" height="64" loading="lazy">
-      <div><span class="bag-title">${titleOfItem(i)}</span><span class="bag-meta">${i.size !== 'Standard' ? i.size : ''}${i.color ? ` · ${i.color}` : ''} × ${number(i.qty)}</span></div>
+      <div><span class="bag-title">${titleOfItem(i)}</span><span class="bag-meta">${i.size !== 'Standard' ? i.size : ''}${i.color ? ` · ${i.color}` : ''}</span>
+        <div class="stepper checkout-stepper" role="group" aria-label="${t('qty')}">
+          <button type="button" data-checkout-step="-1" aria-label="${t('coDecrease')}" ${i.qty <= 1 ? 'disabled' : ''}>−</button>
+          <output>${number(i.qty)}</output>
+          <button type="button" data-checkout-step="1" aria-label="${t('coIncrease')}">+</button>
+        </div></div>
       <span class="price-now">${money(i.lineTotal)}</span></li>`)}</ul>
     <dl class="cart-totals">
       <div><dt>${t('cartSubtotal')}</dt><dd>${money(q.subtotal)}</dd></div>
@@ -238,6 +245,14 @@ function start() {
 on(root, 'submit', '#checkout-form', placeOrder);
 on(root, 'click', '#wa', () => whatsappOrder());
 on(root, 'click', '[data-requote]', () => requote());
+on(root, 'click', '[data-checkout-step]', async (e, button) => {
+  const line = button.closest('[data-checkout-line]');
+  if (!line) return;
+  const current = bag.cart.get().find(item => item.id === line.dataset.checkoutLine
+    && item.size === line.dataset.size && item.color === line.dataset.color);
+  if (!current) return;
+  await bag.setQty(current, current.qty + Number(button.dataset.checkoutStep));
+});
 on(root, 'change', 'input[name="zone"]', () => { readForm(); requote(); });
 on(root, 'input', 'input, textarea', debounce(() => { if ($('#checkout-form')) readForm(); }, 300));
 on(root, 'blur', 'input[name="phone"]', (e, el) => { const input = /** @type {HTMLInputElement} */ (el); if (isBdPhone(input.value)) input.value = normalizePhone(input.value); }, true);

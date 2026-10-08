@@ -137,6 +137,10 @@ function render() {
         ${u.role === 'admin' ? html`<a class="btn btn-ink btn-sm acc-admin" href="/admin">${icon('shield', 16)} ${t('acAdmin')}</a>` : ''}
       </div>
     </header>
+    ${unread ? html`<button class="acc-notice" type="button" data-scroll-notifications>
+      ${icon('bell', 22)} <span><b>${t('acUnread', { n: number(unread) })}</b><small>${notes.list.find(n => !n.is_read)?.title || t('acNotes')}</small></span>
+      <span class="acc-notice-arrow">${t('acOpen')}</span>
+    </button>` : ''}
     <nav class="chip-row acc-nav" aria-label="${t('acEyebrow')}">
       <a class="chip" href="#profile">${t('acNavProfile')}</a>
       <a class="chip" href="#notifications">${t('acNavNotes')}${unread ? html` <span class="badge badge-sale">${number(unread)}</span>` : ''}</a>
@@ -220,6 +224,7 @@ async function loadOrders() {
 const markRead = id => api.post('/api/notifications/mark-read', id ? { notificationId: id } : { markAll: true });
 
 on(root, 'click', '[data-reload]', (e, b) => (b.dataset.reload === 'notes' ? loadNotes() : loadOrders()));
+on(root, 'click', '[data-scroll-notifications]', () => $('#notifications')?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
 on(root, 'click', '[data-mark-all]', async (e, b) => {
   const restore = busy(b);
   try { await markRead(); notes.list = notes.list.map(n => ({ ...n, is_read: true })); render(); }
