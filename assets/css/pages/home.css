@@ -1,7 +1,8 @@
 /* Home — editorial hero, trust row, categories, rails. Tokens only. */
 .hero { position: relative; background: var(--paper-2); }
-.hero-media img { display: block; width: 100%; height: auto; aspect-ratio: 4 / 5; max-height: 78vh; object-fit: cover; }
-@media (min-width: 768px) { .hero-media img { aspect-ratio: 16 / 7; max-height: none; } }
+.hero-media img { display: block; width: 100%; height: auto; aspect-ratio: 1920 / 731; object-fit: cover; }
+.hero.has-banner .hero-media img { aspect-ratio: 4 / 5; max-height: 78vh; }
+@media (min-width: 768px) { .hero.has-banner .hero-media img { aspect-ratio: 16 / 7; } }
 .hero-copy { position: absolute; inset: auto 0 0; padding-block: var(--s6); color: #fffaf3;
   background: linear-gradient(to top, rgb(24 16 12 / 0.62), transparent); display: grid; gap: var(--s3); justify-items: start; }
 .hero-copy[hidden] { display: none; }

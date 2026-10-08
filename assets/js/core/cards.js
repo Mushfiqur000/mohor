@@ -1,6 +1,6 @@
 // Product card + quick-add sheet, shared by home, shop, wishlist and related.
 
-import { html, safeUrl, responsiveImageUrl, responsiveImageSrcset, on, mount } from './dom.js';
+import { html, safeUrl, on, mount } from './dom.js';
 import { t } from './i18n.js';
 import { money } from './format.js';
 import { pricing, inStock, titleOf, imageOf, productUrl, colorsOf, stockFor, categoryLabel, totalStock } from './catalog.js';
@@ -18,13 +18,12 @@ export function productCard(p, { eager = false } = {}) {
   const images = (Array.isArray(p.images) ? p.images : []).filter(Boolean);
   const slides = images.length ? images : [imageOf(p)];
   const colors = colorsOf(p).slice(0, 5);
-  const imageSizes = '(max-width: 639px) 46vw, (max-width: 1099px) 31vw, 300px';
   return html`
     <article class="card${available ? '' : ' is-soldout'}" data-id="${p.id}">
       <div class="card-media" data-card-slider>
         <a class="card-media-link" href="${productUrl(p)}" aria-label="${titleOf(p)}">
           <div class="card-slides">
-            ${slides.map((src, i) => html`<img class="card-slide${i === 0 ? ' is-active' : ''}" data-slide="${i}" ${i === 0 ? `src="${responsiveImageUrl(src, 480)}" srcset="${responsiveImageSrcset(src)}"` : `data-src="${responsiveImageUrl(src, 480)}" data-srcset="${responsiveImageSrcset(src)}"`} sizes="${imageSizes}" alt="" loading="${i === 0 && eager ? 'eager' : 'lazy'}" decoding="async" width="480" height="640">`)}
+            ${slides.map((src, i) => html`<img class="card-slide${i === 0 ? ' is-active' : ''}" data-slide="${i}" src="${safeUrl(src, '/assets/image-placeholder.svg')}" alt="" loading="${i === 0 && eager ? 'eager' : 'lazy'}" decoding="async" width="600" height="800">`)}
           </div>
         </a>
         ${slides.length > 1 ? html`<div class="card-slider-dots" aria-label="${titleOf(p)} images">
@@ -63,16 +62,8 @@ export function bindCards(root, getProducts) {
     let startTimer = 0;
     let slideTimer = 0;
     let visible = true;
-    const loadSlide = slide => {
-      if (!slide) return;
-      if (!slide.src && slide.dataset.src) slide.src = slide.dataset.src;
-      if (!slide.srcset && slide.dataset.srcset) slide.srcset = slide.dataset.srcset;
-      slide.removeAttribute('data-src');
-      slide.removeAttribute('data-srcset');
-    };
     const show = next => {
       index = (next + slides.length) % slides.length;
-      loadSlide(slides[index]);
       slides.forEach((slide, i) => slide.classList.toggle('is-active', i === index));
       dots.forEach((dot, i) => {
         dot.classList.toggle('is-active', i === index);
@@ -121,7 +112,6 @@ export function bindCards(root, getProducts) {
         else stop();
       },
     });
-    loadSlide(slides[0]);
     start();
   };
   const visibility = 'IntersectionObserver' in window ? new IntersectionObserver(entries => {

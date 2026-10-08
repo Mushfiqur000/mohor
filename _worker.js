@@ -1276,27 +1276,6 @@ route('POST', '/api/admin/upload', async c => {
   throw new HttpError(500, 'Image storage is not configured (bind an R2 bucket as IMAGES).');
 });
 
-// ---- Responsive image proxy ------------------------------------------------
-route('GET', '/api/image', async c => {
-  const source = String(c.url.searchParams.get('image') || '').trim();
-  const requestedWidth = Number(c.url.searchParams.get('width') || 480);
-  const allowedWidths = [320, 480, 640, 800, 960, 1280, 1920];
-  const width = allowedWidths.reduce((best, n) => Math.abs(n - requestedWidth) < Math.abs(best - requestedWidth) ? n : best, allowedWidths[0]);
-  let imageUrl;
-  try { imageUrl = new URL(source); } catch { throw new HttpError(400, 'Invalid image URL.'); }
-  if (imageUrl.protocol !== 'https:' || imageUrl.hostname !== 'images.mohor.me') throw new HttpError(403, 'Image source is not permitted.');
-  const originResponse = await fetch(new Request(imageUrl.href, {
-    method: 'GET',
-    headers: { Accept: c.request.headers.get('Accept') || 'image/avif,image/webp,image/*' },
-  }), { cf: { image: { fit: 'scale-down', width, format: 'auto', quality: 80 } } });
-  if (!originResponse.ok) throw new HttpError(originResponse.status || 502, 'Image could not be optimized.');
-  const headers = new Headers(originResponse.headers);
-  headers.set('Cache-Control', 'public, max-age=31536000, immutable');
-  headers.set('Vary', 'Accept');
-  headers.delete('set-cookie');
-  return new Response(originResponse.body, { status: originResponse.status, headers });
-});
-
 // ---- Analytics relay ------------------------------------------------------
 
 const BROWSER_EVENTS = new Set(['PageView', 'ViewContent', 'AddToCart', 'AddToWishlist', 'InitiateCheckout', 'Search', 'Contact']);
