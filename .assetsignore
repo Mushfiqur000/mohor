@@ -2,4 +2,8 @@ _worker.js
 wrangler.jsonc
 .git
 .gitignore
-functions/
+.github
+node_modules
+docs
+workers
+*.md

@@ -1,14 +1,9 @@
 User-agent: *
 Allow: /
-Disallow: /admin.html
-Disallow: /login/
-Disallow: /cart/
-Disallow: /order/
-Disallow: /order-history/
-Disallow: /order-success/
-Disallow: /wishlist/
-
-User-agent: Googlebot-Image
-Allow: /assets/
+Disallow: /admin
+Disallow: /api/
+Disallow: /account
+Disallow: /checkout
+Disallow: /order-success
 
 Sitemap: https://mohor.me/sitemap.xml

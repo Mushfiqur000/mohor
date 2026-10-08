@@ -1,61 +1,26 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Log in | Mohor Clothings</title>
-  <link rel="icon" href="assets/favicon-32.png">
-  <link rel="stylesheet" href="style.css?v=30">
-  <style>
-    .standalone-auth { min-height:100vh; display:grid; place-items:center; padding:32px 16px; background:var(--muslin); }
-    .auth-panel { width:min(100%, 430px); padding:40px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg); box-shadow:var(--shadow-lg); }
-    .auth-panel h1 { margin:24px 0 8px; text-align:center; }
-    .auth-panel p { color:var(--ink-muted); text-align:center; }
-    .auth-panel form { margin-top:24px; }
-    .auth-panel label { display:block; margin:14px 0 6px; color:var(--ink-muted); font-size:.82rem; }
-    .auth-panel input { width:100%; box-sizing:border-box; }
-    .auth-error { min-height:20px; color:var(--rust); font-size:.85rem; }
-    .auth-panel a { color:var(--maroon); font-weight:600; }
-    @media (max-width:480px) { .auth-panel { padding:28px 22px; } }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sign in — Mohor</title>
+<meta name="description" content="Sign in or create your Mohor Clothings account to track orders and save favourites.">
+<link rel="canonical" href="https://mohor.me/login">
+<meta property="og:type" content="website"><meta property="og:site_name" content="Mohor Clothings">
+<meta property="og:title" content="Sign in — Mohor"><meta property="og:description" content="Sign in or create your Mohor Clothings account to track orders and save favourites.">
+<meta property="og:url" content="https://mohor.me/login"><meta property="og:image" content="https://mohor.me/assets/og-image.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#FAF6F0">
+<link rel="icon" href="/assets/favicon-32.png"><link rel="apple-touch-icon" href="/assets/apple-touch-icon.png"><link rel="manifest" href="/manifest.webmanifest">
+<link rel="stylesheet" href="/assets/css/mohor.css"><link rel="stylesheet" href="/assets/css/pages/account.css">
 </head>
 <body>
-  <main class="standalone-auth">
-    <section class="auth-panel">
-      <a href="/" aria-label="Mohor home"><img src="assets/logo-ink.png" alt="Mohor Clothings" width="150"></a>
-      <h1>Welcome back</h1>
-      <p>Log in to manage your account and orders.</p>
-      <form id="loginForm">
-        <label for="email">Email</label>
-        <input class="input" id="email" type="email" autocomplete="email" required>
-        <label for="password">Password</label>
-        <input class="input" id="password" type="password" autocomplete="current-password" required>
-        <p class="auth-error" id="error" role="alert"></p>
-        <button class="btn btn-dark btn-block" type="submit">Log in</button>
-      </form>
-      <p>Don't have an account? <a href="/signup.html">Sign up</a></p>
-    </section>
-  </main>
-  <script>
-    document.getElementById('loginForm').addEventListener('submit', async event => {
-      event.preventDefault();
-      const error = document.getElementById('error');
-      const emailInput = document.getElementById('email');
-      const passwordInput = document.getElementById('password');
-      error.textContent = '';
-      try {
-        const response = await fetch('/api/auth/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email: emailInput.value.trim(), password: passwordInput.value })
-        });
-        const data = await response.json();
-        if (!response.ok) throw new Error(data.error || 'Unable to log in.');
-        localStorage.setItem('authToken', data.token);
-        localStorage.setItem('authUser', JSON.stringify(data.user));
-        window.location.href = '/account.html';
-      } catch (exception) { error.textContent = exception.message; }
-    });
-  </script>
+<div id="app-header"></div>
+<main id="main" tabindex="-1">
+<section class="wrap wrap-narrow auth-wrap"><div id="auth-root"><p class="muted">Loading…</p></div><noscript><p>Please enable JavaScript to sign in.</p></noscript></section>
+</main>
+<div id="app-footer"></div>
+<script type="module" src="/assets/js/pages/login.js"></script>
 </body>
 </html>

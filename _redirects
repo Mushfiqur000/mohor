@@ -1,0 +1,8 @@
+/index.html          /                 301
+/shipping            /policy           301
+/terms               /policy           301
+/signup              /login?mode=signup 302
+/signup.html         /login?mode=signup 302
+/order-history       /orders           301
+/order-history.html  /orders           301
+/order-history/      /orders           301
