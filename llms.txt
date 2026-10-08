@@ -1,8 +1,8 @@
-# MOHOR Clothings
+# Mohor Clothings
 
-MOHOR is a premium e-commerce apparel brand based in Sylhet, Bangladesh,
-specializing in hand-finished South Asian ethnic wear, including three-piece
-sets, kurtis, and khadi collections.
+> Heritage womenswear boutique from Sylhet, Bangladesh. Three-piece sets, kurtis, khadi and sarees. Cash on delivery across Bangladesh.
 
-- Website: https://mohor.me
-- Catalog: https://mohor.me/#shop
+- Shop: https://mohor.me/shop
+- Delivery: ৳70 inside Sylhet City, ৳140 outside. Cash on delivery.
+- Exchange: request within 24 hours of delivery. Policy: https://mohor.me/policy
+- Contact: WhatsApp / phone +8801330113027, https://www.facebook.com/mohor0000

@@ -1,177 +1,26 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title data-i18n="accountPageTitle">Account Hub | Mohor Clothings</title>
-  <link rel="stylesheet" href="style.css?v=37">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>My account — Mohor</title>
+<meta name="description" content="Manage your Mohor Clothings profile, notifications and orders.">
+<link rel="canonical" href="https://mohor.me/account">
+<meta property="og:type" content="website"><meta property="og:site_name" content="Mohor Clothings">
+<meta property="og:title" content="My account — Mohor"><meta property="og:description" content="Manage your Mohor Clothings profile, notifications and orders.">
+<meta property="og:url" content="https://mohor.me/account"><meta property="og:image" content="https://mohor.me/assets/og-image.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#FAF6F0">
+<link rel="icon" href="/assets/favicon-32.png"><link rel="apple-touch-icon" href="/assets/apple-touch-icon.png"><link rel="manifest" href="/manifest.webmanifest">
+<link rel="stylesheet" href="/assets/css/mohor.css"><link rel="stylesheet" href="/assets/css/pages/account.css">
 </head>
-<body class="account-hub">
-  <main class="account-shell">
-    <header class="account-topbar">
-      <a class="account-brand" href="/" data-i18n-aria="brandAlt">
-        <img src="assets/logo-ink.png" alt="Mohor Clothings" width="150" data-i18n-alt="brandAlt">
-      </a>
-      <a class="account-wishlist" href="/wishlist/" data-i18n="wishlist">Wishlist</a>
-    </header>
-    <div id="accountMessage" class="account-message" role="status" aria-live="polite"></div>
-
-    <div class="account-layout">
-      <aside class="account-card account-sidebar">
-        <div class="account-avatar" id="avatar" aria-hidden="true">M</div>
-        <h1 id="profileHeading" class="account-profile-heading" data-i18n="myAccount">My Account</h1>
-        <nav class="account-nav" aria-label="Account">
-          <button type="button" class="account-nav-btn active" data-tab="#profilePanel"><span data-i18n="profileInformation">Profile Information</span></button>
-          <button type="button" class="account-nav-btn" data-tab="#addressPanel"><span data-i18n="addressBook">Address Book</span></button>
-          <button type="button" class="account-nav-btn" data-tab="#ordersPanel"><span data-i18n="myOrders">My Orders</span></button>
-          <button type="button" class="account-nav-btn" data-tab="#notificationsPanel"><span class="account-nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg></span><span data-i18n="messagesNav">Messages</span><span id="notificationBadge" class="account-badge" hidden>0</span></button>
-          <button type="button" class="account-nav-btn" data-tab="#settingsPanel"><span data-i18n="preferencesSecurity">Preferences &amp; Security</span></button>
-          <button type="button" class="account-nav-btn" data-tab="#helpPanel"><span data-i18n="helpPolicies">Help &amp; Policies</span></button>
-        </nav>
-        <button type="button" id="logout" class="account-btn account-btn-outline account-logout" data-i18n="logOut">Log Out</button>
-      </aside>
-
-      <section class="account-content">
-        <article id="profilePanel" class="account-card account-panel active">
-          <h2 data-i18n="personalInformation">Personal Information</h2>
-          <form id="profileForm" novalidate>
-            <div class="account-field">
-              <label for="email" data-i18n="emailVerified">Email (verified)</label>
-              <input id="email" type="email" autocomplete="email" readonly>
-            </div>
-            <div class="account-grid">
-              <div class="account-field">
-                <label for="name" data-i18n="fullName">Full Name</label>
-                <input id="name" type="text" autocomplete="name" required maxlength="100">
-              </div>
-              <div class="account-field">
-                <label for="gender" data-i18n="gender">Gender</label>
-                <select id="gender" autocomplete="sex">
-                  <option value="" data-i18n="select">Select</option>
-                  <option value="Female" data-i18n="female">Female</option>
-                  <option value="Male" data-i18n="male">Male</option>
-                  <option value="Other" data-i18n="other">Other</option>
-                </select>
-              </div>
-              <div class="account-field">
-                <label for="phone" data-i18n="mobilePhone">Mobile Phone Number</label>
-                <input id="phone" type="tel" autocomplete="tel" inputmode="tel">
-              </div>
-              <div class="account-field">
-                <label for="dob" data-i18n="dobOptional">Date of Birth (optional)</label>
-                <input id="dob" type="date" autocomplete="bday">
-              </div>
-            </div>
-            <div class="account-field">
-              <label for="address" data-i18n="defaultDeliveryAddress">Default Delivery Address</label>
-              <textarea id="address" rows="4" autocomplete="street-address"></textarea>
-            </div>
-            <button type="submit" class="account-btn account-btn-primary" data-i18n="saveProfile">Save Profile</button>
-          </form>
-        </article>
-
-        <article id="addressPanel" class="account-card account-panel">
-          <h2 data-i18n="addressBook">Address Book</h2>
-          <p data-i18n="addressBookDescription">Your default address is saved with your profile and automatically used at checkout.</p>
-          <div class="account-field">
-            <label for="addressCopy" data-i18n="defaultDeliveryAddressDetail">Default Delivery Address (street, thana, district/zone)</label>
-            <textarea id="addressCopy" rows="5"></textarea>
-          </div>
-          <button type="button" id="saveAddress" class="account-btn account-btn-primary" data-i18n="saveAddress">Save Address</button>
-        </article>
-
-        <article id="ordersPanel" class="account-card account-panel">
-          <h2 data-i18n="myOrders">My Orders</h2>
-          <div id="orders" class="account-order-list"><p class="account-muted" data-i18n="loadingOrders">Loading orders…</p></div>
-        </article>
-
-        <article id="notificationsPanel" class="account-card account-panel">
-          <div class="account-panel-head">
-            <h2 data-i18n="messagesNotifications">Messages &amp; Notifications</h2>
-            <button type="button" id="markAllNotifications" class="account-btn account-btn-outline" data-i18n="markAllAsRead">Mark all as read</button>
-          </div>
-          <div id="notifications"><p class="account-muted" data-i18n="loadingMessages">Loading messages…</p></div>
-        </article>
-
-        <article id="settingsPanel" class="account-card account-panel">
-          <h2 data-i18n="preferencesSecurityTitle">Preferences &amp; Security</h2>
-          <div class="account-field">
-            <label for="theme" data-i18n="theme">Theme</label>
-            <select id="theme">
-              <option value="light" data-i18n="light">Light ☀️</option>
-              <option value="dark" data-i18n="dark">Dark 🌙</option>
-              <option value="system" data-i18n="systemDefault">System Default 💻</option>
-            </select>
-          </div>
-          <div class="account-field">
-            <label for="language" data-i18n="language">Language</label>
-            <select id="language">
-              <option value="en" data-i18n="english">English</option>
-              <option value="bn" data-i18n="bangla">Bangla</option>
-            </select>
-          </div>
-
-          <section class="account-security-section">
-            <h3 data-i18n="changePassword">Change Password</h3>
-            <form id="passwordForm">
-              <div class="account-field">
-                <label for="currentPassword" data-i18n="currentPassword">Current Password</label>
-                <input id="currentPassword" type="password" autocomplete="current-password" data-i18n-placeholder="currentPassword" placeholder="Current Password" required>
-              </div>
-              <div class="account-field">
-                <label for="newPassword" data-i18n="newPassword8">New Password (8+ characters)</label>
-                <input id="newPassword" type="password" minlength="8" autocomplete="new-password" data-i18n-placeholder="newPassword8" placeholder="New Password (8+ characters)" required>
-              </div>
-              <div class="account-field">
-                <label for="confirmPassword" data-i18n="confirmPassword">Confirm Password</label>
-                <input id="confirmPassword" type="password" autocomplete="new-password" data-i18n-placeholder="confirmPassword" placeholder="Confirm Password" required>
-              </div>
-              <button type="submit" class="account-btn account-password-btn" data-i18n="changePasswordBtn">Change Password</button>
-            </form>
-          </section>
-
-          <section class="account-danger-card">
-            <div>
-              <h3 data-i18n="dangerZone">Danger Zone</h3>
-              <p data-i18n="dangerDescription">Deleting your account signs you out and removes your customer account. This action cannot be undone.</p>
-            </div>
-            <button type="button" id="deleteAccount" class="account-btn account-danger-btn" data-i18n="deleteMyAccount">Delete My Account</button>
-          </section>
-        </article>
-
-        <article id="helpPanel" class="account-card account-panel">
-          <h2 data-i18n="helpPoliciesTitle">Help &amp; Policies</h2>
-          <div class="account-help-links">
-            <a class="account-btn account-btn-primary" href="https://wa.me/8801330113027" target="_blank" rel="noopener" data-i18n="whatsappSupport">WhatsApp Support: +880 1330-113027</a>
-            <a href="/policy/" data-i18n="exchangePolicy">Exchange Policy</a>
-            <a href="/shipping/" data-i18n="shippingInformation">Shipping Information</a>
-            <a href="/terms/" data-i18n="termsConditions">Terms &amp; Conditions</a>
-          </div>
-        </article>
-      </section>
-    </div>
-  </main>
-
-  <div id="orderModal" class="account-modal" hidden role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-    <div class="account-modal-card">
-      <button type="button" id="closeModal" class="account-modal-close account-btn account-btn-outline" data-i18n="close">Close</button>
-      <div id="modalContent"></div>
-    </div>
-  </div>
-
-  <div id="deleteModal" class="account-modal" hidden role="dialog" aria-modal="true" aria-labelledby="deleteModalTitle">
-    <div class="account-modal-card account-confirm-card">
-      <div class="account-confirm-icon" aria-hidden="true">!</div>
-      <h2 id="deleteModalTitle" data-i18n="confirmDeleteTitle">Delete your account?</h2>
-      <p id="deleteModalText" data-i18n="confirmDeleteText">This permanently deletes your customer account. You will be signed out immediately.</p>
-      <div class="account-confirm-actions">
-        <button type="button" id="cancelDeleteModal" class="account-btn account-btn-outline" data-i18n="cancel">Cancel</button>
-        <button type="button" id="confirmDeleteModal" class="account-btn account-danger-btn" data-i18n="confirmDelete">Delete Account</button>
-      </div>
-    </div>
-  </div>
-
-  <script src="app.js"></script>
-  <script src="account.js"></script>
+<body>
+<div id="app-header"></div>
+<main id="main" tabindex="-1">
+<section class="wrap"><div id="account-root" aria-busy="true"><div class="skeleton acc-skel"></div><div class="skeleton acc-skel"></div></div></section>
+</main>
+<div id="app-footer"></div>
+<script type="module" src="/assets/js/pages/account.js"></script>
 </body>
 </html>

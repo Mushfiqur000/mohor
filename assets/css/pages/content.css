@@ -1,0 +1,67 @@
+/* About, policy, wishlist and 404 */
+.prose > * + * { margin-top: var(--s4); }
+.prose p, .prose li { color: var(--ink-2); line-height: 1.7; }
+.prose ul { padding-left: 1.2em; list-style: disc; }
+.prose ul li + li { margin-top: var(--s2); }
+.prose .h3 { margin-top: var(--s5); }
+
+/* About */
+.about-hero { padding-block: var(--s7) var(--s5); }
+.about-hero .display { margin-block: var(--s3) var(--s4); }
+.about-banner { margin-block: 0; }
+.about-banner img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: var(--radius-lg); border: 1px solid var(--line); }
+.values { display: grid; gap: var(--s4); }
+.value { padding: var(--s5); border-top: 1px solid var(--brass); background: var(--card); border-radius: 0 0 var(--radius) var(--radius); }
+.value-num { font: italic 300 var(--text-xl)/1 var(--font-display); color: var(--brass); }
+.value .h3 { margin-block: var(--s3) var(--s2); }
+.value p { color: var(--ink-2); font-size: var(--text-sm); }
+.craft-steps { display: grid; gap: var(--s4); counter-reset: step; }
+.craft-steps li { counter-increment: step; display: grid; gap: 4px; padding-left: 48px; position: relative; }
+.craft-steps li::before { content: counter(step); position: absolute; left: 0; top: 0; width: 34px; height: 34px; display: grid; place-items: center; border: 1px solid var(--brass); border-radius: 50%; font: italic 400 var(--text-md)/1 var(--font-display); color: var(--maroon); }
+.craft-steps b { color: var(--ink); font-weight: 600; }
+.contact-block { display: grid; gap: var(--s5); }
+.contact-block .h2 { margin-block: var(--s2); }
+.contact-actions { display: flex; flex-wrap: wrap; gap: var(--s2); }
+.social { display: flex; gap: var(--s5); }
+.social a { min-height: 44px; display: inline-flex; align-items: center; }
+.about-cta { margin-top: var(--s6); }
+@media (min-width: 900px) {
+  .values { grid-template-columns: repeat(4, 1fr); }
+  .contact-block { grid-template-columns: 1.2fr 1fr; align-items: center; }
+  .social { grid-column: 1 / -1; }
+}
+
+/* Policy */
+.policy-layout { display: grid; gap: var(--s5); padding-bottom: var(--s8); }
+.policy-index { position: sticky; top: var(--header-h); z-index: 5; background: var(--paper); padding-block: var(--s2); border-bottom: 1px solid var(--line); }
+.policy-chips { list-style: none; padding: 0; }
+.policy-sec { scroll-margin-top: calc(var(--header-h) + 72px); padding-bottom: var(--s6); border-bottom: 1px solid var(--line); }
+.policy-sec + .policy-sec { padding-top: var(--s4); }
+.rate-cards { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s3); }
+.rate { padding: var(--s4); border: 1px solid var(--line); border-radius: var(--radius); background: var(--card); }
+.rate-fee { font: 400 var(--text-2xl)/1.1 var(--font-display); color: var(--maroon) !important; margin-block: var(--s2); }
+.policy-help { margin-top: var(--s5); }
+@media (min-width: 900px) {
+  .policy-layout { grid-template-columns: 220px minmax(0, 720px); gap: var(--s7); }
+  .policy-index { top: calc(var(--header-h) + var(--s5)); align-self: start; border: 0; background: none; }
+  .policy-chips { flex-direction: column; overflow: visible; }
+  .policy-chips .chip { border-color: transparent; background: none; width: 100%; justify-content: flex-start; }
+  .policy-chips .chip.is-on { background: var(--paper-2); color: var(--maroon); border-color: var(--line); }
+}
+
+/* Wishlist */
+.wl-actions { display: grid; gap: var(--s3); margin-bottom: var(--s5); }
+.wl-actions:empty { display: none; }
+.wl-buttons { display: flex; flex-wrap: wrap; gap: var(--s2); }
+.wl-item { display: grid; gap: var(--s2); align-content: start; }
+.wl-item-actions { display: flex; gap: var(--s2); align-items: center; }
+.wl-item-actions .btn-primary { flex: 1; }
+.wl-item .card-add { display: none; }
+#wl-grid { padding-bottom: var(--s8); }
+@media (min-width: 640px) { #wl-grid.grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (min-width: 1100px) { #wl-grid.grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+
+/* 404 */
+.nf { padding-block: var(--s8); text-align: center; display: grid; justify-items: center; gap: var(--s4); }
+.nf-code { font: italic 300 clamp(4rem, 3rem + 6vw, 7rem)/1 var(--font-display); letter-spacing: 0; text-transform: none; color: var(--brass); }
+.nf-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--s2); margin-top: var(--s3); }

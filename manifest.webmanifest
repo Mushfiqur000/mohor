@@ -1,16 +1,20 @@
 {
   "name": "Mohor Clothings",
   "short_name": "Mohor",
-  "description": "Handcrafted three-piece sets, kurtis, and khadi wear from Sylhet, Bangladesh.",
-  "start_url": "/",
-  "id": "/",
+  "description": "Heritage womenswear from Sylhet — three-piece, kurti, khadi and saree.",
+  "start_url": "/?source=pwa",
+  "scope": "/",
   "display": "standalone",
-  "background_color": "#F5F1EC",
-  "theme_color": "#8B0000",
+  "background_color": "#FAF6F0",
+  "theme_color": "#6B1E2E",
   "lang": "en",
   "icons": [
     { "src": "/assets/favicon-192.png", "sizes": "192x192", "type": "image/png" },
-    { "src": "/assets/favicon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
-    { "src": "/assets/apple-touch-icon.png", "sizes": "180x180", "type": "image/png" }
+    { "src": "/assets/favicon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/assets/favicon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Shop", "url": "/shop" },
+    { "name": "My orders", "url": "/orders" }
   ]
 }

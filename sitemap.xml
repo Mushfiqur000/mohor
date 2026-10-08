@@ -1,51 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
-  <url>
-    <loc>https://mohor.me/</loc>
-    <lastmod>2026-09-20</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>1.0</priority>
-    <image:image>
-      <image:loc>https://mohor.me/assets/banner-1920.webp</image:loc>
-      <image:title>Mohor Clothings handcrafted fashion collection</image:title>
-      <image:caption>Handcrafted dresses, Kurtis, and Three-Piece fashion from Mohor Clothings in Sylhet, Bangladesh.</image:caption>
-    </image:image>
-  </url>
-  <url>
-    <loc>https://mohor.me/about/</loc>
-    <lastmod>2026-09-20</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-    <image:image>
-      <image:loc>https://mohor.me/assets/banner-1280.webp</image:loc>
-      <image:title>About Mohor Clothings</image:title>
-    </image:image>
-  </url>
-  <url>
-    <loc>https://mohor.me/policy/</loc>
-    <lastmod>2026-09-20</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  <url>
-    <loc>https://mohor.me/product/?id=sample-1</loc>
-    <lastmod>2026-09-20</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-    <image:image>
-      <image:loc>https://mohor.me/assets/banner-800.webp</image:loc>
-      <image:title>Mohor Three-Piece Dress Collection</image:title>
-    </image:image>
-  </url>
-  <url>
-    <loc>https://mohor.me/product/?id=sample-2</loc>
-    <lastmod>2026-09-20</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-    <image:image>
-      <image:loc>https://mohor.me/assets/banner-800.webp</image:loc>
-      <image:title>Mohor Kurti Collection</image:title>
-    </image:image>
-  </url>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://mohor.me/</loc></url>
+  <url><loc>https://mohor.me/shop</loc></url>
+  <url><loc>https://mohor.me/shop?cat=three-piece</loc></url>
+  <url><loc>https://mohor.me/shop?cat=kurti</loc></url>
+  <url><loc>https://mohor.me/shop?cat=khadi</loc></url>
+  <url><loc>https://mohor.me/shop?cat=saree</loc></url>
+  <url><loc>https://mohor.me/about</loc></url>
+  <url><loc>https://mohor.me/policy</loc></url>
+  <url><loc>https://mohor.me/orders</loc></url>
 </urlset>
