@@ -34,6 +34,22 @@ export function safeUrl(value, fallback = '') {
   } catch { return fallback; }
 }
 
+/** Build a same-origin Cloudflare image-resize URL for Mohor's R2 images. */
+export function responsiveImageUrl(value, width = 480) {
+  const url = safeUrl(value);
+  if (!url) return '';
+  try {
+    const parsed = new URL(url, location.origin);
+    if (parsed.hostname !== 'images.mohor.me') return url;
+    const allowed = [320, 480, 640, 800, 960, 1280, 1920];
+    const w = allowed.reduce((best, n) => Math.abs(n - width) < Math.abs(best - width) ? n : best, allowed[0]);
+    return `/api/image?width=${w}&image=${encodeURIComponent(parsed.href)}`;
+  } catch { return ''; }
+}
+export function responsiveImageSrcset(value, widths = [320, 480, 640]) {
+  return [...new Set(widths)].sort((a,b) => a-b).map(w => `${responsiveImageUrl(value, w)} ${w}w`).join(', ');
+}
+
 export const $ = (selector, root = document) => root.querySelector(selector);
 export const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 
