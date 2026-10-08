@@ -15,19 +15,26 @@ export function productCard(p, { eager = false } = {}) {
   const available = inStock(p);
   const stock = totalStock(p);
   const saved = wish.has(p.id);
-  const second = p.images?.[1];
+  const images = (Array.isArray(p.images) ? p.images : []).filter(Boolean);
+  const slides = images.length ? images : [imageOf(p)];
   const colors = colorsOf(p).slice(0, 5);
   return html`
     <article class="card${available ? '' : ' is-soldout'}" data-id="${p.id}">
-      <a class="card-media" href="${productUrl(p)}" aria-label="${titleOf(p)}">
-        <img src="${safeUrl(imageOf(p), '/assets/image-placeholder.svg')}" alt="" loading="${eager ? 'eager' : 'lazy'}" decoding="async" width="600" height="800">
-        ${second ? html`<img class="card-alt" src="${safeUrl(second)}" alt="" loading="lazy" decoding="async" width="600" height="800">` : ''}
+      <div class="card-media" data-card-slider>
+        <a class="card-media-link" href="${productUrl(p)}" aria-label="${titleOf(p)}">
+          <div class="card-slides">
+            ${slides.map((src, i) => html`<img class="card-slide${i === 0 ? ' is-active' : ''}" data-slide="${i}" src="${safeUrl(src, '/assets/image-placeholder.svg')}" alt="" loading="${i === 0 && eager ? 'eager' : 'lazy'}" decoding="async" width="600" height="800">`)}
+          </div>
+        </a>
+        ${slides.length > 1 ? html`<div class="card-slider-dots" aria-label="${titleOf(p)} images">
+          ${slides.map((_, i) => html`<button type="button" class="card-slider-dot${i === 0 ? ' is-active' : ''}" data-slider-dot="${i}" aria-label="${t('pdpImage', { n: i + 1, m: slides.length })}" aria-current="${i === 0}"></button>`)}
+        </div>` : ''}
         <span class="card-badges">
           ${!available ? html`<span class="badge badge-ink">${t('soldOut')}</span>`
             : percent ? html`<span class="badge badge-sale">−${percent}%</span>` : ''}
           ${available && stock > 0 && stock <= 3 ? html`<span class="badge badge-soft">${t('onlyLeft', { n: stock })}</span>` : ''}
         </span>
-      </a>
+      </div>
       <button class="card-wish${saved ? ' is-on' : ''}" type="button" data-wish="${p.id}" aria-pressed="${saved}" aria-label="${t('navWishlist')}">${icon('heart', 20)}</button>
       <div class="card-info">
         <p class="card-cat">${categoryLabel(p.category)}</p>
@@ -43,6 +50,37 @@ export function productCard(p, { eager = false } = {}) {
 
 /** Wires wishlist + quick-add buttons inside a grid. `getProducts` returns the current list. */
 export function bindCards(root, getProducts) {
+  const sliders = new WeakMap();
+  const setupSlider = card => {
+    if (sliders.has(card)) return;
+    const track = card.querySelector('.card-slides');
+    const slides = [...card.querySelectorAll('[data-slide]')];
+    const dots = [...card.querySelectorAll('[data-slider-dot]')];
+    if (!track || slides.length < 2) return;
+    let index = 0;
+    let startX = null;
+    const show = next => {
+      index = (next + slides.length) % slides.length;
+      slides.forEach((slide, i) => slide.classList.toggle('is-active', i === index));
+      dots.forEach((dot, i) => {
+        dot.classList.toggle('is-active', i === index);
+        dot.setAttribute('aria-current', String(i === index));
+      });
+    };
+    const timer = window.setInterval(() => show(index + 1), 5000);
+    track.addEventListener('touchstart', e => { startX = e.touches.length === 1 ? e.touches[0].clientX : null; }, { passive: true });
+    track.addEventListener('touchend', e => {
+      if (startX === null) return;
+      const delta = e.changedTouches[0].clientX - startX;
+      startX = null;
+      if (Math.abs(delta) > 40) show(index + (delta < 0 ? 1 : -1));
+    }, { passive: true });
+    dots.forEach(dot => dot.addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); show(Number(dot.dataset.sliderDot)); }));
+    sliders.set(card, timer);
+  };
+  const observe = new MutationObserver(() => root.querySelectorAll('[data-card-slider]').forEach(setupSlider));
+  observe.observe(root, { childList: true, subtree: true });
+  root.querySelectorAll('[data-card-slider]').forEach(setupSlider);
   on(root, 'click', '[data-wish]', (e, btn) => {
     e.preventDefault();
     const on = wish.toggle(btn.dataset.wish);
