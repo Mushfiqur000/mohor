@@ -20,7 +20,7 @@ export const setToken = token => {
 export async function api(path, { method = 'GET', body, signal, headers = {}, raw } = {}) {
   const token = getToken();
   const init = { method, signal, headers: { Accept: 'application/json', ...headers } };
-  if (token) init.headers.Authorization = `Bearer ${token}`;
+  if (token) init.headers.Authorization = 'Bearer ' + token;
   if (raw !== undefined) init.body = raw;
   else if (body !== undefined) { init.headers['Content-Type'] = 'application/json'; init.body = JSON.stringify(body); }
 

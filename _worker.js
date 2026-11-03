@@ -703,7 +703,7 @@ route('POST', '/api/notifications/mark-read', async c => {
   const user = await c.requireUser();
   const input = await c.body();
   if (input.markAll) {
-    await c.env.DB.prepare('UPDATE notifications SET is_read = 1 WHERE user_id = ?').bind(user.id).run();
+    await c.env.DB.prepare("UPDATE notifications SET is_read = 1 WHERE user_id IN (?, 'ALL')").bind(user.id).run();
   } else if (input.notificationId) {
     await c.env.DB.prepare('UPDATE notifications SET is_read = 1 WHERE id = ? AND user_id = ?').bind(String(input.notificationId), user.id).run();
   } else throw new HttpError(400, 'notificationId or markAll is required.');
@@ -1268,7 +1268,7 @@ route('POST', '/api/admin/upload', async c => {
     target.searchParams.set('filename', key);
     const response = await fetch(target, {
       method: 'POST', body: c.request.body,
-      headers: { 'Content-Type': type, Authorization: `Bearer ${uploaderSecret}` },
+      headers: { 'Content-Type': type, Authorization: 'Bearer ' + uploaderSecret },
     });
     if (!response.ok) throw new HttpError(502, `Uploader rejected the image (${response.status}).`);
     return c.json({ success: true, url: publicBase + encodeURIComponent(key), key });
