@@ -23,7 +23,7 @@ export default {
     if (request.method !== 'POST') return json({ error: 'Method not allowed' }, 405);
     if (!env.RELAY_SECRET || !env.TELEGRAM_BOT_TOKEN || !env.TELEGRAM_CHAT_ID) return json({ error: 'Relay not configured' }, 500);
     const auth = request.headers.get('authorization') || '';
-    if (!safeEqual(auth, `Bearer ${env.RELAY_SECRET}`)) return json({ error: 'Unauthorized' }, 401);
+    if (!safeEqual(auth, 'Bearer ' + env.RELAY_SECRET)) return json({ error: 'Unauthorized' }, 401);
 
     let body;
     try { body = await request.json(); } catch { return json({ error: 'Invalid JSON' }, 400); }
