@@ -16,7 +16,8 @@ export function productCard(p, { eager = false } = {}) {
   const stock = totalStock(p);
   const saved = wish.has(p.id);
   const images = (Array.isArray(p.images) ? p.images : []).filter(Boolean);
-  const slides = images.length ? images : [imageOf(p)];
+  const primaryImage = p.thumbnail || images[0] || imageOf(p);
+  const slides = [primaryImage, ...images.filter(src => src !== primaryImage)];
   const colors = colorsOf(p).slice(0, 5);
   return html`
     <article class="card${available ? '' : ' is-soldout'}" data-id="${p.id}">

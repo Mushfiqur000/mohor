@@ -114,9 +114,6 @@ export const titleOf = p => localized(p?.title) || 'Untitled';
 export const imageOf = (p, index = 0) => p?.images?.[index] || (index === 0 && p?.thumbnail) || p?.images?.[0] || p?.thumbnail || '/assets/image-placeholder.svg';
 export const cardImage = source => {
   if (!source) return '/assets/image-placeholder.svg';
-  if (/-detail\.(?:webp|jpe?g)(?:$|\?)/i.test(source)) {
-    return source.replace(/-detail\.(webp|jpe?g)(?=$|\?)/i, '-thumb.webp');
-  }
   if (/images\.mohor\.me/i.test(source) && !/[?&](?:w|width)=/i.test(source)) {
     return `${source}${source.includes('?') ? '&' : '?'}w=640`;
   }
