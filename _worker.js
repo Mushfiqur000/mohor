@@ -563,7 +563,7 @@ route('GET', '/api/health', c => c.json({ ok: true, time: new Date().toISOString
 
 route('GET', '/api/settings', async c => {
   const settings = await getSettings(c.env);
-  return c.json(settings, 200, { 'Cache-Control': 'public, max-age=60' });
+  return c.json(settings, 200, { 'Cache-Control': 'public, max-age=60, s-maxage=300, stale-while-revalidate=600' });
 });
 
 route('PUT', '/api/settings', async c => {
@@ -826,13 +826,13 @@ route('GET', '/api/products', async c => {
     const row = await c.env.DB.prepare('SELECT * FROM products WHERE id = ? LIMIT 1').bind(id).first();
     const product = row && normalizeProduct(row);
     if (!product || (!includeHidden && product.status !== 'active')) throw new HttpError(404, 'Product not found.');
-    return c.json(product, 200, { 'Cache-Control': includeHidden ? 'no-store' : 'public, max-age=30' });
+    return c.json(product, 200, { 'Cache-Control': includeHidden ? 'no-store' : 'public, max-age=60, s-maxage=300, stale-while-revalidate=600' });
   }
   const { results = [] } = await c.env.DB.prepare('SELECT * FROM products').all();
   const products = results.map(normalizeProduct)
     .filter(p => includeHidden || p.status === 'active')
     .sort((a, b) => a.displayOrder - b.displayOrder || String(b.createdAt || '').localeCompare(String(a.createdAt || '')));
-  return c.json(products, 200, { 'Cache-Control': includeHidden ? 'no-store' : 'public, max-age=30' });
+  return c.json(products, 200, { 'Cache-Control': includeHidden ? 'no-store' : 'public, max-age=60, s-maxage=300, stale-while-revalidate=600' });
 });
 
 route('POST', '/api/products', async c => {
@@ -914,7 +914,7 @@ route('GET', '/api/banners', async c => {
   const banners = results.map(b => ({ ...b, active: b.active === null || b.active === undefined ? true : Boolean(num(b.active, 1)), displayOrder: num(b.displayOrder) }))
     .filter(b => all || (b.active && b.imageUrl))
     .sort((a, b) => a.displayOrder - b.displayOrder);
-  return c.json(banners, 200, { 'Cache-Control': all ? 'no-store' : 'public, max-age=60' });
+  return c.json(banners, 200, { 'Cache-Control': all ? 'no-store' : 'public, max-age=60, s-maxage=300, stale-while-revalidate=600' });
 });
 
 route('POST', '/api/banners', async c => {
@@ -1302,7 +1302,16 @@ export default {
 
     if (!url.pathname.startsWith('/api/')) {
       // Static assets normally never reach the worker; this is a safety net.
-      return env.ASSETS.fetch(request);
+      const response = await env.ASSETS.fetch(request);
+      const headers = new Headers(response.headers);
+      headers.set('X-Content-Type-Options', 'nosniff');
+      headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+      if (/\.[a-f0-9]{8,}\.(?:css|js|webp|avif|woff2?)$/i.test(url.pathname)) {
+        headers.set('Cache-Control', 'public, max-age=31536000, immutable');
+      } else if (url.pathname.startsWith('/assets/')) {
+        headers.set('Cache-Control', 'public, max-age=86400, stale-while-revalidate=604800');
+      }
+      return new Response(response.body, { status: response.status, statusText: response.statusText, headers });
     }
     if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: c.baseHeaders() });
 

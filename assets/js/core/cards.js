@@ -3,7 +3,7 @@
 import { html, safeUrl, on, mount } from './dom.js';
 import { t } from './i18n.js';
 import { money } from './format.js';
-import { pricing, inStock, titleOf, imageOf, productUrl, colorsOf, stockFor, categoryLabel, totalStock } from './catalog.js';
+import { pricing, inStock, titleOf, imageOf, cardImage, productUrl, colorsOf, stockFor, categoryLabel, totalStock } from './catalog.js';
 import * as wish from './wishlist.js';
 import * as bag from './cart.js';
 import { icon, sheet, toast } from './ui.js';
@@ -23,7 +23,13 @@ export function productCard(p, { eager = false } = {}) {
       <div class="card-media" data-card-slider>
         <a class="card-media-link" href="${productUrl(p)}" aria-label="${titleOf(p)}">
           <div class="card-slides">
-            ${slides.map((src, i) => html`<img class="card-slide${i === 0 ? ' is-active' : ''}" data-slide="${i}" src="${safeUrl(src, '/assets/image-placeholder.svg')}" alt="" loading="${i === 0 && eager ? 'eager' : 'lazy'}" decoding="async" width="600" height="800">`)}
+            ${slides.map((src, i) => {
+              const optimized = cardImage(src);
+              const srcSet = optimized.includes('images.mohor.me')
+                ? `${optimized}${optimized.includes('?') ? '&' : '?'}w=480 480w, ${optimized}${optimized.includes('?') ? '&' : '?'}w=640 640w`
+                : '';
+              return html`<img class="card-slide${i === 0 ? ' is-active' : ''}" data-slide="${i}" src="${safeUrl(optimized, '/assets/image-placeholder.svg')}"${srcSet ? ` srcset="${srcSet}"` : ''} sizes="(max-width: 767px) 46vw, (max-width: 1099px) 31vw, 23.5vw" alt="" loading="${i === 0 && eager ? 'eager' : 'lazy'}" decoding="async" width="600" height="800">`;
+            })}
           </div>
         </a>
         ${slides.length > 1 ? html`<div class="card-slider-dots" aria-label="${titleOf(p)} images">

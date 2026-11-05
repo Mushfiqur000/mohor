@@ -1,8 +1,19 @@
 # Mohor Clothings
 
-> Heritage womenswear boutique from Sylhet, Bangladesh. Three-piece sets, kurtis, khadi and sarees. Cash on delivery across Bangladesh.
+Mohor Clothings is a heritage womenswear boutique from Sylhet, Bangladesh,
+selling three-piece sets, kurtis, khadi and sarees with cash on delivery
+across Bangladesh.
 
-- Shop: https://mohor.me/shop
-- Delivery: ৳70 inside Sylhet City, ৳140 outside. Cash on delivery.
-- Exchange: request within 24 hours of delivery. Policy: https://mohor.me/policy
-- Contact: WhatsApp / phone +8801330113027, https://www.facebook.com/mohor0000
+## Important pages
+
+- [Shop](https://mohor.me/shop)
+- [About Mohor](https://mohor.me/about)
+- [Delivery and returns policy](https://mohor.me/policy)
+- [Shopping cart](https://mohor.me/cart)
+- [Customer account](https://mohor.me/account)
+
+## Delivery and contact
+
+Delivery costs ৳70 inside Sylhet City and ৳140 outside. Customers can request
+an exchange within 24 hours of delivery for eligible unworn pieces.
+WhatsApp and phone support: [+8801330113027](https://wa.me/8801330113027).
