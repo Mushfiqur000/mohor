@@ -225,9 +225,14 @@ function reveal() {
 
 renderIntro();
 renderCategories();
-loadBanners();
-loadSettings().then(s => { settings = s || {}; renderSale(); });
-loadCatalog();
 reveal();
+
+const deferNonCriticalHomeWork = () => {
+  loadBanners();
+  loadSettings().then(s => { settings = s || {}; renderSale(); });
+  loadCatalog();
+};
+if ('requestIdleCallback' in window) requestIdleCallback(deferNonCriticalHomeWork, { timeout: 3500 });
+else setTimeout(deferNonCriticalHomeWork, 1200);
 
 onLangChange(() => { renderIntro(); renderHero(); renderCategories(); renderSale(); if (products.length) renderProducts(); });

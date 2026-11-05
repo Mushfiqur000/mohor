@@ -284,6 +284,16 @@ async function announcement() {
  */
 export async function boot({ page, chrome = true }) {
   document.documentElement.classList.add('js');
+  const loadFonts = () => {
+    if (document.querySelector('link[data-mohor-fonts]')) return;
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = 'https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Hind+Siliguri:wght@400;600&family=Work+Sans:wght@400;500;600&display=optional';
+    link.dataset.mohorFonts = 'true';
+    document.head.appendChild(link);
+  };
+  if ('requestIdleCallback' in window) requestIdleCallback(loadFonts, { timeout: 2500 });
+  else setTimeout(loadFonts, 1500);
   if (chrome) {
     mount(document.getElementById('app-header'), header(page));
     mount(document.getElementById('app-footer'), html`${footer()}${tabbar(page)}`);
@@ -300,7 +310,9 @@ export async function boot({ page, chrome = true }) {
     const headerEl = document.getElementById('site-header');
     const onScroll = () => headerEl?.classList.toggle('is-scrolled', scrollY > 8);
     addEventListener('scroll', onScroll, { passive: true }); onScroll();
-    announcement();
+    const deferAnnouncement = () => announcement();
+    if ('requestIdleCallback' in window) requestIdleCallback(deferAnnouncement, { timeout: 3500 });
+    else setTimeout(deferAnnouncement, 1200);
   }
   on(document, 'click', '[data-lang]', () => toggleLang());
   on(document, 'click', '[data-theme-toggle]', () => toggleTheme());
