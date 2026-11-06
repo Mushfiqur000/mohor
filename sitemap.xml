@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <url><loc>https://mohor.me/</loc></url>
   <url><loc>https://mohor.me/shop</loc></url>
   <url><loc>https://mohor.me/shop?cat=three-piece</loc></url>
@@ -9,4 +9,12 @@
   <url><loc>https://mohor.me/about</loc></url>
   <url><loc>https://mohor.me/policy</loc></url>
   <url><loc>https://mohor.me/orders</loc></url>
+  <url>
+    <loc>https://mohor.me/product?id=ypxUPKmvZA5IMLoESHsr</loc>
+    <image:image><image:loc>https://images.mohor.me/mohor-peach-vila-fabric-detail-1790076452878-0-thumb.webp</image:loc></image:image>
+  </url>
+  <url>
+    <loc>https://mohor.me/product?id=voVUMIWgB9gg1sdwQ168</loc>
+    <image:image><image:loc>https://images.mohor.me/crimson-handcrafted-kurtee-hand-1790076777074-0-thumb.webp</image:loc></image:image>
+  </url>
 </urlset>
