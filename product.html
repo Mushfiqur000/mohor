@@ -6,6 +6,15 @@
 <title>Product — Mohor</title>
 <meta name="description" content="Handcrafted in Sylhet by Mohor Clothings. Cash on delivery, ৳70 inside Sylhet City, ৳140 elsewhere, exchange within 24 hours of delivery.">
 <link rel="canonical" href="https://mohor.me/product">
+<script>
+  (() => {
+    const id = new URLSearchParams(location.search).get('id');
+    if (!id) return;
+    const canonical = `${location.origin}/product?id=${encodeURIComponent(id)}`;
+    document.querySelector('link[rel="canonical"]').href = canonical;
+    document.querySelector('meta[property="og:url"]').content = canonical;
+  })();
+</script>
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Mohor Clothings">
 <meta property="og:title" content="Product — Mohor">
