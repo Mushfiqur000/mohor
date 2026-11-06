@@ -276,6 +276,28 @@ function createContext(request, env, ctx) {
       headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
       headers.set('Access-Control-Max-Age', '86400');
     }
+
+    function xmlEscape(value) {
+      return String(value ?? '').replace(/[<>&'"]/g, char => ({
+        '<': '&lt;', '>': '&gt;', '&': '&amp;', "'": '&apos;', '"': '&quot;',
+      }[char]));
+    }
+
+    async function productSitemap(env) {
+      const { results = [] } = await env.DB.prepare('SELECT * FROM products WHERE status = ?').bind('active').all();
+      const urls = results.map(row => {
+        const product = normalizeProduct(row);
+        const loc = `https://mohor.me/product?id=${encodeURIComponent(product.id)}`;
+        const images = [product.thumbnail, ...(Array.isArray(product.images) ? product.images : [])]
+          .filter(Boolean)
+          .filter((image, index, list) => list.indexOf(image) === index)
+          .slice(0, 10)
+          .map(image => `<image:image><image:loc>${xmlEscape(image)}</image:loc></image:image>`)
+          .join('');
+        return `<url><loc>${xmlEscape(loc)}</loc>${images}</url>`;
+      }).join('');
+      return `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"><url><loc>https://mohor.me/</loc></url><url><loc>https://mohor.me/shop</loc></url><url><loc>https://mohor.me/about</loc></url><url><loc>https://mohor.me/policy</loc></url>${urls}</urlset>`;
+    }
     return headers;
   };
 
@@ -1299,6 +1321,23 @@ export default {
   async fetch(request, env, ctx) {
     const c = createContext(request, env, ctx);
     const { url } = c;
+
+    if (url.pathname === '/sitemap.xml' && (request.method === 'GET' || request.method === 'HEAD')) {
+      try {
+        await ensureSchema(env);
+        const body = await productSitemap(env);
+        return new Response(request.method === 'HEAD' ? null : body, {
+          status: 200,
+          headers: {
+            'Content-Type': 'application/xml; charset=utf-8',
+            'Cache-Control': 'public, max-age=300, s-maxage=900, stale-while-revalidate=3600',
+          },
+        });
+      } catch (error) {
+        console.error('Sitemap generation failed', error?.stack || error);
+        return new Response('Sitemap unavailable', { status: 503, headers: { 'Content-Type': 'text/plain; charset=utf-8' } });
+      }
+    }
 
     if (!url.pathname.startsWith('/api/')) {
       // Static assets normally never reach the worker; this is a safety net.
