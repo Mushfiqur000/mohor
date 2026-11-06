@@ -58,8 +58,9 @@ const sel = { color: '', size: '', qty: 1, image: 0 };
 const plain = value => String(value ?? '').replace(/<br\s*\/?>/gi, '\n').replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim();
 const listOf = value => (Array.isArray(value) ? value : (localized(value) || value?.en || [])).filter(x => typeof x === 'string' && x.trim());
 const images = () => {
-  const list = Array.isArray(product.images) && product.images.length ? [...product.images] : [];
-  if (!list.length && product.thumbnail) list.push(product.thumbnail);
+  const gallery = Array.isArray(product.images) ? product.images.filter(Boolean) : [];
+  const primary = product.thumbnail || gallery[0] || '';
+  const list = primary ? [primary, ...gallery.filter(src => src !== primary)] : [];
   if (!list.length) list.push(PLACEHOLDER);
   return list.map(src => safeUrl(src, PLACEHOLDER));
 };
