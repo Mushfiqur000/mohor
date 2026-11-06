@@ -26,10 +26,7 @@ export function productCard(p, { eager = false } = {}) {
           <div class="card-slides">
             ${slides.map((src, i) => {
               const optimized = cardImage(src);
-              const srcSet = optimized.includes('images.mohor.me')
-                ? `${optimized}${optimized.includes('?') ? '&' : '?'}w=480 480w, ${optimized}${optimized.includes('?') ? '&' : '?'}w=640 640w`
-                : '';
-              return html`<img class="card-slide${i === 0 ? ' is-active' : ''}" data-slide="${i}" src="${safeUrl(optimized, '/assets/image-placeholder.svg')}" srcset="${srcSet}" sizes="(max-width: 767px) 46vw, (max-width: 1099px) 31vw, 23.5vw" alt="" loading="${i === 0 && eager ? 'eager' : 'lazy'}" decoding="async" width="600" height="800">`;
+              return html`<img class="card-slide${i === 0 ? ' is-active' : ''}" data-slide="${i}" src="${safeUrl(optimized, '/assets/image-placeholder.svg')}" alt="" loading="${i === 0 && eager ? 'eager' : 'lazy'}" decoding="async" width="600" height="800">`;
             })}
           </div>
         </a>
