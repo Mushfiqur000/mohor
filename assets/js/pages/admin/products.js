@@ -269,12 +269,13 @@ function editor(view, product) {
             ${d.thumbnail === src || (!d.thumbnail && i === 0) ? html`<span class="badge badge-ink adm-thumb-badge">${t('admThumb')}</span>` : ''}
             <div class="adm-img-tools">
               <button class="icon-btn" type="button" data-img-move="-1" data-i="${i}" aria-label="${t('admLeftMove')}">${icon('chevronLeft', 16)}</button>
-              <button class="icon-btn" type="button" data-img-thumb="${i}" aria-label="${t('admMakeThumb')}">${icon('check', 16)}</button>
+              <button class="btn btn-ghost btn-sm" type="button" data-img-thumb="${i}">${icon('check', 16)} ${t('admMakeThumb')}</button>
               <button class="icon-btn" type="button" data-img-del="${i}" aria-label="${t('admDelete')}">${icon('trash', 16)}</button>
               <button class="icon-btn" type="button" data-img-move="1" data-i="${i}" aria-label="${t('admRightMove')}">${icon('chevronRight', 16)}</button>
             </div></li>`)}</ul>
         <div class="adm-toolbar">
           <label class="btn btn-ghost btn-sm adm-file">${icon('plus', 16)} <span data-upl-label>${t('admUpload')}</span><input type="file" accept="image/*" multiple data-upload></label>
+          <label class="check"><input type="checkbox" data-primary-upload> <span>${t('admPrimaryUpload')}</span></label>
           <input class="input" type="url" data-img-url placeholder="${t('admImageUrl')}" aria-label="${t('admImageUrl')}">
           <button class="btn btn-ghost btn-sm" type="button" data-img-add>${t('admAdd')}</button>
         </div>
@@ -357,11 +358,16 @@ function editor(view, product) {
     const files = [...input.files];
     if (!files.length) return;
     collect(form(), d);
+    const makePrimary = $('[data-primary-upload]', view)?.checked;
     const label = $('[data-upl-label]', view); label.textContent = t('admUploading');
     input.disabled = true;
     const base = (d.title.en || 'product').toLowerCase().replace(/[^a-z0-9]+/g, '-');
-    for (const file of files) {
-      try { d.images.push(await uploadImage(file, base)); } catch (error) { fail(error); }
+    for (const [index, file] of files.entries()) {
+      try {
+        const url = await uploadImage(file, base);
+        d.images.push(url);
+        if (makePrimary && index === 0) d.thumbnail = url;
+      } catch (error) { fail(error); }
     }
     dirty.value = true; draw();
   }

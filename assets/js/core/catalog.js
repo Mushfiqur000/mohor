@@ -111,7 +111,12 @@ export const totalStock = p => {
 // ---- Display helpers ------------------------------------------------------
 
 export const titleOf = p => localized(p?.title) || 'Untitled';
-export const imageOf = (p, index = 0) => p?.images?.[index] || (index === 0 && p?.thumbnail) || p?.images?.[0] || p?.thumbnail || '/assets/image-placeholder.svg';
+export const imageOf = (p, index = 0) => {
+  const images = Array.isArray(p?.images) ? p.images.filter(Boolean) : [];
+  const primary = p?.thumbnail || images[0] || '/assets/image-placeholder.svg';
+  if (index === 0) return primary;
+  return images.filter(src => src !== primary)[index - 1] || primary;
+};
 export const cardImage = source => {
   if (!source) return '/assets/image-placeholder.svg';
   if (/images\.mohor\.me/i.test(source) && !/[?&](?:w|width)=/i.test(source)) {
