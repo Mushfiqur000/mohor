@@ -264,7 +264,7 @@ function editor(view, product) {
       <section class="panel stack">
         <h3 class="panel-title">${t('admImages')}</h3>
         <ul class="adm-images">${d.images.map((src, i) => html`
-          <li class="${d.thumbnail === src || (!d.thumbnail && i === 0) ? 'is-thumb' : ''}">
+          <li class="${d.thumbnail === src || (!d.thumbnail && i === 0) ? 'is-thumb' : ''}" draggable="true" data-img-index="${i}">
             <img src="${safeUrl(src, '/assets/image-placeholder.svg')}" alt="" loading="lazy">
             ${d.thumbnail === src || (!d.thumbnail && i === 0) ? html`<span class="badge badge-ink adm-thumb-badge">${t('admThumb')}</span>` : ''}
             <div class="adm-img-tools">
@@ -327,6 +327,7 @@ function editor(view, product) {
   draw();
   const form = () => $('form', view);
   const structural = fn => { collect(form(), d); fn(); dirty.value = true; draw(); };
+  let draggedImageIndex = -1;
   const keepMeasurementEvent = e => {
     if (e.target instanceof Element && e.target.closest('[data-meas]')) e.stopPropagation();
   };
@@ -342,6 +343,38 @@ function editor(view, product) {
   view.addEventListener('change', e => {
     if (e.target.matches('[data-sizes], .c-en, .c-hex')) structural(() => {});
     if (e.target.matches('[data-upload]')) upload(e.target);
+  });
+  view.addEventListener('dragstart', e => {
+    const item = e.target.closest('[data-img-index]');
+    if (!item) return;
+    draggedImageIndex = Number(item.dataset.imgIndex);
+    item.classList.add('is-dragging');
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', String(draggedImageIndex));
+  });
+  view.addEventListener('dragover', e => {
+    const item = e.target.closest('[data-img-index]');
+    if (!item || draggedImageIndex < 0) return;
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+  });
+  view.addEventListener('drop', e => {
+    const item = e.target.closest('[data-img-index]');
+    if (!item || draggedImageIndex < 0) return;
+    e.preventDefault();
+    const targetIndex = Number(item.dataset.imgIndex);
+    const sourceIndex = draggedImageIndex;
+    draggedImageIndex = -1;
+    if (sourceIndex === targetIndex) return;
+    structural(() => {
+      const [moved] = d.images.splice(sourceIndex, 1);
+      d.images.splice(targetIndex, 0, moved);
+    });
+  });
+  view.addEventListener('dragend', e => {
+    const item = e.target.closest('[data-img-index]');
+    if (item) item.classList.remove('is-dragging');
+    draggedImageIndex = -1;
   });
   view.addEventListener('click', async e => {
     const el = e.target.closest('button');
