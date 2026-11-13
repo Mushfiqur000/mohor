@@ -140,12 +140,10 @@ function renderIntro() {
     </div>`);
 }
 
-const HINTS = { 'three-piece': 'catHintThreePiece', kurti: 'catHintKurti', khadi: 'catHintKhadi', saree: 'catHintSaree' };
-
 function renderCategories() {
   const tiles = CATEGORIES.map(c => {
     const items = products.filter(p => p.category === c.key);
-    return { href: `/shop?cat=${encodeURIComponent(c.key)}`, label: c.label(), hint: t(HINTS[c.key]), count: items.length, img: items[0] ? imageOf(items[0]) : '' };
+    return { href: `/shop?cat=${encodeURIComponent(c.key)}`, label: c.label(), hint: c.hint?.() || '', count: items.length, img: items[0] ? imageOf(items[0]) : '' };
   }).filter(tile => !products.length || tile.count);
   const sale = products.filter(p => pricing(p).onSale);
   if (sale.length) tiles.push({ href: '/shop?sale=1', label: t('catOnSale'), hint: t('catHintSale'), count: sale.length, img: imageOf(sale[0]), sale: true });

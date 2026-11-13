@@ -40,8 +40,9 @@ export async function getProduct(id) {
   return list.find(p => p.id === String(id)) || api.get(`/api/products?id=${encodeURIComponent(id)}`);
 }
 
-export function loadSettings() {
-  settingsPromise ||= api.get('/api/settings').then(settings => {
+export function loadSettings({ fresh = false } = {}) {
+  if (fresh) settingsPromise = null;
+  settingsPromise ||= api.get(fresh ? `/api/settings?fresh=${Date.now()}` : '/api/settings').then(settings => {
     const running = settings.saleActive && Number(settings.discountPercent) > 0 &&
       (!settings.saleEndTime || Date.parse(settings.saleEndTime) > Date.now());
     storeSale = { active: Boolean(running), percent: Number(settings.discountPercent) || 0 };
@@ -126,12 +127,23 @@ export const cardImage = source => {
 };
 export const productUrl = p => `/product?id=${encodeURIComponent(p.id)}`;
 
-export const CATEGORIES = [
-  { key: 'three-piece', label: () => t('catThreePiece') },
-  { key: 'kurti', label: () => t('catKurti') },
-  { key: 'khadi', label: () => t('catKhadi') },
-  { key: 'saree', label: () => t('catSaree') },
+const BUILTIN_CATEGORIES = [
+  { key: 'three-piece', label: () => t('catThreePiece'), hint: () => t('catHintThreePiece') },
+  { key: 'kurti', label: () => t('catKurti'), hint: () => t('catHintKurti') },
+  { key: 'khadi', label: () => t('catKhadi'), hint: () => t('catHintKhadi') },
+  { key: 'saree', label: () => t('catSaree'), hint: () => t('catHintSaree') },
 ];
+export const CATEGORIES = [...BUILTIN_CATEGORIES];
+export async function loadCategories({ fresh = false } = {}) {
+  const settings = await loadSettings({ fresh });
+  const custom = Array.isArray(settings.categories) ? settings.categories
+    .filter(c => c && c.active !== false && typeof c.key === 'string' && typeof c.name?.en === 'string' && c.name.en.trim())
+    .sort((a, b) => Number(a.displayOrder || 0) - Number(b.displayOrder || 0))
+    .map(c => ({ key: c.key, label: () => localized(c.name) || c.key, hint: () => localized(c.hint) || '' })) : [];
+  const seen = new Set(BUILTIN_CATEGORIES.map(c => c.key));
+  CATEGORIES.splice(0, CATEGORIES.length, ...BUILTIN_CATEGORIES, ...custom.filter(c => !seen.has(c.key)));
+  return CATEGORIES;
+}
 export const categoryLabel = key => CATEGORIES.find(c => c.key === key)?.label() || (key ? key.replace(/-/g, ' ') : t('catOther'));
 
 /** Accent- and case-insensitive search across both languages. */

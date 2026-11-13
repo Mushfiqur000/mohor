@@ -87,7 +87,7 @@ const DEFAULT_SETTINGS = {
   deliveryInside: 70, deliveryOutside: 140, freeDeliveryThreshold: 0,
   saleActive: false, discountPercent: 0, bannerText: '', bannerBadge: '', saleEndTime: '',
   whatsapp: '8801330113027', phone: '+8801330113027', email: '',
-  announcement: '', maxQtyPerItem: 10,
+  announcement: '', maxQtyPerItem: 10, categories: [],
 };
 const PBKDF2_ITERATIONS = 100000;
 const TOKEN_TTL_SECONDS = 60 * 60 * 24 * 30;
@@ -597,6 +597,22 @@ route('PUT', '/api/settings', async c => {
   for (const key of allowed) {
     if (!(key in input)) continue;
     const def = DEFAULT_SETTINGS[key];
+    if (key === 'categories') {
+      next[key] = Array.isArray(input[key]) ? input[key].slice(0, 100).map(category => ({
+        key: str(category?.key, 80).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''),
+        name: {
+          en: str(category?.name?.en || category?.name, 120),
+          bn: str(category?.name?.bn, 120),
+        },
+        hint: {
+          en: str(category?.hint?.en, 180),
+          bn: str(category?.hint?.bn, 180),
+        },
+        active: category?.active !== false,
+        displayOrder: Math.max(0, num(category?.displayOrder)),
+      })).filter(category => category.key && category.name.en) : [];
+      continue;
+    }
     next[key] = typeof def === 'number' ? Math.max(0, num(input[key], def))
       : typeof def === 'boolean' ? Boolean(input[key])
       : str(input[key], 500);

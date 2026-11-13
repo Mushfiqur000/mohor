@@ -157,6 +157,12 @@
 @media (min-width: 720px) { .adm-meas { grid-template-columns: 90px 1fr 1fr; align-items: center; } }
 .adm-store-sale summary { cursor: pointer; font-weight: 600; }
 .adm-store-sale[open] summary { margin-bottom: var(--s3); }
+.adm-category-list { display: grid; gap: var(--s3); }
+.adm-category-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s3); padding: var(--s3); border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--paper-2); }
+.adm-category-row .field, .adm-category-row .check { min-width: 0; }
+.adm-category-row [data-cat-remove] { justify-self: start; }
+@media (min-width: 900px) { .adm-category-row { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 480px) { .adm-category-row { grid-template-columns: 1fr; } }
 
 /* Banners */
 .adm-banners { display: grid; gap: var(--s3); }
