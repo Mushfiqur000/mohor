@@ -37,7 +37,10 @@
 .pdp-guide-btn { display: inline-flex; align-items: center; gap: 4px; min-height: 44px; font-size: var(--text-sm); }
 .swatch.is-out { opacity: 0.4; }
 .swatch.is-out::before { content: ''; position: absolute; inset: 50% 4px auto; height: 1.5px; background: var(--ink); rotate: -45deg; }
-.pdp-measure { display: flex; gap: 6px; align-items: flex-start; margin-top: var(--s3); padding: var(--s3); border-radius: var(--radius-sm); background: var(--brass-tint); font-size: var(--text-sm); color: var(--ink-2); }
+.pdp-measure { display: flex; gap: var(--s2); align-items: flex-start; margin-top: var(--s3); padding: var(--s3); border-radius: var(--radius-sm); background: var(--brass-tint); font-size: var(--text-sm); color: var(--ink-2); }
+.pdp-measure > .icon { flex: none; margin-top: 2px; color: var(--brass); }
+.pdp-measure-list { display: grid; gap: 5px; min-width: 0; margin: 0; padding-left: 1.1em; list-style: disc; }
+.pdp-measure-list li { padding-left: 2px; line-height: 1.45; overflow-wrap: anywhere; }
 .pdp-stock { font-size: var(--text-sm); display: flex; align-items: center; gap: 8px; }
 .pdp-stock::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--success); }
 .pdp-stock.is-out { color: var(--danger); } .pdp-stock.is-out::before { background: var(--danger); }
@@ -78,6 +81,12 @@
 .pdp-guide-table th, .pdp-guide-table td { text-align: left; padding: var(--s3) var(--s2); border-bottom: 1px solid var(--line); vertical-align: top; }
 .pdp-guide-table thead th { font-size: var(--text-xs); letter-spacing: 0.12em; text-transform: uppercase; color: var(--brass); }
 .pdp-guide-table tr.is-on { background: var(--brass-tint); }
+.pdp-guide-list { gap: 4px; padding-bottom: 0; font-size: inherit; }
+@media (max-width: 420px) {
+  .pdp-measure { padding: var(--s3) var(--s2); gap: 6px; }
+  .pdp-measure-list { gap: 4px; padding-left: 1em; }
+  .pdp-measure-list li { line-height: 1.4; }
+}
 
 /* Fullscreen zoom */
 .zoom-sheet .sheet-panel { height: 100dvh; max-height: none; border-radius: 0; padding: 0; background: var(--paper); display: grid; grid-template-rows: 1fr; }
