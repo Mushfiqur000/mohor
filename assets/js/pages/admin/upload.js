@@ -1,24 +1,44 @@
 import { api } from '/assets/js/core/api.js';
 
-/** Resizes an image file to max 1600px and encodes WebP (JPEG fallback). */
-export async function resizeImage(file, max = 1600, quality = 0.85) {
-  if (file.type === 'image/gif') return file;
+/** Converts common image files to a compact WebP/JPEG upload around 100–150 KB. */
+export async function resizeImage(file, max = 1600, quality = 0.82) {
   let source;
   try { source = await createImageBitmap(file); } catch {
     source = await new Promise((resolve, reject) => {
-      const img = new Image(); img.onload = () => resolve(img); img.onerror = reject; img.src = URL.createObjectURL(file);
+      const url = URL.createObjectURL(file);
+      const img = new Image();
+      img.onload = () => { URL.revokeObjectURL(url); resolve(img); };
+      img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('Could not read this image.')); };
+      img.src = url;
     });
   }
-  const w = source.width, h = source.height;
-  const scale = Math.min(1, max / Math.max(w, h));
+  const width = source.width, height = source.height;
   const canvas = document.createElement('canvas');
-  canvas.width = Math.round(w * scale); canvas.height = Math.round(h * scale);
-  canvas.getContext('2d').drawImage(source, 0, 0, canvas.width, canvas.height);
+  const context = canvas.getContext('2d', { alpha: true });
+  if (!context) throw new Error('Your browser cannot prepare this image.');
+  const toBlob = (type, q) => new Promise(resolve => canvas.toBlob(resolve, type, q));
+  const sizes = [max, 1400, 1200, 1000, 800];
+  const qualities = [quality, 0.74, 0.66, 0.58, 0.5];
+  let best = null;
+  for (const limit of sizes) {
+    const scale = Math.min(1, limit / Math.max(width, height));
+    canvas.width = Math.max(1, Math.round(width * scale));
+    canvas.height = Math.max(1, Math.round(height * scale));
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    context.drawImage(source, 0, 0, canvas.width, canvas.height);
+    for (const q of qualities) {
+      const blob = await toBlob('image/webp', q);
+      if (!blob || blob.type !== 'image/webp') continue;
+      if (!best || blob.size < best.size) best = blob;
+      if (blob.size <= 150 * 1024) {
+        source.close?.();
+        return blob;
+      }
+    }
+  }
   source.close?.();
-  const toBlob = type => new Promise(r => canvas.toBlob(r, type, quality));
-  let blob = await toBlob('image/webp');
-  if (!blob || blob.type !== 'image/webp') blob = await toBlob('image/jpeg');
-  return blob;
+  if (best) return best;
+  throw new Error('This browser could not convert the image to WebP.');
 }
 
 /** Uploads one file; returns the public URL. */

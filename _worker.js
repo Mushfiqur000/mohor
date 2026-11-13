@@ -1292,7 +1292,12 @@ route('POST', '/api/admin/upload', async c => {
       method: 'POST', body: c.request.body,
       headers: { 'Content-Type': type, Authorization: 'Bearer ' + uploaderSecret },
     });
-    if (!response.ok) throw new HttpError(502, `Uploader rejected the image (${response.status}).`);
+    if (!response.ok) {
+      const detail = response.status === 401
+        ? 'Image uploader authentication is not configured correctly. Please contact the site administrator.'
+        : `Uploader rejected the image (${response.status}).`;
+      throw new HttpError(502, detail);
+    }
     return c.json({ success: true, url: publicBase + encodeURIComponent(key), key });
   }
   throw new HttpError(500, 'Image storage is not configured (bind an R2 bucket as IMAGES).');
