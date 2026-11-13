@@ -303,8 +303,8 @@ function editor(view, product) {
       <section class="panel stack">
         <h3 class="panel-title">${t('admMeasure')}</h3>
         ${d.sizes.map(s => html`<div class="adm-meas"><strong>${s}</strong>
-          <input class="input" data-meas="${s}" data-lang="en" placeholder="EN — e.g. Bust 38in, Length 44in" value="${d.meas[s]?.en || ''}" aria-label="${s} EN">
-          <input class="input" data-meas="${s}" data-lang="bn" lang="bn" placeholder="BN" value="${d.meas[s]?.bn || ''}" aria-label="${s} BN"></div>`)}
+          <input class="input" type="text" data-meas="${s}" data-lang="en" placeholder="EN — e.g. Bust 38in, Length 44in" value="${d.meas[s]?.en || ''}" aria-label="${s} EN">
+          <input class="input" type="text" data-meas="${s}" data-lang="bn" lang="bn" placeholder="BN" value="${d.meas[s]?.bn || ''}" aria-label="${s} BN"></div>`)}
         <div class="form-grid cols-2">
           <label class="field"><span>${t('admGuideEn')}</span><textarea class="textarea" name="guide_en" rows="3">${d.guide.en}</textarea></label>
           <label class="field"><span>${t('admGuideBn')}</span><textarea class="textarea" name="guide_bn" lang="bn" rows="3">${d.guide.bn}</textarea></label>
@@ -327,6 +327,9 @@ function editor(view, product) {
   draw();
   const form = () => $('form', view);
   const structural = fn => { collect(form(), d); fn(); dirty.value = true; draw(); };
+  view.addEventListener('click', e => {
+    if (e.target.matches('[data-meas]')) e.stopPropagation();
+  }, true);
   view.addEventListener('input', e => {
     dirty.value = true;
     if (e.target.matches('[data-stock]')) {
