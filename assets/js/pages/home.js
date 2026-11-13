@@ -18,7 +18,7 @@ extend({
     trustCod: 'Cash on delivery', trustCodText: 'Pay when the parcel reaches you',
     trustExchange: 'Exchange within 24 hours', trustExchangeText: 'Of delivery — unworn pieces with tags',
     trustBatch: 'Made in small batches', trustBatchText: 'Hand-finished embroidery throughout',
-    catEyebrow: 'Browse', catHeading: 'Shop by category', catOnSale: 'On sale', catCount: '{n} pieces',
+    catEyebrow: 'Browse', catHeading: 'Shop by category', catOnSale: 'On sale', catCountOne: '{n} product', catCountMany: '{n} products',
     catHintThreePiece: 'Soft cotton sets', catHintKurti: 'Everyday & office wear', catHintKhadi: 'Handwoven, breathable',
     catHintSaree: 'For the occasions', catHintSale: 'Reduced this week',
     featEyebrow: 'Our collection', featHeading: 'Featured pieces', newEyebrow: 'Just in', newHeading: 'New arrivals', seeAll: 'See all',
@@ -39,7 +39,7 @@ extend({
     trustCod: 'ক্যাশ অন ডেলিভারি', trustCodText: 'পার্সেল হাতে পেয়ে টাকা দিন',
     trustExchange: '২৪ ঘণ্টার মধ্যে এক্সচেঞ্জ', trustExchangeText: 'ডেলিভারির পর — ট্যাগসহ অব্যবহৃত পণ্য',
     trustBatch: 'অল্প পরিমাণে তৈরি', trustBatchText: 'পুরোটাই হাতে ফিনিশ করা এমব্রয়ডারি',
-    catEyebrow: 'ব্রাউজ', catHeading: 'ক্যাটাগরি অনুযায়ী', catOnSale: 'সেল চলছে', catCount: '{n}টি পণ্য',
+    catEyebrow: 'ব্রাউজ', catHeading: 'ক্যাটাগরি অনুযায়ী', catOnSale: 'সেল চলছে', catCountOne: '{n}টি পণ্য', catCountMany: '{n}টি পণ্য',
     catHintThreePiece: 'নরম সুতির সেট', catHintKurti: 'প্রতিদিন ও অফিসের জন্য', catHintKhadi: 'হাতে বোনা, আরামদায়ক',
     catHintSaree: 'বিশেষ দিনের জন্য', catHintSale: 'এই সপ্তাহে কম দামে',
     featEyebrow: 'আমাদের কালেকশন', featHeading: 'বাছাই করা পণ্য', newEyebrow: 'নতুন এসেছে', newHeading: 'নতুন কালেকশন', seeAll: 'সব দেখুন',
@@ -141,6 +141,7 @@ function renderIntro() {
 }
 
 function renderCategories() {
+  const countLabel = count => t(count === 1 ? 'catCountOne' : 'catCountMany', { n: count });
   const tiles = CATEGORIES.map(c => {
     const items = products.filter(p => p.category === c.key);
     return { href: `/shop?cat=${encodeURIComponent(c.key)}`, label: c.label(), hint: c.hint?.() || '', count: items.length, img: c.imageUrl || (items[0] ? imageOf(items[0]) : '') };
@@ -150,7 +151,7 @@ function renderCategories() {
   mount($('#cat-tiles'), tiles.map(tile => html`
     <a class="cat-tile${tile.sale ? ' is-sale' : ''}" href="${tile.href}">
       ${tile.img ? html`<img src="${safeUrl(tile.img, '/assets/image-placeholder.svg')}" alt="" loading="lazy" decoding="async" width="400" height="500">` : html`<span class="cat-tile-blank" aria-hidden="true"></span>`}
-      <span class="cat-tile-text"><b>${tile.label}</b><small>${tile.hint}${tile.count ? html` · ${t('catCount', { n: tile.count })}` : ''}</small></span>
+      <span class="cat-tile-text"><b>${tile.label}</b><small>${tile.hint}${tile.count ? html` · ${countLabel(tile.count)}` : ''}</small></span>
     </a>`));
 }
 
