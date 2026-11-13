@@ -284,9 +284,10 @@ function createContext(request, env, ctx) {
     }
 
     async function productSitemap(env) {
-      const { results = [] } = await env.DB.prepare('SELECT * FROM products WHERE status = ?').bind('active').all();
-      const urls = results.map(row => {
-        const product = normalizeProduct(row);
+      const { results = [] } = await env.DB.prepare('SELECT * FROM products').all();
+      const urls = results.map(row => normalizeProduct(row))
+        .filter(product => product.status === 'active')
+        .map(product => {
         const loc = `https://mohor.me/product?id=${encodeURIComponent(product.id)}`;
         const images = [product.thumbnail, ...(Array.isArray(product.images) ? product.images : [])]
           .filter(Boolean)
@@ -294,8 +295,8 @@ function createContext(request, env, ctx) {
           .slice(0, 10)
           .map(image => `<image:image><image:loc>${xmlEscape(image)}</image:loc></image:image>`)
           .join('');
-        return `<url><loc>${xmlEscape(loc)}</loc>${images}</url>`;
-      }).join('');
+          return `<url><loc>${xmlEscape(loc)}</loc>${images}</url>`;
+        }).join('');
       return `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"><url><loc>https://mohor.me/</loc></url><url><loc>https://mohor.me/shop</loc></url><url><loc>https://mohor.me/about</loc></url><url><loc>https://mohor.me/policy</loc></url>${urls}</urlset>`;
     }
     return headers;
