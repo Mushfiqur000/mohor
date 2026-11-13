@@ -10,7 +10,7 @@ import { icon, sheet, toast, emptyState } from './ui.js';
 import { initAuth, session } from './auth.js';
 import * as bag from './cart.js';
 import { wishlist } from './wishlist.js';
-import { loadProducts, loadSettings, matches, titleOf, imageOf, productUrl, pricing, categoryLabel, CATEGORIES } from './catalog.js';
+import { loadProducts, loadSettings, loadCategories, matches, titleOf, imageOf, productUrl, pricing, categoryLabel, CATEGORIES } from './catalog.js';
 import { track } from './analytics.js';
 
 export const CONTACT = {
@@ -284,6 +284,7 @@ async function announcement() {
  */
 export async function boot({ page, chrome = true }) {
   document.documentElement.classList.add('js');
+  await loadCategories().catch(() => CATEGORIES);
   const loadFonts = () => {
     if (document.querySelector('link[data-mohor-fonts]')) return;
     const link = document.createElement('link');

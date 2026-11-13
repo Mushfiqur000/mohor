@@ -3,7 +3,7 @@ import { t } from '/assets/js/core/i18n.js';
 import { api } from '/assets/js/core/api.js';
 import { money, number } from '/assets/js/core/format.js';
 import { icon, toast, busy } from '/assets/js/core/ui.js';
-import { CATEGORIES } from '/assets/js/core/catalog.js';
+import { CATEGORIES, loadCategories } from '/assets/js/core/catalog.js';
 import { PRODUCT_STATUSES, pStatusLabel, title, fail, ask, dirty, leaveOk, loadingView, errorView, freshView } from './shared.js';
 import { uploadImage } from './upload.js';
 
@@ -22,6 +22,7 @@ const productTotal = p => {
 export async function render() {
   const view = freshView();
   loadingView(view);
+  await loadCategories().catch(() => CATEGORIES);
   try { st.products = await api.get('/api/products?all=1'); } catch (error) { errorView(view, error, render); return; }
   st.selected.clear(); st.order = st.products.map(p => p.id); st.saved = [...st.order];
   if (pendingEdit) { const p = st.products.find(x => x.id === pendingEdit); pendingEdit = ''; if (p) { editor(view, p); return; } }
