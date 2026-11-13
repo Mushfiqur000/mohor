@@ -140,8 +140,12 @@ export async function loadCategories({ fresh = false } = {}) {
     .filter(c => c && c.active !== false && typeof c.key === 'string' && typeof c.name?.en === 'string' && c.name.en.trim())
     .sort((a, b) => Number(a.displayOrder || 0) - Number(b.displayOrder || 0))
     .map(c => ({ key: c.key, order: Number(c.displayOrder) > 0 ? Number(c.displayOrder) : 999, priority: 1, imageUrl: c.imageUrl || '', label: () => localized(c.name) || c.key, hint: () => localized(c.hint) || '' })) : [];
+  const configured = new Map(custom.map(category => [category.key, category]));
+  const builtins = BUILTIN_CATEGORIES.map(category => configured.get(category.key)
+    ? { ...category, ...configured.get(category.key) }
+    : category);
   const seen = new Set(BUILTIN_CATEGORIES.map(c => c.key));
-  CATEGORIES.splice(0, CATEGORIES.length, ...[...BUILTIN_CATEGORIES, ...custom.filter(c => !seen.has(c.key))]
+  CATEGORIES.splice(0, CATEGORIES.length, ...[...builtins, ...custom.filter(c => !seen.has(c.key))]
     .sort((a, b) => a.order - b.order || a.priority - b.priority));
   return CATEGORIES;
 }

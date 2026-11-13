@@ -12,19 +12,25 @@ extend({
     admCategoryNameBn: 'Name (বাংলা)', admCategoryHintEn: 'Short description (English)', admCategoryHintBn: 'Short description (বাংলা)',
     admCategoryOrder: 'Order', admAddCategory: 'Add category', admRemoveCategory: 'Remove category',
     admCategoryImage: 'Category thumbnail', admCategoryImageUrl: 'Image URL (optional)', admCategoryUpload: 'Upload thumbnail',
-    admCategoryHint: 'Categories appear in the storefront, filters, footer, and product editor. On sale remains automatic.', active: 'Active',
+    admCategoryHint: 'Categories appear in the storefront, filters, footer, and product editor. Edit a built-in category using its existing key. On sale remains automatic.', active: 'Active',
   },
   bn: {
     admCategories: 'স্টোর ক্যাটাগরি', admCategoryKey: 'কী / স্লাগ', admCategoryNameEn: 'নাম (ইংরেজি)',
     admCategoryNameBn: 'নাম (বাংলা)', admCategoryHintEn: 'সংক্ষিপ্ত বর্ণনা (ইংরেজি)', admCategoryHintBn: 'সংক্ষিপ্ত বর্ণনা (বাংলা)',
     admCategoryOrder: 'ক্রম', admAddCategory: 'ক্যাটাগরি যোগ করুন', admRemoveCategory: 'ক্যাটাগরি সরান',
     admCategoryImage: 'ক্যাটাগরির থাম্বনেইল', admCategoryImageUrl: 'ছবির URL (ঐচ্ছিক)', admCategoryUpload: 'থাম্বনেইল আপলোড',
-    admCategoryHint: 'ক্যাটাগরি storefront, filter, footer এবং product editor-এ দেখাবে। On sale স্বয়ংক্রিয় থাকবে।', active: 'চালু',
+    admCategoryHint: 'ক্যাটাগরি storefront, filter, footer এবং product editor-এ দেখাবে। বিল্ট-ইন ক্যাটাগরি বদলাতে একই key ব্যবহার করুন। On sale স্বয়ংক্রিয় থাকবে।', active: 'চালু',
   },
 });
 
 // datetime-local works in local time; the stored value is ISO.
 const toLocal = iso => { const ms = Date.parse(iso || ''); if (!ms) return ''; const d = new Date(ms - new Date().getTimezoneOffset() * 6e4); return d.toISOString().slice(0, 16); };
+const BUILTIN_CATEGORY_ROWS = [
+  { key: 'three-piece', name: { en: 'Three-piece', bn: 'থ্রি-পিস' }, hint: { en: 'Soft cotton sets', bn: 'নরম সুতির সেট' }, displayOrder: 1, active: true },
+  { key: 'kurti', name: { en: 'Kurti', bn: 'কুর্তি' }, hint: { en: 'Everyday & office wear', bn: 'প্রতিদিন ও অফিসের জন্য' }, displayOrder: 3, active: true },
+  { key: 'khadi', name: { en: 'Khadi', bn: 'খাদি' }, hint: { en: 'Handwoven, breathable', bn: 'হাতে বোনা, আরামদায়ক' }, displayOrder: 4, active: true },
+  { key: 'saree', name: { en: 'Saree', bn: 'শাড়ি' }, hint: { en: 'For the occasions', bn: 'বিশেষ দিনের জন্য' }, displayOrder: 5, active: true },
+];
 const categoryRow = category => html`
   <div class="adm-category-row" data-category-row>
     <label class="field"><span>${t('admCategoryKey')}</span><input class="input" data-cat-key value="${category.key || ''}" placeholder="winter-wear"></label>
@@ -63,7 +69,13 @@ export async function render() {
       </section>
       <section class="panel stack"><h3 class="panel-title">${t('admCategories')}</h3>
         <p class="muted adm-small">${t('admCategoryHint')}</p>
-        <div class="adm-category-list" data-categories>${(Array.isArray(s.categories) ? s.categories : []).map(categoryRow)}</div>
+        <div class="adm-category-list" data-categories>${(() => {
+          const configured = Array.isArray(s.categories) ? s.categories : [];
+          const configuredKeys = new Set(configured.map(category => category.key));
+          return [...BUILTIN_CATEGORY_ROWS.filter(category => !configuredKeys.has(category.key)), ...configured]
+            .sort((a, b) => Number(a.displayOrder || 999) - Number(b.displayOrder || 999))
+            .map(categoryRow);
+        })()}</div>
         <button class="btn btn-ghost btn-sm" type="button" data-cat-add>${t('admAddCategory')}</button>
       </section>
       <section class="panel form-grid cols-2"><h3 class="panel-title span-2">${t('admContact')}</h3>
