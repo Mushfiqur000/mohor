@@ -1,6 +1,6 @@
 // Mohor service worker — offline shell + stale-while-revalidate for static assets.
 // The API is never cached: prices, stock and orders must always be live.
-const VERSION = 'mohor-v2.0.2';
+const VERSION = 'mohor-v2.0.3';
 const SHELL = ['/', '/shop', '/cart', '/404.html', '/assets/css/mohor.css', '/assets/logo-ink.png', '/assets/image-placeholder.svg'];
 
 self.addEventListener('install', event => {
