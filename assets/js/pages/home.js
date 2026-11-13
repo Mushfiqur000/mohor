@@ -143,7 +143,7 @@ function renderIntro() {
 function renderCategories() {
   const tiles = CATEGORIES.map(c => {
     const items = products.filter(p => p.category === c.key);
-    return { href: `/shop?cat=${encodeURIComponent(c.key)}`, label: c.label(), hint: c.hint?.() || '', count: items.length, img: items[0] ? imageOf(items[0]) : '' };
+    return { href: `/shop?cat=${encodeURIComponent(c.key)}`, label: c.label(), hint: c.hint?.() || '', count: items.length, img: c.imageUrl || (items[0] ? imageOf(items[0]) : '') };
   }).filter(tile => !products.length || tile.count);
   const sale = products.filter(p => pricing(p).onSale);
   if (sale.length) tiles.push({ href: '/shop?sale=1', label: t('catOnSale'), hint: t('catHintSale'), count: sale.length, img: imageOf(sale[0]), sale: true });

@@ -598,7 +598,7 @@ route('PUT', '/api/settings', async c => {
     if (!(key in input)) continue;
     const def = DEFAULT_SETTINGS[key];
     if (key === 'categories') {
-      next[key] = Array.isArray(input[key]) ? input[key].slice(0, 100).map(category => ({
+      const categories = Array.isArray(input[key]) ? input[key].slice(0, 100).map(category => ({
         key: str(category?.key, 80).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''),
         name: {
           en: str(category?.name?.en || category?.name, 120),
@@ -608,9 +608,12 @@ route('PUT', '/api/settings', async c => {
           en: str(category?.hint?.en, 180),
           bn: str(category?.hint?.bn, 180),
         },
+        imageUrl: safeLink(category?.imageUrl, 1000),
         active: category?.active !== false,
         displayOrder: Math.max(0, num(category?.displayOrder)),
       })).filter(category => category.key && category.name.en) : [];
+      const seen = new Set();
+      next[key] = categories.filter(category => !seen.has(category.key) && (seen.add(category.key), true));
       continue;
     }
     next[key] = typeof def === 'number' ? Math.max(0, num(input[key], def))

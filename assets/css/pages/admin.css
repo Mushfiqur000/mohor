@@ -160,6 +160,10 @@
 .adm-category-list { display: grid; gap: var(--s3); }
 .adm-category-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s3); padding: var(--s3); border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--paper-2); }
 .adm-category-row .field, .adm-category-row .check { min-width: 0; }
+.adm-category-image { display: grid; gap: var(--s2); align-content: start; }
+.adm-category-image img { width: 110px; height: 110px; object-fit: cover; border-radius: var(--radius-sm); border: 1px solid var(--line); background: var(--paper); }
+.adm-category-image .adm-file { justify-self: start; }
+.adm-category-image .field-label { font-size: .82rem; color: var(--muted); }
 .adm-category-row [data-cat-remove] { justify-self: start; }
 @media (min-width: 900px) { .adm-category-row { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 @media (max-width: 480px) { .adm-category-row { grid-template-columns: 1fr; } }

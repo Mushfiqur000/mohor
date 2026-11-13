@@ -128,10 +128,10 @@ export const cardImage = source => {
 export const productUrl = p => `/product?id=${encodeURIComponent(p.id)}`;
 
 const BUILTIN_CATEGORIES = [
-  { key: 'three-piece', label: () => t('catThreePiece'), hint: () => t('catHintThreePiece') },
-  { key: 'kurti', label: () => t('catKurti'), hint: () => t('catHintKurti') },
-  { key: 'khadi', label: () => t('catKhadi'), hint: () => t('catHintKhadi') },
-  { key: 'saree', label: () => t('catSaree'), hint: () => t('catHintSaree') },
+  { key: 'three-piece', order: 0, label: () => t('catThreePiece'), hint: () => t('catHintThreePiece') },
+  { key: 'kurti', order: 1, label: () => t('catKurti'), hint: () => t('catHintKurti') },
+  { key: 'khadi', order: 2, label: () => t('catKhadi'), hint: () => t('catHintKhadi') },
+  { key: 'saree', order: 3, label: () => t('catSaree'), hint: () => t('catHintSaree') },
 ];
 export const CATEGORIES = [...BUILTIN_CATEGORIES];
 export async function loadCategories({ fresh = false } = {}) {
@@ -139,9 +139,10 @@ export async function loadCategories({ fresh = false } = {}) {
   const custom = Array.isArray(settings.categories) ? settings.categories
     .filter(c => c && c.active !== false && typeof c.key === 'string' && typeof c.name?.en === 'string' && c.name.en.trim())
     .sort((a, b) => Number(a.displayOrder || 0) - Number(b.displayOrder || 0))
-    .map(c => ({ key: c.key, label: () => localized(c.name) || c.key, hint: () => localized(c.hint) || '' })) : [];
+    .map(c => ({ key: c.key, order: 100 + Number(c.displayOrder || 0), imageUrl: c.imageUrl || '', label: () => localized(c.name) || c.key, hint: () => localized(c.hint) || '' })) : [];
   const seen = new Set(BUILTIN_CATEGORIES.map(c => c.key));
-  CATEGORIES.splice(0, CATEGORIES.length, ...BUILTIN_CATEGORIES, ...custom.filter(c => !seen.has(c.key)));
+  CATEGORIES.splice(0, CATEGORIES.length, ...[...BUILTIN_CATEGORIES, ...custom.filter(c => !seen.has(c.key))]
+    .sort((a, b) => a.order - b.order));
   return CATEGORIES;
 }
 export const categoryLabel = key => CATEGORIES.find(c => c.key === key)?.label() || (key ? key.replace(/-/g, ' ') : t('catOther'));
