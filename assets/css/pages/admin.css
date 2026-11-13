@@ -135,7 +135,9 @@
 .adm-file { position: relative; overflow: hidden; cursor: pointer; }
 .adm-file input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
 .adm-images { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: var(--s3); }
-.adm-images li { position: relative; border: 1px solid var(--line); border-radius: var(--radius-sm); overflow: hidden; background: var(--paper-2); }
+.adm-images li { position: relative; border: 1px solid var(--line); border-radius: var(--radius-sm); overflow: hidden; background: var(--paper-2); cursor: grab; }
+.adm-images li:active { cursor: grabbing; }
+.adm-images li.is-dragging { opacity: 0.45; border-color: var(--brass); }
 .adm-images li.is-thumb { border-color: var(--maroon); box-shadow: 0 0 0 2px var(--maroon-tint); }
 .adm-images img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; display: block; }
 .adm-thumb-badge { position: absolute; top: 6px; left: 6px; }
