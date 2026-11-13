@@ -267,10 +267,10 @@ function editor(view, product) {
           <li class="${d.thumbnail === src || (!d.thumbnail && i === 0) ? 'is-thumb' : ''}" draggable="true" data-img-index="${i}">
             <img src="${safeUrl(src, '/assets/image-placeholder.svg')}" alt="" loading="lazy">
             ${d.thumbnail === src || (!d.thumbnail && i === 0) ? html`<span class="badge badge-ink adm-thumb-badge">${t('admThumb')}</span>` : ''}
+            <button class="adm-img-remove" type="button" data-img-del="${i}" aria-label="${t('admDelete')}" title="${t('admDelete')}">${icon('close', 16)}</button>
             <div class="adm-img-tools">
               <button class="icon-btn" type="button" data-img-move="-1" data-i="${i}" aria-label="${t('admLeftMove')}">${icon('chevronLeft', 16)}</button>
               <button class="btn btn-ghost btn-sm" type="button" data-img-thumb="${i}">${icon('check', 16)} ${t('admMakeThumb')}</button>
-              <button class="icon-btn" type="button" data-img-del="${i}" aria-label="${t('admDelete')}">${icon('trash', 16)}</button>
               <button class="icon-btn" type="button" data-img-move="1" data-i="${i}" aria-label="${t('admRightMove')}">${icon('chevronRight', 16)}</button>
             </div></li>`)}</ul>
         <div class="adm-toolbar">

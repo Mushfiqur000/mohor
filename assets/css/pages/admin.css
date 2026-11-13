@@ -141,6 +141,9 @@
 .adm-images li.is-thumb { border-color: var(--maroon); box-shadow: 0 0 0 2px var(--maroon-tint); }
 .adm-images img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; display: block; }
 .adm-thumb-badge { position: absolute; top: 6px; left: 6px; }
+.adm-img-remove { position: absolute; top: 6px; right: 6px; z-index: 2; display: grid; place-items: center; width: 30px; height: 30px;
+  padding: 0; border: 0; border-radius: 50%; background: rgb(24 16 12 / 0.78); color: #fff; cursor: pointer; }
+.adm-img-remove:hover { background: var(--danger); }
 .adm-img-tools { display: flex; justify-content: space-between; background: var(--card); }
 .adm-img-tools .icon-btn { width: 30px; height: 36px; }
 .adm-color-row { display: grid; grid-template-columns: 44px 1fr 1fr auto; gap: var(--s2); align-items: center; }
