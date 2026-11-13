@@ -379,7 +379,13 @@ function editor(view, product) {
     try {
       const body = payload(d);
       d.id ? await api.put('/api/products', body) : await api.post('/api/products', body);
-      dirty.value = false; toast(t('admSaved'), { type: 'success' }); render();
+      dirty.value = false;
+      toast(t('admSaved'), { type: 'success' });
+      if (d.id) {
+        editor(view, { ...product, ...body, id: d.id });
+      } else {
+        render();
+      }
     } catch (error) { restore(); fail(error); }
   });
 }
