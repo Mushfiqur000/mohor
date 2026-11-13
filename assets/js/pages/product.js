@@ -69,6 +69,11 @@ const hasSizeChoice = () => !(sizes().length === 1 && sizes()[0] === 'Standard')
 const available = () => (sel.size ? stockFor(product, sel.size, sel.color) : 0);
 const colorLabel = () => colorsOf(product).find(c => c.key === sel.color)?.label || '';
 const measurementFor = size => { const m = product.sizeMeasurements?.[size]; return m ? plain(localized(m)) : ''; };
+const measurementItems = size => measurementFor(size)
+  .split(/\s*(?:•|\||\n)\s*|\s*,\s*(?=(?:[A-Za-z][A-Za-z ]+|[\u0980-\u09FF][^:]*):)/)
+  .map(item => item.replace(/^[•·-]\s*/, '').trim())
+  .filter(Boolean);
+const measurementList = (size, className = 'pdp-measure-list') => html`<ul class="${className}">${measurementItems(size).map(item => html`<li>${item}</li>`)}</ul>`;
 
 function pickDefaults() {
   const colors = colorsOf(product);
@@ -114,7 +119,7 @@ function optionsMarkup() {
         const k = stockFor(product, size, sel.color);
         return html`<button type="button" class="size${size === sel.size ? ' is-on' : ''}" data-size="${size}" ${k ? '' : 'disabled'} aria-pressed="${size === sel.size}" aria-label="${size}${k ? '' : ` — ${t('soldOut')}`}">${size}${k && k <= 3 ? html`<small>${t('onlyLeft', { n: k })}</small>` : ''}</button>`;
       })}</div>
-      ${sel.size && measurementFor(sel.size) ? html`<p class="pdp-measure">${icon('ruler', 16)} ${measurementFor(sel.size)}</p>` : ''}
+      ${sel.size && measurementFor(sel.size) ? html`<div class="pdp-measure">${icon('ruler', 16)} ${measurementList(sel.size)}</div>` : ''}
     </fieldset>` : ''}
     <p class="pdp-stock ${anyStock && (!sel.size || n) ? 'is-ok' : 'is-out'}" role="status">
       ${!anyStock ? t('pdpOut') : sel.size && !n ? t('pdpOutSel') : sel.size && n <= 3 ? t('onlyLeft', { n }) : t('pdpInStock')}</p>
@@ -294,7 +299,7 @@ function openGuide() {
     body: html`
       ${guide ? guide.split(/\n+/).map(p => html`<p class="pdp-guide-text">${p}</p>`) : ''}
       ${rows.length ? html`<table class="pdp-guide-table"><thead><tr><th scope="col">${t('size')}</th><th scope="col">${t('pdpMeasure')}</th></tr></thead>
-        <tbody>${rows.map(s => html`<tr class="${s === sel.size ? 'is-on' : ''}"><th scope="row">${s}</th><td>${measurementFor(s)}</td></tr>`)}</tbody></table>` : ''}
+        <tbody>${rows.map(s => html`<tr class="${s === sel.size ? 'is-on' : ''}"><th scope="row">${s}</th><td>${measurementList(s, 'pdp-measure-list pdp-guide-list')}</td></tr>`)}</tbody></table>` : ''}
       ${!guide && !rows.length ? html`<p class="muted">${t('pdpNoGuide')}</p>` : ''}
       <a class="btn btn-wa btn-block" href="https://wa.me/${CONTACT.whatsapp}?text=${encodeURIComponent(`${t('pdpSizeGuide')} — ${titleOf(product)}`)}" target="_blank" rel="noopener" data-contact>${icon('whatsapp', 20)}<span>${t('supportWhatsapp')}</span></a>`,
   });
