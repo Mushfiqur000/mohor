@@ -16,6 +16,11 @@
   "d1_databases": [
     { "binding": "DB", "database_name": "mohor-db", "database_id": "eb1b375e-a0aa-413f-80b2-130082b97b16" }
   ],
+  "previews": {
+    "d1_databases": [
+      { "binding": "DB", "database_id": "eb1b375e-a0aa-413f-80b2-130082b97b16" }
+    ]
+  },
   // Uncomment and set your bucket name to upload images straight to R2
   // (the bucket served at images.mohor.me). Otherwise the legacy
   // mohor-uploader worker is used via UPLOADER_URL + UPLOADER_SECRET.
