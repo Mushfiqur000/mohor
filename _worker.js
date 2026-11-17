@@ -256,6 +256,75 @@ async function verifyJWT(token, secret) {
 // Request context
 // --------------------------------------------------------------------------
 
+function xmlEscape(value) {
+  return String(value ?? '').replace(/[<>&'"]/g, char => ({
+    '<': '&lt;', '>': '&gt;', '&': '&amp;', "'": '&apos;', '"': '&quot;',
+  }[char]));
+}
+
+async function productSitemap(env) {
+  const { results = [] } = await env.DB.prepare('SELECT * FROM products').all();
+  const urls = results.map(row => normalizeProduct(row))
+    .filter(product => product.status === 'active')
+    .map(product => {
+      const loc = `https://mohor.me/product?id=${encodeURIComponent(product.id)}`;
+      const images = [product.thumbnail, ...(Array.isArray(product.images) ? product.images : [])]
+        .filter(Boolean)
+        .filter((image, index, list) => list.indexOf(image) === index)
+        .slice(0, 10)
+        .map(image => `<image:image><image:loc>${xmlEscape(image)}</image:loc></image:image>`)
+        .join('');
+      return `<url><loc>${xmlEscape(loc)}</loc>${images}</url>`;
+    }).join('');
+  return `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"><url><loc>https://mohor.me/</loc></url><url><loc>https://mohor.me/shop</loc></url><url><loc>https://mohor.me/about</loc></url><url><loc>https://mohor.me/policy</loc></url>${urls}</urlset>`;
+}
+
+async function productHtml(request, env) {
+  const id = new URL(request.url).searchParams.get('id');
+  if (!id) return null;
+  const row = await env.DB.prepare('SELECT * FROM products WHERE id = ? LIMIT 1').bind(id).first();
+  const product = row && normalizeProduct(row);
+  if (!product || product.status !== 'active') return null;
+  const asset = await env.ASSETS.fetch(new Request(new URL('/product.html', request.url), { method: 'GET', headers: request.headers }));
+  if (!asset.ok) return null;
+  const title = String(product.title?.en || product.title || 'Product');
+  const description = String(product.description?.en || `${title} — handcrafted by Mohor Clothings in Sylhet.`)
+    .replace(/\s+/g, ' ').trim().slice(0, 180);
+  const image = product.thumbnail || product.images?.[0] || '';
+  const canonical = `${env.PUBLIC_ORIGIN || new URL(request.url).origin}/product?id=${encodeURIComponent(product.id)}`;
+  const html = await asset.text();
+  const ld = {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: title,
+    sku: product.id,
+    image: [image, ...(product.images || [])].filter(Boolean),
+    description,
+    brand: { '@type': 'Brand', name: 'Mohor Clothings' },
+    offers: {
+      '@type': 'Offer',
+      url: canonical,
+      priceCurrency: 'BDT',
+      price: product.price,
+      availability: product.quantity > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+    },
+  };
+  const meta = html
+    .replace(/<title>[\s\S]*?<\/title>/i, `<title>${escapeHtml(title)} — Mohor</title>`)
+    .replace(/<meta name="description" content="[^"]*">/i, `<meta name="description" content="${escapeHtml(description)}">`)
+    .replace(/<link rel="canonical" href="[^"]*">/i, `<link rel="canonical" href="${escapeHtml(canonical)}">`)
+    .replace(/<meta property="og:title" content="[^"]*">/i, `<meta property="og:title" content="${escapeHtml(title)} — Mohor">`)
+    .replace(/<meta property="og:description" content="[^"]*">/i, `<meta property="og:description" content="${escapeHtml(description)}">`)
+    .replace(/<meta property="og:url" content="[^"]*">/i, `<meta property="og:url" content="${escapeHtml(canonical)}">`)
+    .replace(/<meta property="og:image" content="[^"]*">/i, `<meta property="og:image" content="${escapeHtml(image)}">`)
+    .replace(/<meta property="og:type" content="website">/i, '<meta property="og:type" content="product">')
+    .replace('</head>', `<meta property="og:image:secure_url" content="${escapeHtml(image)}"><meta name="twitter:image" content="${escapeHtml(image)}"><meta property="product:price:amount" content="${escapeHtml(product.price)}"><meta property="product:price:currency" content="BDT"><script type="application/ld+json">${JSON.stringify(ld).replace(/</g, '\\u003c')}</script></head>`);
+  return new Response(meta, {
+    status: 200,
+    headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'public, max-age=60, s-maxage=300, stale-while-revalidate=600' },
+  });
+}
+
 function createContext(request, env, ctx) {
   const url = new URL(request.url);
   const allowedOrigins = new Set([env.PUBLIC_ORIGIN || 'https://mohor.me', 'https://mohor.me', 'https://www.mohor.me']);
@@ -1361,6 +1430,17 @@ export default {
       } catch (error) {
         console.error('Sitemap generation failed', error?.stack || error);
         return new Response('Sitemap unavailable', { status: 503, headers: { 'Content-Type': 'text/plain; charset=utf-8' } });
+      }
+    }
+
+    if (url.pathname === '/product' && (request.method === 'GET' || request.method === 'HEAD') && url.searchParams.has('id')) {
+      try {
+        const response = await productHtml(request, env);
+        if (response) return request.method === 'HEAD'
+          ? new Response(null, { status: response.status, headers: response.headers })
+          : response;
+      } catch (error) {
+        console.error('Product metadata generation failed', error?.stack || error);
       }
     }
 
