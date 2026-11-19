@@ -284,7 +284,16 @@ async function productHtml(request, env) {
   if (!id) return null;
   const row = await env.DB.prepare('SELECT * FROM products WHERE id = ? LIMIT 1').bind(id).first();
   const product = row && normalizeProduct(row);
-  if (!product || product.status !== 'active') return null;
+  if (!product || product.status !== 'active') {
+    const notFound = await env.ASSETS.fetch(new Request(new URL('/404.html', request.url), {
+      method: 'GET',
+      headers: request.headers,
+    }));
+    return new Response(notFound.body, {
+      status: 404,
+      headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'public, max-age=300' },
+    });
+  }
   const asset = await env.ASSETS.fetch(new Request(new URL('/product.html', request.url), { method: 'GET', headers: request.headers }));
   if (!asset.ok) return null;
   const title = String(product.title?.en || product.title || 'Product');
@@ -318,7 +327,7 @@ async function productHtml(request, env) {
     .replace(/<meta property="og:url" content="[^"]*">/i, `<meta property="og:url" content="${escapeHtml(canonical)}">`)
     .replace(/<meta property="og:image" content="[^"]*">/i, `<meta property="og:image" content="${escapeHtml(image)}">`)
     .replace(/<meta property="og:type" content="website">/i, '<meta property="og:type" content="product">')
-    .replace('</head>', `<meta property="og:image:secure_url" content="${escapeHtml(image)}"><meta name="twitter:image" content="${escapeHtml(image)}"><meta property="product:price:amount" content="${escapeHtml(product.price)}"><meta property="product:price:currency" content="BDT"><script type="application/ld+json">${JSON.stringify(ld).replace(/</g, '\\u003c')}</script></head>`);
+    .replace('</head>', `<meta property="og:image:secure_url" content="${escapeHtml(image)}"><meta property="og:image:alt" content="${escapeHtml(title)}"><meta name="twitter:image" content="${escapeHtml(image)}"><meta property="twitter:image:alt" content="${escapeHtml(title)}"><meta property="product:price:amount" content="${escapeHtml(product.price)}"><meta property="product:price:currency" content="BDT"><script type="application/ld+json">${JSON.stringify(ld).replace(/</g, '\\u003c')}</script></head>`);
   return new Response(meta, {
     status: 200,
     headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'public, max-age=60, s-maxage=300, stale-while-revalidate=600' },
