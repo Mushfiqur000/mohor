@@ -7,7 +7,7 @@
   "assets": {
     "directory": ".",
     "binding": "ASSETS",
-    // Only the API wakes the Worker; pages, CSS, JS and images are served
+    // Dynamic API, sitemap and product routes wake the Worker; pages, CSS, JS and images are served
     // directly from Cloudflare's edge (free, unmetered).
     "run_worker_first": ["/api/*", "/sitemap.xml", "/product"],
     "html_handling": "auto-trailing-slash",
