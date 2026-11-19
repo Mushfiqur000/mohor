@@ -6,4 +6,4 @@ Disallow: /account
 Disallow: /checkout
 Disallow: /order-success
 
-Sitemap: https://mohor.me/sitemap.xml
+Sitemap: /sitemap.xml
