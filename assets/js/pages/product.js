@@ -382,8 +382,8 @@ function bindPage() {
 function seo() {
   const title = titleOf(product);
   const { price } = pricing(product);
-  const url = `https://mohor.me${productUrl(product)}`;
-  const abs = src => new URL(src, 'https://mohor.me').href;
+  const url = new URL(productUrl(product), location.origin).href;
+  const abs = src => new URL(src, location.origin).href;
   const desc = plain(localized(product.description)).slice(0, 160) || `${title} — handcrafted by Mohor Clothings in Sylhet.`;
   document.title = `${title} — Mohor`;
   const setMeta = (attr, key, value) => {

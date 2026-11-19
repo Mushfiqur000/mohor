@@ -6,14 +6,14 @@ across Bangladesh.
 
 ## Important pages
 
-- [Shop](https://mohor.me/shop)
-- [About Mohor](https://mohor.me/about)
-- [Delivery and returns policy](https://mohor.me/policy)
-- [Shopping cart](https://mohor.me/cart)
-- [Customer account](https://mohor.me/account)
+- [Shop](/shop)
+- [About Mohor](/about)
+- [Delivery and returns policy](/policy)
+- [Shopping cart](/cart)
+- [Customer account](/account)
 
 ## Delivery and contact
 
-Delivery costs ৳70 inside Sylhet City and ৳140 outside. Customers can request
+Delivery costs à§³70 inside Sylhet City and à§³140 outside. Customers can request
 an exchange within 24 hours of delivery for eligible unworn pieces.
 WhatsApp and phone support: [+8801330113027](https://wa.me/8801330113027).

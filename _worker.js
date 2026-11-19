@@ -262,28 +262,31 @@ function xmlEscape(value) {
   }[char]));
 }
 
-async function productSitemap(env) {
+async function productSitemap(request, env) {
   const { results = [] } = await env.DB.prepare('SELECT * FROM products').all();
-  const urls = results.map(row => normalizeProduct(row))
+  const origin = publicOrigin(request, env);
+  const products = results.map(row => normalizeProduct(row, env))
     .filter(product => product.status === 'active')
-    .map(product => {
-      const loc = `https://mohor.me/product?id=${encodeURIComponent(product.id)}`;
+  const categories = [...new Set(products.map(product => product.category).filter(Boolean))];
+  const categoryUrls = categories.map(category => `<url><loc>${xmlEscape(`${origin}/shop?cat=${encodeURIComponent(category)}`)}</loc></url>`).join('');
+  const urls = products.map(product => {
+      const loc = `${origin}/product?id=${encodeURIComponent(product.id)}`;
       const images = [product.thumbnail, ...(Array.isArray(product.images) ? product.images : [])]
         .filter(Boolean)
         .filter((image, index, list) => list.indexOf(image) === index)
         .slice(0, 10)
-        .map(image => `<image:image><image:loc>${xmlEscape(image)}</image:loc></image:image>`)
+        .map(image => `<image:image><image:loc>${xmlEscape(image)}</image:loc><image:title>${xmlEscape(`MOHOR Clothing - ${product.title?.en || product.title || product.id}`)}</image:title></image:image>`)
         .join('');
       return `<url><loc>${xmlEscape(loc)}</loc>${images}</url>`;
     }).join('');
-  return `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"><url><loc>https://mohor.me/</loc></url><url><loc>https://mohor.me/shop</loc></url><url><loc>https://mohor.me/about</loc></url><url><loc>https://mohor.me/policy</loc></url>${urls}</urlset>`;
+  return `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"><url><loc>${xmlEscape(`${origin}/`)}</loc></url><url><loc>${xmlEscape(`${origin}/shop`)}</loc></url>${categoryUrls}${urls}</urlset>`;
 }
 
 async function productHtml(request, env) {
   const id = new URL(request.url).searchParams.get('id');
   if (!id) return null;
   const row = await env.DB.prepare('SELECT * FROM products WHERE id = ? LIMIT 1').bind(id).first();
-  const product = row && normalizeProduct(row);
+  const product = row && normalizeProduct(row, env);
   if (!product || product.status !== 'active') {
     const notFound = await env.ASSETS.fetch(new Request(new URL('/404.html', request.url), {
       method: 'GET',
@@ -291,7 +294,7 @@ async function productHtml(request, env) {
     }));
     return new Response(notFound.body, {
       status: 404,
-      headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'public, max-age=300' },
+      headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'public, max-age=300', 'X-Robots-Tag': 'noindex' },
     });
   }
   const asset = await env.ASSETS.fetch(new Request(new URL('/product.html', request.url), { method: 'GET', headers: request.headers }));
@@ -300,16 +303,17 @@ async function productHtml(request, env) {
   const description = String(product.description?.en || `${title} — handcrafted by Mohor Clothings in Sylhet.`)
     .replace(/\s+/g, ' ').trim().slice(0, 180);
   const image = product.thumbnail || product.images?.[0] || '';
-  const canonical = `${env.PUBLIC_ORIGIN || new URL(request.url).origin}/product?id=${encodeURIComponent(product.id)}`;
+  const canonical = `${publicOrigin(request, env)}/product?id=${encodeURIComponent(product.id)}`;
+  const images = [image, ...(product.images || [])].filter(Boolean).filter((value, index, list) => list.indexOf(value) === index);
   const html = await asset.text();
   const ld = {
     '@context': 'https://schema.org',
     '@type': 'Product',
     name: title,
     sku: product.id,
-    image: [image, ...(product.images || [])].filter(Boolean),
+    image: images,
     description,
-    brand: { '@type': 'Brand', name: 'Mohor Clothings' },
+    brand: { '@type': 'Brand', name: 'MOHOR' },
     offers: {
       '@type': 'Offer',
       url: canonical,
@@ -319,24 +323,70 @@ async function productHtml(request, env) {
     },
   };
   const meta = html
-    .replace(/<title>[\s\S]*?<\/title>/i, `<title>${escapeHtml(title)} — Mohor</title>`)
+    .replace(/<title>[\s\S]*?<\/title>/i, `<title>${escapeHtml(title)} | MOHOR Clothing</title>`)
     .replace(/<meta name="description" content="[^"]*">/i, `<meta name="description" content="${escapeHtml(description)}">`)
     .replace(/<link rel="canonical" href="[^"]*">/i, `<link rel="canonical" href="${escapeHtml(canonical)}">`)
-    .replace(/<meta property="og:title" content="[^"]*">/i, `<meta property="og:title" content="${escapeHtml(title)} — Mohor">`)
+    .replace(/<meta property="og:title" content="[^"]*">/i, `<meta property="og:title" content="${escapeHtml(title)} | MOHOR Clothing">`)
     .replace(/<meta property="og:description" content="[^"]*">/i, `<meta property="og:description" content="${escapeHtml(description)}">`)
     .replace(/<meta property="og:url" content="[^"]*">/i, `<meta property="og:url" content="${escapeHtml(canonical)}">`)
     .replace(/<meta property="og:image" content="[^"]*">/i, `<meta property="og:image" content="${escapeHtml(image)}">`)
     .replace(/<meta property="og:type" content="website">/i, '<meta property="og:type" content="product">')
-    .replace('</head>', `<meta property="og:image:secure_url" content="${escapeHtml(image)}"><meta property="og:image:alt" content="${escapeHtml(title)}"><meta name="twitter:image" content="${escapeHtml(image)}"><meta property="twitter:image:alt" content="${escapeHtml(title)}"><meta property="product:price:amount" content="${escapeHtml(product.price)}"><meta property="product:price:currency" content="BDT"><script type="application/ld+json">${JSON.stringify(ld).replace(/</g, '\\u003c')}</script></head>`);
+    .replace('</head>', `<meta property="og:image:secure_url" content="${escapeHtml(image)}"><meta property="og:image:alt" content="${escapeHtml(title)}"><meta name="twitter:image" content="${escapeHtml(image)}"><meta property="twitter:image:alt" content="${escapeHtml(title)}"><meta property="product:price:amount" content="${escapeHtml(product.price)}"><meta property="product:price:currency" content="BDT"><script type="application/ld+json">${JSON.stringify(ld).replace(/</g, '\\u003c')}</script></head>`)
+    .replace('<div class="wrap" id="product-root" aria-busy="true">', `<div class="wrap" id="product-root" aria-busy="false"><article class="pdp ssr-product"><div class="pdp-gallery">${images.map((src, index) => `<img src="${escapeHtml(src)}" alt="MOHOR Clothing - ${escapeHtml(title)}" width="800" height="1067" loading="${index ? 'lazy' : 'eager'}">`).join('')}</div><div class="pdp-info"><h1>${escapeHtml(title)}</h1><p>${escapeHtml(description)}</p><p class="pdp-price">৳ ${escapeHtml(product.price)}</p></div></article>`);
   return new Response(meta, {
     status: 200,
     headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'public, max-age=60, s-maxage=300, stale-while-revalidate=600' },
   });
 }
 
+function productCardHtml(product) {
+  const title = String(product.title?.en || product.title || product.id);
+  const image = product.thumbnail || product.images?.[0] || '';
+  return `<article class="product-card ssr-product-card"><a href="/product?id=${encodeURIComponent(product.id)}"><img src="${escapeHtml(image)}" alt="MOHOR Clothing - ${escapeHtml(title)}" width="600" height="800" loading="lazy"><h2>${escapeHtml(title)}</h2><p>৳ ${escapeHtml(product.price)}</p></a></article>`;
+}
+
+async function shopHtml(request, env) {
+  const url = new URL(request.url);
+  const category = String(url.searchParams.get('cat') || '').trim().toLowerCase();
+  if (!category) return null;
+  const { results = [] } = await env.DB.prepare('SELECT * FROM products').all();
+  const products = results.map(row => normalizeProduct(row, env))
+    .filter(product => product.status === 'active' && product.category === category);
+  if (!products.length) {
+    return new Response('<!doctype html><title>Category not found — MOHOR</title><h1>Category not found</h1>', {
+      status: 404,
+      headers: { 'Content-Type': 'text/html; charset=utf-8', 'X-Robots-Tag': 'noindex' },
+    });
+  }
+  const asset = await env.ASSETS.fetch(new Request(new URL('/shop.html', request.url), { headers: request.headers }));
+  if (!asset.ok) return null;
+  const html = await asset.text();
+  const origin = publicOrigin(request, env);
+  const hasFilters = [...url.searchParams.keys()].some(key => key !== 'cat');
+  const canonical = hasFilters ? `${origin}/shop?cat=${encodeURIComponent(category)}` : `${origin}/shop?cat=${encodeURIComponent(category)}`;
+  const title = `${category.replace(/-/g, ' ')} — MOHOR Clothing`;
+  return new Response(html
+    .replace(/<title>[\s\S]*?<\/title>/i, `<title>${escapeHtml(title)}</title>`)
+    .replace(/<link rel="canonical" href="[^"]*">/i, `<link rel="canonical" href="${escapeHtml(canonical)}">`)
+    .replace('<div class="grid" id="shop-grid"></div>', `<div class="grid" id="shop-grid">${products.map(productCardHtml).join('')}</div>`), {
+      status: 200,
+      headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'public, max-age=60, s-maxage=300, stale-while-revalidate=600' },
+    });
+}
+
+function redirectResponse(location) {
+  return new Response(null, { status: 301, headers: { Location: location, 'Cache-Control': 'public, max-age=3600' } });
+}
+
+function robotsText(request, env) {
+  const origin = publicOrigin(request, env);
+  return `User-agent: *\nAllow: /\nDisallow: /admin\nDisallow: /api/\nDisallow: /account\nDisallow: /checkout\nDisallow: /order-success\nDisallow: /orders\nDisallow: /cart\nDisallow: /wishlist\nSitemap: ${origin}/sitemap.xml\n`;
+}
+
 function createContext(request, env, ctx) {
   const url = new URL(request.url);
-  const allowedOrigins = new Set([env.PUBLIC_ORIGIN || 'https://mohor.me', 'https://mohor.me', 'https://www.mohor.me']);
+  const configuredOrigin = env.PUBLIC_ORIGIN || url.origin;
+  const allowedOrigins = new Set([configuredOrigin, url.origin]);
   const origin = request.headers.get('Origin');
   const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
 
@@ -443,7 +493,39 @@ async function getSettings(env) {
   return { ...DEFAULT_SETTINGS, ...columns, ...(data && typeof data === 'object' ? data : {}) };
 }
 
-function normalizeProduct(row) {
+function publicOrigin(request, env) {
+  return String(env.PUBLIC_ORIGIN || new URL(request.url).origin).replace(/\/+$/, '');
+}
+
+function publicImageUrl(value, env) {
+  const raw = String(value || '').trim();
+  if (!raw) return '';
+  const base = String(env.R2_PUBLIC_URL || '').replace(/\/+$/, '');
+  if (!base) return raw;
+  if (/^https?:\/\//i.test(raw)) {
+    try {
+      const parsed = new URL(raw);
+      const baseHost = new URL(base).hostname;
+      if (parsed.hostname === baseHost) return `${base}/${parsed.pathname.replace(/^\/+/, '')}${parsed.search}`;
+      return parsed.href;
+    } catch { return ''; }
+  }
+  return `${base}/${raw.replace(/^\/+/, '')}`;
+}
+
+function imageKey(value, env = {}) {
+  const raw = String(value || '').trim();
+  if (!raw) return '';
+  if (!/^https?:\/\//i.test(raw)) return raw.replace(/^\/+/, '');
+  try {
+    const parsed = new URL(raw);
+    const configuredUrl = String(env.R2_PUBLIC_URL || '');
+    const publicHost = configuredUrl ? new URL(configuredUrl).hostname : '';
+    return publicHost && parsed.hostname === publicHost ? parsed.pathname.replace(/^\/+/, '') : raw;
+  } catch { return ''; }
+}
+
+function normalizeProduct(row, env = {}) {
   const p = parseRow(row);
   // Legacy pricing fields → canonical price / originalPrice
   const regular = num(p.regularPrice);
@@ -458,7 +540,9 @@ function normalizeProduct(row) {
     id: String(p.id),
     price,
     originalPrice: originalPrice > price ? originalPrice : 0,
-    images: Array.isArray(p.images) ? p.images.filter(i => typeof i === 'string') : (p.images ? [String(p.images)] : []),
+    images: (Array.isArray(p.images) ? p.images : (p.images ? [String(p.images)] : []))
+      .filter(i => typeof i === 'string').map(i => publicImageUrl(i, env)).filter(Boolean),
+    thumbnail: publicImageUrl(p.thumbnail, env),
     sizes: Array.isArray(p.sizes) && p.sizes.length ? p.sizes.map(String) : ['Standard'],
     quantity: num(p.quantity),
     displayOrder: num(p.displayOrder),
@@ -621,7 +705,7 @@ async function sendMetaEvent(env, c, eventName, { eventId, value, contents, emai
   if (phone) user_data.ph = [await sha256Hex('88' + normalizePhone(phone))];
   const event = {
     event_name: eventName, event_time: Math.floor(Date.now() / 1000), action_source: 'website',
-    event_id: eventId, event_source_url: sourceUrl || c.env.PUBLIC_ORIGIN || 'https://mohor.me', user_data,
+    event_id: eventId, event_source_url: sourceUrl || c.env.PUBLIC_ORIGIN || new URL(c.request.url).origin, user_data,
     custom_data: value !== undefined ? { currency: 'BDT', value, contents, content_type: 'product' } : undefined,
   };
   await fetch(`https://graph.facebook.com/v19.0/${env.META_PIXEL_ID}/events?access_token=${encodeURIComponent(env.META_CAPI_TOKEN)}`, {
@@ -865,7 +949,7 @@ route('POST', '/api/cart', c => routes.find(r => r.method === 'PUT' && r.path ==
 
 // ---- Products -------------------------------------------------------------
 
-function sanitizeProductInput(input) {
+function sanitizeProductInput(input, env = {}) {
   const out = {};
   const i18n = value => (value && typeof value === 'object' && !Array.isArray(value)
     ? { en: str(value.en, 5000), bn: str(value.bn, 5000) }
@@ -883,8 +967,8 @@ function sanitizeProductInput(input) {
   if ('category' in input) out.category = str(input.category, 60).toLowerCase();
   if ('price' in input) out.price = Math.max(0, Math.round(num(input.price)));
   if ('originalPrice' in input) out.originalPrice = Math.max(0, Math.round(num(input.originalPrice)));
-  if ('images' in input) out.images = (Array.isArray(input.images) ? input.images : []).map(safeLink).filter(Boolean).slice(0, 20);
-  if ('thumbnail' in input) out.thumbnail = safeLink(input.thumbnail);
+  if ('images' in input) out.images = (Array.isArray(input.images) ? input.images : []).map(value => imageKey(value, env)).filter(Boolean).slice(0, 20);
+  if ('thumbnail' in input) out.thumbnail = imageKey(input.thumbnail, env);
   if ('sizes' in input) out.sizes = (Array.isArray(input.sizes) ? input.sizes : []).map(s => str(s, 30)).filter(Boolean).slice(0, 20);
   if ('colors' in input) {
     const clean = list => (Array.isArray(list) ? list : []).slice(0, 30).map(c => (typeof c === 'string'
@@ -922,7 +1006,7 @@ route('GET', '/api/products', async c => {
   const includeHidden = user?.role === 'admin' && c.url.searchParams.get('all') === '1';
   if (id) {
     const row = await c.env.DB.prepare('SELECT * FROM products WHERE id = ? LIMIT 1').bind(id).first();
-    const product = row && normalizeProduct(row);
+    const product = row && normalizeProduct(row, c.env);
     if (!product || (!includeHidden && product.status !== 'active')) throw new HttpError(404, 'Product not found.');
     return c.json(product, 200, { 'Cache-Control': includeHidden ? 'no-store' : 'public, max-age=60, s-maxage=300, stale-while-revalidate=600' });
   }
@@ -936,7 +1020,7 @@ route('GET', '/api/products', async c => {
 route('POST', '/api/products', async c => {
   await c.requireAdmin();
   const input = await c.body();
-  const product = sanitizeProductInput(input);
+  const product = sanitizeProductInput(input, c.env);
   if (!product.title?.en) throw new HttpError(400, 'Product title is required.');
   if (!product.price) throw new HttpError(400, 'Product price is required.');
   const now = new Date().toISOString();
@@ -952,7 +1036,7 @@ route('PUT', '/api/products', async c => {
   if (!id) throw new HttpError(400, 'Product id is required.');
   const exists = await c.env.DB.prepare('SELECT id FROM products WHERE id = ?').bind(id).first();
   if (!exists) throw new HttpError(404, 'Product not found.');
-  await updateRow(c.env, 'products', id, { ...sanitizeProductInput(input), updatedAt: new Date().toISOString() });
+  await updateRow(c.env, 'products', id, { ...sanitizeProductInput(input, c.env), updatedAt: new Date().toISOString() });
   return c.json({ success: true, id });
 });
 
@@ -973,7 +1057,7 @@ route('POST', '/api/admin/products/bulk', async c => {
   for (const id of ids.slice(0, 500).map(String)) {
     const row = await c.env.DB.prepare('SELECT * FROM products WHERE id = ?').bind(id).first();
     if (!row) continue;
-    const p = normalizeProduct(row);
+    const p = normalizeProduct(row, c.env);
     let fields = null;
     if (action === 'discount') {
       const pct = Math.min(90, Math.max(1, num(value)));
@@ -1063,7 +1147,7 @@ async function priceCart(env, rawItems, zone) {
     if (!id || qty < 1) continue;
     if (!products.has(id)) {
       const row = await env.DB.prepare('SELECT * FROM products WHERE id = ? LIMIT 1').bind(id).first();
-      products.set(id, row ? normalizeProduct(row) : null);
+      products.set(id, row ? normalizeProduct(row, c.env) : null);
     }
     const product = products.get(id);
     if (!product || product.status !== 'active') { problems.push({ id, reason: 'unavailable' }); continue; }
@@ -1236,7 +1320,7 @@ async function setOrderStatus(c, id, status) {
     for (const item of order.items) {
       const prow = await c.env.DB.prepare('SELECT * FROM products WHERE id = ?').bind(String(item.id)).first();
       if (!prow) continue;
-      const product = normalizeProduct(prow);
+      const product = normalizeProduct(prow, c.env);
       await updateRow(c.env, 'products', product.id, adjustStock(product, item.size, item.color, restoring ? num(item.qty) : -num(item.qty)));
     }
   }
@@ -1353,11 +1437,11 @@ route('POST', '/api/admin/upload', async c => {
   const ext = type.split('/')[1].replace('jpeg', 'jpg');
   const base = str(c.url.searchParams.get('name'), 80).toLowerCase().replace(/[^a-z0-9-]+/g, '-').replace(/^-|-$/g, '') || 'image';
   const key = `${base}-${Date.now().toString(36)}-${crypto.randomUUID().slice(0, 6)}.${ext}`;
-  const publicBase = (c.env.R2_PUBLIC_URL || 'https://images.mohor.me/').replace(/\/?$/, '/');
+  const publicBase = (c.env.R2_PUBLIC_URL || '').replace(/\/?$/, '/');
 
   if (c.env.IMAGES) {
     await c.env.IMAGES.put(key, c.request.body, { httpMetadata: { contentType: type, cacheControl: 'public, max-age=31536000, immutable' } });
-    return c.json({ success: true, url: publicBase + key, key });
+    return c.json({ success: true, url: publicBase ? publicBase + key : key, key });
   }
   const uploaderSecret = c.env.UPLOADER_SECRET || c.env.UPLOAD_SECRET;
   if (c.env.UPLOADER_URL && uploaderSecret) {
@@ -1374,7 +1458,7 @@ route('POST', '/api/admin/upload', async c => {
         : `Uploader rejected the image (${response.status}).`;
       throw new HttpError(502, detail);
     }
-    return c.json({ success: true, url: publicBase + encodeURIComponent(key), key });
+    return c.json({ success: true, url: publicBase ? publicBase + encodeURIComponent(key) : key, key });
   }
   throw new HttpError(500, 'Image storage is not configured (bind an R2 bucket as IMAGES).');
 });
@@ -1393,6 +1477,7 @@ route('POST', '/api/track', async c => {
   }));
   return c.json({ success: true }, 202);
 });
+route('POST', '/capi', c => routes.find(r => r.method === 'POST' && r.path === '/api/track').handler(c));
 
 // --------------------------------------------------------------------------
 // Entry point
@@ -1406,7 +1491,7 @@ export default {
     if (url.pathname === '/sitemap.xml' && (request.method === 'GET' || request.method === 'HEAD')) {
       try {
         await ensureSchema(env);
-        const body = await productSitemap(env);
+        const body = await productSitemap(request, env);
         return new Response(request.method === 'HEAD' ? null : body, {
           status: 200,
           headers: {
@@ -1420,7 +1505,21 @@ export default {
       }
     }
 
-    if (url.pathname === '/product' && (request.method === 'GET' || request.method === 'HEAD') && url.searchParams.has('id')) {
+    if (url.pathname === '/robots.txt' && (request.method === 'GET' || request.method === 'HEAD')) {
+      return new Response(request.method === 'HEAD' ? null : robotsText(request, env), {
+        status: 200,
+        headers: { 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': 'public, max-age=3600' },
+      });
+    }
+
+    if ((url.pathname === '/product' || url.pathname === '/product/') && !url.searchParams.has('id')) {
+      return redirectResponse(`${publicOrigin(request, env)}/shop`);
+    }
+    if (url.pathname === '/product.html') {
+      if (!url.searchParams.has('id')) return redirectResponse(`${publicOrigin(request, env)}/shop`);
+      return redirectResponse(`${publicOrigin(request, env)}/product?id=${encodeURIComponent(url.searchParams.get('id'))}`);
+    }
+    if ((url.pathname === '/product' || url.pathname === '/product/') && url.searchParams.has('id')) {
       try {
         const response = await productHtml(request, env);
         if (response) return request.method === 'HEAD'
@@ -1431,7 +1530,16 @@ export default {
       }
     }
 
-    if (!url.pathname.startsWith('/api/')) {
+    if (url.pathname === '/shop' || url.pathname === '/shop/') {
+      try {
+        const response = await shopHtml(request, env);
+        if (response) return response;
+      } catch (error) {
+        console.error('Shop rendering failed', error?.stack || error);
+      }
+    }
+
+    if (!url.pathname.startsWith('/api/') && url.pathname !== '/capi') {
       // Static assets normally never reach the worker; this is a safety net.
       const response = await env.ASSETS.fetch(request);
       const headers = new Headers(response.headers);
@@ -1450,7 +1558,7 @@ export default {
       if (!env.JWT_SECRET || env.JWT_SECRET.length < 16) throw new HttpError(500, 'Server is not configured (JWT_SECRET).');
       // Blocks cross-site form posts against the cookie-less API as defence-in-depth.
       const origin = request.headers.get('Origin');
-      if (request.method !== 'GET' && origin && origin !== url.origin && !['https://mohor.me', 'https://www.mohor.me', env.PUBLIC_ORIGIN].includes(origin)) {
+      if (request.method !== 'GET' && origin && origin !== url.origin && ![env.PUBLIC_ORIGIN, url.origin].filter(Boolean).includes(origin)) {
         throw new HttpError(403, 'Cross-origin request blocked.');
       }
       await ensureSchema(env);

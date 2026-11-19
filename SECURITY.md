@@ -8,4 +8,4 @@
 - Rate limiting on login, register, order and tracking endpoints.
 - Strict CSP, HSTS, frame denial, same-origin API writes; all rendered data is HTML-escaped.
 
-Report a vulnerability privately via the contact details on https://mohor.me/about.
+Report a vulnerability privately via the contact details on /about.
