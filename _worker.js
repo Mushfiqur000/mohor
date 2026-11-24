@@ -1147,7 +1147,7 @@ async function priceCart(env, rawItems, zone) {
     if (!id || qty < 1) continue;
     if (!products.has(id)) {
       const row = await env.DB.prepare('SELECT * FROM products WHERE id = ? LIMIT 1').bind(id).first();
-      products.set(id, row ? normalizeProduct(row, c.env) : null);
+      products.set(id, row ? normalizeProduct(row, env) : null);
     }
     const product = products.get(id);
     if (!product || product.status !== 'active') { problems.push({ id, reason: 'unavailable' }); continue; }
